@@ -1,0 +1,255 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Csoportkör-fogadások {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Dashboard</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+            <!--div class="col-md-7 col-4 align-self-center">
+                <a target="_blank"
+                   href="https://appseed.us"
+                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
+                    More Starters
+                </a>
+            </div-->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+
+                        <script>
+                            var sortableArray = [];
+
+                            function populateSortableArray() {
+                                {% for group in groups %}
+                                console.log("pushing sortable:  {{groupID}}");
+                                sortableArray.push(["{{group.ID}}", new Sortable(document.getElementById('list-{{group.ID}}'), {
+                                    animation: 150,
+                                    ghostClass: 'blue-background-class'
+                                })]);
+                                {% endfor %}
+
+                                teamSelect.value = "{{final_team}}";
+                                resultSelect.value = "{{final_result}}";
+                            }
+                            
+                            function calculateRemainingBetAmount() {
+                                var remainingValue = {{start_amount}};
+
+                                console.log("sortable size: " + sortableArray.length);
+
+                                for (const sortableElement of sortableArray) {
+                                    let[groupID, group] = sortableElement;
+                                    remainingValue -=  document.getElementById("bet-" + groupID).value;
+                                    console.log(groupID +": " + document.getElementById("bet-" + groupID).value);
+                                }
+
+                                remainingValue -= finalResultBet.value;
+                                remainingAmount.innerText = remainingValue + " tallér";
+
+                                console.log("calculated remaining bet amount!");
+                            }
+
+                        </script>
+
+                        <script type="module">
+                            import {scores} from './static/assets/js/data/scores.js'
+                            import {namemap} from './static/assets/js/data/scores.js'
+                            import {resultNamemap} from './static/assets/js/data/scores.js'
+
+                            console.log("entry length: " + Object.entries(scores).length);
+
+                            var teamSelect = document.getElementById("teamSelect");
+                            var resultSelect = document.getElementById("resultSelect");
+                            var finalResultOdd = document.getElementById("finalResultOdd");
+                            var finalResultBet = document.getElementById("finalResultBet");
+                            var expectedWinAmount = document.getElementById("expectedWinAmount");
+
+                            for (const [key, value] of Object.entries(scores)) {
+                                console.log(`${key}: ${value}`);
+                                teamSelect.options[teamSelect.options.length] = new Option(namemap[key], key);
+                            }
+
+                            for (let i = 0; i < 4; i++) {
+                                resultSelect.options[resultSelect.options.length] = new Option(resultNamemap[`${i}`], i);
+                            }
+
+                            function updateFinalBet() {
+                                var teamID = teamSelect.options[teamSelect.selectedIndex].value;
+                                var resultID = resultSelect.options[resultSelect.selectedIndex].value;
+
+                                var odd = scores[teamID][resultID];
+                                finalResultOdd.innerText = odd;
+                                finalResultOdd.value = odd;
+
+                                expectedWinAmount.value = odd * finalResultBet.value;
+
+                                calculateExpectedWinAmount();
+                            }
+
+                            function calculateExpectedWinAmount() {
+                                expectedWinAmount.value = parseFloat(finalResultOdd.value) * finalResultBet.value;
+                                expectedWinAmount.innerText = parseFloat(finalResultOdd.value) * finalResultBet.value;
+                            }
+
+                            teamSelect.onchange = updateFinalBet;
+                            resultSelect.onchange = updateFinalBet;
+
+                            finalResultBet.oninput = function() {
+                                if (this.value > 200) {
+                                    this.value = 200;
+                                    this.innerText = 200;
+                                }
+
+                                if (this.value < 0) {
+                                    this.value = 0;
+                                    this.innerText = 0;
+                                }
+
+                                calculateExpectedWinAmount();
+                                calculateRemainingBetAmount();
+                            }
+
+                            var sendButton = document.getElementById("sendButton");
+                            sendButton.onclick = function() {
+                                console.log( 'Sending data' );
+
+                                const XHR = new XMLHttpRequest();
+
+                                XHR.onload = function() {
+                                    console.log("response: " + XHR.response);
+                                }
+
+                                XHR.onerror = function() {
+                                    alert( 'Hiba történt a szerverrel való kommunikációban.' );
+                                }
+
+                                // Set up our request
+                                XHR.open( 'POST', '/group', true);
+
+                                // Add the required HTTP header for form data POST requests
+                                //XHR.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+                                XHR.setRequestHeader( 'Content-Type', 'application/json' );
+                                
+                                var output = {};
+
+                                var finalObject = {"team" : teamSelect.options[teamSelect.selectedIndex].value, "result" : resultSelect.options[resultSelect.selectedIndex].value};
+                                output["final"] = finalObject;
+
+                                var groupsObject = {};
+
+                                for (const sortableElement of sortableArray) {
+                                    let[groupID, group] = sortableElement;
+
+                                    var groupObject = {}
+
+                                    groupObject["bet"] = document.getElementById("bet-" + groupID).value;
+                                    groupObject["order"] = group.toArray();
+
+                                    groupsObject[groupID] = groupObject;
+                                }
+
+                                output["group"] = groupsObject;
+                                 
+                                console.log("out: " + JSON.stringify(output));
+
+                                XHR.send(JSON.stringify(output));
+                            }
+
+                            var remainingAmount = document.getElementById("remainingAmount");
+
+                            window.onload = function() {
+                                populateSortableArray();
+                                updateFinalBet();
+                                calculateRemainingBetAmount();
+                            }
+
+                        </script>                       
+
+                        <div>Kezdőtőke: {{start_amount}}</div>
+
+                        <div>
+                            <div> Végeredmény-tipp:</div>
+                            <select name="teamSelect" id="teamSelect" style="display: inline-block;"> </select>
+                            <select name="resultSelect" id="resultSelect" style="display: inline-block;"> </select>
+                            <label for="finalResultOdd" style="padding-left: 1em;">Szorzó: </label>
+                            <div id="finalResultOdd" style="display: inline-block;"></div>
+
+                            <label for="finalResultBet" style="padding-left: 1em;">Tét: </label>
+                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{final_result_bet}}">
+
+                            <label for="expectedWinAmount" style="padding-left: 1em;"> Várható nyeremény: </label>
+                            <div style="display: inline-block;" id="expectedWinAmount"> </div>
+                        </div>                        
+                        
+                        <div>Vonszolással állítsd be a csoportok sorrendjét!</div>
+                        {% for group in groups %}
+                            <div id="{{group.ID}}" class="row" style="width: 26em;">
+                                <h4 class="col-12" style="display:inline;">{{group.ID}}. csoport</h4>
+
+                                <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 1px;">
+                                    <!--div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div-->
+                                    <div class="list-group-item" style="width: 3em">1.</div>
+                                    <div class="list-group-item" style="width: 3em">2.</div>
+                                    <div class="list-group-item" style="width: 3em">3.</div>
+                                    <div class="list-group-item" style="width: 3em">4.</div>
+                                </div>
+
+                                <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
+                                    {% for team in group.teams %}
+                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.id}}">{{team.name}}</div>
+                                    {% endfor %}
+                                </div>
+                            </div> 
+
+                            <label for="bet-{{group.ID}}" style="padding-left: 3em; padding-top: 1em;">Tét: </label>
+                            <input type="number" size="3" value="{{group.bet}}" id="bet-{{group.ID}}" name="bet-{{group.ID}}" min=0 max=200 oninput="calculateRemainingBetAmount()">
+                            <br>
+                        {% endfor %}
+
+                        <div>
+                            <div style="display: inline-block;">Fennmaradő tőke: </div>
+                            <div style="display: inline-block;" id="remainingAmount"">0 tallér</div>
+                        </div>
+
+                        <button type="button" id="sendButton"> Beküld</button> 
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- ============================================================== -->
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,106 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Blank Page {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Dashboard</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+            <div class="col-md-7 col-4 align-self-center">
+                <a target="_blank"
+                   href="https://appseed.us"
+                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
+                    More Starters
+                </a>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        <form action="./match" method="POST" id="betForm" name="betForm">
+                            <div> {{match.ID}}. mérkőzés ({{match.time}}) - {{match.type}}</div>
+                            
+                            <div style="display: inline-block;">
+                                {{match.team1}}
+                            </div>
+
+                            <div style="display: inline-block;">
+                                <input type="number" size="2" min="0" max="30" value="{{match.goal1}}" name="goal1" form="betForm"/>
+                            </div>
+                            -
+                            <div style="display: inline-block;">
+                                <input type="number" size="2" min="0" max="30" value="{{match.goal2}}" name="goal2" form="betForm"/>
+                            </div>
+
+                            <div style="display: inline-block;">
+                                {{match.team2}}
+                            </div>
+
+                            <div style="display: inline-block;padding-left: 5em;">
+                                <div style="background-color: orange;">
+                                    Oddok: 
+                                    <div style="display: inline-block; padding-left: 5em;">
+                                        1: {{match.odd1}}
+                                    </div>
+
+                                    <div style="display: inline-block; padding-left: 5em;">
+                                        X: {{match.oddX}}
+                                    </div>
+
+                                    <div style="display: inline-block; padding-left: 5em;">
+                                        2: {{match.odd2}}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label>Tét: </label>
+                                <input type="number" size="1" value="{{match.bet}}" name="bet" min="0" max="50" form="betForm"/>
+                            </div>
+
+                            <input type="submit" value="Submit" form="betForm">
+
+                        </form>
+
+                        <script>
+                            /*var sendButton = document.getElementById("sendButton");
+                            sendButton.onclick = function() {
+                                
+                            }*/
+                        </script>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- ============================================================== -->
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,105 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Korábbi fogadások {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Dashboard</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+            <!--div class="col-md-7 col-4 align-self-center">
+                <a target="_blank"
+                   href="https://appseed.us"
+                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
+                    More Starters
+                </a>
+            </div-->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        
+                        <select name="players" id="players">
+                            {% for player in players %}
+                            <option value="{{player["username"]}}" {% if player["username"] == username %} selected="selected" {% endif %}>{{player["username"]}}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div id="resultNode">
+                            Betöltés folyamatban...
+                        </div>
+
+                        <script>
+                            var listSelector = document.getElementById("players");
+
+                            window.onload = function() {
+                                askPlayerPreviousBets(String(listSelector.value));
+                            }
+
+                            var betMap = new Map();
+
+                            var resultNode = document.getElementById("resultNode");
+
+                            function askPlayerPreviousBets(nameID) {
+                                console.log("Map doesn't contain the key: " + nameID);
+
+                                var resultRequest = new XMLHttpRequest();
+                                resultRequest.open("GET", "./group?name=" +nameID);
+                                
+                                resultRequest.onload = function() {
+                                    resultNode.innerHTML = resultRequest.response;
+                                    betMap.set(nameID, resultRequest.response);
+                                }
+
+                                resultRequest.ontimeout = function() {
+                                    resultNode.innerHTML = "Megszakadt a kapcsolat a kiszolgálóval!";
+                                }
+
+                                resultRequest.send();
+                            }
+                            
+                            listSelector.onchange = function() {
+                                if (betMap.get(this.value) == null) {
+                                    resultNode.innerHTML = "Betöltés folyamatban...";
+                                    askPlayerPreviousBets(this.value);
+                                }
+                                else {
+                                    resultNode.innerHTML = betMap.get(this.value);
+                                }
+                            }
+
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- ============================================================== -->
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

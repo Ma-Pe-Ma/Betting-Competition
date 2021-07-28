@@ -1,0 +1,25 @@
+<div> Megjátszott tét: {{total_bet}}</div>
+<div> A nyeremény összege: {{total_win}}</div>
+
+{% for group in groups %}
+
+<div id="sorting-disabled" class="row" style="padding-left: 1em;">
+    <h4 class="col-12">{{group.ID}}. csoport: Tét - {{group.bet_amount}} tallér, szorzó - {{group.multiplier}} ({{group.multiplier_text}}), nyeremény - {{group.win_amount}} tallér</h4>
+    <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 20em;">
+        <div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div>
+        <div class="list-group-item">1. {{group.result.first}}</div>
+        <div class="list-group-item">2. {{group.result.second}}</div>
+        <div class="list-group-item">3. {{group.result.third}}</div>
+        <div class="list-group-item">4. {{group.result.fourth}}</div>
+    </div>
+
+    <div id="example4-right" class="list-group col" style="width: 30em;">
+        <div class="list-group-item" style="background-color: #b8b8b8;">Tipp</div>
+        <div class="list-group-item tinted" style="background-color: {{group.bet.first[1]}};">{{group.bet.first[0]}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group.bet.second[1]}};">{{group.bet.second[0]}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group.bet.third[1]}};">{{group.bet.third[0]}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group.bet.fourth[1]}};">{{group.bet.fourth[0]}}</div>
+    </div>
+</div>
+<br>
+{% endfor %}

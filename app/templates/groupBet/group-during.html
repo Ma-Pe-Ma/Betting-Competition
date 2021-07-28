@@ -1,0 +1,16 @@
+{% for group in groups %}
+
+<div id="sorting-disabled" class="row" style="width: 30em;padding-left: 1em;">
+    <h4 class="col-12">{{group.ID}}. csoport: Tét - {{group.bet_amount}} tallér</h4>
+    <div id="example4-left" class="list-group col" style="padding-left: 2em;">
+        <div class="list-group-item" style="background-color: #b8b8b8;">Tipp</div>
+        <div class="list-group-item">1. {{group.first}}</div>
+        <div class="list-group-item">2. {{group.second}}</div>
+        <div class="list-group-item">3. {{group.third}}</div>
+        <div class="list-group-item">4. {{group.fourth}}</div>
+    </div>
+</div>
+<br>
+{% endfor %}
+
+<div>Felhasználható összeg csoportkör tipp után: {{amount_after}}</div>
