@@ -134,7 +134,7 @@ def register():
 
         flash(error)
 
-        return render_template("register.html", username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key = key, reminder = reminder)
+        return render_template("auth/register.html", username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key = key, reminder = reminder)
 
     return render_template("auth/register.html", reminder="nonBetOnly")
 

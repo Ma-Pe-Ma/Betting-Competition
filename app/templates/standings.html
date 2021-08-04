@@ -84,7 +84,7 @@
                                     yValueFormatString: ",###",
                                     dataPoints: [
                                         {% for day in player.days %}
-                                        {x: new Date({{day.date}}), y:{{day.point}}},
+                                        {x: new Date({{day.year}}, {{day.month}}, {{day.day}} ), y:{{day.point}}},
                                         {% endfor %}
                                     ]
                                 },

@@ -7,12 +7,13 @@
     <table style="width:90%;margin-left:20px;background-color: lightblue">
         <tr>
             <th rowspan="2" style="width: 5%;">ID</th>
+            <th rowspan="2" style="width: 7%;text-align:center;">Időpont</th>
             <th rowspan="2" style="width: 25%;text-align:center;">Csapatok</th>
             <th rowspan="2" style="width: 10%;text-align:center;">Végeredmény</th>
             <th rowspan="2" style="width: 15%;text-align:center;">Típus</th>
             <th scope="col" colspan="3" style="text-align:center;">Szorzók</th> 
-            <th rowspan="2" style="width: 8%;text-align:center;">Tipp</th>
-            <th rowspan="2" style="width: 8%;text-align:center;">Tét</th>
+            <th rowspan="2" style="width: 7%;text-align:center;">Tipp</th>
+            <th rowspan="2" style="width: 7%;text-align:center;">Tét</th>
             <th rowspan="2" style="width: 8%;text-align:center;">Nyeremény + Bónusz</th>
             <th rowspan="2" style="width: 15%;text-align:center;">Új könyvelt egyenleg</th>
         </tr>
@@ -23,19 +24,20 @@
     </table>   
     {% endif %}
 
-    <div id="ID_{{day.number}}">
-        {{day.number}}. nap: {{day.name}}
+    <div id="ID_{{day.number}}" style="background-color: aquamarine; width: 20em; ">
+        {{day.number}}. nap: {{day.date}} - {{day.name}}
     </div>
 
     <table style="width:90%;margin-left:20px;">
         <tr>
             <th rowspan="2" style="width: 5%;"></th>
+            <th rowspan="2" style="width: 7%;text-align:center;"></th>
             <th rowspan="2" style="width: 25%;text-align:center;"></th>
             <th rowspan="2" style="width: 10%;text-align:center;"></th>
             <th rowspan="2" style="width: 15%;text-align:center;" ></th>
             <th scope="col" colspan="3" style="text-align:center;"></th> 
-            <th rowspan="2" style="width: 8%;text-align:center;"></th>
-            <th rowspan="2" style="width: 8%;text-align:center;"></th>
+            <th rowspan="2" style="width: 7%;text-align:center;"></th>
+            <th rowspan="2" style="width: 7%;text-align:center;"></th>
             <th rowspan="2" style="width: 8%;text-align:center;"></th>
             <th rowspan="2" style="width: 15%;text-align:center;"></th>
         </tr>
@@ -47,6 +49,7 @@
         {% for match in day.matches %}
         <tr style="padding-bottom:5px;">
             <td>{{match.ID}}</td>
+            <td style="text-align:center;">{{match.time}}</td>
             <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
             <td style="text-align:center;">{{match.result1}} - {{match.result2}}</td>
             <td style="text-align:center;">{{match.type}}</td>
@@ -68,10 +71,12 @@
     <br>
 
     {%if day.date == group_evaulation_date %}
+    <br>
     <div style="background-color: greenyellow;">
-        <a href="group" style="display: inline-block;">Csoporttipp bónusz összeg: {{group_bonus}}</a>
-        <div style="display: inline-block;">, új könyvelt egyenleg: {{new_balance}}</div>
+        <a href="group" style="display: inline-block;font-weight: bold;">Csoporttipp bónusz összeg: {{group_bonus}}</a>
+        <div style="display: inline-block;padding-left: 1em;">Új könyvelt egyenleg: {{balance_after_group}}</div>
     </div>
+    <br>
     {% endif %}
 
 <!--/div-->

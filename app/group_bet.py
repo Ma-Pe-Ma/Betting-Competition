@@ -1,4 +1,4 @@
-from os import stat_result
+from os import name, stat_result
 from app.auth import login_required
 from flask import Blueprint
 from flask import redirect
@@ -11,16 +11,78 @@ from flask import url_for
 from app.db import get_db
 
 from datetime import timezone, datetime
+from collections import namedtuple
+
+from app.score_calculator import *
 
 bp = Blueprint("group", __name__, '''url_prefix="/group"''')
 
-deadline = datetime(2012, 7, 25, 7, 56, tzinfo=timezone.utc)
+deadline = datetime(2022, 7, 25, 7, 56, tzinfo=timezone.utc)
 group_evaulation_time = datetime(2013, 7, 25, 7, 56, tzinfo=timezone.utc)
 
-start_amount = 2000
+Team = namedtuple("Team", "name, hun_name, position, top1, top2, top4, top16")
+Group = namedtuple("Group", "ID, teams, bet")
+
+def sort_groups(group):
+    return group.ID
+
+def sort_teams(team):
+    return team.position
 
 def before_deadline():
-    if request.method == "POST":
+    if request.method == "GET":
+        groups = []
+        teams = []
+
+        user_name = g.user["username"]
+
+        user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
+
+        if len(user_bets) == 0 :
+            team_prefabs = get_db().execute("SELECT name, hun_name, group_id, top1, top2, top4, top16 FROM team", ()).fetchall()
+
+            for team_prefab in team_prefabs:
+
+                group_of_team = None
+
+                for group in groups:
+                    if group.ID == team_prefab["group_id"]:
+                        group_of_team = group
+
+                if group_of_team == None:
+                    group_of_team = Group(ID=team_prefab["group_id"], teams=[], bet=0)
+                    groups.append(group_of_team)
+                
+                team_nr = len(group_of_team.teams)
+                group_of_team.teams.append(Team(name=team_prefab["name"], hun_name=team_prefab["hun_name"], position=(team_nr + 1), top1=team_prefab["top1"], top2=team_prefab["top2"], top4=team_prefab["top4"], top16=team_prefab["top16"]))
+
+        else:
+            for user_bet in user_bets:
+                team_prefab = get_db().execute("SELECT name, hun_name, group_id, top1, top2, top4, top16 FROM team WHERE name = ?", (user_bet["team"],)).fetchone()
+
+                group_of_team = None
+
+                for group in groups:
+                    if group.ID == team_prefab["group_id"]:
+                        group_of_team = group
+
+                if group_of_team == None:
+                    group_bet = get_db().execute("SELECT bet FROM group_bet WHERE (username = ? AND group_ID = ?)", (user_name, team_prefab["group_id"],)).fetchone()
+                    group_of_team = Group(ID=team_prefab["group_id"], teams=[], bet=group_bet["bet"])
+                    groups.append(group_of_team)
+                
+                group_of_team.teams.append(Team(name=team_prefab["name"], hun_name=team_prefab["hun_name"], position=user_bet["position"], top1=team_prefab["top1"], top2=team_prefab["top2"], top4=team_prefab["top4"], top16=team_prefab["top16"]))
+
+        groups.sort(key=sort_groups)
+
+        for group in groups:
+            group.teams.sort(key=sort_teams)
+
+        final_bet = get_db().execute("SELECT team, bet, result FROM final_bet WHERE username = ?", (user_name,)).fetchone()
+
+        return render_template("groupBet/group-edit.html", username = user_name, admin=g.user["admin"], start_amount=starting_bet_amount, final_team = final_bet["team"], final_result = final_bet["result"], final_result_bet = final_bet["bet"], groups = groups)
+
+    elif request.method == "POST":
         print("group form: " + str(request.get_json()))
 
         group_bet = request.get_json()
@@ -44,31 +106,6 @@ def before_deadline():
                 i = i + 1
 
         return "okszi!"
-    
-    from collections import namedtuple
-    groups = []
-    teams = []
-
-    Team = namedtuple("Team", "id, name")
-
-    Group = namedtuple("Group", "ID, teams, bet")
-    hun = Team(id="HUN", name="Trinidad- és tobagó")
-    ger = Team(id="GER", name="Észak-Macedónia")
-    por = Team(id="POR", name="Amerikai Egyesült Államok")
-    fra = Team(id="FRA", name="Franciaország")
-
-    teams.append(hun)
-    teams.append(ger)
-    teams.append(por)
-    teams.append(fra)
-
-    groupA = Group(ID = "A", teams=teams, bet="174")
-    groupB = Group(ID = "B", teams=teams, bet="111")
-
-    groups.append(groupA)
-    groups.append(groupB)
-
-    return render_template("groupBet/group-edit.html", username = g.user["username"], admin=g.user["admin"], start_amount=start_amount, final_team ="GER", final_result = 3, final_result_bet = 11, groups = groups)
 
 def during_groupstage():
     if request.args.get("name") is not None:

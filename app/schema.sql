@@ -3,11 +3,15 @@
 
 --DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS match;
-DROP TABLE IF EXISTS match_bets;
+DROP TABLE IF EXISTS match_bet;
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS team;
+DROP TABLE IF EXISTS team_bet;
+DROP TABLE IF EXISTS group_bet;
+DROP TABLE IF EXISTS final_bet;
 -- DROP TABLE IF EXISTS post;
 
-/*CREATE TABLE user (
+/*IF NOT EXISTS CREATE TABLE user (
   username TEXT UNIQUE NOT NULL PRIMARY KEY,
   name TEXT NOT NULL,
   password TEXT NOT NULL,
@@ -29,17 +33,81 @@ CREATE TABLE match (
   odd2 REAL
 );
 
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-29 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-29 17:47', "B Csoport", "Németország", "Portugália", "", "", 1.57, 6.1, 1.2);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-30 17:47', "B Csoport", "Franci", "Angli", "", "", 1.57, 6.1, 1.2);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-09-30 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-31 17:47', "B Csoport", "Németország", "Portugália", 3, 8, 1.57, 6.1, 1.2);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-31 15:47', "B Csoport", "Franci", "Angli", "", "", 1.57, 6.1, 1.2);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-08-03 15:47', "B Csoport", "Franci", "Angli", 4, 9, 1.57, 6.1, 1.2);
 
-CREATE TABLE match_bets (
+CREATE TABLE team (
+  name TEXT NOT NULL PRIMARY KEY,
+  hun_name TEXT,
+  group_id CHAR,
+  position INTEGER,
+  top1 FLOAT,
+  top2 FLOAT,
+  top4 FLOAT,
+  top16 FLOAT
+);
+
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("GERMANY", "Németország", 'A', 1, 2, 3, 4);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("HUNGARY", "Magyarország", 'A', 5, 6, 7, 8);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("ITALY", "Olaszország", 'A', 9, 10, 11, 12);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("JAPAN", "Japán", 'A', 13, 14, 15, 16);
+
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("CZECHIA", "Csehország", 'B', 17, 18, 19, 20);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("SLOVAKIA", "Szlovákia", 'B', 21, 22, 23, 24);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("POLAND", "Lengyelország", 'B', 25, 26, 27, 28);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("YUGOSLAVIA", "Jugoszlávia", 'B', 29, 30, 31, 32);
+
+CREATE TABLE team_bet (
+  id INTEGER NOT NULL PRIMARY KEY,
+  username TEXT,
+  team TEXT,
+  position INTEGER,
+  FOREIGN KEY(username) REFERENCES user(username)
+);
+
+
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "GERMANY",4);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "HUNGARY",2);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "ITALY",3);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "JAPAN",1);
+
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "CZECHIA",4);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "SLOVAKIA",3);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "POLAND", 1);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "YUGOSLAVIA",2);
+
+CREATE TABLE group_bet (
+  id INTEGER NOT NULL PRIMARY KEY,
+  group_ID INTEGER NOT NULL,
+  username TEXT,
+  bet INTEGER,
+  FOREIGN KEY(username) REFERENCES user(username)
+);
+
+INSERT INTO group_bet(group_ID, username, bet) VALUES ("A", "MPM", 50);
+INSERT INTO group_bet(group_ID, username, bet) VALUES ("B", "MPM", 11);
+
+CREATE TABLE final_bet (
+  id INTEGER NOT NULL PRIMARY KEY,
+  username TEXT,
+  team TEXT NOT NULL,
+  bet INTEGER NOT NULL,
+  result INTEGER NOT NULL,
+  FOREIGN KEY(username) REFERENCES user(username)
+);
+
+INSERT INTO final_bet(username, team, bet, result) VALUES("MPM", "GERMANY", 111, 1);
+
+CREATE TABLE match_bet (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  username TEXT NOT NULL,
+  username TEXT,
   match_id INTEGER NOT NULL,
   goal1 INTEGER,
   goal2 INTEGER,
-  bet INTEGER
+  bet INTEGER,
+  FOREIGN KEY(username) REFERENCES user(username)
 );
 
 CREATE TABLE messages (
@@ -47,8 +115,8 @@ CREATE TABLE messages (
   message TEXT
 );
 
-INSERT INTO match_bets (username, match_id, goal1, goal2, bet) VALUES ("MPM", 1, 1, 2, 14);
-INSERT INTO match_bets (username, match_id, goal1, goal2, bet) VALUES ("MPM", 2, 3, 9, 27);
+INSERT INTO match_bets (username, match_id, goal1, goal2, bet) VALUES ("MPM", 2, 3, 8, 14);
+INSERT INTO match_bets (username, match_id, goal1, goal2, bet) VALUES ("MPM", 4, 4, 9, 27);
 
 INSERT INTO messages (message) VALUES ("Itt egy üzi!");
 

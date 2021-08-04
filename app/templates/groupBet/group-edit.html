@@ -79,9 +79,21 @@
                         </script>
 
                         <script type="module">
-                            import {scores} from './static/assets/js/data/scores.js'
-                            import {namemap} from './static/assets/js/data/scores.js'
+                            //import {scores} from './static/assets/js/data/scores.js'
+                            //import {namemap} from './static/assets/js/data/scores.js'
                             import {resultNamemap} from './static/assets/js/data/scores.js'
+
+                            var scores = {
+                            {% for group in groups%}
+                                {% for team in group.teams %} "{{team.name}}" : [{{team.top1}}, {{team.top2}}, {{team.top4}}, {{team.top16}}],{% endfor %}
+                            {% endfor %}
+                            }
+
+                            var namemap = {
+                            {% for group in groups%}
+                                {% for team in group.teams %} "{{team.name}}" : "{{team.hun_name}}",{% endfor %}
+                            {% endfor %}
+                            };
 
                             console.log("entry length: " + Object.entries(scores).length);
 
@@ -195,7 +207,7 @@
                         <div>Kezdőtőke: {{start_amount}}</div>
 
                         <div>
-                            <div> Végeredmény-tipp:</div>
+                            <div style="display: inline-block;"> Végeredmény-tipp:</div>
                             <select name="teamSelect" id="teamSelect" style="display: inline-block;"> </select>
                             <select name="resultSelect" id="resultSelect" style="display: inline-block;"> </select>
                             <label for="finalResultOdd" style="padding-left: 1em;">Szorzó: </label>
@@ -223,7 +235,7 @@
 
                                 <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
                                     {% for team in group.teams %}
-                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.id}}">{{team.name}}</div>
+                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.hun_name}}</div>
                                     {% endfor %}
                                 </div>
                             </div> 

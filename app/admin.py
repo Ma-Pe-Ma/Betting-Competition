@@ -35,3 +35,5 @@ def admin_page():
 #message after redirect
 #timed callback -> update match database
 #disqus
+
+# flask-init db, read teams from csv!

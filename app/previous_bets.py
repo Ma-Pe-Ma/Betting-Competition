@@ -11,32 +11,116 @@ from flask import Markup
 from app.db import get_db
 from app.auth import login_required
 
+from datetime import datetime
+from dateutil import tz
+
+from app.score_calculator import *
+
 bp = Blueprint("previous", __name__, '''url_prefix="/group"''')
+
+Day = namedtuple("Day", "number, date, name, matches")
+Match = namedtuple("Match", "ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance")
 
 @bp.route("/prev", methods=("GET", "POST"))
 @login_required
 def prev_bets():
-    from collections import namedtuple
+    user_name = request.args.get("name")
 
-    if request.args.get("name") is not None:
-        Match = namedtuple("MATCH", "ID, type, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance")
-        matches1 = []
-        matches1.append(Match(ID="1", type="A csoport / 1.kör", team1="Olaszország", team2="Anglia", result1=1, result2=1, odd1=1.7, oddX=4.86, odd2=9.2, goal1=4, goal2=3, bet=33, prize=47, bonus=2, balance=2456))
-        matches1.append(Match(ID="2", type="A csoport / 1.kör", team1="Észak-Macedónia", team2="Észak-Macedónia", result1=0, result2=0, odd1=1.7, oddX=4.86, odd2=9.2, goal1=4, goal2=3, bet=33, prize=47, bonus=2, balance=2456))
-
-        matches2 = []
-        matches2.append(Match(ID="3", type="A csoport / 1.kör", team1="Németország", team2="Magyarország", result1=2, result2=2, odd1=1.7, oddX=4.86, odd2=9.2, goal1=4, goal2=3, bet=33, prize=47, bonus=2, balance=2456))
-        matches2.append(Match(ID="4", type="A csoport / 1.kör", team1="Franciaország", team2="Portugália", result1=2, result2=2, odd1=1.7, oddX=4.86, odd2=9.2, goal1=4, goal2=3, bet=33, prize=47, bonus=2, balance=2456))
-
-        Day = namedtuple("Day", "number, date, name, matches")
+    if user_name is not None:
+        utc_now = datetime.utcnow()
+        utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
     
+        start_amount = 75000
+        group_bonus = 12000
+        balance_after_group = 0
+
         days = []
-        days.append(Day(number = 1, date="2021-07-26", name="péntek", matches=matches1))
-        days.append(Day(number = 2, date="2021-07-27", name="péntek", matches=matches2))
 
-        defaultResultNode = render_template("previous-bet/previous-day-match.html", days = days, group_evaulation_date = "2021-07-27", group_bonus = 5000, new_balance="7415")
+        for previous_match in get_db().execute("SELECT * FROM match WHERE DATETIME(time) < ?", (utc_now.strftime("%Y-%m-%d %H:%M"),)):
+            match_time = datetime.strptime(previous_match["time"], "%Y-%m-%d %H:%M")
+            match_time.replace(tzinfo=tz.gettz('UTC'))
+            
+            match_time_local = match_time.astimezone(local_zone)   
 
-        print("name: " + request.args.get("name"))
+            match_date = match_time_local.strftime("%Y-%m-%d")
+            match_time_string = match_time_local.strftime("%H:%M")
+
+            match_bet = get_db().execute("SELECT * FROM match_bet WHERE username=? AND match_id = ?",(user_name, previous_match["id"] )).fetchone()
+
+            result1 = previous_match["goal1"]
+            result2 = previous_match["goal2"]
+
+            odd1 = previous_match["odd1"]
+            oddX = previous_match["oddX"]
+            odd2 = previous_match["odd2"]
+
+            goal1 = ""
+            goal2 = ""
+            bet = ""
+            bonus = 0
+            prize = 0
+
+            if match_bet is not None:
+                goal1 = match_bet["goal1"]
+                goal2 = match_bet["goal2"]
+                bet = match_bet["bet"]
+
+                if result1 is not None :
+                    result_value = prize_result(result1, result2, goal1, goal2)
+
+                    if result_value.actual == result_value.bet:
+                        if result_value.actual == 1:
+                            prize = bet * odd1
+                        elif result_value.actual == -1:
+                            prize = bet * odd2
+                        else:
+                            prize = bet * oddX
+                        
+                        bonus = bet * result_value.bonus_multiplier
+
+            match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=previous_match["team1"], team2=previous_match["team2"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=4)
+
+            match_day = None
+
+            for day in days:
+                if day.date == match_date:
+                    match_day = day
+
+            if match_day is None:
+                match_day = Day(number = 0, date=match_date, name=day_names[match_time_local.weekday()], matches=[])
+                days.append(match_day) 
+
+            match_day.matches.append(match_object)
+
+        days.sort(key=sorting_date)
+        amount = start_amount
+
+        modified_days = []
+
+        i = 1
+
+        for day in days:
+            day.matches.sort(key=sorting_time)
+
+            modifed_matches = []
+
+            for match in day.matches:
+                amount = amount + match.prize + match.bonus
+                
+                print("balance: " + str(amount))
+                modifed_matches.append(match._replace(balance=amount))
+        
+            day.matches.clear()
+            modified_days.append(day._replace(number = i, matches = modifed_matches))
+
+            if day.date == group_evaulation_date:
+                amount = amount + group_bonus
+                balance_after_group = amount
+            i += 1
+
+        days.clear()     
+
+        defaultResultNode = render_template("previous-bet/previous-day-match.html", days = modified_days, group_evaulation_date = group_evaulation_date, start_amount = start_amount, group_bonus = group_bonus, balance_after_group = balance_after_group)
         return defaultResultNode
 
     players = get_db().execute("SELECT username FROM user WHERE NOT username='RESULT'", ())
