@@ -13,6 +13,15 @@ bullseye_multiplier = 4
 difference_multiplier = 1
 
 starting_bet_amount = 2000
+max_group_bet_value = 50
+
+hit_map = [0, 1, 2, 3, 4]
+
+def get_group_bet_amount(user_name):
+
+
+    return 400
+
 
 def sorting_date(day):
     return datetime.strptime(day.date, "%Y-%m-%d")

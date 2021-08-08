@@ -49,15 +49,15 @@ CREATE TABLE team (
   top16 FLOAT
 );
 
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("GERMANY", "Németország", 'A', 1, 2, 3, 4);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("HUNGARY", "Magyarország", 'A', 5, 6, 7, 8);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("ITALY", "Olaszország", 'A', 9, 10, 11, 12);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("JAPAN", "Japán", 'A', 13, 14, 15, 16);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("GERMANY", "Németország", 'A', 1, 2, 3, 4,2);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("HUNGARY", "Magyarország", 'A', 5, 6, 7, 8,4);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("ITALY", "Olaszország", 'A', 9, 10, 11, 12,1);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("JAPAN", "Japán", 'A', 13, 14, 15, 16,3);
 
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("CZECHIA", "Csehország", 'B', 17, 18, 19, 20);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("SLOVAKIA", "Szlovákia", 'B', 21, 22, 23, 24);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("POLAND", "Lengyelország", 'B', 25, 26, 27, 28);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16) VALUES("YUGOSLAVIA", "Jugoszlávia", 'B', 29, 30, 31, 32);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("CZECHIA", "Csehország", 'B', 17, 18, 19, 20, 4);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("SLOVAKIA", "Szlovákia", 'B', 21, 22, 23, 24, 3);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("POLAND", "Lengyelország", 'B', 25, 26, 27, 28, 1);
+INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("YUGOSLAVIA", "Jugoszlávia", 'B', 29, 30, 31, 32, 2);
 
 CREATE TABLE team_bet (
   id INTEGER NOT NULL PRIMARY KEY,
@@ -95,6 +95,7 @@ CREATE TABLE final_bet (
   team TEXT NOT NULL,
   bet INTEGER NOT NULL,
   result INTEGER NOT NULL,
+  success BOOLEAN,
   FOREIGN KEY(username) REFERENCES user(username)
 );
 

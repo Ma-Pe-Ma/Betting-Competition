@@ -1,25 +1,67 @@
-<div> Megjátszott tét: {{total_bet}}</div>
-<div> A nyeremény összege: {{total_win}}</div>
+{% if group_containers is none %}
+Kiértékelés folyamatban...
+{% else %}
 
-{% for group in groups %}
+<div>
+{%if final_bet.success is none %}
+    <div style="display: inline-block;">Végső-tipp: {{final_bet.hun_name}} - </div>
+    <div style="display: inline-block;" id="resultID">{{final_bet.result}}</div>
+    <div style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</div>
+    <div style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </div>
+    <div style="display: inline-block; padding-left: 2em;">Várható nyeremény: {{final_bet.winning_amount}}</div>
+    
+{%elif final_bet.success is true %}
+    <div style="display: inline-block;">Végső-tipp - sikeres: {{final_bet.hun_name}} - </div>
+    <div style="display: inline-block; background-color: green;" id="resultID">{{final_bet.result}}</div>
+    <div style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</div>
+    <div style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </div>
+    <div style="display: inline-block; padding-left: 2em;">Nyeremény: {{final_bet.winning_amount}}</div>
+{% else %}
+    <div style="display: inline-block;">Végső-tipp - sikertelen: {{final_bet.hun_name}} - </div>
+    <div style="display: inline-block; background-color: red;" id="resultID">{{final_bet.result}}</div>
+    <div style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</div>
+    <div style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </div>
+{% endif %}
+</div>
+
+<br>
+
+<div> Csoportkör-tippen megjátszott összes tét: {{total_bet}}</div>
+<div> Az össznyeremény: {{total_win}}</div>
+<br>
+{% for group_container in group_containers %}
+<div>
+    {{group_container.bet.ID}}. csoport:
+</div>
+
+<div style="padding-left: 1em;">
+    Találatok: {{group_container.result.hit_number}} - szorzó: {{group_container.result.multiplier}}
+</div>
+
+<div style="padding-left: 1em;">
+    Tét: {{group_container.bet.bet}} tallér - nyeremény: {{group_container.result.win_amount}} tallér
+</div>
 
 <div id="sorting-disabled" class="row" style="padding-left: 1em;">
-    <h4 class="col-12">{{group.ID}}. csoport: Tét - {{group.bet_amount}} tallér, szorzó - {{group.multiplier}} ({{group.multiplier_text}}), nyeremény - {{group.win_amount}} tallér</h4>
+    <h4 class="col-12"></h4>
+
     <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 20em;">
         <div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div>
-        <div class="list-group-item">1. {{group.result.first}}</div>
-        <div class="list-group-item">2. {{group.result.second}}</div>
-        <div class="list-group-item">3. {{group.result.third}}</div>
-        <div class="list-group-item">4. {{group.result.fourth}}</div>
+        <div class="list-group-item">1. {{group_container.result.teams[0].name}} </div>
+        <div class="list-group-item">2. {{group_container.result.teams[1].name}}</div>
+        <div class="list-group-item">3. {{group_container.result.teams[2].name}}</div>
+        <div class="list-group-item">4. {{group_container.result.teams[3].name}}</div>
     </div>
 
     <div id="example4-right" class="list-group col" style="width: 30em;">
         <div class="list-group-item" style="background-color: #b8b8b8;">Tipp</div>
-        <div class="list-group-item tinted" style="background-color: {{group.bet.first[1]}};">{{group.bet.first[0]}}</div>
-        <div class="list-group-item tinted" style="background-color: {{group.bet.second[1]}};">{{group.bet.second[0]}}</div>
-        <div class="list-group-item tinted" style="background-color: {{group.bet.third[1]}};">{{group.bet.third[0]}}</div>
-        <div class="list-group-item tinted" style="background-color: {{group.bet.fourth[1]}};">{{group.bet.fourth[0]}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group_container.result.teams[0].background}};">{{group_container.bet.teams[0].hun_name}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group_container.result.teams[1].background}};">{{group_container.bet.teams[1].hun_name}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group_container.result.teams[2].background}};">{{group_container.bet.teams[2].hun_name}}</div>
+        <div class="list-group-item tinted" style="background-color: {{group_container.result.teams[3].background}};">{{group_container.bet.teams[3].hun_name}}</div>
     </div>
 </div>
 <br>
 {% endfor %}
+
+{% endif %}

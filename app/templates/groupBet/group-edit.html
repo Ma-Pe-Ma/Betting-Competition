@@ -55,8 +55,8 @@
                                 })]);
                                 {% endfor %}
 
-                                teamSelect.value = "{{final_team}}";
-                                resultSelect.value = "{{final_result}}";
+                                teamSelect.value = "{{final_bet.team}}";
+                                resultSelect.value = "{{final_bet.result}}";
                             }
                             
                             function calculateRemainingBetAmount() {
@@ -171,7 +171,7 @@
                                 
                                 var output = {};
 
-                                var finalObject = {"team" : teamSelect.options[teamSelect.selectedIndex].value, "result" : resultSelect.options[resultSelect.selectedIndex].value};
+                                var finalObject = {"team" : teamSelect.options[teamSelect.selectedIndex].value, "result" : resultSelect.options[resultSelect.selectedIndex].value, "bet" : document.getElementById("finalResultBet").value};
                                 output["final"] = finalObject;
 
                                 var groupsObject = {};
@@ -214,7 +214,7 @@
                             <div id="finalResultOdd" style="display: inline-block;"></div>
 
                             <label for="finalResultBet" style="padding-left: 1em;">Tét: </label>
-                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{final_result_bet}}">
+                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{final_bet.betting_amount}}">
 
                             <label for="expectedWinAmount" style="padding-left: 1em;"> Várható nyeremény: </label>
                             <div style="display: inline-block;" id="expectedWinAmount"> </div>

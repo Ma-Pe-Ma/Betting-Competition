@@ -51,7 +51,8 @@
                             Betöltés folyamatban...
                         </div>
 
-                        <script>
+                        <script type="module">
+                            import {resultNamemap} from './static/assets/js/data/scores.js'
                             var listSelector = document.getElementById("players");
 
                             window.onload = function() {
@@ -71,6 +72,9 @@
                                 resultRequest.onload = function() {
                                     resultNode.innerHTML = resultRequest.response;
                                     betMap.set(nameID, resultRequest.response);
+
+                                    var result = document.getElementById("resultID");
+                                    result.innerText = resultNamemap[result.innerText];
                                 }
 
                                 resultRequest.ontimeout = function() {

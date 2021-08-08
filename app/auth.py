@@ -123,6 +123,7 @@ def register():
                 "INSERT INTO user (username, name, password, email, reminder, admin) VALUES (?, ?, ?, ?, ?, ?)",
                 (username, name, generate_password_hash(password), email, reminderInteger, admin),
             )
+
             db.commit()
 
             session.clear()

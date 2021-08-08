@@ -27,13 +27,20 @@ def admin_page():
 #message on homepage
 
 #groupstage evaulation
+#groupstage feedback for result of posting in client
+#final bet evaulation, hand->user-by user, setting success flag true or false (after tournament ending!)
 
-#odd submitting
+#odd submitting (for matches after groupstage)
+
+# seperate final bet table for readabilty
 
 #other:
 #session timeout
 #message after redirect
 #timed callback -> update match database
+#timed email notifications!
 #disqus
 
 # flask-init db, read teams from csv!
+
+# html template -> removing deadlinks + dashboard problem + username problem
