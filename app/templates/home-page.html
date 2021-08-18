@@ -42,28 +42,37 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-block">
-                        <table>
-                            {% with messages = get_flashed_messages() %}
-                                {% if messages %}
-                                    {% for message in messages %}
-                                    <div>{{message}}</div>
-                                    {% endfor %}
+                        {% if match_id %}
+                        <div style="background-color: lime; width: 15em;" >
+                            {{match_id}}. meccs-tipp frissítve!
+                        </div>
+                        {% endif %}
+
+                        <br>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <div>Üzenetek: </div>
+                                {% for message in messages %}
+                                {%if message != "" %}
+                                <div style="background-color:rgb(255, 238, 0);">{{loop.index}}: {{message}}</div>
                                 {% endif %}
-                            {% endwith %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
 
+                        <br>
+                        <br>
+                        
+                        <p style="font-size: 20px;">Jelenlegi egyenleg: {{current_amount}}</p>
+                        <div>Találati arányok: </div>
 
-                            <tr><td><div contenteditable>I'm editable</div></td><td><div contenteditable>I'm also editable</div></td></tr>
-                            <tr><td>I'm not editable</td></tr>
-
-                            Jelenlegi egyenleg: 
-                            Találati arányok:
-
+                        <table>
                             {% for day in days %}
-                            {%if loop.index % 10 == 1 %}
+                            {%if loop.index % 12 == 1 %}
                             <table style="width:90%;margin-left:20px;background-color: lightblue">
                                 <tr>
-                                    <th rowspan="2" style="width: 5%;">Időpont</th>
                                     <th rowspan="2" style="width: 5%;">ID</th>
+                                    <th rowspan="2" style="width: 5%;">Időpont</th>
                                     <th rowspan="2" style="width: 25%;text-align:center;">Csapatok</th>
                                     <th rowspan="2" style="width: 15%;text-align:center;">Forduló</th>
                                     <th scope="col" colspan="3" style="text-align:center;">Oddok</th> 
@@ -82,10 +91,10 @@
                                 {{day.number}}. nap - {{day.date}} - {{day.name}}
                             </div>
 
-                            <table style="width:90%;margin-left:20px;{%if loop.index % 10 == 1 %} background:yellow; {% endif %}">
+                            <table style="width:90%;margin-left:20px;{#%if loop.index % 10 == 1 %} background:yellow; {% endif %#}">
                                 <tr>
                                     <th rowspan="2" style="width: 5%;"></th>
-                                    <th rowspan="2" style="width: 5%;"></th>
+                                    <th rowspan="2" style="width: 5%;text-align:center"></th>
                                     <th rowspan="2" style="width: 25%;text-align:center;"></th>
                                     <th rowspan="2" style="width: 15%;text-align:center;" ></th>
                                     <th scope="col" colspan="3" style="text-align:center;"></th> 
@@ -100,17 +109,17 @@
 
                                 {% for match in day.matches %}
                                 <tr style="padding-bottom:5px;">
-                                    <td>{{match.time}}</td>
                                     <td>{{match.ID}}</td>
-                                    <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
+                                    <td>{{match.time}}</td>
+                                    <td style="text-align:center;">{% if match.team1 =="" %} Nem ismert {%else%} {{match.team1}} {% endif %} - {% if match.team2 =="" %} Nem ismert {%else%} {{match.team2}} {% endif %}</td>
                                     <td style="text-align:center;">{{match.type}}</td>
                                     <td style="text-align:center;">{{match.odd1}}</td>
                                     <td style="text-align:center;">{{match.oddX}}</td>
                                     <td style="text-align:center;">{{match.odd2}}</td>
                                     <td style="text-align:center;">{{match.goal1}}-{{match.goal2}}</td>
-                                    <td style="text-align:center;">{{match.bet}}</td>
+                                    <td style="text-align:center;">{{match.bet}} / {{match.max_bet}}</td>
                                     <!--input type="image" src="http://example.com/path/to/image.png" /-->
-                                    <td><button class="editbtn" value="1" onclick="buttonclick(this.value)">edit</button></td>
+                                    <td><button class="editbtn" value="1" onclick="redirectToEdit(this.value)">Szerkeszt</button></td>
                                 </tr>
 
                                 {% endfor %}
@@ -123,9 +132,9 @@
                         </table>                    
                         
                         <script>
-                            function buttonclick(buttonID) {
+                            function redirectToEdit(buttonID) {
                                 console.log("arg: " + buttonID);
-                                window.location = "./match?matchID=1";
+                                window.location = "./match?matchID=" + buttonID;
                             }
                         </script>
 

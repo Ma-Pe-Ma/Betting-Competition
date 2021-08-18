@@ -3,31 +3,29 @@ Kiértékelés folyamatban...
 {% else %}
 
 <div>
-{%if final_bet.success is none %}
+{%if final_bet.success == "" %}
     <div style="display: inline-block;">Végső-tipp: {{final_bet.hun_name}} - </div>
     <div style="display: inline-block;" id="resultID">{{final_bet.result}}</div>
     <div style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</div>
     <div style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </div>
     <div style="display: inline-block; padding-left: 2em;">Várható nyeremény: {{final_bet.winning_amount}}</div>
     
-{%elif final_bet.success is true %}
+{%elif final_bet.success == 1 %}
     <div style="display: inline-block;">Végső-tipp - sikeres: {{final_bet.hun_name}} - </div>
-    <div style="display: inline-block; background-color: green;" id="resultID">{{final_bet.result}}</div>
+    <div style="display: inline-block; background-color: lime;" id="resultID">{{final_bet.result}}</div>
     <div style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</div>
     <div style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </div>
     <div style="display: inline-block; padding-left: 2em;">Nyeremény: {{final_bet.winning_amount}}</div>
 {% else %}
     <div style="display: inline-block;">Végső-tipp - sikertelen: {{final_bet.hun_name}} - </div>
-    <div style="display: inline-block; background-color: red;" id="resultID">{{final_bet.result}}</div>
+    <div style="display: inline-block; background-color: lightcoral;" id="resultID">{{final_bet.result}}</div>
     <div style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</div>
     <div style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </div>
 {% endif %}
 </div>
-
 <br>
-
 <div> Csoportkör-tippen megjátszott összes tét: {{total_bet}}</div>
-<div> Az össznyeremény: {{total_win}}</div>
+<div> Az össznyeremény csoportkör-tippeken: {{total_win}}</div>
 <br>
 {% for group_container in group_containers %}
 <div>

@@ -14,6 +14,14 @@ from flask   import render_template, request
 from flask.helpers import make_response
 from jinja2  import TemplateNotFound
 
+from datetime import timedelta
+
+import time
+
+from multiprocessing import Process, Value
+from app import file_request
+from app import scheduler
+
 def create_app(test_config = None):
     # Inject Flask magic
     app = Flask(__name__, instance_relative_config=True)
@@ -81,8 +89,10 @@ def create_app(test_config = None):
         # note that we set the 404 status explicitly
         return render_template('page-404.html'), 404
 
-    from datetime import timedelta
 
+
+    p = Process(target=scheduler.scheduler_loop, args=())
+    #p.start()  
 
     return app
 

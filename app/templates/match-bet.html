@@ -78,10 +78,12 @@
                             
                             <div>
                                 <label>Tét: </label>
-                                <input type="number" size="1" value="{{match.bet}}" name="bet" min="0" max="50" form="betForm"/>
+                                <input type="number" size="3" value="{{match.bet}}" name="bet" min="0" max="50" form="betForm"/>
+                                <div style="display: inline-block;"> / {{match.max_bet}}</div>
                             </div>
 
-                            <input type="submit" value="Submit" form="betForm">
+                            <input type="hidden" id="matchID" name="matchID" value="{{match.ID}}"> 
+                            <input type="submit" value="Beküld" form="betForm">
 
                         </form>
 

@@ -18,18 +18,9 @@ from app.score_calculator import *
 
 bp = Blueprint("group", __name__, '''url_prefix="/group"''')
 
-deadline = datetime(2022, 7, 25, 7, 56, tzinfo=timezone.utc)
-group_evaulation_time = datetime(2022, 7, 25, 7, 56, tzinfo=timezone.utc)
-
 Team = namedtuple("Team", "name, hun_name, position, top1, top2, top4, top16")
 Group = namedtuple("Group", "ID, teams, bet")
 FinalBet = namedtuple("FinalBet", "team, hun_name, result, multiplier, betting_amount, winning_amount, success")
-
-def sort_groups(group):
-    return group.ID
-
-def sort_teams(team):
-    return team.position
 
 def sort_group_results(group_result):
     return group_result["position"]
@@ -73,6 +64,8 @@ def get_final_bet(user_name):
 
     winning_amount = final_bet["bet"] * final_multiplier
 
+    #print("success: " + str(len(final_bet["success"])))
+
     return FinalBet(team=final_bet["team"], hun_name=final_team["hun_name"], result=final_bet["result"], multiplier=final_multiplier, betting_amount=final_bet["bet"], winning_amount=winning_amount, success=final_bet["success"] )
 
 def before_deadline():
@@ -80,7 +73,6 @@ def before_deadline():
 
     if request.method == "GET":
         groups = []
-        teams = []
 
         user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
 
@@ -181,10 +173,8 @@ def before_deadline():
             id = get_db().execute("SELECT id FROM final_bet WHERE username=?", (user_name,)).fetchone()
 
             if id is None:
-                print("inserting into")
                 get_db().execute("INSERT INTO final_bet (username, bet, team, result) VALUES(?,?,?,?)", (user_name, final_bet, final_team, final_result))
             else:
-                print("updating - username: " + user_name + ", bet: " + str(final_bet) + ", team: " + final_team + ", result: " + str(final_result) + ", id: " + str(id["id"]))
                 get_db().execute("UPDATE final_bet SET username = ?, bet = ?, team = ?, result = ? WHERE id = ?", (user_name, final_bet, final_team, final_result, id["id"],))
 
             for group_id in groups:
@@ -221,7 +211,6 @@ def during_groupstage():
         user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
 
         if len(user_bets) == 0:
-            print("NONE?")
             return render_template("groupBet/group-during.html", groups = None, starting_bet_amount=starting_bet_amount)
         else:
             final_bet_object = get_final_bet(user_name)
@@ -243,8 +232,10 @@ def during_groupstage():
 
     return render_template("groupBet/group-choose.html", username = g.user["username"], admin=g.user["admin"], players=players)
 
-def after_evaulation():
+def after_evaluation():
     user_name = request.args.get("name")
+
+    get_group_win_amount(user_name)
 
     if user_name is not None:
         user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
@@ -287,9 +278,9 @@ def after_evaulation():
                         hit_number += 1
                         correct_position = True
 
-                    background = "red"    
+                    background = "lightcoral"    
                     if correct_position:
-                        background = "green"
+                        background = "lime"
 
                     team_results.append(TeamResult(name=team_result_prefab["hun_name"], background=background))
                     i += 1
@@ -313,10 +304,25 @@ def after_evaulation():
 @login_required
 def group_order():
     current_time = datetime.now(tz=timezone.utc)
+    deadline = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
+    deadline = deadline.replace(tzinfo=tz.gettz('UTC'))
+    group_evaluation_time = datetime.strptime(group_evaluation_date, "%Y-%m-%d")
+    group_evaluation_time = group_evaluation_time.replace(tzinfo=tz.gettz('UTC'))
 
     if current_time < deadline:
         return before_deadline()
-    elif current_time < group_evaulation_time:
+    elif current_time < group_evaluation_time:
         return during_groupstage()
     else:
-        return after_evaulation()
+        return after_evaluation()
+
+@bp.route("/final-odds", methods=("GET", "POST"))
+@login_required
+def final_bet_odds():
+    teams = []
+    Team = namedtuple("Team", "name, top1, top2, top4, top16")
+
+    for team in get_db().execute("SELECT hun_name, top1, top2, top4, top16 FROM team"):
+        teams.append(Team(name=team["hun_name"], top1=team["top1"], top2=team["top2"], top4=team["top4"], top16=team["top16"]))
+
+    return render_template("groupBet/final-odds.html", teams=teams)

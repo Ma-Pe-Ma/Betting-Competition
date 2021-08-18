@@ -48,6 +48,18 @@ def login_required(view):
 
     return wrapped_view
 
+def admin_required(view):
+    """View decorator that redirects anonymous users to the login page."""
+
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if not g.user["admin"]:
+            return render_template('page-404.html'), 404
+
+        return view(**kwargs)
+
+    return wrapped_view
+
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     """Register a new user.
@@ -169,7 +181,7 @@ def login():
 
         flash(error)
 
-        return render_template("login.html", username_form=username)
+        return render_template("auth/login.html", username_form=username)
 
     return render_template("auth/login.html")
 

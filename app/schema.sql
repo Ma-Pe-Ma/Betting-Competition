@@ -30,13 +30,14 @@ CREATE TABLE match (
   goal2 INTEGER,
   odd1 REAL,
   oddX REAL,
-  odd2 REAL
+  odd2 REAL,
+  max_bet INTEGER
 );
 
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-09-30 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-31 17:47', "B Csoport", "Németország", "Portugália", 3, 8, 1.57, 6.1, 1.2);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-07-31 15:47', "B Csoport", "Franci", "Angli", "", "", 1.57, 6.1, 1.2);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2) VALUES ('2021-08-03 15:47', "B Csoport", "Franci", "Angli", 4, 9, 1.57, 6.1, 1.2);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-09-30 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-07-31 17:47', "B Csoport", "Németország", "Portugália", 3, 8, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-07-31 15:47', "B Csoport", "Franci", "Angli", 1, 1, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-08-03 15:47', "B Csoport", "Franci", "Angli", 4, 9, 1.57, 6.1, 1.2, 50);
 
 CREATE TABLE team (
   name TEXT NOT NULL PRIMARY KEY,
@@ -95,7 +96,7 @@ CREATE TABLE final_bet (
   team TEXT NOT NULL,
   bet INTEGER NOT NULL,
   result INTEGER NOT NULL,
-  success BOOLEAN,
+  success INTEGER,
   FOREIGN KEY(username) REFERENCES user(username)
 );
 
@@ -112,14 +113,19 @@ CREATE TABLE match_bet (
 );
 
 CREATE TABLE messages (
-  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  label TEXT NOT NULL PRIMARY KEY,
   message TEXT
 );
 
-INSERT INTO match_bets (username, match_id, goal1, goal2, bet) VALUES ("MPM", 2, 3, 8, 14);
-INSERT INTO match_bets (username, match_id, goal1, goal2, bet) VALUES ("MPM", 4, 4, 9, 27);
+INSERT INTO match_bet (username, match_id, goal1, goal2, bet) VALUES ("MPM", 2, 3, 8, 14);
+INSERT INTO match_bet (username, match_id, goal1, goal2, bet) VALUES ("MPM", 4, 4, 9, 27);
+INSERT INTO match_bet (username, match_id, goal1, goal2, bet) VALUES ("MPM", 3, 4, 9, 27);
 
-INSERT INTO messages (message) VALUES ("Itt egy üzi!");
+INSERT INTO messages (label, message) VALUES ("message1", "");
+INSERT INTO messages (label, message) VALUES ("message2", "");
+INSERT INTO messages (label, message) VALUES ("message3", "");
+INSERT INTO messages (label, message) VALUES ("message4", "");
+INSERT INTO messages (label, message) VALUES ("message5", "");
 
 /*CREATE TABLE post (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

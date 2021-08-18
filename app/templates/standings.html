@@ -40,6 +40,26 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-block">
+                        
+                        Jelenlegi állás
+                        <table style="width:100%;margin-left:20px;">
+                            <tr>
+                                <th rowspan="1" style="width: 10%;text-align:left;">Pozíció</th>
+                                <th rowspan="1" style="width: 45%;text-align:center;">Név</th>
+                                <th rowspan="1" style="width: 45%;text-align:center;">Pontszám</th>
+                            </tr>
+                    
+                            {% for current_state in current_states %}
+                            <tr style="padding-bottom:5px;">                            
+                                <td style="text-align:left;">{{loop.index}}</td>
+                                <td style="text-align:center;">{{current_state.name}}</td>
+                                <td style="text-align:center;">{{current_state.point}}</td>                            
+                            </tr>
+                            {% endfor %}
+                        </table>
+
+                        <br><br>
+
                         <div id="chartContainer" style="height: 370px; width: 100%;"></div>
                         <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
@@ -48,7 +68,7 @@
 
                             var chart = new CanvasJS.Chart("chartContainer", {
                                 title: {
-                                    text: "Tippverseny állása"
+                                    text: "Tippverseny-állás története"
                                 },
                                 axisX: {
                                     valueFormatString: "MMM-DD",

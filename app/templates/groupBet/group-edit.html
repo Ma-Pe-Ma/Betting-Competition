@@ -207,11 +207,15 @@
                         <div>Kezdőtőke: {{start_amount}}</div>
 
                         <div>
-                            <div style="display: inline-block;"> Végeredmény-tipp:</div>
+                            <div style="display: inline-block;"> Végeredmény-tipp :</div>
+                            
+
+
                             <select name="teamSelect" id="teamSelect" style="display: inline-block;"> </select>
                             <select name="resultSelect" id="resultSelect" style="display: inline-block;"> </select>
                             <label for="finalResultOdd" style="padding-left: 1em;">Szorzó: </label>
                             <div id="finalResultOdd" style="display: inline-block;"></div>
+                            <a href="./final-odds">(táblázatos forma)</a>
 
                             <label for="finalResultBet" style="padding-left: 1em;">Tét: </label>
                             <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{final_bet.betting_amount}}">

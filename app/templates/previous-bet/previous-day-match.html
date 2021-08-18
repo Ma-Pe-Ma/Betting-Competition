@@ -1,4 +1,4 @@
-<div>Kezdőtőke csoportkörtipp után: {{start_amount}}</div>
+<div style="display: inline-block;">Kezdőtőke</div> <a href="./group" style="display: inline-block;">csoportkörtipp</a> <div style="display: inline-block;"> után: {{start_amount}}</div>
 
 {% for day in days %}
 <!--div-->
@@ -47,7 +47,7 @@
           <th style="text-align:center;width: 3%;"></td>
 
         {% for match in day.matches %}
-        <tr style="padding-bottom:5px;">
+        <tr style="padding-bottom:5px; background-color: {{match.color}};">
             <td>{{match.ID}}</td>
             <td style="text-align:center;">{{match.time}}</td>
             <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
@@ -70,7 +70,7 @@
     </table>
     <br>
 
-    {%if day.date == group_evaulation_date %}
+    {%if day.date == group_evaluation_date %}
     <br>
     <div style="background-color: greenyellow;">
         <a href="group" style="display: inline-block;font-weight: bold;">Csoporttipp bónusz összeg: {{group_bonus}}</a>
