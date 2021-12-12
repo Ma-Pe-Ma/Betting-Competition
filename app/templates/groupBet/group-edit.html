@@ -48,7 +48,6 @@
 
                             function populateSortableArray() {
                                 {% for group in groups %}
-                                console.log("pushing sortable:  {{groupID}}");
                                 sortableArray.push(["{{group.ID}}", new Sortable(document.getElementById('list-{{group.ID}}'), {
                                     animation: 150,
                                     ghostClass: 'blue-background-class'
@@ -62,25 +61,18 @@
                             function calculateRemainingBetAmount() {
                                 var remainingValue = {{start_amount}};
 
-                                console.log("sortable size: " + sortableArray.length);
-
                                 for (const sortableElement of sortableArray) {
                                     let[groupID, group] = sortableElement;
                                     remainingValue -=  document.getElementById("bet-" + groupID).value;
-                                    console.log(groupID +": " + document.getElementById("bet-" + groupID).value);
                                 }
 
                                 remainingValue -= finalResultBet.value;
                                 remainingAmount.innerText = remainingValue + " tallér";
-
-                                console.log("calculated remaining bet amount!");
                             }
 
                         </script>
 
                         <script type="module">
-                            //import {scores} from './static/assets/js/data/scores.js'
-                            //import {namemap} from './static/assets/js/data/scores.js'
                             import {resultNamemap} from './static/assets/js/data/scores.js'
 
                             var scores = {
@@ -95,8 +87,6 @@
                             {% endfor %}
                             };
 
-                            console.log("entry length: " + Object.entries(scores).length);
-
                             var teamSelect = document.getElementById("teamSelect");
                             var resultSelect = document.getElementById("resultSelect");
                             var finalResultOdd = document.getElementById("finalResultOdd");
@@ -104,7 +94,7 @@
                             var expectedWinAmount = document.getElementById("expectedWinAmount");
 
                             for (const [key, value] of Object.entries(scores)) {
-                                console.log(`${key}: ${value}`);
+                                //console.log(`${key}: ${value}`);
                                 teamSelect.options[teamSelect.options.length] = new Option(namemap[key], key);
                             }
 
@@ -134,9 +124,9 @@
                             resultSelect.onchange = updateFinalBet;
 
                             finalResultBet.oninput = function() {
-                                if (this.value > 200) {
-                                    this.value = 200;
-                                    this.innerText = 200;
+                                if (this.value > {{max_final_bet_value}}) {
+                                    this.value = {{max_final_bet_value}};
+                                    this.innerText = {{max_final_bet_value}};
                                 }
 
                                 if (this.value < 0) {
@@ -208,8 +198,6 @@
 
                         <div>
                             <div style="display: inline-block;"> Végeredmény-tipp :</div>
-                            
-
 
                             <select name="teamSelect" id="teamSelect" style="display: inline-block;"> </select>
                             <select name="resultSelect" id="resultSelect" style="display: inline-block;"> </select>
@@ -238,14 +226,20 @@
                                 </div>
 
                                 <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
+                                    {% if group.bets|length > 0 %}
+                                    {% for team in group.bets %}
+                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.team}}">{{team.hun_name}}</div>
+                                    {% endfor %}
+                                    {% else %}
                                     {% for team in group.teams %}
                                         <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.hun_name}}</div>
                                     {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div> 
 
                             <label for="bet-{{group.ID}}" style="padding-left: 3em; padding-top: 1em;">Tét: </label>
-                            <input type="number" size="3" value="{{group.bet}}" id="bet-{{group.ID}}" name="bet-{{group.ID}}" min=0 max=200 oninput="calculateRemainingBetAmount()">
+                            <input type="number" size="3" value="{{group.bet_property.amount}}" id="bet-{{group.ID}}" name="bet-{{group.ID}}" min=0 max={{max_group_bet_value}} oninput="calculateRemainingBetAmount()">
                             <br>
                         {% endfor %}
 

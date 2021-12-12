@@ -9,129 +9,65 @@ from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
+from flask import jsonify
 from app.db import get_db
 
 from datetime import timezone, datetime
+from dateutil import tz
 from collections import namedtuple
 
-from app.score_calculator import *
+#from app.tools.score_calculator import 
+from app.tools.ordering import order_teams, order_groups
+from app.configuration import starting_bet_amount, max_group_bet_value, max_final_bet_value
+from app.configuration import group_deadline_time, group_evaluation_date
+from app.tools.group_calculator import get_group_object, get_final_bet
+from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount2
 
 bp = Blueprint("group", __name__, '''url_prefix="/group"''')
-
-Team = namedtuple("Team", "name, hun_name, position, top1, top2, top4, top16")
-Group = namedtuple("Group", "ID, teams, bet")
-FinalBet = namedtuple("FinalBet", "team, hun_name, result, multiplier, betting_amount, winning_amount, success")
-
-def sort_group_results(group_result):
-    return group_result["position"]
-
-def get_ordered_groups(user_name, user_bets):
-    groups = []
-
-    for user_bet in user_bets:
-        team_prefab = get_db().execute("SELECT name, hun_name, group_id, top1, top2, top4, top16 FROM team WHERE name = ?", (user_bet["team"],)).fetchone()
-
-        group_of_team = None
-
-        for group in groups:
-            if group.ID == team_prefab["group_id"]:
-                group_of_team = group
-
-        if group_of_team == None:
-            group_bet = get_db().execute("SELECT bet FROM group_bet WHERE (username = ? AND group_ID = ?)", (user_name, team_prefab["group_id"],)).fetchone()
-            group_of_team = Group(ID=team_prefab["group_id"], teams=[], bet=group_bet["bet"])
-            groups.append(group_of_team)
-        
-        group_of_team.teams.append(Team(name=team_prefab["name"], hun_name=team_prefab["hun_name"], position=user_bet["position"], top1=team_prefab["top1"], top2=team_prefab["top2"], top4=team_prefab["top4"], top16=team_prefab["top16"]))        
-
-    return groups
-
-def get_final_bet(user_name):
-    final_bet = get_db().execute("SELECT team, bet, result, success FROM final_bet WHERE username = ?", (user_name,)).fetchone()
-    final_team = get_db().execute("SELECT hun_name, top1, top2, top4, top16 FROM team WHERE name=?", (final_bet["team"],)).fetchone()
-    final_multiplier = 0
-
-    if final_bet["result"] == 0:
-        final_multiplier = final_team["top1"]
-    elif final_bet["result"] == 1:
-        final_multiplier = final_team["top2"]
-    elif final_bet["result"] == 2:
-        final_multiplier = final_team["top4"]
-    elif final_bet["result"] == 3:
-        final_multiplier = final_team["top16"]
-
-    print("multiplier: " + str(final_multiplier))
-
-    winning_amount = final_bet["bet"] * final_multiplier
-
-    #print("success: " + str(len(final_bet["success"])))
-
-    return FinalBet(team=final_bet["team"], hun_name=final_team["hun_name"], result=final_bet["result"], multiplier=final_multiplier, betting_amount=final_bet["bet"], winning_amount=winning_amount, success=final_bet["success"] )
 
 def before_deadline():
     user_name = g.user["username"]
 
     if request.method == "GET":
-        groups = []
+        groups = get_group_object(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name)
 
-        user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
-
-        if len(user_bets) == 0:
-            team_prefabs = get_db().execute("SELECT name, hun_name, group_id, top1, top2, top4, top16 FROM team", ()).fetchall()
-
-            for team_prefab in team_prefabs:
-
-                group_of_team = None
-
-                for group in groups:
-                    if group.ID == team_prefab["group_id"]:
-                        group_of_team = group
-
-                if group_of_team == None:
-                    group_of_team = Group(ID=team_prefab["group_id"], teams=[], bet=0)
-                    groups.append(group_of_team)
-                
-                team_nr = len(group_of_team.teams)
-                group_of_team.teams.append(Team(name=team_prefab["name"], hun_name=team_prefab["hun_name"], position=(team_nr + 1), top1=team_prefab["top1"], top2=team_prefab["top2"], top4=team_prefab["top4"], top16=team_prefab["top16"]))
-        else:
-            groups = get_ordered_groups(user_name, user_bets)
-
-        groups.sort(key=sort_groups)
-
-        for group in groups:
-            group.teams.sort(key=sort_teams)
-
-        final_bet_object = get_final_bet(user_name)
-        print("final get: " + str(final_bet_object.betting_amount))
-
-        return render_template("groupBet/group-edit.html", username = user_name, admin=g.user["admin"], start_amount=starting_bet_amount, final_bet = final_bet_object, groups = groups)
+        return render_template("groupBet/group-edit.html", username = user_name, admin=g.user["admin"], start_amount=starting_bet_amount, max_group_bet_value = max_group_bet_value, max_final_bet_value=max_final_bet_value, final_bet = final_bet_object, groups = groups)
 
     elif request.method == "POST":
-        print("group form: " + str(request.get_json()))
+        bet_object = request.get_json()
+        response_object = {}
 
-        group_bet = request.get_json()
-
-        error = None
-
-        #if get_db().execute("SELECT name FROM user WHERE name=?", (user_name)) is None:
-            #error = ""    
-
-        final = group_bet["final"]
-        groups = group_bet["group"]
+        # parsing and checking final bet properties
+        final = bet_object["final"]
 
         final_team = final["team"]
         if get_db().execute("SELECT name FROM team WHERE name = ?", (final_team,)).fetchone() is None:
-            error = "FINAL_TEAM"     
-
+            response_object['result'] = 'error'
+            response_object['info'] = 'FINAL_TEAM'
         try:
             final_result = int(final["result"])
-            if final_result < 0 or final_result> 3 :
-                error = "FINAL_RESULT"
-
-            final_bet = int(final["bet"])
-            print("posted final bet: " + str(int(final_bet)))
+            if final_result < 0 or 3 < final_result:
+                response_object['result'] = 'error'
+                response_object['info'] = 'FINAL_RESULT'
         except ValueError:
-            error = "FINAL_RESULT"            
+            response_object['result'] = 'error'
+            response_object['info'] = 'FINAL_RESULT'
+
+        try:
+            final_bet_value = int(final["bet"])
+            if final_bet_value > max_final_bet_value:
+                final["bet"] = max_final_bet_value
+
+            if final_bet_value < 0:
+                final["bet"] = max_final_bet_value
+
+        except ValueError:
+            response_object['result'] = 'error'
+            response_object['info'] = 'FINAL_BET'
+
+        # parsing anc checking group properties
+        groups = bet_object["group"]
 
         for group_id in groups:
             bet = groups[group_id]["bet"]
@@ -145,13 +81,18 @@ def before_deadline():
                 elif bet_value < 0:
                     bet_value = 0
 
+                groups[group_id]["bet"] = bet_value
+                print("groups[group_id][bet]" + str(groups[group_id]["bet"]))
+
             except ValueError:
-                error = "BET"
+                response_object['result'] = 'error'
+                response_object['info'] = "GROUP_BET"
                 break
 
             db_teams = get_db().execute("SELECT name FROM team WHERE group_id = ?", (group_id,)).fetchall()
             if len(db_teams) == 0:
-                error = "GROUP_ID"
+                response_object['result'] = 'error'
+                response_object['info'] = "GROUP_ID"
                 break
             else:
                 for team in order:
@@ -163,17 +104,18 @@ def before_deadline():
                             break
                         
                     if team_found is False:
-                        error = "TEAM"
+                        response_object['result'] = 'error'
+                        response_object['info'] = "GROUP_TEAM"
                         break
 
-        if error is not None:
-            print("error happened: " + error)
-            return ""
+        if bool(response_object) is not False:
+            return jsonify(response_object)
         else:
             id = get_db().execute("SELECT id FROM final_bet WHERE username=?", (user_name,)).fetchone()
+            final_bet = final["bet"]
 
             if id is None:
-                get_db().execute("INSERT INTO final_bet (username, bet, team, result) VALUES(?,?,?,?)", (user_name, final_bet, final_team, final_result))
+                get_db().execute("INSERT INTO final_bet (username, bet, team, result, success) VALUES(?,?,?,?,?)", (user_name, final_bet, final_team, final_result, ""))
             else:
                 get_db().execute("UPDATE final_bet SET username = ?, bet = ?, team = ?, result = ? WHERE id = ?", (user_name, final_bet, final_team, final_result, id["id"],))
 
@@ -186,12 +128,10 @@ def before_deadline():
                 if id is None:
                     get_db().execute("INSERT INTO group_bet (username, bet, group_ID) VALUES(?, ?, ?)", (user_name, bet, group_id))
                 else:
-                    get_db().execute("UPDATE group_bet SET username=?, bet=?, group_ID=? WHERE id=?", (user_name, bet, group_id, id["id"]))                
+                    get_db().execute("UPDATE group_bet SET username=?, bet=?, group_ID=? WHERE id=?", (user_name, bet, group_id, id["id"]))
 
                 position = 1
                 for team in order:
-                    print("new pos: " + team +", " + str(position))
-
                     id = get_db().execute("SELECT id FROM team_bet WHERE username=? AND team=?", (user_name, team)).fetchone()
                     if id is None:
                         get_db().execute("INSERT INTO team_bet (username, team, position) VALUES(?, ?, ?)", (user_name, team, position))
@@ -201,32 +141,18 @@ def before_deadline():
                     position += 1
 
             get_db().commit()
-            print("EVERYTHING IS OK!")
-            return "OK"
+            response_object["result"] = "OK"
+            return jsonify(response_object)
 
 def during_groupstage():
     user_name = request.args.get("name")
 
     if user_name is not None:
-        user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
+        amount_after = starting_bet_amount - get_group_and_final_bet_amount(user_name=user_name)
+        groups = get_group_object(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name)
 
-        if len(user_bets) == 0:
-            return render_template("groupBet/group-during.html", groups = None, starting_bet_amount=starting_bet_amount)
-        else:
-            final_bet_object = get_final_bet(user_name)
-
-            groups = get_ordered_groups(user_name, user_bets)
-
-            groups.sort(key=sort_groups)
-
-            amount_after = starting_bet_amount
-            amount_after -= final_bet_object.betting_amount
-
-            for group in groups:
-                amount_after -= group.bet
-                group.teams.sort(key=sort_teams)
-
-            return render_template("groupBet/group-during.html", groups=groups, final_bet = final_bet_object , amount_after=amount_after, starting_bet_amount=starting_bet_amount)
+        return render_template("groupBet/group-during.html", groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=starting_bet_amount)
     
     players = get_db().execute("SELECT username FROM user WHERE NOT username='RESULT'", ())
 
@@ -235,66 +161,13 @@ def during_groupstage():
 def after_evaluation():
     user_name = request.args.get("name")
 
-    get_group_win_amount(user_name)
-
     if user_name is not None:
-        user_bets = get_db().execute("SELECT team, position FROM team_bet WHERE username =?", (user_name,)).fetchall()
+        final_bet_object = get_final_bet(user_name=user_name)
+        groups = get_group_object(user_name=user_name)
+        total_group_bet = get_group_and_final_bet_amount(user_name=user_name)
+        total_win_amount = get_group_win_amount2(groups)
 
-        if len(user_bets) == 0:
-            return render_template("groupBet/group-during.html", groups = None, starting_bet_amount=starting_bet_amount)
-        else:
-            GroupContainer = namedtuple("GroupContainer", "result, bet")
-            GroupResult = namedtuple("GroupResult", "multiplier, win_amount, hit_number, teams")
-            TeamResult = namedtuple("TeamResult", "name, background")
-            
-            group_containers = []
-
-            groups = get_ordered_groups(user_name, user_bets)
-            groups.sort(key=sort_groups)
-
-            final_bet_object = get_final_bet(user_name)
-
-            total_group_bet = 0
-            total_win_amount = 0
-
-            for group in groups:
-                group.teams.sort(key=sort_teams)
-
-                team_result_prefabs = get_db().execute("SELECT name, position, hun_name FROM team WHERE group_ID = ?", (group.ID,)).fetchall()
-                
-                for team_result_prefab in team_result_prefabs:
-                    if team_result_prefab["position"] is None:
-                        return render_template("groupBet/group-after.html", group_containers=None)
-
-                team_result_prefabs.sort(key=sort_group_results)
-
-                team_results = []
-
-                i=0
-                hit_number = 0
-                for team_result_prefab in team_result_prefabs:
-                    correct_position = False
-                    if team_result_prefab["name"] == group.teams[i].name:
-                        hit_number += 1
-                        correct_position = True
-
-                    background = "lightcoral"    
-                    if correct_position:
-                        background = "lime"
-
-                    team_results.append(TeamResult(name=team_result_prefab["hun_name"], background=background))
-                    i += 1
-
-                multiplier = hit_map[hit_number]
-                win_amount = group.bet * multiplier
-                result = GroupResult(teams=team_results, hit_number=hit_number, multiplier=multiplier, win_amount=win_amount)
-
-                total_group_bet += group.bet
-                total_win_amount += win_amount
-
-                group_containers.append(GroupContainer(result=result, bet=group))                
-
-            return render_template("groupBet/group-after.html", group_containers=group_containers, total_bet=total_group_bet, total_win=total_win_amount, final_bet=final_bet_object)
+        return render_template("groupBet/group-after.html", group_containers=groups, total_bet=total_group_bet, total_win=total_win_amount, final_bet=final_bet_object)
     
     players = get_db().execute("SELECT username FROM user WHERE NOT username='RESULT'", ())
 
@@ -316,7 +189,7 @@ def group_order():
     else:
         return after_evaluation()
 
-@bp.route("/final-odds", methods=("GET", "POST"))
+@bp.route("/final-odds", methods=("GET",))
 @login_required
 def final_bet_odds():
     teams = []

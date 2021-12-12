@@ -49,11 +49,11 @@
                                 <th rowspan="1" style="width: 45%;text-align:center;">Pontszám</th>
                             </tr>
                     
-                            {% for current_state in current_states %}
+                            {% for current_player_standing in current_player_standings %}
                             <tr style="padding-bottom:5px;">                            
                                 <td style="text-align:left;">{{loop.index}}</td>
-                                <td style="text-align:center;">{{current_state.name}}</td>
-                                <td style="text-align:center;">{{current_state.point}}</td>                            
+                                <td style="text-align:center;">{{current_player_standing.name}}</td>
+                                <td style="text-align:center;">{{current_player_standing.point}}</td>                            
                             </tr>
                             {% endfor %}
                         </table>

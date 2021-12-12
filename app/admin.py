@@ -1,4 +1,3 @@
-from app.score_calculator import sort_teams
 from collections import namedtuple
 from typing import Match
 from app import auth
@@ -13,27 +12,37 @@ from flask import url_for
 from app.db import get_db
 from app.auth import admin_required, login_required
 
+from app.tools.ordering import order_teams
+
 bp = Blueprint("admin", __name__, '''url_prefix="/group"''')
 
-# groupbet, matchbet feedback for result of posting in client #message after redirect (after posting, group or match!)
+# groupbet, matchbet feedback for result of posting in client
+# message after redirect (after posting, group or match!) or try failure in match_bet -> search for TODO-s (not complete :/)
 # calculate + add final_bet win amount to standings after last match
 
 # user config page
-# request csv update by button
+# request result csv update by button
 
-# flask-init db, read teams + matches from csv!
+# flask-init db, read teams + matches from csv! # when reading from csv, add position to team!!!!!!!
 # email for everyone - implement sending
 # timed email notifications!
 # configure schedulings properly
-# daily standings reminder at end of match day?
-# backup sqlite database at night by email
+# daily standings reminder at end of match day <- registration form option 
+# backup sqlite database at night by email to admins
 
 # change app secure key!
-# deployment
+# deployment (apache or docker/heroku?)
 # disqus
 # replace logo
-# html template -> removing deadlinks + dashboard problem + username problem
-# remove comments
+# html template -> removing deadlinks + dashboard problem (?) + username problem (?)
+# remove comments from HTML
+# deadlines, keys, configuration to seperate file
+# readme + setup + user manual
+# hun name -> to local name
+# variable max bet size? completed?
+# commenting sql schema too
+# group evaluation time should be actual + 1?
+# more starters gomb
 
 @bp.route("/admin", methods=("GET",))
 @login_required
@@ -199,7 +208,6 @@ def final_bet():
             print("value: " + request.form[key])
 
         get_db().commit()
-
     else:
         pass
 

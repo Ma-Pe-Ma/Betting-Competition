@@ -34,11 +34,13 @@ CREATE TABLE match (
   max_bet INTEGER
 );
 
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-09-30 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2, 50);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-07-31 17:47', "B Csoport", "Németország", "Portugália", 3, 8, 1.57, 6.1, 1.2, 50);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-07-31 15:47', "B Csoport", "Franci", "Angli", 1, 1, 1.57, 6.1, 1.2, 50);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-08-03 15:47', "B Csoport", "Franci", "Angli", 4, 9, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 17:47', "B Csoport", "Németország", "Portugália", 3, 8, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 15:47', "B Csoport", "Franci", "Angli", 1, 1, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 15:47', "B Csoport", "Franci", "Angli", 4, 9, 1.57, 6.1, 1.2, 50);
 
+
+-- Table containing team details 
 CREATE TABLE team (
   name TEXT NOT NULL PRIMARY KEY,
   hun_name TEXT,
@@ -60,25 +62,7 @@ INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VA
 INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("POLAND", "Lengyelország", 'B', 25, 26, 27, 28, 1);
 INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("YUGOSLAVIA", "Jugoszlávia", 'B', 29, 30, 31, 32, 2);
 
-CREATE TABLE team_bet (
-  id INTEGER NOT NULL PRIMARY KEY,
-  username TEXT,
-  team TEXT,
-  position INTEGER,
-  FOREIGN KEY(username) REFERENCES user(username)
-);
-
-
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "GERMANY",4);
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "HUNGARY",2);
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "ITALY",3);
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "JAPAN",1);
-
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "CZECHIA",4);
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "SLOVAKIA",3);
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "POLAND", 1);
-INSERT INTO team_bet(username, team, position) VALUES("MPM", "YUGOSLAVIA",2);
-
+-- Table holding a player's bet on a specific group
 CREATE TABLE group_bet (
   id INTEGER NOT NULL PRIMARY KEY,
   group_ID INTEGER NOT NULL,
@@ -90,6 +74,26 @@ CREATE TABLE group_bet (
 INSERT INTO group_bet(group_ID, username, bet) VALUES ("A", "MPM", 50);
 INSERT INTO group_bet(group_ID, username, bet) VALUES ("B", "MPM", 11);
 
+-- Table used by group bet, contains player's tip for the result of a team
+CREATE TABLE team_bet (
+  id INTEGER NOT NULL PRIMARY KEY,
+  username TEXT,
+  team TEXT,
+  position INTEGER,
+  FOREIGN KEY(username) REFERENCES user(username)
+);
+
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "GERMANY",4);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "HUNGARY",2);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "ITALY",3);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "JAPAN",1);
+
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "CZECHIA",4);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "SLOVAKIA",3);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "POLAND", 1);
+INSERT INTO team_bet(username, team, position) VALUES("MPM", "YUGOSLAVIA",2);
+
+-- Table containing the final bets
 CREATE TABLE final_bet (
   id INTEGER NOT NULL PRIMARY KEY,
   username TEXT,

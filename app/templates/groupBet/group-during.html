@@ -1,33 +1,36 @@
-{% if groups is not none %}
-
-<div>Kezdőtőke: {{starting_bet_amount}}</div>
+<h4>Kezdőtőke: {{starting_bet_amount}}</h4>
 
 <div>
-    <div style="display: inline-block;">Végeredmény-tipp:</div>
-    <div style="display: inline-block;">{{final_bet.hun_name}} -  </div>
-    <div style="display: inline-block;" id="resultID">{{final_bet.result}} </div>
-    <a href="./final-odds">Szorzó: {{final_bet.multiplier}}</a>
-    <div style="display: inline-block; padding-left: 1em;">Tét: {{final_bet.betting_amount}}</div>
-    <div style="display: inline-block; padding-left: 1em;">Várható nyeremény: {{final_bet.winning_amount}}</div>
+    <h4 style="display: inline-block;">Végeredmény-tipp:</h4>
+    <h4 style="display: inline-block;">{{final_bet.hun_name}} -  </h4>
+    <h4 style="display: inline-block;" id="resultID">{{final_bet.result}} </h4>
+    <a href="./final-odds">(Szorzó: {{final_bet.multiplier}})</a>
+    <h4 style="display: inline-block; padding-left: 1.5em;">Tét: {{final_bet.betting_amount}}</h4>
+    <h4 style="display: inline-block; padding-left: 1em;">Várható nyeremény: {{final_bet.betting_amount * final_bet.multiplier}}</h4>
+
+    <br>
+    <h4>Felhasználható összeg csoportkör tipp után: {{amount_after}}</h4>
 </div>
+
+<br>
+<h4>Csoportkör-tippek:</h4>
 
 {% for group in groups %}
 
+{% if group.bets|length == 0 %}
+    <h4 class="col-12">{{group.ID}}. csoport: A játékos nem fogadott a csoportra</h4>
+{% else %}
+
 <div id="sorting-disabled" class="row" style="width: 30em;padding-left: 1em;">
-    <h4 class="col-12">{{group.ID}}. csoport: Tét - {{group.bet}} tallér</h4>
+    <h4 class="col-12">{{group.ID}}. csoport: Tét - {{group.bet_property.amount}} tallér</h4>
     <div id="example4-left" class="list-group col" style="padding-left: 2em;">
         <div class="list-group-item" style="background-color: #b8b8b8;">Tipp</div>
-        <div class="list-group-item">1. {{group.teams[0].hun_name}}</div>
-        <div class="list-group-item">2. {{group.teams[1].hun_name}}</div>
-        <div class="list-group-item">3. {{group.teams[2].hun_name}}</div>
-        <div class="list-group-item">4. {{group.teams[3].hun_name}}</div>
+
+        {% for i in range(4) %}
+        <div class="list-group-item">{{i + 1}}. {{group.bets[i].hun_name}}</div>
+        {% endfor %}
     </div>
 </div>
 <br>
-{% endfor %}
-
-<div>Felhasználható összeg csoportkör tipp után: {{amount_after}}</div>
-
-{% else %}
-A játékos nem fogadott csoportkörre, így a kezdő egyenlege: {{starting_bet_amount}}.
 {% endif %}
+{% endfor %}
