@@ -16,8 +16,6 @@ from datetime import timezone, datetime
 from dateutil import tz
 from collections import namedtuple
 
-#from app.tools.score_calculator import 
-from app.tools.ordering import order_teams, order_groups
 from app.configuration import starting_bet_amount, max_group_bet_value, max_final_bet_value
 from app.configuration import group_deadline_time, group_evaluation_date
 from app.tools.group_calculator import get_group_object, get_final_bet
@@ -73,7 +71,7 @@ def before_deadline():
             bet = groups[group_id]["bet"]
             order = groups[group_id]["order"]
 
-            #checking and trimming bet value
+            # checking and trimming bet value
             try:
                 bet_value = int(bet)
                 if bet_value > max_group_bet_value:
@@ -82,7 +80,6 @@ def before_deadline():
                     bet_value = 0
 
                 groups[group_id]["bet"] = bet_value
-                print("groups[group_id][bet]" + str(groups[group_id]["bet"]))
 
             except ValueError:
                 response_object['result'] = 'error'
@@ -90,7 +87,7 @@ def before_deadline():
                 break
 
             db_teams = get_db().execute("SELECT name FROM team WHERE group_id = ?", (group_id,)).fetchall()
-            if len(db_teams) == 0:
+            if db_teams is None or len(db_teams) == 0:
                 response_object['result'] = 'error'
                 response_object['info'] = "GROUP_ID"
                 break
@@ -111,8 +108,8 @@ def before_deadline():
         if bool(response_object) is not False:
             return jsonify(response_object)
         else:
-            id = get_db().execute("SELECT id FROM final_bet WHERE username=?", (user_name,)).fetchone()
             final_bet = final["bet"]
+            id = get_db().execute("SELECT id FROM final_bet WHERE username=?", (user_name,)).fetchone()
 
             if id is None:
                 get_db().execute("INSERT INTO final_bet (username, bet, team, result, success) VALUES(?,?,?,?,?)", (user_name, final_bet, final_team, final_result, ""))
@@ -141,6 +138,7 @@ def before_deadline():
                     position += 1
 
             get_db().commit()
+            
             response_object["result"] = "OK"
             return jsonify(response_object)
 
@@ -179,7 +177,7 @@ def group_order():
     current_time = datetime.now(tz=timezone.utc)
     deadline = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
     deadline = deadline.replace(tzinfo=tz.gettz('UTC'))
-    group_evaluation_time = datetime.strptime(group_evaluation_date, "%Y-%m-%d")
+    group_evaluation_time = datetime.strptime(group_evaluation_date, "%Y-%m-%d %H:%M")
     group_evaluation_time = group_evaluation_time.replace(tzinfo=tz.gettz('UTC'))
 
     if current_time < deadline:
@@ -195,7 +193,7 @@ def final_bet_odds():
     teams = []
     Team = namedtuple("Team", "name, top1, top2, top4, top16")
 
-    for team in get_db().execute("SELECT hun_name, top1, top2, top4, top16 FROM team"):
-        teams.append(Team(name=team["hun_name"], top1=team["top1"], top2=team["top2"], top4=team["top4"], top16=team["top16"]))
+    for team in get_db().execute("SELECT local_name, top1, top2, top4, top16 FROM team"):
+        teams.append(Team(name=team["local_name"], top1=team["top1"], top2=team["top2"], top4=team["top4"], top16=team["top16"]))
 
     return render_template("groupBet/final-odds.html", teams=teams)

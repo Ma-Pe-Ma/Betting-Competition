@@ -14,8 +14,8 @@ from werkzeug.security import generate_password_hash
 from app.db import get_db
 
 bp = Blueprint("auth", __name__, '''url_prefix="/auth"''')
-invitation_key = "registration"
-admin_invitation_key = "admin"
+from app.configuration import user_invitation_key
+from app.configuration import admin_invitation_key
 
 #https://docs.python.org/3/library/sqlite3.html
 
@@ -102,7 +102,7 @@ def register():
             error = "A jelszó rövid, minimum 8 karakter."
         elif password != password_repeat:
             error = "A két jelszó nem egyezik meg."
-        elif key != invitation_key and key != admin_invitation_key:
+        elif key != user_invitation_key and key != admin_invitation_key:
             error = "A meghívó nem érvényes."
         elif (
             db.execute("SELECT name FROM user WHERE username = ?", (username,)).fetchone()

@@ -83,7 +83,7 @@
 
                             var namemap = {
                             {% for group in groups%}
-                                {% for team in group.teams %} "{{team.name}}" : "{{team.hun_name}}",{% endfor %}
+                                {% for team in group.teams %} "{{team.name}}" : "{{team.local_name}}",{% endfor %}
                             {% endfor %}
                             };
 
@@ -145,7 +145,46 @@
                                 const XHR = new XMLHttpRequest();
 
                                 XHR.onload = function() {
-                                    console.log("response: " + XHR.response);
+                                    var responseObject = JSON.parse(XHR.response);
+                                    
+                                    if (responseObject["result"] == "OK") {
+                                        window.location.href = "./?match_state=group";
+                                    }
+                                    else if (responseObject["result"] == "error") {
+                                        var info = responseObject["info"];
+
+                                        var errorMessage = "";
+
+                                        switch(info) {
+                                            case "FINAL_TEAM":
+                                            errorMessage = "A végső tippnél megadott csapat nem létezik.";
+                                            break;
+
+                                            case "FINAL_RESULT":
+                                            errorMessage = "Hibás végsőtipp eredmény.";
+                                            break;
+
+                                            case "FINAL_BET":
+                                            errorMessage = "Hibás végsőtipp fogadási mennyiség.";
+                                            break;
+
+                                            case "GROUP_BET":
+                                            errorMessage = "Hibás fogadási mennyiség a csoportkörtippnél.";
+                                            break;
+
+                                            case "GROUP_ID":
+                                            errorMessage = "Hibás csoport azonosító.";
+                                            break;
+
+                                            case "GROUP_TEAM":
+                                            errorMessage = "Hibás csapatnév a csoportkörnél.";
+                                            console.log("GROUP_TEAM_ERROR");
+                                            break;
+                                        }
+                                        
+                                        var errorMessageNode = document.getElementById("errorMessage");
+                                        errorMessageNode.innerText = errorMessage;
+                                    }
                                 }
 
                                 XHR.onerror = function() {
@@ -228,11 +267,11 @@
                                 <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
                                     {% if group.bets|length > 0 %}
                                     {% for team in group.bets %}
-                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.team}}">{{team.hun_name}}</div>
+                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.team}}">{{team.local_name}}</div>
                                     {% endfor %}
                                     {% else %}
                                     {% for team in group.teams %}
-                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.hun_name}}</div>
+                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.local_name}}</div>
                                     {% endfor %}
                                     {% endif %}
                                 </div>
@@ -245,7 +284,11 @@
 
                         <div>
                             <div style="display: inline-block;">Fennmaradő tőke: </div>
-                            <div style="display: inline-block;" id="remainingAmount"">0 tallér</div>
+                            <div style="display: inline-block;" id="remainingAmount">0 tallér</div>
+                        </div>
+
+                        <div style="padding-left:1em; color:red;" id="errorMessage">
+                            
                         </div>
 
                         <button type="button" id="sendButton"> Beküld</button> 

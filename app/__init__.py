@@ -16,11 +16,10 @@ from jinja2  import TemplateNotFound
 
 from datetime import timedelta
 
-import time
-
 from multiprocessing import Process, Value
 from app import file_request
 from app import scheduler
+from app.configuration import app_secure_key
 
 def create_app(test_config = None):
     # Inject Flask magic
@@ -33,7 +32,7 @@ def create_app(test_config = None):
     # this is from the tutorial
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY="dev",
+        SECRET_KEY=app_secure_key,
         # store the database in the instance folder
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )

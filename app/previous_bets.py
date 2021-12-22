@@ -18,6 +18,7 @@ from dateutil import tz
 
 from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount
 from app.tools.score_calculator import prize_result
+from app.tools.group_calculator import get_final_bet
 
 from app.tools.ordering import order_date
 from app.tools.ordering import order_time
@@ -72,7 +73,7 @@ def prev_bets():
 
             goal1 = ""
             goal2 = ""
-            bet = ""
+            bet = 0
             bonus = 0
             prize = 0
 
@@ -129,7 +130,6 @@ def prev_bets():
 
             # calculate balance after match
             for match in day.matches:
-                print("match.bet: " + match.bet)
                 amount -= int(match.bet)
                 amount += match.prize + match.bonus
                 modifed_matches.append(match._replace(balance=amount))
@@ -144,7 +144,15 @@ def prev_bets():
 
         days.clear()     
 
-        return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group)
+        final_bet_object = get_final_bet(user_name=user_name)
+
+        # if there's a final result then display it on a new day
+        if final_bet_object is not None and final_bet_object.success != "":
+            amount += final_bet_object.betting_amount * final_bet_object.multiplier
+                    
+        finishing_balance = amount
+
+        return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance)
 
     # if no user name provided send down the username list and render the base page
     players = get_db().execute("SELECT username FROM user WHERE NOT username='RESULT'", ())

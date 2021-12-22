@@ -4,20 +4,20 @@
 <h3 style="display: inline-block; padding-left: 10em;">tét: {{total_bet - final_bet.betting_amount}}</h3>
 <div>
 {%if final_bet.success == "" %}
-    <h3 style="display: inline-block;">Végső-tipp: {{final_bet.hun_name}} - </h3>
+    <h3 style="display: inline-block;">Végső-tipp: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block;" id="resultID">{{final_bet.result}}</h3>
     <h3 style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</h3>
     <h3 style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </h3>
     <h3 style="display: inline-block; padding-left: 2em;">Várható nyeremény: {{final_bet.betting_amount * final_bet.multiplier}}</h3>
     
 {%elif final_bet.success == 1 %}
-    <h3 style="display: inline-block;">Végső-tipp - sikeres: {{final_bet.hun_name}} - </h3>
+    <h3 style="display: inline-block;">Végső-tipp - sikeres: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block; background-color: lime;" id="resultID">{{final_bet.result}}</h3>
     <h3 style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</h3>
     <h3 style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Nyeremény: {{final_bet.winning_amount}}</h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Nyeremény: {{final_bet.betting_amount * final_bet.multiplier}}</h3>
 {% else %}
-    <h3 style="display: inline-block;">Végső-tipp - sikertelen: {{final_bet.hun_name}} - </h3>
+    <h3 style="display: inline-block;">Végső-tipp - sikertelen: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block; background-color: lightcoral;" id="resultID">{{final_bet.result}}</h3>
     <h3 style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</h3>
     <h3 style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </h3>
@@ -43,7 +43,7 @@
     <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 20em;">
         <div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div>
         {%for i in range(4) %}
-        <div class="list-group-item">{{i+1}}. {{group_container.teams[i].hun_name}}</div>
+        <div class="list-group-item">{{i+1}}. {{group_container.teams[i].local_name}}</div>
         {% endfor %}
     </div>
 
@@ -55,10 +55,10 @@
                 {% set text = "A játékos nem fogadott a csoportra!" %}
             {% elif group_container.teams[i].name == group_container.bets[i].team %}
                 {% set color = "lime" %}
-                {% set text = group_container.bets[i].hun_name %}
+                {% set text = group_container.bets[i].local_name %}
             {% else %} 
                 {% set color = "lightcoral" %}
-                {% set text = group_container.bets[i].hun_name %}
+                {% set text = group_container.bets[i].local_name %}
             {% endif %}
                 <div class="list-group-item tinted" style="background-color: {{color}};">{{text}}</div>
         {% endfor %}

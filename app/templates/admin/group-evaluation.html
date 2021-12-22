@@ -68,7 +68,21 @@
                             const XHR = new XMLHttpRequest();
 
                             XHR.onload = function() {
-                                console.log("response: " + XHR.response);
+                                var responseObject = JSON.parse(XHR.response);
+
+                                var message = "ismeretlen esemény.";
+                                var messageNode = document.getElementById("errorMessage");
+
+                                if (responseObject["result"] == "OK") {
+                                    message = "Beállítás sikeres.";
+                                    messageNode.style = "padding-left:1em; color:green;"
+                                }
+                                else if (responseObject["result"] == "error") {
+                                    message = "Beállítás sikertelen.";
+                                    messageNode.style = "padding-left:1em; color:red;"
+                                }
+                                
+                                messageNode.innerText = message;                                
                             }
 
                             XHR.onerror = function() {
@@ -114,13 +128,17 @@
 
                             <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
                                 {% for team in group.teams %}
-                                    <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.hun_name}}</div>
+                                    <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.local_name}}</div>
                                 {% endfor %}
                             </div>
                         </div> 
  
                         <br>
                     {% endfor %}
+
+                    <div style="padding-left:1em; color:red;" id="errorMessage">
+                            
+                    </div>
 
                     <button type="button" id="sendButton"> Beküld</button>     
                     </div>

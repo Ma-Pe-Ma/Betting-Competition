@@ -10,6 +10,7 @@ from flask import request
 from flask import session
 from flask import url_for
 from app.db import get_db
+from flask import jsonify
 from app.auth import admin_required, login_required
 
 from app.tools.ordering import order_teams
@@ -19,30 +20,27 @@ bp = Blueprint("admin", __name__, '''url_prefix="/group"''')
 # groupbet, matchbet feedback for result of posting in client
 # message after redirect (after posting, group or match!) or try failure in match_bet -> search for TODO-s (not complete :/)
 # calculate + add final_bet win amount to standings after last match
+# sucess rate at previous bets
 
 # user config page
 # request result csv update by button
 
 # flask-init db, read teams + matches from csv! # when reading from csv, add position to team!!!!!!!
 # email for everyone - implement sending
-# timed email notifications!
-# configure schedulings properly
+# timed email notifications (about starting match)
 # daily standings reminder at end of match day <- registration form option 
 # backup sqlite database at night by email to admins
 
-# change app secure key!
-# deployment (apache or docker/heroku?)
 # disqus
 # replace logo
 # html template -> removing deadlinks + dashboard problem (?) + username problem (?)
 # remove comments from HTML
-# deadlines, keys, configuration to seperate file
-# readme + setup + user manual
-# hun name -> to local name
-# variable max bet size? completed?
+# readme + setup + user manual + deployment (apache or docker/heroku?)
 # commenting sql schema too
-# group evaluation time should be actual + 1?
 # more starters gomb
+# javascriptek + html-ek átnézése
+# 404-es oldal + felesleges html oldalak törlése
+# auth oldal beégett stringjeit kiszervezni a html-be, inkább a nyelv specifikus dolgok kiszervezése a html-ből
 
 @bp.route("/admin", methods=("GET",))
 @login_required
@@ -106,7 +104,10 @@ def odd():
     matches = []
 
     for match_prefab in get_db().execute("SELECT id, time, team1, team2, odd1, oddX, odd2, max_bet FROM match "):
-        matches.append(Match(ID=match_prefab["id"], time=match_prefab["time"], team1=match_prefab["team1"], team2=match_prefab["team2"], odd1=match_prefab["odd1"], oddX=match_prefab["oddX"], odd2=match_prefab["odd2"], max_bet=match_prefab["max_bet"]))
+        team1_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (match_prefab["team1"],)).fetchone()
+        team2_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (match_prefab["team2"],)).fetchone()
+
+        matches.append(Match(ID=match_prefab["id"], time=match_prefab["time"], team1=team1_local["local_name"], team2=team2_local["local_name"], odd1=match_prefab["odd1"], oddX=match_prefab["oddX"], odd2=match_prefab["odd2"], max_bet=match_prefab["max_bet"]))
 
     return render_template("admin/odd.html", username = g.user["username"], admin=g.user["admin"], matches=matches)
 
@@ -153,6 +154,8 @@ def odd_edit():
 def group_evaluation():
     
     if request.method == "POST":
+        response_object = {}
+
         for key in request.json:
             i = 1
             for team in request.json[key]:
@@ -161,14 +164,16 @@ def group_evaluation():
 
         get_db().commit()
 
-        return "OK"
+        response_object['result'] = 'OK'
+
+        return jsonify(response_object)
     
     Group = namedtuple("Group", "ID, teams")
-    Team = namedtuple("Team", "name, hun_name, position")
+    Team = namedtuple("Team", "name, local_name, position")
 
     groups = []
 
-    for team in get_db().execute("SELECT name, hun_name, group_id, position FROM team").fetchall():
+    for team in get_db().execute("SELECT name, local_name, group_id, position FROM team").fetchall():
         group_of_team = None
 
         for group in groups:
@@ -180,7 +185,7 @@ def group_evaluation():
             group_of_team = Group(ID=team["group_id"], teams=[])
             groups.append(group_of_team)
 
-        group_of_team.teams.append(Team(name=team["name"], hun_name=team["hun_name"], position=team["position"]))
+        group_of_team.teams.append(Team(name=team["name"], local_name=team["local_name"], position=team["position"]))
 
     already_submitted = True
 
@@ -192,7 +197,7 @@ def group_evaluation():
 
     if already_submitted:
         for group in groups:
-            group.teams.sort(key=sort_teams)
+            group.teams.sort(key=order_teams)
 
     return render_template("admin/group-evaluation.html", username = g.user["username"], admin=g.user["admin"], groups = groups)
 
@@ -201,7 +206,6 @@ def group_evaluation():
 @admin_required
 def final_bet():
     if request.method == "POST":
-        print("final bet keys: " + str(request.form.keys))
 
         for key in request.form:
             get_db().execute("UPDATE final_bet SET success=? WHERE username=?", (request.form[key], key))
@@ -215,8 +219,7 @@ def final_bet():
     players = []
 
     for final_bet in get_db().execute("SELECT * FROM final_bet", ()).fetchall():
-        team = get_db().execute("SELECT hun_name FROM team WHERE name=?", (final_bet["team"],)).fetchone()
-        players.append(Player(name=final_bet["username"], team=team["hun_name"], result=final_bet["result"], success=final_bet["success"]))
-        print("success: " + str(final_bet["success"]))
+        team = get_db().execute("SELECT local_name FROM team WHERE name=?", (final_bet["team"],)).fetchone()
+        players.append(Player(name=final_bet["username"], team=team["local_name"], result=final_bet["result"], success=final_bet["success"]))
 
     return render_template("admin/final-bet.html", username = g.user["username"], admin=g.user["admin"], players=players)

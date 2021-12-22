@@ -46,7 +46,6 @@
 
                         {% for player in players %} 
                             <div>
-                                {{player.success}}
                                 <label for="{{player.name}}">{{player.name}} - {{player.team}} - </label>
                                 <div style="display: inline-block;" id="result-{{loop.index}}">{{player.result}}</div>
                                 <select name ="{{player.name}}" id="{{player.name}}" form="finalForm" selected =>

@@ -29,8 +29,9 @@ from app.tools.ordering import order_time
 @bp.route("/", methods=("GET",))
 @login_required
 def homepage():
-    #successful match bet set?
-    match_id = request.args.get("matchID")
+    #successful match bet set
+    match_id = request.args.get("match_id")
+    match_state = request.args.get("match_state")
 
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
@@ -68,7 +69,10 @@ def homepage():
         else:
             pass
 
-        match_object = Match(ID=match["id"], time=match_time, type=match["round"], team1=match["team1"], team2=match["team2"], odd1=match["odd1"], oddX=match["oddX"], odd2=match["odd2"], bet=bet, goal1=goal1, goal2=goal2, max_bet=match["max_bet"])
+        team1_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match["team1"],)).fetchone()
+        team2_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match["team2"],)).fetchone()
+
+        match_object = Match(ID=match["id"], time=match_time, type=match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], odd1=match["odd1"], oddX=match["oddX"], odd2=match["odd2"], bet=bet, goal1=goal1, goal2=goal2, max_bet=match["max_bet"])
 
         # found the day object of the match if it doesn't exist create it
         match_day = None
@@ -98,4 +102,7 @@ def homepage():
     # determine the current credit of the player
     current_amount = get_current_points_by_player(g.user["username"])
 
-    return render_template("home-page.html", username = g.user["username"], admin=g.user["admin"], days=modified_days, current_amount=current_amount, match_id=match_id)
+    print("match_state: " + str(match_state))
+    print("match_id: " + str(match_id))
+
+    return render_template("home-page.html", username = g.user["username"], admin=g.user["admin"], days=modified_days, current_amount=current_amount, match_id=match_id, match_state=match_state)

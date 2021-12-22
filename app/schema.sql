@@ -34,16 +34,16 @@ CREATE TABLE match (
   max_bet INTEGER
 );
 
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 12:47', "A Csoport", "Magyarország", "Olaszország", 3, 2, 1.47, 2.1, 3.2, 50);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 17:47', "B Csoport", "Németország", "Portugália", 3, 8, 1.57, 6.1, 1.2, 50);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 15:47', "B Csoport", "Franci", "Angli", 1, 1, 1.57, 6.1, 1.2, 50);
-INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-10 15:47', "B Csoport", "Franci", "Angli", 4, 9, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-23 12:47', "A Csoport", "HUNGARY", "ITALY", 3, 2, 1.47, 2.1, 3.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-23 17:47', "B Csoport", "GERMANY", "JAPAN", 3, 8, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-23 15:47', "B Csoport", "SLOVAKIA", "CZECHIA", 1, 1, 1.57, 6.1, 1.2, 50);
+INSERT INTO match (time, round, team1, team2, goal1, goal2, odd1, oddX, odd2, max_bet) VALUES ('2021-12-23 15:47', "B Csoport", "POLAND", "YUGOSLAVIA", 4, 9, 1.57, 6.1, 1.2, 50);
 
 
 -- Table containing team details 
 CREATE TABLE team (
   name TEXT NOT NULL PRIMARY KEY,
-  hun_name TEXT,
+  local_name TEXT,
   group_id CHAR,
   position INTEGER,
   top1 FLOAT,
@@ -52,15 +52,15 @@ CREATE TABLE team (
   top16 FLOAT
 );
 
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("GERMANY", "Németország", 'A', 1, 2, 3, 4,2);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("HUNGARY", "Magyarország", 'A', 5, 6, 7, 8,4);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("ITALY", "Olaszország", 'A', 9, 10, 11, 12,1);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("JAPAN", "Japán", 'A', 13, 14, 15, 16,3);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("GERMANY", "Németország", 'A', 1, 2, 3, 4,2);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("HUNGARY", "Magyarország", 'A', 5, 6, 7, 8,4);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("ITALY", "Olaszország", 'A', 9, 10, 11, 12,1);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("JAPAN", "Japán", 'A', 13, 14, 15, 16,3);
 
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("CZECHIA", "Csehország", 'B', 17, 18, 19, 20, 4);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("SLOVAKIA", "Szlovákia", 'B', 21, 22, 23, 24, 3);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("POLAND", "Lengyelország", 'B', 25, 26, 27, 28, 1);
-INSERT INTO team(name, hun_name, group_id, top1, top2, top4, top16, position) VALUES("YUGOSLAVIA", "Jugoszlávia", 'B', 29, 30, 31, 32, 2);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("CZECHIA", "Csehország", 'B', 17, 18, 19, 20, 4);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("SLOVAKIA", "Szlovákia", 'B', 21, 22, 23, 24, 3);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("POLAND", "Lengyelország", 'B', 25, 26, 27, 28, 1);
+INSERT INTO team(name, local_name, group_id, top1, top2, top4, top16, position) VALUES("YUGOSLAVIA", "Jugoszlávia", 'B', 29, 30, 31, 32, 2);
 
 -- Table holding a player's bet on a specific group
 CREATE TABLE group_bet (

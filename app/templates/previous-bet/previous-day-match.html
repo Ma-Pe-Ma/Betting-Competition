@@ -81,3 +81,16 @@
 
 <!--/div-->
 {% endfor %}
+
+{% if final_bet and final_bet.success != "" %} 
+<br>
+<div style="background-color: greenyellow;">
+    {% if final_bet.success == 1%}
+    <a href="group" style="display: inline-block;font-weight: bold;">Végsőtipp bónusz összeg: {{final_bet.betting_amount * final_bet.multiplier}}</a>
+    {% else %}
+    <a href="group" style="display: inline-block;font-weight: bold">Végsőtipp bónusz összeg: 0</a>
+    {% endif %}
+    <div style="display: inline-block;padding-left: 4em;font-weight: bold">Záróegyenleg: {{finishing_balance}}</div>
+</div>
+<br>
+{% endif %}

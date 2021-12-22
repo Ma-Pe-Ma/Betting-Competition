@@ -78,8 +78,19 @@
                             
                             <div>
                                 <label>Tét: </label>
-                                <input type="number" size="3" value="{{match.bet}}" name="bet" min="0" max="50" form="betForm"/>
+                                <input type="number" size="3" value="{{match.bet}}" name="bet" min="0" max="{{match.max_bet}}" form="betForm"/>
                                 <div style="display: inline-block;"> / {{match.max_bet}}</div>
+                            </div>
+
+
+                            <div style="padding-left:1em; color:red;">
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    {{message}}
+                                    {% endfor %}
+                                {% endif %}
+                                {% endwith %}
                             </div>
 
                             <input type="hidden" id="matchID" name="matchID" value="{{match.ID}}"> 

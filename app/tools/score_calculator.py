@@ -40,6 +40,7 @@ def get_group_and_final_bet_amount(user_name):
 
 def get_group_win_amount2(group_object):
     win_amount = 0
+    
     for group in group_object:
         win_amount += group.bet_property.multiplier * group.bet_property.amount
 
