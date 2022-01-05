@@ -16,6 +16,9 @@ def order_date(day):
 def order_time(match):
     return datetime.strptime(match.time, "%H:%M")
 
+def order_matches2(match):
+    return datetime.strptime(match["time"], "%Y-%m-%d %H:%M")
+
 # ordering groupt results
 def order_group_results(group_result):
     return group_result["position"]

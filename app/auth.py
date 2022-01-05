@@ -81,6 +81,7 @@ def register():
         password_repeat = request.form.get("password_repeat")
         key = request.form.get("key")
         reminder = request.form.get("reminder")
+        summary = request.form.get("summary")
 
         db = get_db()
         error = None
@@ -119,21 +120,14 @@ def register():
             # the name is available, store it in the database and go to
             # the login page
 
-            #not so elegant enum
-            reminderInteger : int = 0
-            if reminder == "every":
-                reminderInteger = 1
-            elif reminder == "none":
-                reminderInteger = 2
-
             admin = False
 
             if key == admin_invitation_key:
                 admin = True
 
             db.execute(
-                "INSERT INTO user (username, name, password, email, reminder, admin) VALUES (?, ?, ?, ?, ?, ?)",
-                (username, name, generate_password_hash(password), email, reminderInteger, admin),
+                "INSERT INTO user (username, name, password, email, reminder, summary, admin) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (username, name, generate_password_hash(password), email, reminder, summary, admin),
             )
 
             db.commit()
@@ -143,13 +137,14 @@ def register():
 
             return redirect(url_for("group.group_order"))
         else:
-            print("Error: " + error)
+            pass
+            #print("Error: " + error)
 
         flash(error)
 
-        return render_template("auth/register.html", username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key = key, reminder = reminder)
+        return render_template("auth/register.html", username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
 
-    return render_template("auth/register.html", reminder="nonBetOnly")
+    return render_template("auth/register.html", reminder=0, summary=1)
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
@@ -191,3 +186,17 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for("auth.login"))
+
+@bp.route("/page-profile", methods=("GET", "POST"))
+@login_required
+def page_profile():
+
+    if request.method == "POST":
+        reminder = request.form["reminder"]
+        summary = request.form["summary"]
+        get_db().execute("UPDATE user SET reminder = ?, summary = ? WHERE username=?", (reminder, summary, g.user["username"]))
+        get_db().commit()
+
+    user_data = get_db().execute("SELECT username, name, email, reminder, summary FROM user WHERE username=?", (g.user["username"],)).fetchone()
+
+    return render_template("auth/modify.html", username = g.user["username"], email=user_data["email"], name=user_data["name"], reminder=user_data["reminder"], summary=user_data["summary"])

@@ -1,18 +1,18 @@
 from app.db import get_db
-import urllib
-from flask import app
-
-import requests
+import urllib.request
 import csv
 
 url = 'https://fixturedownload.com/download/uefa-euro-2020-UTC.csv'
 
-
 def download_data_csv():
-    r = requests.get(url)
+    response = urllib.request.urlopen(url)
+    data = response.read()
+    text = data.decode("utf-8")
 
-    data_readear = csv.reader(r.content.decode("utf-8").splitlines(), delimiter=',')
-    
+    #print("text: " + text)
+
+    data_readear = csv.reader(text.splitlines(), delimiter=',')
+
     for idx, row in enumerate(data_readear):        
         if idx != 0:
             goals = row[7].split("-")

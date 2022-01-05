@@ -31,7 +31,7 @@ from app.tools.ordering import order_time
 @bp.route("/", methods=("GET",))
 @login_required
 def homepage():
-    #successful match bet set
+    #successful match bet set (after redirecting)
     match_id = request.args.get("match_id")
     match_state = request.args.get("match_state")
 

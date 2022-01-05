@@ -3,12 +3,14 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from pytz import timezone
 from app.db import get_db
 from app.home_page import homepage
 import os
 
 # import Flask 
 from flask import Flask
+from flask_apscheduler import APScheduler
 
 from flask   import render_template, request
 from flask.helpers import make_response
@@ -16,9 +18,11 @@ from jinja2  import TemplateNotFound
 
 from datetime import timedelta
 
-from multiprocessing import Process, Value
-from app import file_request
-from app import scheduler
+#from multiprocessing import Process, Value
+#from app import scheduler
+from app.scheduler import init_scheduler
+from app.file_request import download_data_csv
+
 from app.configuration import app_secure_key
 
 def create_app(test_config = None):
@@ -88,10 +92,10 @@ def create_app(test_config = None):
         # note that we set the 404 status explicitly
         return render_template('page-404.html'), 404
 
+    app.config.update(SCHEDULER_TIMEZONE = "utc")
 
-
-    p = Process(target=scheduler.scheduler_loop, args=())
-    #p.start()  
+    #download_data_csv()
+    init_scheduler(app)
 
     return app
 

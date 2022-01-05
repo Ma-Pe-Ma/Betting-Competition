@@ -17,28 +17,33 @@ from app.tools.ordering import order_teams
 
 bp = Blueprint("admin", __name__, '''url_prefix="/group"''')
 
-# user config page
 # request result csv update by button
+# implement parsing result csv in file_request.py
 
 # flask-init db, read teams + matches from csv! # when reading from csv, add position to team!!!!!!!
 # email for everyone - implement sending
-# timed email notifications (about starting match)
-# daily standings reminder at end of match day <- registration form option 
+# daily standings reminder at end of match day
 # backup sqlite database at night by email to admins
 
-# javascriptek + html-ek átnézése
-# 404-es oldal + felesleges html oldalak törlése
 # auth oldal beégett stringjeit kiszervezni a html-be, inkább a nyelv specifikus dolgok kiszervezése a html-ből
 # commenting sql schema too + removing default values
 # readme + setup + user manual + deployment (apache or docker/heroku?)
+# javascriptek + html-ek átnézése
+# out comment starting csv fetch in init.py
 
+# cleanup __init__.py
+# rethink url paths
+# fix title of pages 
 # flask babel - multilanguage
+# felesleges html oldalak törlése
 # disqus
 # replace logo
 # replace icons at sidebar
 # html template -> removing deadlinks + dashboard problem (?) + username problem (?)
 # remove comments from HTML
 # more starters gomb
+
+# CHECK TODO-s
 
 
 @bp.route("/admin", methods=("GET",))
