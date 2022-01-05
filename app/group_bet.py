@@ -17,7 +17,7 @@ from dateutil import tz
 from collections import namedtuple
 
 from app.configuration import starting_bet_amount, max_group_bet_value, max_final_bet_value
-from app.configuration import group_deadline_time, group_evaluation_date
+from app.configuration import group_deadline_time, group_evaluation_time
 from app.tools.group_calculator import get_group_object, get_final_bet
 from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount2
 
@@ -177,12 +177,12 @@ def group_order():
     current_time = datetime.now(tz=timezone.utc)
     deadline = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
     deadline = deadline.replace(tzinfo=tz.gettz('UTC'))
-    group_evaluation_time = datetime.strptime(group_evaluation_date, "%Y-%m-%d %H:%M")
-    group_evaluation_time = group_evaluation_time.replace(tzinfo=tz.gettz('UTC'))
+    group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
+    group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
 
     if current_time < deadline:
         return before_deadline()
-    elif current_time < group_evaluation_time:
+    elif current_time < group_evaluation_time_object:
         return during_groupstage()
     else:
         return after_evaluation()

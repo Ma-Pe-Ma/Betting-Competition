@@ -17,11 +17,6 @@ from app.tools.ordering import order_teams
 
 bp = Blueprint("admin", __name__, '''url_prefix="/group"''')
 
-# groupbet, matchbet feedback for result of posting in client
-# message after redirect (after posting, group or match!) or try failure in match_bet -> search for TODO-s (not complete :/)
-# calculate + add final_bet win amount to standings after last match
-# sucess rate at previous bets
-
 # user config page
 # request result csv update by button
 
@@ -31,16 +26,20 @@ bp = Blueprint("admin", __name__, '''url_prefix="/group"''')
 # daily standings reminder at end of match day <- registration form option 
 # backup sqlite database at night by email to admins
 
-# disqus
-# replace logo
-# html template -> removing deadlinks + dashboard problem (?) + username problem (?)
-# remove comments from HTML
-# readme + setup + user manual + deployment (apache or docker/heroku?)
-# commenting sql schema too
-# more starters gomb
 # javascriptek + html-ek átnézése
 # 404-es oldal + felesleges html oldalak törlése
 # auth oldal beégett stringjeit kiszervezni a html-be, inkább a nyelv specifikus dolgok kiszervezése a html-ből
+# commenting sql schema too + removing default values
+# readme + setup + user manual + deployment (apache or docker/heroku?)
+
+# flask babel - multilanguage
+# disqus
+# replace logo
+# replace icons at sidebar
+# html template -> removing deadlinks + dashboard problem (?) + username problem (?)
+# remove comments from HTML
+# more starters gomb
+
 
 @bp.route("/admin", methods=("GET",))
 @login_required
@@ -208,8 +207,11 @@ def final_bet():
     if request.method == "POST":
 
         for key in request.form:
-            get_db().execute("UPDATE final_bet SET success=? WHERE username=?", (request.form[key], key))
-            print("value: " + request.form[key])
+            success = request.form[key]
+            if success == "":
+                success = None
+
+            get_db().execute("UPDATE final_bet SET success=? WHERE username=?", (success, key))
 
         get_db().commit()
     else:

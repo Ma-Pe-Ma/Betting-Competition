@@ -21,8 +21,7 @@ from dateutil import tz
 from collections import namedtuple
 
 from app.configuration import starting_bet_amount
-from app.configuration import group_deadline_time
-from app.configuration import group_evaluation_date
+from app.configuration import group_deadline_time, group_evaluation_time
 
 from app.tools.score_calculator import get_group_win_amount
 from app.tools.score_calculator import get_group_and_final_bet_amount
@@ -45,7 +44,7 @@ def standings():
     group_deadline_time_object = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
     two_days_before_deadline = group_deadline_time_object - timedelta(days=2)
     one_day_before_deadline = group_deadline_time_object - timedelta(days=1)
-    group_evaluation_date_object = datetime.strptime(group_evaluation_date, "%Y-%m-%d %H:%M")
+    group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
 
     utc_now = datetime.now(tz=timezone.utc)
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
@@ -97,7 +96,7 @@ def standings():
             days.append(Day(year=day_date.year, month=day_date.month-1, day=day_date.day, point=amount))
 
             # if the current day is the group evaulation day add a new (fake) day which shows the group bet point win amounts
-            if day_date.date() == group_evaluation_date_object.date() and utc_now > group_evaluation_date_object.replace(tzinfo=tz.gettz('UTC')):
+            if day_date.date() == group_evaluation_time_object.date() and utc_now > group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC')):
                 amount += group_winning_amount
                 fake_day = day_date + timedelta(days=1)
                 days.append(Day(year=fake_day.year, month=fake_day.month-1, day=fake_day.day, point=amount))
@@ -110,7 +109,7 @@ def standings():
         final_bet_object = get_final_bet(user_name=user_name)
 
         # if there's a final result then display it on a new day
-        if final_bet_object is not None and final_bet_object.success != "":
+        if final_bet_object is not None and final_bet_object.success is not None:
             if final_bet_object.success == 1:
                 amount += final_bet_object.betting_amount * final_bet_object.multiplier
             elif final_bet_object.success == 2:

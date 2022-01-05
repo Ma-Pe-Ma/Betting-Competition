@@ -25,7 +25,7 @@ from app.tools.ordering import order_time
 
 from app.configuration import starting_bet_amount
 from app.configuration import local_zone
-from app.configuration import group_evaluation_date
+from app.configuration import group_evaluation_time
 from app.configuration import day_names
 
 bp = Blueprint("previous", __name__, '''url_prefix="/group"''')
@@ -42,12 +42,16 @@ def prev_bets():
     if user_name is not None:
         utc_now = datetime.utcnow()
         utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
-    
+        group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
+
         start_amount = starting_bet_amount - get_group_and_final_bet_amount(user_name)
         group_bonus = get_group_win_amount(user_name)
         balance_after_group = 0
 
         days = []
+
+        number_of_match_bets = 0
+        number_of_successful_bets = 0
 
         # iterate through matches which has already been played (more precisely started)
         for previous_match in get_db().execute("SELECT * FROM match WHERE DATETIME(time) < ?", (utc_now.strftime("%Y-%m-%d %H:%M"),)):
@@ -85,12 +89,16 @@ def prev_bets():
                 bet = match_bet["bet"]
 
                 if result1 is not None :
+                    number_of_match_bets += 1
+
                     result_value = prize_result(result1, result2, goal1, goal2)
 
                     color = "lightcoral"
 
                     # determine won credits
                     if result_value.actual == result_value.bet:
+                        number_of_successful_bets += 1
+
                         if result_value.actual == 1:
                             prize = bet * odd1
                         elif result_value.actual == -1:
@@ -102,7 +110,10 @@ def prev_bets():
 
                         color = "lime"
 
-            match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=previous_match["team1"], team2=previous_match["team2"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, color=color )
+            team1_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (previous_match["team1"],)).fetchone()
+            team2_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (previous_match["team2"],)).fetchone()
+
+            match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, color=color)
 
             # find match_day it does not exist create it
             match_day = None
@@ -137,22 +148,31 @@ def prev_bets():
             day.matches.clear()
             modified_days.append(day._replace(number = i + 1, matches = modifed_matches))
 
+            day_date_object = datetime.strptime(day.date, "%Y-%m-%d")
+
             #if checked day is group evaulation date than add group win amount at end
-            if day.date == group_evaluation_date:
+            if day_date_object.date() == group_evaluation_time_object.date():
                 amount += group_bonus
                 balance_after_group = amount
 
         days.clear()     
 
+        group_evaluation_date = group_evaluation_time_object.date().strftime("%Y-%m-%d")
+
         final_bet_object = get_final_bet(user_name=user_name)
 
         # if there's a final result then display it on a new day
-        if final_bet_object is not None and final_bet_object.success != "":
-            amount += final_bet_object.betting_amount * final_bet_object.multiplier
+        if final_bet_object is not None and final_bet_object.success is not None:
+            if final_bet_object.success == 1:
+                amount += final_bet_object.betting_amount * final_bet_object.multiplier
+            elif final_bet_object.success == 2:
+                pass
                     
         finishing_balance = amount
 
-        return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance)
+        success_rate = number_of_successful_bets / number_of_match_bets
+
+        return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
 
     # if no user name provided send down the username list and render the base page
     players = get_db().execute("SELECT username FROM user WHERE NOT username='RESULT'", ())

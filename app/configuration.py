@@ -12,7 +12,7 @@ day_names = ["hétfő", "kedd", "szerda", "csütörtök", "péntek", "szombat", 
 #the start time of the first match
 group_deadline_time = "2021-12-10 18:00"
 #30 minutes after the last group stage match is finished
-group_evaluation_date = "2021-12-10 12:00"
+group_evaluation_time = "2021-12-10 19:00"
 
 starting_bet_amount = 2000
 max_group_bet_value = 50

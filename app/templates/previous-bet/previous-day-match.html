@@ -1,4 +1,5 @@
 <div style="display: inline-block;">Kezdőtőke</div> <a href="./group" style="display: inline-block;">csoportkörtipp</a> <div style="display: inline-block;"> után: {{start_amount}}</div>
+<div>Találati arány: {{success_rate|round(2)}}</div>
 
 {% for day in days %}
 <!--div-->
@@ -58,8 +59,8 @@
             <td style="text-align:center;">{{match.odd2}}</td>
             <td style="text-align:center;">{{match.goal1}}-{{match.goal2}}</td>
             <td style="text-align:center;">{{match.bet}}</td>
-            <td style="text-align:center;">{{match.prize}} + {{match.bonus}}</td>
-            <td style="text-align:center;">{{match.balance}}</th>
+            <td style="text-align:center;">{{match.prize|round(2)}} + {{match.bonus|round(2)}}</td>
+            <td style="text-align:center;">{{match.balance|round(2)}}</th>
         </tr>
 
         <!--div style="padding-left:1em;position: relative;">
@@ -82,15 +83,15 @@
 <!--/div-->
 {% endfor %}
 
-{% if final_bet and final_bet.success != "" %} 
+{% if final_bet and final_bet.success is not none %} 
 <br>
 <div style="background-color: greenyellow;">
     {% if final_bet.success == 1%}
-    <a href="group" style="display: inline-block;font-weight: bold;">Végsőtipp bónusz összeg: {{final_bet.betting_amount * final_bet.multiplier}}</a>
+    <a href="group" style="display: inline-block;font-weight: bold;">Végsőtipp bónusz összeg: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</a>
     {% else %}
     <a href="group" style="display: inline-block;font-weight: bold">Végsőtipp bónusz összeg: 0</a>
     {% endif %}
-    <div style="display: inline-block;padding-left: 4em;font-weight: bold">Záróegyenleg: {{finishing_balance}}</div>
+    <div style="display: inline-block;padding-left: 4em;font-weight: bold">Záróegyenleg: {{finishing_balance|round(2)}}</div>
 </div>
 <br>
 {% endif %}

@@ -53,7 +53,7 @@
                             <tr style="padding-bottom:5px;">                            
                                 <td style="text-align:left;">{{loop.index}}</td>
                                 <td style="text-align:center;">{{current_player_standing.name}}</td>
-                                <td style="text-align:center;">{{current_player_standing.point}}</td>                            
+                                <td style="text-align:center;">{{current_player_standing.point|round(2)}}</td>                            
                             </tr>
                             {% endfor %}
                         </table>

@@ -61,22 +61,21 @@
                         </div>
                         {% endif %}
 
-                        <br>
                         {% with messages = get_flashed_messages() %}
-                            {% if messages|length > 0%}
-                                <div>Üzenetek: </div>
-                                {% for message in messages %}
+                            {% if messages and messages|length > 0 %}
+                        <br>
+                            <div>Üzenetek: </div>
+                            {% for message in messages %}
                                 {%if message != "" %}
-                                <div style="background-color:rgb(255, 238, 0);">{{loop.index}}: {{message}}</div>
+                            <div style="background-color:rgb(255, 238, 0);">{{loop.index}}: {{message}}</div>
                                 {% endif %}
-                                {% endfor %}
+                            {% endfor %}
+                        <br>
+                        <br>
                             {% endif %}
                         {% endwith %}
-
-                        <br>
-                        <br>
                         
-                        <p style="font-size: 20px;">Jelenlegi egyenleg: {{current_amount}}</p>
+                        <p style="font-size: 20px;">Jelenlegi egyenleg: {{current_amount|round(2)}}</p>
 
                         <table>
                             {% for day in days %}
@@ -143,6 +142,10 @@
 
                         </table>                    
                         
+                        {% if days|length == 0 %}
+                        <div style="display: inline-block;">A tipp bajnokság véget ért. </div> <div style="display: inline-block;">A végeredményhez</div> <a href="./standings" style="display: inline-block;">kattints ide!</a>
+                        {% endif %}
+
                         <script>
                             function redirectToEdit(buttonID) {
                                 console.log("arg: " + buttonID);

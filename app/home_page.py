@@ -15,6 +15,8 @@ from dateutil import tz
 from datetime import datetime
 from collections import namedtuple
 
+from app.tools.group_calculator import get_final_bet
+
 bp = Blueprint("home", __name__, '''url_prefix="/group"''')
 
 Day = namedtuple("Day", "number, date, name, matches")
@@ -38,7 +40,8 @@ def homepage():
     
     # show messages for user!
     for row in get_db().execute("SELECT * FROM messages",()):
-        flash(row["message"])
+        if row["message"] is not None and row["message"] != "":
+            flash(row["message"])
 
     days = []
 
@@ -102,7 +105,13 @@ def homepage():
     # determine the current credit of the player
     current_amount = get_current_points_by_player(g.user["username"])
 
-    print("match_state: " + str(match_state))
-    print("match_id: " + str(match_id))
+    final_bet_object = get_final_bet(user_name=g.user["username"],)
+
+    # if there's a final result then display it on a new day
+    if final_bet_object is not None and final_bet_object.success is not None:
+        if final_bet_object.success == 1:
+            current_amount += final_bet_object.betting_amount * final_bet_object.multiplier
+        elif final_bet_object.success == 2:
+            pass
 
     return render_template("home-page.html", username = g.user["username"], admin=g.user["admin"], days=modified_days, current_amount=current_amount, match_id=match_id, match_state=match_state)

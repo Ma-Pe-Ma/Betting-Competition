@@ -38,8 +38,6 @@ def get_final_bet(user_name):
         success = None
         multiplier = 0
 
-    print("result_ " + str(result))
-
     return FinalBet(team=final_team["name"], local_name=final_team["local_name"], result=result, betting_amount=bet, success=success, multiplier=multiplier)
 
 

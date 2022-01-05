@@ -3,7 +3,7 @@
 <h3 style="display: inline-block;"> Az össznyeremény csoportkör-tippeken: {{total_win}}, </h3>
 <h3 style="display: inline-block; padding-left: 10em;">tét: {{total_bet - final_bet.betting_amount}}</h3>
 <div>
-{%if final_bet.success == "" %}
+{%if final_bet.success is none %}
     <h3 style="display: inline-block;">Végső-tipp: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block;" id="resultID">{{final_bet.result}}</h3>
     <h3 style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</h3>
