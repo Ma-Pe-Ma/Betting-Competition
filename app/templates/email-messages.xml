@@ -1,0 +1,34 @@
+<EmailDrafts>
+    <Collection lan="hu">
+        <Welcome>
+            <Subject>
+            </Subject>
+            <Content>
+            </Content>
+        </Welcome>
+        <MatchReminder>
+            <Subject>{% if missing_bets|length > 0 %}Hiányzó tipp {% else %} Meccsértesítő {% endif %}</Subject>
+            <Content>Kedves {{username}}!
+{% if missing_bets|length > 0 %}
+Ma ismét meccsnap van, ne felejts el tippelni a következő meccs(ek)re:
+{% for missing in missing_bets %}    {{missing.date}} : {{missing.team1}} - {{missing.team2}}
+{% endfor %}{% endif %}
+{% if non_missing_bets|length > 0 %}{% if missing_bets|length > 0 %}Az alábbi meccs(ek)re a következő(ke)t tippelted:{% else %}Ma ismét meccsnap van, a következőket tippelted:{% endif %}
+{% for non_missing in non_missing_bets %}    {{non_missing.date}} : {{non_missing.team1}} - {{non_missing.team2}}    {{goal1}} - {{goal2}}
+{% endfor %}
+{% endif %}Üdvözlettel: a Tippmester</Content>
+        </MatchReminder>
+        <DailyStandings>
+            <Subject>Állásközlő - {{date}}</Subject>
+            <Content>Kedves {{username}}!
+
+A {{date}}. nap végén az állás a következő:
+
+    Helyezés    Becenév     Pontszám
+{% for player in players %}     {{loop.index}}. {{player.username}}     {{player.score}}
+{% endfor %}
+Üdvözlettel: A Tippmester
+            </Content>
+        </DailyStandings>
+    </Collection>
+</EmailDrafts>

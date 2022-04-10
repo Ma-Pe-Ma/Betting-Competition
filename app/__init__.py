@@ -1,11 +1,3 @@
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
-from pytz import timezone
-from app.db import get_db
-from app.home_page import homepage
 import os
 
 # import Flask 
@@ -21,7 +13,7 @@ from datetime import timedelta
 #from multiprocessing import Process, Value
 #from app import scheduler
 from app.scheduler import init_scheduler
-from app.file_request import download_data_csv
+from app.database_manager import init_db_with_data_command
 
 from app.configuration import app_secure_key
 
@@ -61,6 +53,7 @@ def create_app(test_config = None):
     from app import db
 
     db.init_app(app)
+    app.cli.add_command(init_db_with_data_command)
 
     from flask import session
 

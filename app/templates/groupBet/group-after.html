@@ -1,21 +1,21 @@
 <h3> Csoportkör- és végsőtippen megjátszott összes tét: {{total_bet}}</h3>
 <br>
 <h3 style="display: inline-block;"> Az össznyeremény csoportkör-tippeken: {{total_win}}, </h3>
-<h3 style="display: inline-block; padding-left: 10em;">tét: {{total_bet - final_bet.betting_amount}}</h3>
+<h3 style="display: inline-block; padding-left: 2em;">Tét: {{total_bet - final_bet.betting_amount}}</h3>
 <div>
 {%if final_bet.success is none %}
     <h3 style="display: inline-block;">Végső-tipp: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block;" id="resultID">{{final_bet.result}}</h3>
     <h3 style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</h3>
     <h3 style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Várható nyeremény: {{final_bet.betting_amount * final_bet.multiplier}}</h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Várható nyeremény: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</h3>
     
 {%elif final_bet.success == 1 %}
     <h3 style="display: inline-block;">Végső-tipp - sikeres: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block; background-color: lime;" id="resultID">{{final_bet.result}}</h3>
     <h3 style="display: inline-block; padding-left: 0em;">(Szorzó: {{final_bet.multiplier}})</h3>
     <h3 style="display: inline-block; padding-left: 2em;">Tét: {{final_bet.betting_amount}} </h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Nyeremény: {{final_bet.betting_amount * final_bet.multiplier}}</h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Nyeremény: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</h3>
 {% else %}
     <h3 style="display: inline-block;">Végső-tipp - sikertelen: {{final_bet.local_name}} - </h3>
     <h3 style="display: inline-block; background-color: lightcoral;" id="resultID">{{final_bet.result}}</h3>

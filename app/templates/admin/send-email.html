@@ -47,18 +47,23 @@
                             E-mail elküldése sikeres volt.
                             {% else %}
                             <div style="color: red; font-weight: 500;">
-                            E-mail elküldése sikertelen. {%if note is not none %} {% if note == 'short' %} Túl rövid üzenet. {% endif %} {% endif %}
+                            E-mail elküldése sikertelen. {%if note is not none %} {% if note == 'short' %} Túl rövid tárgy/üzenet. {% endif %} {% endif %}
                             {% endif %}
                         </div>
                         
                         {% endif %}
 
-                        Az alábbi mezőt kitöltve emailt tudsz küldeni a játékban résztvevőknek.
+                        Az alábbi mezőket kitöltve emailt tudsz küldeni a játékban résztvevőknek.
                         <br>
                         <br>
 
                         <form action="/admin/send-email" method="POST" >
                             
+                            <div>
+                                <label for="subject" style="vertical-align: top;">Üzenet tárgya:</label>
+                                <input id="subject" name="subject" type="text">
+                            </div>
+                            <br>
                             <div>
                                 <label for="email" style="vertical-align: top;">Küldendő üzenet:</label>
                                 <textarea id="email" name="email" rows="4" cols="50"></textarea>     

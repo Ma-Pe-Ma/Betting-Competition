@@ -12,10 +12,9 @@ from flask import url_for
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from app.db import get_db
+from app.configuration import user_invitation_key, admin_invitation_key
 
 bp = Blueprint("auth", __name__, '''url_prefix="/auth"''')
-from app.configuration import user_invitation_key
-from app.configuration import admin_invitation_key
 
 #https://docs.python.org/3/library/sqlite3.html
 
@@ -135,6 +134,8 @@ def register():
             session.clear()
             session["username"] = username
 
+            #TODO: send_welcome_email(username=username, email_address=email)
+
             return redirect(url_for("group.group_order"))
         else:
             pass
@@ -180,7 +181,6 @@ def login():
 
     return render_template("auth/login.html")
 
-
 @bp.route("/logout")
 def logout():
     """Clear the current session, including the stored user id."""
@@ -190,7 +190,6 @@ def logout():
 @bp.route("/page-profile", methods=("GET", "POST"))
 @login_required
 def page_profile():
-
     if request.method == "POST":
         reminder = request.form["reminder"]
         summary = request.form["summary"]

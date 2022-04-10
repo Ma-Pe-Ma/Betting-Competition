@@ -1,13 +1,8 @@
-from os import name
-from app import auth
 from flask import Blueprint
-from flask import redirect
 from flask import g
 from flask import flash
 from flask import render_template
 from flask import request
-from flask import session
-from flask import url_for
 from app.db import get_db
 from app.auth import login_required
 
@@ -16,17 +11,14 @@ from datetime import datetime
 from collections import namedtuple
 
 from app.tools.group_calculator import get_final_bet
+from app.tools.score_calculator import get_current_points_by_player
+
+from app.configuration import day_names, local_zone
 
 bp = Blueprint("home", __name__, '''url_prefix="/group"''')
 
 Day = namedtuple("Day", "number, date, name, matches")
 Match = namedtuple("MATCH", "ID, time, type, team1, team2, odd1, oddX, odd2, bet, goal1, goal2, max_bet")
-
-from app.tools.score_calculator import get_current_points_by_player
-from app.configuration import day_names
-from app.configuration import local_zone
-from app.tools.ordering import order_date
-from app.tools.ordering import order_time
 
 @bp.route("/", methods=("GET",))
 @login_required
@@ -61,21 +53,21 @@ def homepage():
         #get set bet
         match_bet = get_db().execute("SELECT * FROM match_bet WHERE (username = ? AND match_id = ? )", (g.user["username"], match["id"])).fetchone()
 
-        goal1 = ""
-        goal2 = ""
-        bet = "-"
-
-        if match_bet is not None:
-            bet = match_bet["bet"]
-            goal1 = match_bet["goal1"]
-            goal2 = match_bet["goal2"] 
-        else:
-            pass
+        bet = "" if match_bet is None else match_bet["bet"]
+        goal1 = "" if match_bet is None else match_bet["goal1"]
+        goal2 = "" if match_bet is None else match_bet["goal2"]
 
         team1_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match["team1"],)).fetchone()
         team2_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match["team2"],)).fetchone()
 
-        match_object = Match(ID=match["id"], time=match_time, type=match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], odd1=match["odd1"], oddX=match["oddX"], odd2=match["odd2"], bet=bet, goal1=goal1, goal2=goal2, max_bet=match["max_bet"])
+        if team1_local is None or team2_local is None or team1_local['local_name'] == '' or team2_local['local_name'] == '':
+            continue
+
+        odd1 = '-' if match['odd1'] is None else match['odd1']
+        oddX = '-' if match['oddX'] is None else match['oddX']
+        odd2 = '-' if match['odd2'] is None else match['odd2']
+
+        match_object = Match(ID=match["id"], time=match_time, type=match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], odd1=odd1, oddX=oddX, odd2=odd2, bet=bet, goal1=goal1, goal2=goal2, max_bet=match["max_bet"])
 
         # found the day object of the match if it doesn't exist create it
         match_day = None
@@ -91,12 +83,12 @@ def homepage():
         match_day.matches.append(match_object)
 
     # order the day by date
-    days.sort(key=order_date)
+    days.sort(key=lambda day : datetime.strptime(day.date, "%Y-%m-%d"))
     
     modified_days = []
     # add index to days (technically copying to new modified days list)
     for i, day in enumerate(days):
-        day.matches.sort(key=order_time)
+        day.matches.sort(key=lambda match : datetime.strptime(match.time, "%H:%M"))
         modified_days.append(day._replace(number = i + 1))
         i += 1
 

@@ -1,5 +1,4 @@
 from collections import namedtuple
-from app.tools.ordering import order_teams, order_groups
 from app.db import get_db
 
 FinalBet = namedtuple("FinalBet", "team, local_name, result, betting_amount, success, multiplier")
@@ -10,7 +9,7 @@ Team = namedtuple("Team", "name, local_name, position, top1, top2, top4, top16")
 Bet2 = namedtuple("Bet2", "team, local_name, position")
 BetProperty = namedtuple("BetProperty", "amount, win, hit_number, multiplier")
 
-# map used to declare win amount multiplier for group 
+# map used to declare win amount multiplier for group
 hit_map = [0, 0, 2, 0, 4]
 
 # get's user's final bet, or create default if it does not exist
@@ -21,7 +20,7 @@ def get_final_bet(user_name):
         final_team = get_db().execute("SELECT name, local_name, top1, top2, top4, top16 FROM team WHERE name=?", (final_bet["team"],)).fetchone()
         bet = final_bet["bet"]
         result = final_bet["result"]
-        success = final_bet["success"]
+        success = None if final_bet["success"] == '' else final_bet["success"]
 
         if result == 0:
             multiplier = final_team["top1"]
@@ -66,7 +65,7 @@ def get_group_object(user_name):
 
     #order the teams in the groups
     for group in group_containers:
-        group.teams.sort(key=order_teams)
+        group.teams.sort(key=lambda team : team.position)
 
     # read out the order for teams from user bets
     user_team_bets = get_db().execute("SELECT team_bet.team, team_bet.position, team.group_id, team.local_name FROM team_bet INNER JOIN team ON team_bet.team=team.name WHERE username =?", (user_name,)).fetchall()
@@ -78,7 +77,7 @@ def get_group_object(user_name):
                     break      
         
         for j, group in enumerate(group_containers):
-            group.bets.sort(key=order_teams)
+            group.bets.sort(key=lambda team : team.position)
 
             hit_number = 0
 
@@ -102,5 +101,5 @@ def get_group_object(user_name):
                     group_containers[i] = group_container._replace(bet_property=new_bet_property)
                     break
 
-    group_containers.sort(key=order_groups)
+    group_containers.sort(key=lambda group : group.ID)
     return group_containers

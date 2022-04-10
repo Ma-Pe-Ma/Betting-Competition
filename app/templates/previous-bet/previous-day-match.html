@@ -86,7 +86,7 @@
 {% if final_bet and final_bet.success is not none %} 
 <br>
 <div style="background-color: greenyellow;">
-    {% if final_bet.success == 1%}
+    {% if final_bet.success == 1 %}
     <a href="group" style="display: inline-block;font-weight: bold;">Végsőtipp bónusz összeg: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</a>
     {% else %}
     <a href="group" style="display: inline-block;font-weight: bold">Végsőtipp bónusz összeg: 0</a>

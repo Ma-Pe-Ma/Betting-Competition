@@ -20,9 +20,6 @@ from app.tools.score_calculator import get_group_and_final_bet_amount, get_group
 from app.tools.score_calculator import prize_result
 from app.tools.group_calculator import get_final_bet
 
-from app.tools.ordering import order_date
-from app.tools.ordering import order_time
-
 from app.configuration import starting_bet_amount
 from app.configuration import local_zone
 from app.configuration import group_evaluation_time
@@ -129,13 +126,13 @@ def prev_bets():
             match_day.matches.append(match_object)
 
         # order days by date
-        days.sort(key=order_date)
+        days.sort(key=lambda date : datetime.strptime(day.date, "%Y-%m-%d"))
         amount = start_amount
 
         modified_days = []
 
         for i, day in enumerate(days):
-            day.matches.sort(key=order_time)
+            day.matches.sort(key=lambda match : datetime.strptime(match.time, "%H:%M"))
 
             modifed_matches = []
 
@@ -165,12 +162,13 @@ def prev_bets():
         if final_bet_object is not None and final_bet_object.success is not None:
             if final_bet_object.success == 1:
                 amount += final_bet_object.betting_amount * final_bet_object.multiplier
-            elif final_bet_object.success == 2:
-                pass
                     
         finishing_balance = amount
 
-        success_rate = number_of_successful_bets / number_of_match_bets
+        if number_of_match_bets == 0:
+            success_rate = 0        
+        else:
+            success_rate = number_of_successful_bets / number_of_match_bets
 
         return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
 

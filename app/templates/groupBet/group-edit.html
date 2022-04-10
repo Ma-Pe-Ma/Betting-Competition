@@ -110,14 +110,14 @@
                                 finalResultOdd.innerText = odd;
                                 finalResultOdd.value = odd;
 
-                                expectedWinAmount.value = odd * finalResultBet.value;
+                                expectedWinAmount.value = Math.round(odd * finalResultBet.value * 100) / 100;
 
                                 calculateExpectedWinAmount();
                             }
 
                             function calculateExpectedWinAmount() {
-                                expectedWinAmount.value = parseFloat(finalResultOdd.value) * finalResultBet.value;
-                                expectedWinAmount.innerText = parseFloat(finalResultOdd.value) * finalResultBet.value;
+                                expectedWinAmount.value = Math.round(parseFloat(finalResultOdd.value) * finalResultBet.value * 100) / 100;
+                                expectedWinAmount.innerText = Math.round(parseFloat(finalResultOdd.value) * finalResultBet.value * 100) / 100;
                             }
 
                             teamSelect.onchange = updateFinalBet;

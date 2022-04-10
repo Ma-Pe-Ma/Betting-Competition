@@ -45,8 +45,10 @@
                         <table style="width:100%;margin-left:20px;">
                             <tr>
                                 <th rowspan="1" style="width: 10%;text-align:left;">Pozíció</th>
-                                <th rowspan="1" style="width: 45%;text-align:center;">Név</th>
-                                <th rowspan="1" style="width: 45%;text-align:center;">Pontszám</th>
+                                <th rowspan="1" style="width: 22%;text-align:center;">Név</th>
+                                <th rowspan="1" style="width: 22%;text-align:center;">Pontszám</th>
+                                <th rowspan="1" style="width: 23%;text-align:center;">Pontszámváltozás</th>
+                                <th rowspan="1" style="width: 23%;text-align:center;">Helyezésváltozás</th>
                             </tr>
                     
                             {% for current_player_standing in current_player_standings %}
@@ -54,6 +56,8 @@
                                 <td style="text-align:left;">{{loop.index}}</td>
                                 <td style="text-align:center;">{{current_player_standing.name}}</td>
                                 <td style="text-align:center;">{{current_player_standing.point|round(2)}}</td>                            
+                                <td style="text-align:center;">{{(current_player_standing.point - current_player_standing.previous_point)|round(2)}}</td>
+                                <td style="text-align:center;">{{current_player_standing.position_diff}}</td> 
                             </tr>
                             {% endfor %}
                         </table>

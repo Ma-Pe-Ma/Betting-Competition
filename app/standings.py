@@ -1,3 +1,4 @@
+from copy import copy
 from os import name
 
 from dateutil.tz.tz import datetime_ambiguous
@@ -27,11 +28,10 @@ from app.tools.score_calculator import get_group_win_amount
 from app.tools.score_calculator import get_group_and_final_bet_amount
 from app.tools.score_calculator import get_daily_points_by_current_time
 from app.tools.group_calculator import get_final_bet
-from app.tools.ordering import order_current_player_standings
 
 Player = namedtuple("Player", "nick, days")
 Day = namedtuple("Day", "year, month, day, point")
-CurrentPlayerStanding = namedtuple("CurrentPlayerStanding", "name, point")
+CurrentPlayerStanding = namedtuple("CurrentPlayerStanding", "name, point, previous_point, position_diff")
 
 @bp.route("/standings", methods=("GET",))
 @login_required
@@ -119,16 +119,35 @@ def standings():
             days.append(Day(year=day_after_finnish.year, month=day_after_finnish.month-1, day=day_after_finnish.day, point=amount))
 
         #add the last/current player point to seperate list which will be used in a list-chart
-        current_player_standings.append(CurrentPlayerStanding(name=user_name, point=days[-1].point))
+        current_player_standings.append(CurrentPlayerStanding(name=user_name, point=days[-1].point, previous_point=days[-2].point, position_diff=-1))
 
         day_prefabs.clear()
 
         players.append(Player(nick=user_name, days=days))
 
     #order the current player standings by the points
-    current_player_standings.sort(key=order_current_player_standings, reverse=True)
+    current_player_standings.sort(key=lambda player_standing : player_standing.point, reverse=True)
 
-    return render_template("standings.html", username = g.user["username"], admin=g.user["admin"], players=players, current_player_standings=current_player_standings)
+    #create previous day's standings
+    previous_player_standings = copy(current_player_standings)
+    previous_player_standings.sort(key=lambda prev_player_standing : prev_player_standing.previous_point, reverse=True)
+
+    modified_current_player_standings = []
+
+    for current_position, current_player_standing in enumerate(current_player_standings):
+        position_diff = -1
+
+        for previous_position, previous_player_standing in enumerate(previous_player_standings):
+            if previous_player_standing.name == current_player_standing.name:
+                position_diff = current_position - previous_position
+                break
+
+        modified_current_player_standings.append(current_player_standing._replace(position_diff=position_diff))
+
+    previous_player_standings.clear()
+    current_player_standings.clear()
+
+    return render_template("standings.html", username = g.user["username"], admin=g.user["admin"], players=players, current_player_standings=modified_current_player_standings)
 
 #https://canvasjs.com/html5-javascript-line-chart/
 #https://stackoverflow.com/questions/35854244/how-can-i-create-a-horizontal-scrolling-chart-js-line-chart-with-a-locked-y-axis

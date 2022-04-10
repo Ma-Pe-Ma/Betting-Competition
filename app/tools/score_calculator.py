@@ -2,13 +2,10 @@ from os import name
 from collections import namedtuple
 from app.db import get_db
 
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil import tz
 
-from app.configuration import local_zone
-from app.configuration import starting_bet_amount
-
-from app.tools.ordering import order_date
+from app.configuration import local_zone, starting_bet_amount
 from app.tools.group_calculator import get_group_object
 
 DayPrefab = namedtuple("DayPrefab", "date, points")
@@ -50,8 +47,12 @@ def get_group_win_amount2(group_object):
 def get_group_win_amount(user_name):
     win_amount = 0
 
-    for group in get_group_object(user_name=user_name): 
-        win_amount += group.bet_property.multiplier * group.bet_property.amount
+    group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
+    group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
+
+    if datetime.now(tz=timezone.utc) > group_evaluation_time_object:
+        for group in get_group_object(user_name=user_name):
+            win_amount += group.bet_property.multiplier * group.bet_property.amount
 
     return win_amount
 
@@ -159,7 +160,7 @@ def get_daily_points_by_current_time(user_name):
         match_day.points.append(prize)
         match_day.points.append(-1 * bet_amount)
 
-    day_prefabs.sort(key=order_date)
+    day_prefabs.sort(key=lambda day : datetime.strptime(day.date, "%Y-%m-%d"))
     return day_prefabs
 
 # get player's current balance 
