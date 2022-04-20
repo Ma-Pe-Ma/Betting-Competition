@@ -51,13 +51,13 @@
                                 <th rowspan="1" style="width: 23%;text-align:center;">Helyezésváltozás</th>
                             </tr>
                     
-                            {% for current_player_standing in current_player_standings %}
+                            {% for standing in standings %}
                             <tr style="padding-bottom:5px;">                            
-                                <td style="text-align:left;">{{loop.index}}</td>
-                                <td style="text-align:center;">{{current_player_standing.name}}</td>
-                                <td style="text-align:center;">{{current_player_standing.point|round(2)}}</td>                            
-                                <td style="text-align:center;">{{(current_player_standing.point - current_player_standing.previous_point)|round(2)}}</td>
-                                <td style="text-align:center;">{{current_player_standing.position_diff}}</td> 
+                                <td style="text-align:left;">{{loop.index}}.</td>
+                                <td style="text-align:center;">{{standing.name}}</td>
+                                <td style="text-align:center;">{{standing.point|round(2)}}</td>                            
+                                <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
+                                <td style="text-align:center;">{{standing.position_diff}}</td> 
                             </tr>
                             {% endfor %}
                         </table>

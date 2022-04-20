@@ -5,7 +5,7 @@ from app.db import get_db
 from datetime import datetime, timezone
 from dateutil import tz
 
-from app.configuration import local_zone, starting_bet_amount
+from app.configuration import local_zone, starting_bet_amount, group_evaluation_time
 from app.tools.group_calculator import get_group_object
 
 DayPrefab = namedtuple("DayPrefab", "date, points")

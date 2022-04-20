@@ -5,10 +5,12 @@ from app.db import get_db
 from pytz import utc
 from dateutil import tz
 from datetime import datetime, timedelta
-from app.gmail_handler import create_draft, create_message, create_message_with_attachment, send_messages, get_email_resource_by_tag
+from app.gmail_handler import create_draft, create_message, create_message_with_attachment, send_messages, get_email_resource_by_tag, create_drafts
 from app.database_manager import download_data_csv
 from app.configuration import match_base_time, match_extra_time, local_zone
 from flask import current_app
+
+from app.standings import create_standings
 scheduler = APScheduler()
 
 from collections import namedtuple
@@ -49,7 +51,7 @@ def match_reminder_per_match(match):
         match_time = match_time_local.strftime("%H:%M")
 
         #read email resource from file
-        email_object = get_email_resource_by_tag('MatchReminder').format(notifiable_user[1], team1_local, team2_local, match_time)
+        email_object = get_email_resource_by_tag('MatchReminder')
 
         #format subject by match info
         subject = email_object[0].format(team1_local, team2_local, match_time)
@@ -122,9 +124,29 @@ def update_results():
 
 def daily_standings():
     with scheduler.app.app_context():
+        #match time in utc
+        utc_now = datetime.utcnow()
+        utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+        
+        #object holding the correct date adjusted to timezone
+        local_date = utc_now.astimezone(local_zone).strftime("%Y. %m. %d")
+
+        messages = []
+
+        #create email message
+        email_object = get_email_resource_by_tag('DailyStandings')
+        subject = render_template_string(email_object[0], date=local_date)
+
+        standings = create_standings()
+
         for user in get_db().execute("SELECT username, email from user WHERE summary=?", (1,)).fetchall():
-            pass
-            #TODO SEND EMAIL
+            message_text = render_template_string(email_object[1], username=user['username'], date=local_date, standings=standings[1])
+            print("teszt: " + message_text)
+
+            messages.append(create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
+
+        #send_messages(messages=messages)
+        create_drafts(drafts=messages)
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():

@@ -63,8 +63,8 @@ def get_credentials():
 
     return creds
 
-def create_message(sender, to, subject, message_text):
-    message = MIMEText(message_text)
+def create_message(sender, to, subject, message_text, subtype = 'plain'):
+    message = MIMEText(message_text, subtype)
     message['to'] = to
     message['from'] = sender
     message['subject'] = subject
@@ -124,6 +124,10 @@ def create_draft(message_body):
 
     except HttpError as error:
         print(f'An error occurred while creating drafts: {error}')
+
+def create_drafts(drafts):
+    for draft in drafts:
+        create_draft(draft)
 
 def send_message(service, user_id, message):
     try:

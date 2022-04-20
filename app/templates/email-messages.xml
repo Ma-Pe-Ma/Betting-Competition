@@ -1,9 +1,14 @@
 <EmailDrafts>
     <Collection lan="hu">
         <Welcome>
-            <Subject>
-            </Subject>
-            <Content>
+            <Subject>Tippbajnokság - Sikeres regisztráció!</Subject>
+            <Content>Kedves {{username}}!
+
+Sikeresen regisztráltál a tippbajnokságra.
+
+Ha bármilyen kérdésed van, vagy valamilyen bugot találtál, akkor azokat elküldheted erre a címre, vagy írj a közös chat beszélgetésbe.
+
+Üdvözlettel: A Tippmester
             </Content>
         </Welcome>
         <MatchReminder>
@@ -20,14 +25,33 @@ Ma ismét meccsnap van, ne felejts el tippelni a következő meccs(ek)re:
         </MatchReminder>
         <DailyStandings>
             <Subject>Állásközlő - {{date}}</Subject>
-            <Content>Kedves {{username}}!
+            <Content><![CDATA[<div>Kedves {{username}}!</div><br>
 
-A {{date}}. nap végén az állás a következő:
+A {{date}}. nap végén a tippbajnokság állása a következő:
+                        <table style="width:100%;margin-left:20px;">
+                            <tr>
+                                <th rowspan="1" style="width: 10%;text-align:left;">Pozíció</th>
+                                <th rowspan="1" style="width: 22%;text-align:center;">Név</th>
+                                <th rowspan="1" style="width: 22%;text-align:center;">Pontszám</th>
+                                <th rowspan="1" style="width: 23%;text-align:center;">Pontszámváltozás</th>
+                                <th rowspan="1" style="width: 23%;text-align:center;">Helyezésváltozás</th>
+                            </tr>
+                    
+                            {% for standing in standings %}
+                            <tr style="padding-bottom:5px;">                            
+                                <td style="text-align:left;">{{loop.index}}.</td>
+                                <td style="text-align:center;">{{standing.name}}</td>
+                                <td style="text-align:center;">{{standing.point|round(2)}}</td>                            
+                                <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
+                                <td style="text-align:center;">{{standing.position_diff}}</td> 
+                            </tr>
+                            {% endfor %}
 
-    Helyezés    Becenév     Pontszám
-{% for player in players %}     {{loop.index}}. {{player.username}}     {{player.score}}
-{% endfor %}
-Üdvözlettel: A Tippmester
+                        </table>
+
+<br>
+
+Üdvözlettel: A Tippmester]]>
             </Content>
         </DailyStandings>
     </Collection>

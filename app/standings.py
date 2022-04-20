@@ -33,9 +33,7 @@ Player = namedtuple("Player", "nick, days")
 Day = namedtuple("Day", "year, month, day, point")
 CurrentPlayerStanding = namedtuple("CurrentPlayerStanding", "name, point, previous_point, position_diff")
 
-@bp.route("/standings", methods=("GET",))
-@login_required
-def standings():
+def create_standings():
     players = []
 
     current_player_standings = []
@@ -147,7 +145,13 @@ def standings():
     previous_player_standings.clear()
     current_player_standings.clear()
 
-    return render_template("standings.html", username = g.user["username"], admin=g.user["admin"], players=players, current_player_standings=modified_current_player_standings)
+    return (players, modified_current_player_standings)
+
+@bp.route("/standings", methods=("GET",))
+@login_required
+def standings():
+    standings = create_standings()
+    return render_template("standings.html", username = g.user["username"], admin=g.user["admin"], players=standings[0], standings=standings[1])
 
 #https://canvasjs.com/html5-javascript-line-chart/
 #https://stackoverflow.com/questions/35854244/how-can-i-create-a-horizontal-scrolling-chart-js-line-chart-with-a-locked-y-axis
