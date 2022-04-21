@@ -52,7 +52,12 @@
                         </div>
 
                         <script type="module">
-                            import {resultNamemap} from './static/assets/js/data/scores.js'
+                            var resultNamemap = {
+                                "0" : "Győztes",
+                                "1" : "Döntős",
+                                "2" : "Elődöntős",
+                                "3" : "Csoporkörön túl"
+                            }
                             var listSelector = document.getElementById("players");
 
                             window.onload = function() {

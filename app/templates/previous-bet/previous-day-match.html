@@ -1,6 +1,15 @@
 <div style="display: inline-block;">Kezdőtőke</div> <a href="./group" style="display: inline-block;">csoportkörtipp</a> <div style="display: inline-block;"> után: {{start_amount}}</div>
 <div>Találati arány: {{success_rate|round(2)}}</div>
 
+{% set day_names = dict() %}
+{% set dummy = day_names.update({0 : 'hétfő'}) %}
+{% set dummy = day_names.update({1 : 'kedd'}) %}
+{% set dummy = day_names.update({2 : 'szerda'}) %}
+{% set dummy = day_names.update({3 : 'csütörtök'}) %}
+{% set dummy = day_names.update({4 : 'péntek'}) %}
+{% set dummy = day_names.update({5 : 'szombat'}) %}
+{% set dummy = day_names.update({6 : 'vasárnap'}) %}
+
 {% for day in days %}
 <!--div-->
     {%if loop.index % 10 == 1 %}
@@ -26,7 +35,7 @@
     {% endif %}
 
     <div id="ID_{{day.number}}" style="background-color: aquamarine; width: 20em; ">
-        {{day.number}}. nap: {{day.date}} - {{day.name}}
+        {{day.number}}. nap: {{day.date}} - {{day_names[day.id]}}
     </div>
 
     <table style="width:90%;margin-left:20px;">

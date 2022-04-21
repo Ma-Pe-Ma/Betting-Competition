@@ -13,11 +13,11 @@ from collections import namedtuple
 from app.tools.group_calculator import get_final_bet
 from app.tools.score_calculator import get_current_points_by_player
 
-from app.configuration import day_names, local_zone
+from app.configuration import local_zone
 
 bp = Blueprint("home", __name__, '''url_prefix="/group"''')
 
-Day = namedtuple("Day", "number, date, name, matches")
+Day = namedtuple("Day", "number, date, id, matches")
 Match = namedtuple("MATCH", "ID, time, type, team1, team2, odd1, oddX, odd2, bet, goal1, goal2, max_bet")
 
 @bp.route("/", methods=("GET",))
@@ -76,7 +76,7 @@ def homepage():
                 match_day = day
 
         if match_day == None:
-            match_day = Day(number = 0, date=match_date, name=day_names[match_time_local.weekday()], matches=[])
+            match_day = Day(number = 0, date=match_date, id=match_time_local.weekday(), matches=[])
             days.append(match_day) 
 
         # add the match to its day

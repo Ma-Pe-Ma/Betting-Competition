@@ -73,7 +73,12 @@
                         </script>
 
                         <script type="module">
-                            import {resultNamemap} from './static/assets/js/data/scores.js'
+                            var resultNamemap = {
+                                "0" : "Győztes",
+                                "1" : "Döntős",
+                                "2" : "Elődöntős",
+                                "3" : "Csoporkörön túl"
+                            }
 
                             var scores = {
                             {% for group in groups%}
@@ -188,11 +193,11 @@
                                 }
 
                                 XHR.onerror = function() {
-                                    alert( 'Hiba történt a szerverrel való kommunikációban.' );
+                                    alert('Hiba történt a szerverrel való kommunikációban.' );
                                 }
 
                                 // Set up our request
-                                XHR.open( 'POST', '/group', true);
+                                XHR.open('POST', '/group', true);
 
                                 // Add the required HTTP header for form data POST requests
                                 //XHR.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );

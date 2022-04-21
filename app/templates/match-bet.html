@@ -36,12 +36,22 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
+
+        {% set day_names = dict() %}
+        {% set dummy = day_names.update({0 : 'hétfő'}) %}
+        {% set dummy = day_names.update({1 : 'kedd'}) %}
+        {% set dummy = day_names.update({2 : 'szerda'}) %}
+        {% set dummy = day_names.update({3 : 'csütörtök'}) %}
+        {% set dummy = day_names.update({4 : 'péntek'}) %}
+        {% set dummy = day_names.update({5 : 'szombat'}) %}
+        {% set dummy = day_names.update({6 : 'vasárnap'}) %}
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-block">
                         <form action="./match" method="POST" id="betForm" name="betForm">
-                            <div> {{match.ID}}. mérkőzés ({{match.time}}) - {{match.type}}</div>
+                            <div> {{match.ID}}. mérkőzés ({{match.date}} - {{day_names[match.day_id]}} {{match.time}}) - {{match.type}}</div>
                             
                             <div style="display: inline-block;">
                                 {{match.team1}}

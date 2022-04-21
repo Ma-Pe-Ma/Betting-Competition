@@ -23,11 +23,10 @@ from app.tools.group_calculator import get_final_bet
 from app.configuration import starting_bet_amount
 from app.configuration import local_zone
 from app.configuration import group_evaluation_time
-from app.configuration import day_names
 
 bp = Blueprint("previous", __name__, '''url_prefix="/group"''')
 
-Day = namedtuple("Day", "number, date, name, matches")
+Day = namedtuple("Day", "number, date, id, matches")
 Match = namedtuple("Match", "ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, color")
 
 @bp.route("/prev", methods=("GET",))
@@ -120,7 +119,7 @@ def prev_bets():
                     match_day = day
 
             if match_day is None:
-                match_day = Day(number = 0, date=match_date, name=day_names[match_time_local.weekday()], matches=[])
+                match_day = Day(number=0, date=match_date, id=match_time_local.weekday(), matches=[])
                 days.append(match_day) 
 
             match_day.matches.append(match_object)

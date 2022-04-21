@@ -25,8 +25,5 @@ default_max_bet_per_match = 50
 language = 'hu'
 
 #TODO ezt itt kiszedni
-
-day_names = ["hétfő", "kedd", "szerda", "csütörtök", "péntek", "szombat", "vasárnap"]
-
 invalid_bet_amount = "Invalid bet amount"
 invalid_goal_value = "Invalid goal value"

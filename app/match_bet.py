@@ -12,12 +12,11 @@ from app.db import get_db
 
 bp = Blueprint("match", __name__, '''url_prefix="/group"''')
 
-from app import home_page
 import datetime
 from dateutil import tz
 
 from collections import namedtuple
-Match = namedtuple("Match", "ID, team1, team2, odd1, oddX, odd2, time, type, goal1, goal2, bet, max_bet")
+Match = namedtuple("Match", "ID, team1, team2, odd1, oddX, odd2, date, time, day_id, type, goal1, goal2, bet, max_bet")
 MatchContainer = namedtuple("MatchContainer", "state, match")
 
 from enum import Enum
@@ -28,7 +27,6 @@ from datetime import datetime, time
 from app.configuration import local_zone
 from app.configuration import invalid_bet_amount
 from app.configuration import invalid_goal_value
-
 
 def get_match_bet(match_id, user_name):
     utc_now = datetime.utcnow()
@@ -57,7 +55,6 @@ def get_match_bet(match_id, user_name):
     match_time = match_time_local.strftime("%H:%M")        
 
     #description strings on client
-    dateString = match_date + " - " +  home_page.day_names[match_time_local.weekday()] + " " + match_time
     typeString = match_from_db["round"]
 
     goal1 = ""
@@ -75,7 +72,10 @@ def get_match_bet(match_id, user_name):
         goal2 = user_match_bet["goal2"]
         bet = user_match_bet["bet"]
 
-    match = Match(ID=match_id, team1=team1_local["local_name"], team2=team2_local["local_name"], odd1=match_from_db["odd1"], oddX=match_from_db["oddX"], odd2=match_from_db["odd2"], time=dateString, type=typeString, goal1 = goal1, goal2 = goal2, bet=bet, max_bet=match_from_db["max_bet"])
+    match = Match(ID=match_id, team1=team1_local["local_name"], team2=team2_local["local_name"],
+                    odd1=match_from_db["odd1"], oddX=match_from_db["oddX"], odd2=match_from_db["odd2"],
+                    date=match_date, time=match_time, day_id=match_time_local.weekday(), type=typeString,
+                    goal1 = goal1, goal2 = goal2, bet=bet, max_bet=match_from_db["max_bet"])
     return  MatchContainer(state=MatchState.nonstarted, match=match)
 
 @bp.route("/match", methods=("GET", "POST"))

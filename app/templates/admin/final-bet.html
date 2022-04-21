@@ -63,7 +63,12 @@
                         </form>
 
                         <script type="module">
-                            import {resultNamemap} from '../static/assets/js/data/scores.js'
+                            var resultNamemap = {
+                                "0" : "Győztes",
+                                "1" : "Döntős",
+                                "2" : "Elődöntős",
+                                "3" : "Csoporkörön túl"
+                            }
 
                             window.onload = function() {
                                 {% for i in players %} 

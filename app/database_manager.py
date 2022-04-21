@@ -10,8 +10,8 @@ from app.configuration import default_max_bet_per_match
 url = 'https://fixturedownload.com/download/fifa-world-cup-2022-UTC.csv'
 
 def initialize_teams():
-    with current_app.open_resource("teams.csv", 'r') as team_file:
-        data_reader = csv.reader(team_file, delimiter='|')
+    with current_app.open_resource("teams.csv", 'rb') as team_file:
+        data_reader = csv.reader(team_file.read().decode('utf-8').splitlines(), delimiter='|')
 
         fields = next(data_reader)
 

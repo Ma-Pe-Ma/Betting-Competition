@@ -78,6 +78,15 @@
                         <p style="font-size: 20px;">Jelenlegi egyenleg: {{current_amount|round(2)}}</p>
 
                         <table>
+                            {% set day_names = dict() %}
+                            {% set dummy = day_names.update({0 : 'hétfő'}) %}
+                            {% set dummy = day_names.update({1 : 'kedd'}) %}
+                            {% set dummy = day_names.update({2 : 'szerda'}) %}
+                            {% set dummy = day_names.update({3 : 'csütörtök'}) %}
+                            {% set dummy = day_names.update({4 : 'péntek'}) %}
+                            {% set dummy = day_names.update({5 : 'szombat'}) %}
+                            {% set dummy = day_names.update({6 : 'vasárnap'}) %}
+
                             {% for day in days %}
                             {%if loop.index % 12 == 1 %}
                             <table style="width:90%;margin-left:20px;background-color: lightblue">
@@ -99,7 +108,7 @@
                             {% endif %}
 
                             <div id="ID_{{day.number}}">
-                                {{day.number}}. nap - {{day.date}} - {{day.name}}
+                                {{day.number}}. nap - {{day.date}} - {{day_names[day.id]}}
                             </div>
 
                             <table style="width:90%;margin-left:20px;{#%if loop.index % 10 == 1 %} background:yellow; {% endif %#}">
