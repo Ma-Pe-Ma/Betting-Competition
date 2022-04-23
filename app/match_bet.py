@@ -34,10 +34,12 @@ def get_match_bet(match_id, user_name):
 
     try:
         match_id = int(match_id)
-    except ValueError:
+    except:
         return MatchContainer(state=MatchState.invalid, match=None)
 
-    match_from_db = get_db().execute("SELECT team1, team2, odd1, oddX, odd2, time, round, max_bet FROM match WHERE id=?", (match_id,)).fetchone()            
+    cursor = get_db().cursor()
+    cursor.execute("SELECT team1, team2, odd1, oddX, odd2, time, round, max_bet FROM match WHERE id=%s", (match_id,))
+    match_from_db = cursor.fetchone()       
 
     if match_from_db is None:
         return MatchContainer(state=MatchState.invalid, match=None)        
@@ -57,23 +59,25 @@ def get_match_bet(match_id, user_name):
     #description strings on client
     typeString = match_from_db["round"]
 
-    goal1 = ""
-    goal2 = ""
-    bet = 0
-
     # get user bet (if exists)
-    user_match_bet = get_db().execute("SELECT goal1, goal2, bet FROM match_bet WHERE username=? AND match_id = ?", (user_name, match_id)).fetchone()
+    cursor0 = get_db().cursor()
+    cursor0.execute("SELECT goal1, goal2, bet FROM match_bet WHERE username=%s AND match_id = %s", (user_name, match_id))
+    user_match_bet = cursor0.fetchone()
 
-    team1_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match_from_db["team1"],)).fetchone()
-    team2_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match_from_db["team2"],)).fetchone()
+    cursor1 = get_db().cursor()
+    cursor1.execute("SELECT local_name FROM team WHERE (name = %s)", (match_from_db["team1"],))
+    team1_local = cursor1.fetchone()
+    
+    cursor2 = get_db().cursor()
+    cursor2.execute("SELECT local_name FROM team WHERE (name = %s)", (match_from_db["team2"],))
+    team2_local = cursor2.fetchone()
 
-    if user_match_bet is not None:
-        goal1 = user_match_bet["goal1"]
-        goal2 = user_match_bet["goal2"]
-        bet = user_match_bet["bet"]
+    goal1 = user_match_bet["goal1"] if user_match_bet is not None else ""
+    goal2 = user_match_bet["goal2"] if user_match_bet is not None else ""
+    bet = user_match_bet["bet"] if user_match_bet is not None else 0
 
     match = Match(ID=match_id, team1=team1_local["local_name"], team2=team2_local["local_name"],
-                    odd1=match_from_db["odd1"], oddX=match_from_db["oddX"], odd2=match_from_db["odd2"],
+                    odd1=match_from_db["odd1"], oddX=match_from_db["oddx"], odd2=match_from_db["odd2"],
                     date=match_date, time=match_time, day_id=match_time_local.weekday(), type=typeString,
                     goal1 = goal1, goal2 = goal2, bet=bet, max_bet=match_from_db["max_bet"])
     return  MatchContainer(state=MatchState.nonstarted, match=match)
@@ -128,11 +132,14 @@ def match_bet():
             match = match_bet_object.match._replace(bet=bet_number)
             return render_template("match-bet.html", match=match)
 
+        cursor = get_db().cursor()
+        cursor.execute("SELECT * FROM match_bet WHERE match_id=%s AND username=%s", (match_id, user_name))
+
         # rude solution if entry not exists create it it does then update
-        if get_db().execute("SELECT * FROM match_bet WHERE match_id=? AND username=?", (match_id, user_name)).fetchone() is None:
-            get_db().execute("INSERT INTO match_bet (match_id, username, bet, goal1, goal2) VALUES(?,?,?,?,?)", (match_id, user_name, bet_number, goal1_number, goal2_number))
+        if cursor.fetchone() is None:
+            get_db().cursor().execute("INSERT INTO match_bet (match_id, username, bet, goal1, goal2) VALUES(%s,%s,%s,%s,%s)", (match_id, user_name, bet_number, goal1_number, goal2_number))
         else:
-            get_db().execute("UPDATE match_bet SET bet = ?, goal1 = ?, goal2 = ? WHERE match_id = ? AND username = ?", (bet_number, goal1_number, goal2_number, match_id, user_name))
+            get_db().cursor().execute("UPDATE match_bet SET bet = %s, goal1 = %s, goal2 = %s WHERE match_id = %s AND username = %s", (bet_number, goal1_number, goal2_number, match_id, user_name))
 
         get_db().commit()
 

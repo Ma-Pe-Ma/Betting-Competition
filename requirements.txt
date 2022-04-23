@@ -1,5 +1,5 @@
 flask
-gunicorn==20.0.4
+gunicorn
 Flask-APScheduler
 google-api-python-client
 google-auth-httplib2

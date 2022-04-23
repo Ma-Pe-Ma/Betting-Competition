@@ -14,10 +14,14 @@ hit_map = [0, 0, 2, 0, 4]
 
 # get's user's final bet, or create default if it does not exist
 def get_final_bet(user_name):
-    final_bet = get_db().execute("SELECT team, bet, result, success FROM final_bet WHERE username = ?", (user_name,)).fetchone()
+    cursor = get_db().cursor()
+    cursor.execute("SELECT team, bet, result, success FROM final_bet WHERE username=%s", (user_name,))
+    final_bet = cursor.fetchone()
 
     if final_bet != None:
-        final_team = get_db().execute("SELECT name, local_name, top1, top2, top4, top16 FROM team WHERE name=?", (final_bet["team"],)).fetchone()
+        cursor = get_db().cursor()
+        cursor.execute("SELECT name, local_name, top1, top2, top4, top16 FROM team WHERE name=%s", (final_bet["team"],))
+        final_team = cursor.fetchone()
         bet = final_bet["bet"]
         result = final_bet["result"]
         success = None if final_bet["success"] == '' else final_bet["success"]
@@ -32,7 +36,9 @@ def get_final_bet(user_name):
             multiplier = final_team["top16"]
     else:
         bet = 0
-        final_team = get_db().execute("SELECT * FROM team", ()).fetchone()
+        cursor = get_db().cursor()
+        cursor.execute("SELECT * FROM team", ())
+        final_team = cursor.fetchone()
         result = 0
         success = None
         multiplier = 0
@@ -42,7 +48,9 @@ def get_final_bet(user_name):
 
 # get group object which contains both the results and both the user bets (used in every 3 contexts)
 def get_group_object(user_name):
-    teams = get_db().execute("SELECT name, local_name, group_id, top1, top2, top4, top16, position FROM team", ()).fetchall()
+    cursor = get_db().cursor()
+    cursor.execute("SELECT name, local_name, group_id, top1, top2, top4, top16, position FROM team", ())
+    teams = cursor.fetchall()
 
     group_containers = []
 
@@ -68,7 +76,9 @@ def get_group_object(user_name):
         group.teams.sort(key=lambda team : team.position)
 
     # read out the order for teams from user bets
-    user_team_bets = get_db().execute("SELECT team_bet.team, team_bet.position, team.group_id, team.local_name FROM team_bet INNER JOIN team ON team_bet.team=team.name WHERE username =?", (user_name,)).fetchall()
+    cursor = get_db().cursor()
+    cursor.execute("SELECT team_bet.team, team_bet.position, team.group_id, team.local_name FROM team_bet INNER JOIN team ON team_bet.team=team.name WHERE username=%s", (user_name,))
+    user_team_bets = cursor.fetchall()
     if user_team_bets is not None:
         for user_team_bet in user_team_bets:
             for group_container in group_containers:
@@ -90,7 +100,9 @@ def get_group_object(user_name):
             group_containers[j] = group._replace(bet_property=new_bet_property)
 
     # read out the group bet and add to existing object
-    user_group_bets = get_db().execute("SELECT group_id, bet FROM group_bet WHERE username=?", (user_name,)).fetchall()
+    cursor = get_db().cursor()
+    cursor.execute("SELECT group_id, bet FROM group_bet WHERE username=%s", (user_name,))
+    user_group_bets = cursor.fetchall()
     if user_group_bets is not None:
         for i, group_container in enumerate(group_containers):
             for user_group_bet in user_group_bets:

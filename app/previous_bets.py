@@ -49,8 +49,11 @@ def prev_bets():
         number_of_match_bets = 0
         number_of_successful_bets = 0
 
+        cursor = get_db().cursor()
+        cursor.execute("SELECT * FROM match WHERE time::date < %s::date", (utc_now.strftime("%Y-%m-%d %H:%M"),))
+
         # iterate through matches which has already been played (more precisely started)
-        for previous_match in get_db().execute("SELECT * FROM match WHERE DATETIME(time) < ?", (utc_now.strftime("%Y-%m-%d %H:%M"),)):
+        for previous_match in cursor.fetchall():
             #match time in UTC
             match_time = datetime.strptime(previous_match["time"], "%Y-%m-%d %H:%M")
             match_time = match_time.replace(tzinfo=tz.gettz('UTC'))
@@ -62,52 +65,55 @@ def prev_bets():
             match_time_string = match_time_local.strftime("%H:%M")
 
             # get the user's bet for the match 
-            match_bet = get_db().execute("SELECT * FROM match_bet WHERE username=? AND match_id = ?", (user_name, previous_match["id"] )).fetchone()
+            cursor0 = get_db().cursor()
+            cursor0.execute("SELECT * FROM match_bet WHERE username=%s AND match_id = %s", (user_name, previous_match["id"]))
+            match_bet = cursor0.fetchone()
 
             result1 = previous_match["goal1"]
             result2 = previous_match["goal2"]
 
             odd1 = previous_match["odd1"]
-            oddX = previous_match["oddX"]
+            oddX = previous_match["oddx"]
             odd2 = previous_match["odd2"]
 
-            goal1 = ""
-            goal2 = ""
-            bet = 0
+            goal1 = match_bet["goal1"] if match_bet is not None else ""
+            goal2 = match_bet["goal2"] if match_bet is not None else ""
+            bet = match_bet["bet"] if match_bet is not None else 0
+
             bonus = 0
             prize = 0
 
             color = ""
 
-            if match_bet is not None:
-                goal1 = match_bet["goal1"]
-                goal2 = match_bet["goal2"]
-                bet = match_bet["bet"]
+            if match_bet is not None and result1 is not None:
+                number_of_match_bets += 1
 
-                if result1 is not None :
-                    number_of_match_bets += 1
+                result_value = prize_result(result1, result2, goal1, goal2)
 
-                    result_value = prize_result(result1, result2, goal1, goal2)
+                color = "lightcoral"
 
-                    color = "lightcoral"
+                # determine won credits
+                if result_value.actual == result_value.bet:
+                    number_of_successful_bets += 1
 
-                    # determine won credits
-                    if result_value.actual == result_value.bet:
-                        number_of_successful_bets += 1
+                    if result_value.actual == 1:
+                        prize = bet * odd1
+                    elif result_value.actual == -1:
+                        prize = bet * odd2
+                    else:
+                        prize = bet * oddX
+                    
+                    bonus = bet * result_value.bonus_multiplier
 
-                        if result_value.actual == 1:
-                            prize = bet * odd1
-                        elif result_value.actual == -1:
-                            prize = bet * odd2
-                        else:
-                            prize = bet * oddX
-                        
-                        bonus = bet * result_value.bonus_multiplier
+                    color = "lime"
 
-                        color = "lime"
+            cursor1 = get_db().cursor()
+            cursor1.execute("SELECT local_name FROM team WHERE name=%s", (previous_match["team1"],))
+            team1_local = cursor1.fetchone()
 
-            team1_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (previous_match["team1"],)).fetchone()
-            team2_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (previous_match["team2"],)).fetchone()
+            cursor2 = get_db().cursor()
+            cursor2.execute("SELECT local_name FROM team WHERE name=%s", (previous_match["team2"],))
+            team2_local = cursor2.fetchone()
 
             match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, color=color)
 
@@ -125,7 +131,7 @@ def prev_bets():
             match_day.matches.append(match_object)
 
         # order days by date
-        days.sort(key=lambda date : datetime.strptime(day.date, "%Y-%m-%d"))
+        days.sort(key=lambda day : datetime.strptime(day.date, "%Y-%m-%d"))
         amount = start_amount
 
         modified_days = []
@@ -172,6 +178,8 @@ def prev_bets():
         return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
 
     # if no user name provided send down the username list and render the base page
-    players = get_db().execute("SELECT username FROM user WHERE NOT username='RESULT'", ())
+    cursor = get_db().cursor()
+    cursor.execute("SELECT username FROM bet_user WHERE NOT username='RESULT'", ())
+    players = cursor.fetchall()
 
     return render_template("previous-bet/previous-bets.html", username = g.user["username"], admin=g.user["admin"], players=players)

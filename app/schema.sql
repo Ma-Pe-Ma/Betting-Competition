@@ -1,17 +1,18 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS match;
-DROP TABLE IF EXISTS match_bet;
-DROP TABLE IF EXISTS messages;
-DROP TABLE IF EXISTS team; 
-DROP TABLE IF EXISTS team_bet;
 DROP TABLE IF EXISTS group_bet;
 DROP TABLE IF EXISTS final_bet;
+DROP TABLE IF EXISTS match_bet;
+DROP TABLE IF EXISTS team_bet;
+DROP TABLE IF EXISTS bet_user;
+DROP TABLE IF EXISTS match;
+DROP TABLE IF EXISTS team;
+DROP TABLE IF EXISTS messages;
+
 -- DROP TABLE IF EXISTS post;
 
-CREATE TABLE user (
+CREATE TABLE bet_user (
   username TEXT UNIQUE NOT NULL PRIMARY KEY,
   name TEXT NOT NULL,
   password TEXT NOT NULL,
@@ -49,53 +50,53 @@ CREATE TABLE team (
 
 -- Table holding a player's bet on a specific group
 CREATE TABLE group_bet (
-  id INTEGER NOT NULL PRIMARY KEY,
-  group_ID INTEGER NOT NULL,
+  id SERIAL PRIMARY KEY,
+  group_ID TEXT NOT NULL,
   username TEXT,
   bet INTEGER,
-  FOREIGN KEY(username) REFERENCES user(username)
+  FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
 -- Table used by group bet, contains player's tip for the result of a team
 CREATE TABLE team_bet (
-  id INTEGER NOT NULL PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   username TEXT,
   team TEXT,
   position INTEGER,
-  FOREIGN KEY(username) REFERENCES user(username)
+  FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
 -- Table containing the final bets
 CREATE TABLE final_bet (
-  id INTEGER NOT NULL PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   username TEXT,
   team TEXT NOT NULL,
   bet INTEGER NOT NULL,
   result INTEGER NOT NULL,
   success INTEGER,
-  FOREIGN KEY(username) REFERENCES user(username)
+  FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
 CREATE TABLE match_bet (
-  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  id SERIAL,
   username TEXT,
   match_id INTEGER NOT NULL,
   goal1 INTEGER,
   goal2 INTEGER,
   bet INTEGER,
-  FOREIGN KEY(username) REFERENCES user(username)
+  FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
 CREATE TABLE messages (
-  id INTEGER PRIMARY KEY,
+  id SERIAL,
   message TEXT
 );
 
-INSERT INTO messages (id, message) VALUES ("1", "");
-INSERT INTO messages (id, message) VALUES ("2", "");
-INSERT INTO messages (id, message) VALUES ("3", "");
-INSERT INTO messages (id, message) VALUES ("4", "");
-INSERT INTO messages (id, message) VALUES ("5", "");
+INSERT INTO messages (id, message) VALUES (1, '');
+INSERT INTO messages (id, message) VALUES (2, '');
+INSERT INTO messages (id, message) VALUES (3, '');
+INSERT INTO messages (id, message) VALUES (4, '');
+INSERT INTO messages (id, message) VALUES (5, '');
 
 /*CREATE TABLE post (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

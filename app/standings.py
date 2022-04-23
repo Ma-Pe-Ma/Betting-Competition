@@ -48,7 +48,10 @@ def create_standings():
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
     #iterate through users
-    for player in get_db().execute("SELECT username FROM user", ()):
+    cursor = get_db().cursor()
+    cursor.execute("SELECT username FROM bet_user", ())
+
+    for player in cursor.fetchall():
         user_name = player["username"]
 
         # find group bet/win amount

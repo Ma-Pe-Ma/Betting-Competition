@@ -31,8 +31,11 @@ def load_logged_in_user():
     if username is None:
         g.user = None
     else:
+        cursor = get_db().cursor()
+        cursor.execute("SELECT * FROM bet_user WHERE username = %s", (username,))
+
         g.user = (
-            get_db().execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+            cursor.fetchone()
         )
 
 def login_required(view):
@@ -104,16 +107,16 @@ def register():
             error = "A két jelszó nem egyezik meg."
         elif key != user_invitation_key and key != admin_invitation_key:
             error = "A meghívó nem érvényes."
-        elif (
-            db.execute("SELECT name FROM user WHERE username = ?", (username,)).fetchone()
-            is not None
-        ):
-            error = f"A felhasználónév már regisztrálva van."
-        elif (
-            db.execute("SELECT name FROM user WHERE email = ?", (email,)).fetchone()
-            is not None
-        ):
-            error = f"Az adott email-cím már regisztrálva van!"
+        else:
+            cursor = db.cursor()
+            cursor.execute("SELECT name FROM bet_user WHERE username = %s", (username,))
+            if cursor.fetchone() is not None:         
+                error = f"A felhasználónév már regisztrálva van."
+            else:                
+                cursor = db.cursor()
+                cursor.execute("SELECT name FROM bet_user WHERE email = %s", (email,))
+                if cursor.fetchone() is not None:
+                    error = f"Az adott email-cím már regisztrálva van!"
 
         if error is None:
             # the name is available, store it in the database and go to
@@ -124,8 +127,8 @@ def register():
             if key == admin_invitation_key:
                 admin = True
 
-            db.execute(
-                "INSERT INTO user (username, name, password, email, reminder, summary, admin) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            db.cursor().execute(
+                "INSERT INTO bet_user (username, name, password, email, reminder, summary, admin) VALUES (%s, %s, %s, %s, %s, %s, %s)",
                 (username, name, generate_password_hash(password), email, reminder, summary, admin),
             )
 
@@ -160,9 +163,9 @@ def login():
         password = request.form["password"]
         db = get_db()
         error = None
-        user = db.execute(
-            "SELECT * FROM user WHERE username = ?", (username,)
-        ).fetchone()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM bet_user WHERE username = %s", (username,))
+        user = cursor.fetchone()
 
         if user is None:
             error = "Felhasználónév nem létezik."
@@ -193,9 +196,11 @@ def page_profile():
     if request.method == "POST":
         reminder = request.form["reminder"]
         summary = request.form["summary"]
-        get_db().execute("UPDATE user SET reminder = ?, summary = ? WHERE username=?", (reminder, summary, g.user["username"]))
+        get_db().cursor().execute("UPDATE bet_user SET reminder=%s, summary=%s WHERE username=%s", (reminder, summary, g.user["username"]))
         get_db().commit()
 
-    user_data = get_db().execute("SELECT username, name, email, reminder, summary FROM user WHERE username=?", (g.user["username"],)).fetchone()
+    cursor = get_db().cursor()
+    cursor.execute("SELECT username, name, email, reminder, summary FROM bet_user WHERE username=%s", (g.user["username"],))
+    user_data = cursor.fetchone()
 
     return render_template("auth/modify.html", username = g.user["username"], email=user_data["email"], name=user_data["name"], reminder=user_data["reminder"], summary=user_data["summary"])

@@ -22,7 +22,9 @@ def get_group_and_final_bet_amount(user_name):
     total_bet = 0
 
     # get the final bet
-    final_bet = get_db().execute("SELECT bet FROM final_bet WHERE username = ?", (user_name,)).fetchone()
+    cursor = get_db().cursor()
+    cursor.execute("SELECT bet FROM final_bet WHERE username = %s", (user_name,))
+    final_bet = cursor.fetchone()
 
     if final_bet is not None:
         total_bet += final_bet["bet"]
@@ -30,7 +32,10 @@ def get_group_and_final_bet_amount(user_name):
         return 0
 
     # get the group bets and add them
-    for group_bet in get_db().execute("SELECT bet FROM group_bet WHERE username =?", (user_name,)).fetchall():
+    cursor1 = get_db().cursor()
+    cursor1.execute("SELECT bet FROM group_bet WHERE username = %s", (user_name,))
+
+    for group_bet in cursor1.fetchall():
         total_bet += group_bet["bet"]
     
     return total_bet
@@ -95,7 +100,7 @@ def get_match_prize(match, match_bet):
     result2 = match["goal2"]
 
     odd1 = match["odd1"]
-    oddX = match["oddX"]
+    oddX = match["oddx"]
     odd2 = match["odd2"]
 
     goal1 = match_bet["goal1"]
@@ -126,8 +131,11 @@ def get_daily_points_by_current_time(user_name):
 
     day_prefabs = []
 
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM match WHERE time::date < %s::date", (utc_now.strftime("%Y-%m-%d %H:%M"),))
+
     # get matches which has been started by current time
-    for match in get_db().execute("SELECT * FROM match WHERE DATETIME(time) < ?", (utc_now.strftime("%Y-%m-%d %H:%M"),)):
+    for match in cursor.fetchall():
         match_time_utc = datetime.strptime(match["time"], "%Y-%m-%d %H:%M")
         match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
 
@@ -136,7 +144,9 @@ def get_daily_points_by_current_time(user_name):
         match_date = match_time_local.strftime("%Y-%m-%d")
         match_time = match_time_local.strftime("%H:%M")        
 
-        match_bet = get_db().execute("SELECT * FROM match_bet WHERE (username = ? AND match_id = ? )", (user_name, match["id"])).fetchone()
+        cursor2 = get_db().cursor()
+        cursor2.execute("SELECT * FROM match_bet WHERE (username = %s AND match_id = %s)", (user_name, match["id"]))
+        match_bet = cursor2.fetchone()
 
         prize = 0
         bet_amount = 0
