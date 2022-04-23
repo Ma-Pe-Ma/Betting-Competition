@@ -92,5 +92,7 @@ def create_app(test_config = None):
 
     return app
 
+app = create_app()
+
 # Import routing to render the pages
 #from app import views
