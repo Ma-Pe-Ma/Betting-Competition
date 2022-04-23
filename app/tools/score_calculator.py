@@ -52,10 +52,13 @@ def get_group_win_amount2(group_object):
 def get_group_win_amount(user_name):
     win_amount = 0
 
+    utc_now = datetime.utcnow()
+    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+
     group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
     group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
 
-    if datetime.now(tz=timezone.utc) > group_evaluation_time_object:
+    if utc_now > group_evaluation_time_object:
         for group in get_group_object(user_name=user_name):
             win_amount += group.bet_property.multiplier * group.bet_property.amount
 

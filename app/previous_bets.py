@@ -27,7 +27,7 @@ from app.configuration import group_evaluation_time
 bp = Blueprint("previous", __name__, '''url_prefix="/group"''')
 
 Day = namedtuple("Day", "number, date, id, matches")
-Match = namedtuple("Match", "ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, color")
+Match = namedtuple("Match", "ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, bet_result")
 
 @bp.route("/prev", methods=("GET",))
 @login_required
@@ -83,14 +83,14 @@ def prev_bets():
             bonus = 0
             prize = 0
 
-            color = ""
+            bet_result = 0
 
             if match_bet is not None and result1 is not None:
                 number_of_match_bets += 1
 
                 result_value = prize_result(result1, result2, goal1, goal2)
 
-                color = "lightcoral"
+                bet_result = 1
 
                 # determine won credits
                 if result_value.actual == result_value.bet:
@@ -105,7 +105,7 @@ def prev_bets():
                     
                     bonus = bet * result_value.bonus_multiplier
 
-                    color = "lime"
+                    bet_result = 2
 
             cursor1 = get_db().cursor()
             cursor1.execute("SELECT local_name FROM team WHERE name=%s", (previous_match["team1"],))
@@ -115,7 +115,7 @@ def prev_bets():
             cursor2.execute("SELECT local_name FROM team WHERE name=%s", (previous_match["team2"],))
             team2_local = cursor2.fetchone()
 
-            match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, color=color)
+            match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, bet_result=bet_result)
 
             # find match_day it does not exist create it
             match_day = None

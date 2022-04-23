@@ -22,7 +22,7 @@ def backup_sqlite_database():
     admin_address = ''
 
     cursor = get_db().cursor()
-    cursor.execute("SELECT email FROM bet_user WHERE user.admin = TRUE", ())
+    cursor.execute("SELECT email FROM bet_user WHERE bet_user.admin = TRUE", ())
 
     for admin in cursor.fetchall():
         admin_address += admin['email'] + ', '
@@ -38,7 +38,7 @@ def backup_sqlite_database():
         message_text='Backing up result database at: ' + current_localtime.strftime("%Y-%m-%d %H:%M"),
         file=current_app.config['DATABASE'])
     
-    create_draft(message_body=message)
+    #create_draft(message_body=message)
 
 #in the end this is not used
 def match_reminder_per_match(match):
@@ -146,7 +146,7 @@ def match_reminder_once_per_day(matches):
 def update_results():
     with scheduler.app.app_context():
         download_data_csv()
-        backup_sqlite_database()
+        #backup_sqlite_database()
 
 def daily_standings():
     with scheduler.app.app_context():
@@ -170,8 +170,6 @@ def daily_standings():
 
         for user in cursor.fetchall():
             message_text = render_template_string(email_object[1], username=user['username'], date=local_date, standings=standings[1])
-            print("teszt: " + message_text)
-
             messages.append(create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
 
         #send_messages(messages=messages)
@@ -179,15 +177,16 @@ def daily_standings():
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():
-    print("daily checker...")
+    print("Daily checker...")
+    
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
     with scheduler.app.app_context():
-        backup_sqlite_database()
+        #backup_sqlite_database()
 
         cursor = get_db().cursor()
-        cursor.execute("SELECT * FROM match WHERE time::date == %s::date", (utc_now.strftime("%Y-%m-%d"),))
+        cursor.execute("SELECT * FROM match WHERE time::date = %s::date", (utc_now.strftime("%Y-%m-%d"),))
         matches = cursor.fetchall()
 
         if matches is not None and len(matches) > 0:

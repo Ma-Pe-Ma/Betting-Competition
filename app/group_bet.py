@@ -191,15 +191,17 @@ def after_evaluation():
 @bp.route("/group", methods=("GET", "POST"))
 @login_required
 def group_order():
-    current_time = datetime.now(tz=timezone.utc)
+    utc_now = datetime.utcnow()
+    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+
     deadline = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
     deadline = deadline.replace(tzinfo=tz.gettz('UTC'))
     group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
     group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
 
-    if current_time < deadline:
+    if utc_now < deadline:
         return before_deadline()
-    elif current_time < group_evaluation_time_object:
+    elif utc_now < group_evaluation_time_object:
         return during_groupstage()
     else:
         return after_evaluation()
@@ -210,9 +212,11 @@ def final_bet_odds():
     teams = []
     Team = namedtuple("Team", "name, top1, top2, top4, top16")
 
+    cursor = get_db().cursor()
+    cursor.execute("SELECT local_name, top1, top2, top4, top16 FROM team")
 
 
-    for team in get_db().cursor().execute("SELECT local_name, top1, top2, top4, top16 FROM team"):
+    for team in cursor.fetchall():
         teams.append(Team(name=team["local_name"], top1=team["top1"], top2=team["top2"], top4=team["top4"], top16=team["top16"]))
 
     return render_template("groupBet/final-odds.html", teams=teams)

@@ -25,8 +25,7 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
-
-    print("close_db called!")
+        print("close_db called!")
 
 def init_db():
     """Clear existing data and create new tables."""

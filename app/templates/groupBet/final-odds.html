@@ -53,7 +53,13 @@
                             </tr>
                     
                             {% for team in teams %}
-                            <tr style="padding-bottom:5px;">                            
+                            {% set background = 'white' %}
+
+                            {% if loop.index %2 == 1 %}
+                            {% set background = '#E8E8E8' %}
+                            {% endif %}
+
+                            <tr style="padding-bottom:5px;background-color:{{background}};">                            
                                 <td style="text-align:left;">{{team.name}}</td>
                                 <td style="text-align:center;">{{team.top1}}</td>
                                 <td style="text-align:center;">{{team.top2}}</td>

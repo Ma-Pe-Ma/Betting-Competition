@@ -100,7 +100,6 @@ def send_email():
                 note = "short"
                 send_success = False
             else:
-                print("email_message: " + email_message)
                 messages = []
 
                 cursor = get_db().cursor()
@@ -178,16 +177,15 @@ def odd_edit():
     elif request.method == "POST":
         dict = request.form
         odd1 = dict["odd1"]
-        oddX = dict["oddx"]
+        oddX = dict["oddX"]
         odd2 = dict["odd2"]
         max_bet = dict["max_bet"]
-        print("max_bet: " + str(max_bet))
+        
         ID = dict["ID"]
 
         get_db().cursor().execute("UPDATE match SET odd1=%s, oddX=%s, odd2=%s, max_bet=%s WHERE ID=%s", (odd1, oddX, odd2, max_bet, ID))
         get_db().commit()
 
-        print("group form: " + str(request.form.keys))
         return redirect(url_for("admin.odd"))
     
     return render_template("admin/odd-edit.html", admin=g.user["admin"], match=match)

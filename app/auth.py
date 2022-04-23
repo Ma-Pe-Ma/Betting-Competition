@@ -74,8 +74,6 @@ def register():
         return redirect(url_for("home.homepage"))
 
     if request.method == "POST":
-        print("form: " + str(request.form.keys))
-
         name = request.form.get("fullname")
         username = request.form.get("username")
         password = request.form.get("password")
