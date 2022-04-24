@@ -5,6 +5,9 @@ import click
 from flask import current_app
 from flask import g
 from flask.cli import with_appcontext
+import os
+
+DATABASE_URL = os.environ['DATABASE_URL']
 
 def get_db():
     """Connect to the application's configured database. The connection
@@ -13,7 +16,7 @@ def get_db():
     """
 
     if "db" not in g:
-        g.db = psycopg2.connect("dbname=app_db user=mpm", cursor_factory=RealDictCursor)
+        g.db = psycopg2.connect(DATABASE_URL, sslmode='require', cursor_factory=RealDictCursor)
 
     return g.db
 
