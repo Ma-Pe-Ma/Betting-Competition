@@ -111,7 +111,7 @@ def send_email():
                 send_messages(messages=messages)
                 send_success = True
         except:
-            print("exception occured")
+            print("Error sending admin email to everyone")
             send_success = False
 
     return render_template("admin/send-email.html", username = g.user["username"], admin=g.user["admin"], send_success=send_success, note = note)

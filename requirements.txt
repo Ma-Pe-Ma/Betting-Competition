@@ -1,5 +1,6 @@
 flask
 gunicorn
+psycopg2-binary
 Flask-APScheduler
 google-api-python-client
 google-auth-httplib2

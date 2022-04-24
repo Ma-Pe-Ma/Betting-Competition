@@ -9,6 +9,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.oauth2 import service_account
+import json
 
 from app.configuration import language
 import xml.etree.ElementTree as ET
@@ -44,11 +46,26 @@ def get_email_resource_by_tag(tag):
 
 def get_credentials():
     creds = None
+
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    # version 1: if token file used
+    #if os.path.exists('token.json'):
+    #   creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    # version 2: this variable holds the content of the token.json, and saved on heroku dash
+    # with this you can use gmail api on heroku but token needs to be generated firstly
+    # Token generation is currently made manually, see below
+    # quite complicated to automatize it (not worth it) https://developers.google.com/identity/protocols/oauth2/web-server#python_1
+    if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') is not None:
+        json_str = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+        json_data = json.loads(json_str)
+        creds = Credentials.from_authorized_user_info(info=json_data, scopes=SCOPES)
+    
+    # only used to create token.json at the first time, both version 1-2 needs it
+    # but version 2 cant be run on heroku, needs to be run first locally
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -60,6 +77,15 @@ def get_credentials():
         # Save the credentials for the next run
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
+
+    # version3 - service account info sign in for servers, requires only key, but only works with google workspace accounts
+    # not suitable for our case
+    '''json_str = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+
+    json_data = json.loads(json_str)
+    json_data['private_key'] = json_data['private_key'].replace('\\n', '\n')
+
+    creds = service_account.Credentials.from_service_account_info(json_data, scopes=SCOPES)'''
 
     return creds
 
