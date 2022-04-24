@@ -38,17 +38,20 @@ def create_standings():
 
     current_player_standings = []
 
+    utc_now = datetime.utcnow()
+    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+
     #create unique time objects
     group_deadline_time_object = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
     two_days_before_deadline = group_deadline_time_object - timedelta(days=2)
     one_day_before_deadline = group_deadline_time_object - timedelta(days=1)
     group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
 
-    utc_now = datetime.now(tz=timezone.utc)
-    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
-
     #iterate through users
-    for player in get_db().execute("SELECT username FROM user", ()):
+    cursor = get_db().cursor()
+    cursor.execute("SELECT username FROM bet_user", ())
+
+    for player in cursor.fetchall():
         user_name = player["username"]
 
         # find group bet/win amount
@@ -91,17 +94,23 @@ def create_standings():
 
             # add the examined day to the chart
             amount += daily_point
-            days.append(Day(year=day_date.year, month=day_date.month-1, day=day_date.day, point=amount))
+            '''days.append(Day(year=day_date.year, month=day_date.month-1, day=day_date.day, point=amount))
 
-            # if the current day is the group evaulation day add a new (fake) day which shows the group bet point win amounts
+            # if the current day is the group evaulation day add a new (fake) day which shows the group bet point win amounts,
             if day_date.date() == group_evaluation_time_object.date() and utc_now > group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC')):
                 amount += group_winning_amount
                 fake_day = day_date + timedelta(days=1)
                 days.append(Day(year=fake_day.year, month=fake_day.month-1, day=fake_day.day, point=amount))
                 prev_date = fake_day
             else:
-                prev_date = day_date
+                prev_date = day_date'''
 
+            if day_date.date() == group_evaluation_time_object.date() and utc_now > group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC')):
+                amount += group_winning_amount
+
+            days.append(Day(year=day_date.year, month=day_date.month-1, day=day_date.day, point=amount))
+            
+            prev_date = day_date
             prev_amount = amount
 
         final_bet_object = get_final_bet(user_name=user_name)

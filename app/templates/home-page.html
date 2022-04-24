@@ -128,7 +128,15 @@
                                 <th style="text-align:center;width: 3%;"></td>
 
                                 {% for match in day.matches %}
-                                <tr style="padding-bottom:5px;">
+
+                                
+                                {% set background = 'white' %}
+
+                                {% if loop.index %2 == 1 %}
+                                {% set background = '#E8E8E8' %}
+                                {% endif %}
+
+                                <tr style="padding-bottom:5px;background-color:{{background}};">
                                     <td>{{match.ID}}</td>
                                     <td>{{match.time}}</td>
                                     <td style="text-align:center;">{% if match.team1 =="" %} Nem ismert {%else%} {{match.team1}} {% endif %} - {% if match.team2 =="" %} Nem ismert {%else%} {{match.team2}} {% endif %}</td>

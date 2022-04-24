@@ -33,9 +33,6 @@ def create_app(test_config = None):
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )
 
-    print("__name__: " + __name__)
-    print ("instance path: " + os.path.join(app.instance_path, "flaskr.sqlite"))
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile("config.py", silent=True)

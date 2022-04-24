@@ -31,14 +31,20 @@ def homepage():
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
     
     # show messages for user!
-    for row in get_db().execute("SELECT * FROM messages",()):
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM messages",())
+
+    for row in cursor.fetchall():
         if row["message"] is not None and row["message"] != "":
             flash(row["message"])
 
     days = []
 
     # list future matches with set bets
-    for match in get_db().execute("SELECT * FROM match WHERE DATETIME(time) > ?", (utc_now.strftime("%Y-%m-%d %H:%M"),)):
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM match WHERE time::date > %s::date", (utc_now.strftime("%Y-%m-%d %H:%M"),))
+
+    for match in cursor.fetchall():
         match_time_utc = datetime.strptime(match["time"], "%Y-%m-%d %H:%M")
         match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
         
@@ -51,21 +57,28 @@ def homepage():
         match_time = match_time_local.strftime("%H:%M")        
 
         #get set bet
-        match_bet = get_db().execute("SELECT * FROM match_bet WHERE (username = ? AND match_id = ? )", (g.user["username"], match["id"])).fetchone()
+        cursor1 = get_db().cursor()
+        cursor1.execute("SELECT * FROM match_bet WHERE (username = %s AND match_id = %s)", (g.user["username"], match["id"]))
+        match_bet = cursor1.fetchone()
 
         bet = "" if match_bet is None else match_bet["bet"]
         goal1 = "" if match_bet is None else match_bet["goal1"]
         goal2 = "" if match_bet is None else match_bet["goal2"]
 
-        team1_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match["team1"],)).fetchone()
-        team2_local = get_db().execute("SELECT local_name FROM team WHERE (name = ?  )", (match["team2"],)).fetchone()
+        cursor2 = get_db().cursor()
+        cursor2.execute("SELECT local_name FROM team WHERE (name = %s)", (match["team1"],))
+        team1_local = cursor2.fetchone()
+
+        cursor3 = get_db().cursor()
+        cursor3.execute("SELECT local_name FROM team WHERE (name = %s)", (match["team2"],))
+        team2_local = cursor3.fetchone()
 
         if team1_local is None or team2_local is None or team1_local['local_name'] == '' or team2_local['local_name'] == '':
             continue
 
         odd1 = '-' if match['odd1'] is None else match['odd1']
-        oddX = '-' if match['oddX'] is None else match['oddX']
         odd2 = '-' if match['odd2'] is None else match['odd2']
+        oddX = '-' if match['oddx'] is None else match['oddx']
 
         match_object = Match(ID=match["id"], time=match_time, type=match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], odd1=odd1, oddX=oddX, odd2=odd2, bet=bet, goal1=goal1, goal2=goal2, max_bet=match["max_bet"])
 

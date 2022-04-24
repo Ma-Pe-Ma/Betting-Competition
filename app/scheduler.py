@@ -14,13 +14,17 @@ from app.standings import create_standings
 scheduler = APScheduler()
 
 from collections import namedtuple
-Match=namedtuple("Match", "local1, local2, goal1, goal2, time")
+Match = namedtuple("Match", "local1, local2, goal1, goal2, time")
 Bet = namedtuple("Bet", 'team1, team2, date, goal1, goal2')
 
 def backup_sqlite_database():
     #find admin adresses
     admin_address = ''
-    for admin in get_db().execute("SELECT email FROM user WHERE user.admin = TRUE", ()).fetchall():
+
+    cursor = get_db().cursor()
+    cursor.execute("SELECT email FROM bet_user WHERE bet_user.admin = TRUE", ())
+
+    for admin in cursor.fetchall():
         admin_address += admin['email'] + ', '
 
     #create string from current local date and add it to subject
@@ -34,14 +38,20 @@ def backup_sqlite_database():
         message_text='Backing up result database at: ' + current_localtime.strftime("%Y-%m-%d %H:%M"),
         file=current_app.config['DATABASE'])
     
-    create_draft(message_body=message)
+    #create_draft(message_body=message)
 
 #in the end this is not used
 def match_reminder_per_match(match):
     with scheduler.app.app_context():        
         #get team properties
-        team1_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (match['team1'],)).fetchone()
-        team2_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (match['team2'],)).fetchone()
+
+        cursor1 = get_db().cursor()
+        cursor1.execute("SELECT local_name FROM team WHERE name=%s", (match['team1'],))
+        team1_local = cursor1.fetchone()
+
+        cursor2 = get_db().cursor()
+        cursor2.execute("SELECT local_name FROM team WHERE name=%s", (match['team2'],))
+        team2_local = cursor2.fetchone()
         
         match_time_utc = datetime.strptime(match["time"], "%Y-%m-%d %H:%M")
         match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
@@ -58,8 +68,14 @@ def match_reminder_per_match(match):
 
         notifiable_users = []
         #find users who must be notified
-        for user in get_db().execute("SELECT username, email FROM user WHERE user.reminder = ?", (0,)).fetchall():
-            if get_db().execute("SELECT * FROM match_bet WHERE username=? AND match_id=?", (user['username'], match['id'])).fetchone() is None:
+
+        cursor3 = get_db().cursor()
+        cursor3.execute("SELECT username, email FROM bet_user WHERE user.reminder=%s", (0,))
+
+        for user in cursor3.fetchall():
+            cursor4 = get_db().cursor()
+            cursor4.execute("SELECT * FROM match_bet WHERE username=%s AND match_id=%s", (user['username'], match['id']))
+            if cursor4.fetchone() is None:
                 notifiable_users.append((user['email'], user['username']))
 
         sendable_emails = []
@@ -75,13 +91,21 @@ def match_reminder_once_per_day(matches):
     with scheduler.app.app_context():
         sendable_emails = []
 
-        for user in get_db().execute("SELECT email, username, reminder FROM user WHERE (user.reminder = ? OR user.reminder = ?)" , (0,1)).fetchall():
+        cursor = get_db().cursor()
+        cursor.execute("SELECT email, username, reminder FROM bet_user WHERE (user.reminder = %s OR user.reminder = %s)" , (0,1))
+
+        for user in cursor.fetchall():
             missing_bets = []
             non_missing_bets = []
 
             for match in matches:
-                team1_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (match["team1"],)).fetchone()['local_name']
-                team2_local = get_db().execute("SELECT local_name FROM team WHERE name=?", (match["team2"],)).fetchone()['local_name']
+                cursor1 = get_db().cursor()
+                cursor1.execute("SELECT local_name FROM team WHERE name=%s", (match['team1'],))
+                team1_local = cursor1.fetchone()
+
+                cursor2 = get_db().cursor()
+                cursor2.execute("SELECT local_name FROM team WHERE name=%s", (match['team2'],))
+                team2_local = cursor2.fetchone()
 
                 #match time in utc
                 match_time_utc = datetime.strptime(match["time"], "%Y-%m-%d %H:%M")
@@ -91,7 +115,9 @@ def match_reminder_once_per_day(matches):
                 match_time_local = match_time_utc.astimezone(local_zone)
                 match_time = match_time_local.strftime("%H:%M")
 
-                match_bet = get_db().execute("SELECT goal1, goal2 from match_bet WHERE match_id=? AND username=?", (match["id"], user["username"])).fetchone()
+                cursor3 = get_db().cursor()
+                cursor3.execute("SELECT goal1, goal2 from match_bet WHERE match_id=%s AND username=%s", (match["id"], user["username"]))
+                match_bet = cursor3.fetchone()
 
                 # find matches with missing bets
                 if match_bet is None or match_bet['goal1'] is None or match_bet['goal2'] is None:
@@ -120,7 +146,7 @@ def match_reminder_once_per_day(matches):
 def update_results():
     with scheduler.app.app_context():
         download_data_csv()
-        backup_sqlite_database()
+        #backup_sqlite_database()
 
 def daily_standings():
     with scheduler.app.app_context():
@@ -139,10 +165,11 @@ def daily_standings():
 
         standings = create_standings()
 
-        for user in get_db().execute("SELECT username, email from user WHERE summary=?", (1,)).fetchall():
-            message_text = render_template_string(email_object[1], username=user['username'], date=local_date, standings=standings[1])
-            print("teszt: " + message_text)
+        cursor = get_db().cursor()
+        cursor.execute("SELECT username, email from bet_user WHERE summary=%s", (1,))
 
+        for user in cursor.fetchall():
+            message_text = render_template_string(email_object[1], username=user['username'], date=local_date, standings=standings[1])
             messages.append(create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
 
         #send_messages(messages=messages)
@@ -150,14 +177,17 @@ def daily_standings():
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():
-    print("daily checker...")
+    print("Daily checker...")
+    
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
     with scheduler.app.app_context():
-        backup_sqlite_database()
+        #backup_sqlite_database()
 
-        matches = get_db().execute("SELECT * FROM match WHERE DATE(time) == ?", (utc_now.strftime("%Y-%m-%d"),)).fetchall()
+        cursor = get_db().cursor()
+        cursor.execute("SELECT * FROM match WHERE time::date = %s::date", (utc_now.strftime("%Y-%m-%d"),))
+        matches = cursor.fetchall()
 
         if matches is not None and len(matches) > 0:
             matches.sort(key=lambda match : datetime.strptime(match["time"], "%Y-%m-%d %H:%M"))

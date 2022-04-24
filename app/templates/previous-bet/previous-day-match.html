@@ -57,7 +57,28 @@
           <th style="text-align:center;width: 3%;"></td>
 
         {% for match in day.matches %}
-        <tr style="padding-bottom:5px; background-color: {{match.color}};">
+
+            {% set background = 'white' %}
+
+            {% if loop.index % 2 == 1 %}
+                {% set background = 'white' %}   
+
+                {% if match.bet_result == 1 %}
+                    {% set background = '#FF0000' %}
+                {% elif match.bet_result == 2 %}
+                    {% set background = '#00FF00' %}
+                {% endif %}
+            {% else %}
+                {% set background = '#E8E8E8' %}
+
+                {% if match.bet_result == 1 %}
+                    {% set background = '#ff8080' %}
+                {% elif match.bet_result == 2 %}
+                    {% set background = '#80ff80' %}
+                {% endif %}
+            {% endif %}
+
+        <tr style="padding-bottom:5px; background-color: {{background}};">
             <td>{{match.ID}}</td>
             <td style="text-align:center;">{{match.time}}</td>
             <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
