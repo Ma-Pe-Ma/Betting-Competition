@@ -1,29 +1,39 @@
-app_secure_key = "dev"
-
-user_invitation_key = "registration"
-admin_invitation_key = "admin"
-
+import os
 from dateutil import tz
-local_zone = tz.gettz('Europe/Budapest')
+
+DATABASE_URL = os.environ['DATABASE_URL']
+REMARK42_URL = os.environ['REMARK42_URL']
+REMARK42_SITE_ID = os.environ['REMARK42_SITE_ID']
+
+app_secure_key = os.environ['app_secure_key']
+
+# in minutes!
+session_timeout = int(os.environ['session_timeout'])
+
+user_invitation_key = os.environ['user_invitation_key']
+admin_invitation_key = os.environ['admin_invitation_key']
+
+local_zone = tz.gettz(os.environ['local_zone'])
 
 # times in UTC!!!!
-#the start time of the first match
-group_deadline_time = "2022-11-21 10:00"
-#30 minutes after the last group stage match is finished
-group_evaluation_time = "2022-12-02 19:00"
+#the start time of the first match, format: '%Y-%m-%d %H:%M'
+group_deadline_time = os.environ['group_deadline_time']
+#30 minutes after the last group stage match is finished, format: '%Y-%m-%d %H:%M'
+group_evaluation_time = os.environ['group_evaluation_time']
 
-#the match time with and without extra time (after this time the csv will be updated) [hours]
-match_base_time = 2
-match_extra_time = 2.5
+#the match time with and without extra time (after this time the csv will be updated) [hours], format: float
+match_base_time = float(os.environ['match_base_time'])
+match_extra_time = float(os.environ['match_extra_time'])
 
-starting_bet_amount = 2000
-max_group_bet_value = 50
-max_final_bet_value = 200
-default_max_bet_per_match = 50
+#values for configuring betting values, format: int
+starting_bet_amount = int(os.environ['starting_bet_amount'])
+max_group_bet_value = int(os.environ['max_group_bet_value'])
+max_final_bet_value = int(os.environ['max_final_bet_value'])
+default_max_bet_per_match = int(os.environ['default_max_bet_per_match'])
 
 #language identifier only used for emailresource identifying
-language = 'hu'
+resource_language = os.environ['resource_language']
 
-#TODO ezt itt kiszedni
+#TODO remove this
 invalid_bet_amount = "Invalid bet amount"
 invalid_goal_value = "Invalid goal value"

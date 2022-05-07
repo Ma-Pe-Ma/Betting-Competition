@@ -15,7 +15,7 @@ from datetime import timedelta
 from app.scheduler import init_scheduler
 from app.database_manager import init_db_with_data_command
 
-from app.configuration import app_secure_key
+from app.configuration import app_secure_key, session_timeout
 
 def create_app(test_config = None):
     # Inject Flask magic
@@ -58,7 +58,7 @@ def create_app(test_config = None):
     @app.before_request
     def before_request():
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=15)
+        app.permanent_session_lifetime = timedelta(minutes=session_timeout)
 
     # apply the blueprints to the app
     from app import auth

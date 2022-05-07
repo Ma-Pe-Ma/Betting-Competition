@@ -12,7 +12,7 @@ from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
 import json
 
-from app.configuration import language
+from app.configuration import resource_language
 import xml.etree.ElementTree as ET
 
 import base64
@@ -31,7 +31,7 @@ def get_email_resource_by_tag(tag):
 
         for item in root:
             if item.tag == 'Collection':
-                if item.attrib['lan'] == language:
+                if item.attrib['lan'] == resource_language:
                     for res in item:
                         if res.tag == tag:
                             for sub_item in res:
