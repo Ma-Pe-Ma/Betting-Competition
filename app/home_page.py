@@ -13,7 +13,7 @@ from collections import namedtuple
 from app.tools.group_calculator import get_final_bet
 from app.tools.score_calculator import get_current_points_by_player
 
-from app.configuration import local_zone
+from app.configuration import REMARK42_URL, REMARK42_SITE_ID, local_zone
 
 bp = Blueprint("home", __name__, '''url_prefix="/group"''')
 
@@ -119,4 +119,6 @@ def homepage():
         elif final_bet_object.success == 2:
             pass
 
-    return render_template("home-page.html", username = g.user["username"], admin=g.user["admin"], days=modified_days, current_amount=current_amount, match_id=match_id, match_state=match_state)
+    return render_template("home-page.html", username = g.user["username"], admin=g.user["admin"],
+                                            days=modified_days, current_amount=current_amount, match_id=match_id, match_state=match_state,
+                                            REMARK42_URL=REMARK42_URL, REMARK42_SITE_ID=REMARK42_SITE_ID)

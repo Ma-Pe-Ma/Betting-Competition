@@ -7,7 +7,7 @@ from flask import g
 from flask.cli import with_appcontext
 import os
 
-DATABASE_URL = os.environ['DATABASE_URL']
+from app.configuration import DATABASE_URL
 
 def get_db():
     """Connect to the application's configured database. The connection
