@@ -5,12 +5,12 @@ import csv
 from flask import current_app
 import click
 from flask.cli import with_appcontext
-from app.configuration import default_max_bet_per_match
+from app.configuration import default_max_bet_per_match, match_url
 
-url = 'https://fixturedownload.com/download/fifa-world-cup-2022-UTC.csv'
+url = match_url
 
-def initialize_teams():
-    with current_app.open_resource("teams.csv", 'rb') as team_file: 
+def initialize_teams(file_name):
+    with current_app.open_resource(file_name, 'rb') as team_file: 
         data_reader = csv.reader(team_file.read().decode('utf-8').splitlines(), delimiter='|')
 
         fields = next(data_reader)
@@ -66,12 +66,15 @@ def download_data_csv():
         get_db().commit()
     except:
         print("Error updating matches.da")
+        return False
+
+    return True
 
 @click.command("init-db-with-data")
 @with_appcontext
 def init_db_with_data_command():
-    """Clear existing data and create new tables."""
+    """Clear existing data and create new tables."""    
     init_db()
-    initialize_teams()
-    initialize_matches()
+    #initialize_teams("teams.csv")
+    #initialize_matches()
     click.echo("Initialized the database.")

@@ -2,9 +2,8 @@ import os
 
 # import Flask 
 from flask import Flask
-from flask_apscheduler import APScheduler
 
-from flask   import render_template, request
+from flask import render_template, request, redirect
 from flask.helpers import make_response
 from jinja2  import TemplateNotFound
 
@@ -15,22 +14,25 @@ from datetime import timedelta
 from app.scheduler import init_scheduler
 from app.database_manager import init_db_with_data_command
 
-from app.configuration import app_secure_key, session_timeout
+from app.configuration import app_secret_key, session_timeout
+
+UPLOAD_FOLDER = './app'
+ALLOWED_EXTENSIONS = {'csv'}
 
 def create_app(test_config = None):
     # Inject Flask magic
     app = Flask(__name__, instance_relative_config=True)
 
-    # App Config - the minimal footprint
-    #app.config['TESTING'   ] = True 
-    #app.config['SECRET_KEY'] = 'S#perS3crEt_JamesBond' 
-
     # this is from the tutorial
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY=app_secure_key,
+        SECRET_KEY=app_secret_key,
         # store the database in the instance folder
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
+        # file upload folder
+        UPLOAD_FOLDER=UPLOAD_FOLDER,
+        # extensions enabled for uploading
+        ALLOWED_EXTENSIONS=ALLOWED_EXTENSIONS
     )
 
     if test_config is None:
@@ -57,6 +59,11 @@ def create_app(test_config = None):
     #Setting session timeout
     @app.before_request
     def before_request():
+        if not request.is_secure:
+            url = request.url.replace('http://', 'https://', 1)
+            code = 301
+            return redirect(url, code=code)
+
         session.permanent = True
         app.permanent_session_lifetime = timedelta(minutes=session_timeout)
 

@@ -37,6 +37,7 @@ def init_db():
     with current_app.open_resource("schema.sql", 'rb') as f:
         cursor = db.cursor()
         cursor.execute(f.read().decode('utf-8'))
+        db.commit()
 
 @click.command("init-db")
 @with_appcontext

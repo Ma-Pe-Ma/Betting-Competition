@@ -1,17 +1,16 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
-DROP TABLE IF EXISTS group_bet;
-DROP TABLE IF EXISTS final_bet;
-DROP TABLE IF EXISTS match_bet;
-DROP TABLE IF EXISTS team_bet;
-DROP TABLE IF EXISTS bet_user;
-DROP TABLE IF EXISTS match;
-DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS match_bet;
+DROP TABLE IF EXISTS final_bet;
+DROP TABLE IF EXISTS team_bet;
+DROP TABLE IF EXISTS group_bet;
+DROP TABLE IF EXISTS team;
+DROP TABLE IF EXISTS match;
+DROP TABLE IF EXISTS bet_user;
 
--- DROP TABLE IF EXISTS post;
-
+-- Table containing user data
 CREATE TABLE bet_user (
   username TEXT UNIQUE NOT NULL PRIMARY KEY,
   name TEXT NOT NULL,
@@ -22,6 +21,7 @@ CREATE TABLE bet_user (
   admin BOOLEAN
 );
 
+-- Table containing match data
 CREATE TABLE match (
   id INTEGER NOT NULL PRIMARY KEY,
   time TEXT NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE team_bet (
   FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
--- Table containing the final bets
+-- Table containing the final bet per player
 CREATE TABLE final_bet (
   id SERIAL PRIMARY KEY,
   username TEXT,
@@ -77,6 +77,7 @@ CREATE TABLE final_bet (
   FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
+-- Table containing a player's bet on a match
 CREATE TABLE match_bet (
   id SERIAL,
   username TEXT,
@@ -87,25 +88,15 @@ CREATE TABLE match_bet (
   FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
+-- Messages which can be written on the default page by the admin
 CREATE TABLE messages (
   id SERIAL,
   message TEXT
 );
 
+-- Creating default 5 messages
 INSERT INTO messages (id, message) VALUES (1, '');
 INSERT INTO messages (id, message) VALUES (2, '');
 INSERT INTO messages (id, message) VALUES (3, '');
 INSERT INTO messages (id, message) VALUES (4, '');
 INSERT INTO messages (id, message) VALUES (5, '');
-
-/*CREATE TABLE post (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  author_id INTEGER NOT NULL,
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  title TEXT NOT NULL,
-  body TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
-);*/
-
-/*https://stackoverflow.com/questions/10950362/protecting-against-sql-injection-in-python
-https://docs.python.org/3/library/sqlite3.html*/

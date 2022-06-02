@@ -1,6 +1,4 @@
 from collections import namedtuple
-from typing import Match
-from app import auth
 from flask import Blueprint
 from flask import redirect
 from flask import g
@@ -9,55 +7,50 @@ from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
+from app.database_manager import download_data_csv, initialize_matches, initialize_teams
 from app.db import get_db
 from flask import jsonify
 from app.auth import admin_required, login_required
 from app.gmail_handler import create_message, send_messages
 from datetime import datetime
+from werkzeug.utils import secure_filename
+from flask import current_app
+import os
 
 bp = Blueprint("admin", __name__, '''url_prefix="/group"''')
 
 # CHECK TODO-s
 
 #BACKEND
-# request result csv update by button
-# daily standings reminder at end of match day + welcome message
-
-#rethink initialization (scheduling, backuping, database updating etc.)
-# key configuration (eg. secret cookie key)
-# after tournament finish, show results on homepage?
-# LOGGING!!!!!!!!!!! (printek törlése)
-# commenting sql schema too + removing default values
-# javascriptek + html-ek átnézése
+# daily standings reminder at end of match day + welcome message [email]
+# rethink initialization (scheduling, backuping, database updating etc.)
 # outcomment starting csv fetch in init.py + start daily checker immidiately (check if match already started then!)
-# delete unnecessary imports
-# cleanup __init__.py
+
 # rethink url paths
+# LOGGING!!!!!!!!!!! (printek törlése)
 
 #FRONTEND
 # auth oldal beégett stringjeit kiszervezni a html-be, inkább a nyelv specifikus dolgok kiszervezése a html-ből
-# felesleges html oldalak törlése
-# fix title of pages 
-# replace logo
-# replace icons at sidebar
-# html template -> removing deadlinks + dashboard problem (?) + username problem (?)
-# remove comments from HTML
-# more starters button
-# orange odds in betting page
-
-#MISC
-# disqus
-# readme + setup (gmail) + user manual + deployment (apache [ddns] or docker/heroku?) + requirements.txt
-# testing
+# javascriptek + html-ek átnézése, remove comments from HTML
 
 # backlog:
-    # flask babel - multilanguage
+# flask babel - multilanguage
+
+#README: gmail, remark [docker], heroku, configuration, first as admin upload csv + apache2 + wsgi, fixture note, init-db-with data, TESTING: POSTGRES + OSVARIABLES
 
 @bp.route("/admin", methods=("GET",))
 @login_required
 @admin_required
 def admin_page():
     return render_template("admin/admin.html", username = g.user["username"], admin=g.user["admin"])
+
+@bp.route("/admin/fetch-match", methods=("GET",))
+@login_required
+@admin_required
+def fetch_match():
+    result = {}
+    result['result'] = download_data_csv()
+    return jsonify(result)
 
 @bp.route("/admin/message", methods=("GET", "POST"))
 @login_required
@@ -276,3 +269,35 @@ def final_bet():
         players.append(Player(name=final_bet["username"], team=team["local_name"], result=final_bet["result"], success=final_bet["success"]))
 
     return render_template("admin/final-bet.html", username = g.user["username"], admin=g.user["admin"], players=players)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+@bp.route("/admin/upload-team-data", methods=("GET", "POST"))
+@login_required
+@admin_required
+def upload_team_data():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+            initialize_teams(file_name=filename)
+            initialize_matches()
+            
+            flash('UPLOAD_OK')
+            return redirect(url_for('admin.admin_page'))
+
+    return render_template("admin/upload-team-data.html", username = g.user["username"], admin=g.user["admin"])

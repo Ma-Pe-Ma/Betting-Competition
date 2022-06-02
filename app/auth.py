@@ -13,6 +13,10 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from app.db import get_db
 from app.configuration import user_invitation_key, admin_invitation_key
+from app.configuration import register_deadline_time
+
+from datetime import datetime
+from dateutil import tz
 
 bp = Blueprint("auth", __name__, '''url_prefix="/auth"''')
 
@@ -69,6 +73,14 @@ def register():
     Validates that the username is not already taken. Hashes the
     password for security.
     """
+    utc_now = datetime.utcnow()
+    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+
+    register_deadline = datetime.strptime(register_deadline_time, "%Y-%m-%d %H:%M")
+    register_deadline = register_deadline.replace(tzinfo=tz.gettz('UTC'))
+
+    if utc_now > register_deadline:
+        return render_template("auth/register-fail.html")
 
     if g.user is not None:
         return redirect(url_for("home.homepage"))
@@ -136,6 +148,12 @@ def register():
             session["username"] = username
 
             #TODO: send_welcome_email(username=username, email_address=email)
+
+            player_cursor = db.cursor()
+            player_cursor.execute("SELECT * FROM bet_user")
+
+            if len(player_cursor.fetchall()) <= 1:
+                return redirect(url_for("admin.upload_team_data"))
 
             return redirect(url_for("group.group_order"))
         else:
