@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Korábbi fogadások {% endblock %} 
+{% block title %} Admin/Odd-szerkesztés {% endblock %} 
 
 <!-- Plugins CSS goes HERE  -->
 {% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
@@ -16,11 +16,11 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Dashboard</h3>
-                <ol class="breadcrumb">
+                <h3 class="text-themecolor m-b-0 m-t-0">Meccs-szorzók módosítása</h3>
+                <!--ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
-                </ol>
+                </ol-->
             </div>
             <!--div class="col-md-7 col-4 align-self-center">
                 <a target="_blank"
@@ -58,7 +58,14 @@
                             <th style="text-align:center;width: 3%;">2</td>
 
                             {% for match in matches %}
-                            <tr style="padding-bottom:5px;">
+                            
+                            {% set background = 'white' %}
+
+                            {% if loop.index %2 == 1 %}
+                                {% set background = '#E8E8E8' %}
+                            {% endif %}
+
+                            <tr style="padding-bottom:5px;background-color:{{background}};">
                                 <td>{{match.ID}}</td>
                                 <td>{{match.time}}</td>
                                 <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
@@ -67,7 +74,6 @@
                                 <td style="text-align:center;">{{match.odd1}}</td>
                                 <td style="text-align:center;">{{match.oddX}}</td>
                                 <td style="text-align:center;">{{match.odd2}}</td>
-                                <!--input type="image" src="http://example.com/path/to/image.png" /-->
                                 <td><button class="editbtn" value="{{match.ID}}" onclick="redirectToEdit(this.value)">Szerkeszt</button></td>
                             </tr>
 
