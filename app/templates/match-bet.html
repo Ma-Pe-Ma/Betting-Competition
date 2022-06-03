@@ -99,7 +99,11 @@
                                 {% with messages = get_flashed_messages() %}
                                 {% if messages %}
                                     {% for message in messages %}
-                                    {{message}}
+                                        {% if message == 'invalid_goal' %}
+                                        Rosszul megadott gólérték!
+                                        {% elif message == 'invalid_bet' %}
+                                        Rosszul megadott tétérték!
+                                        {% endif %}
                                     {% endfor %}
                                 {% endif %}
                                 {% endwith %}

@@ -24,21 +24,22 @@ from app.configuration import starting_bet_amount
 from app.configuration import local_zone
 from app.configuration import group_evaluation_time
 
-bp = Blueprint("previous", __name__, '''url_prefix="/group"''')
+bp = Blueprint('previous', __name__, '''url_prefix="/group"''')
 
-Day = namedtuple("Day", "number, date, id, matches")
-Match = namedtuple("Match", "ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, bet_result")
+Day = namedtuple('Day', 'number, date, id, matches')
+Match = namedtuple('Match', 'ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, bet_result')
 
-@bp.route("/prev", methods=("GET",))
+@bp.route('/prev', methods=('GET',))
 @login_required
 def prev_bets():
-    user_name = request.args.get("name")
+    user_name = request.args.get('name')
 
     # download users's previous bets which will be inserted into the webpage
     if user_name is not None:
         utc_now = datetime.utcnow()
         utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
-        group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
+
+        group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
 
         start_amount = starting_bet_amount - get_group_and_final_bet_amount(user_name)
         group_bonus = get_group_win_amount(user_name)
@@ -50,35 +51,35 @@ def prev_bets():
         number_of_successful_bets = 0
 
         cursor = get_db().cursor()
-        cursor.execute("SELECT * FROM match WHERE time::date < %s::date", (utc_now.strftime("%Y-%m-%d %H:%M"),))
+        cursor.execute('SELECT * FROM match WHERE time::timestamp < %s::timestamp', (utc_now.strftime('%Y-%m-%d %H:%M'),))
 
         # iterate through matches which has already been played (more precisely started)
         for previous_match in cursor.fetchall():
             #match time in UTC
-            match_time = datetime.strptime(previous_match["time"], "%Y-%m-%d %H:%M")
+            match_time = datetime.strptime(previous_match['time'], '%Y-%m-%d %H:%M')
             match_time = match_time.replace(tzinfo=tz.gettz('UTC'))
             
             #match time in local time
             match_time_local = match_time.astimezone(local_zone)   
 
-            match_date = match_time_local.strftime("%Y-%m-%d")
-            match_time_string = match_time_local.strftime("%H:%M")
+            match_date = match_time_local.strftime('%Y-%m-%d')
+            match_time_string = match_time_local.strftime('%H:%M')
 
             # get the user's bet for the match 
             cursor0 = get_db().cursor()
-            cursor0.execute("SELECT * FROM match_bet WHERE username=%s AND match_id = %s", (user_name, previous_match["id"]))
+            cursor0.execute('SELECT * FROM match_bet WHERE username=%s AND match_id = %s', (user_name, previous_match['id']))
             match_bet = cursor0.fetchone()
 
-            result1 = previous_match["goal1"]
-            result2 = previous_match["goal2"]
+            result1 = previous_match['goal1']
+            result2 = previous_match['goal2']
 
-            odd1 = previous_match["odd1"]
-            oddX = previous_match["oddx"]
-            odd2 = previous_match["odd2"]
+            odd1 = previous_match['odd1']
+            oddX = previous_match['oddx']
+            odd2 = previous_match['odd2']
 
-            goal1 = match_bet["goal1"] if match_bet is not None else ""
-            goal2 = match_bet["goal2"] if match_bet is not None else ""
-            bet = match_bet["bet"] if match_bet is not None else 0
+            goal1 = match_bet['goal1'] if match_bet is not None else ''
+            goal2 = match_bet['goal2'] if match_bet is not None else ''
+            bet = match_bet['bet'] if match_bet is not None else 0
 
             bonus = 0
             prize = 0
@@ -108,14 +109,14 @@ def prev_bets():
                     bet_result = 2
 
             cursor1 = get_db().cursor()
-            cursor1.execute("SELECT local_name FROM team WHERE name=%s", (previous_match["team1"],))
+            cursor1.execute('SELECT local_name FROM team WHERE name=%s', (previous_match['team1'],))
             team1_local = cursor1.fetchone()
 
             cursor2 = get_db().cursor()
-            cursor2.execute("SELECT local_name FROM team WHERE name=%s", (previous_match["team2"],))
+            cursor2.execute('SELECT local_name FROM team WHERE name=%s', (previous_match['team2'],))
             team2_local = cursor2.fetchone()
 
-            match_object = Match(previous_match["id"], time = match_time_string, type=previous_match["round"], team1=team1_local["local_name"], team2=team2_local["local_name"], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, bet_result=bet_result)
+            match_object = Match(previous_match['id'], time = match_time_string, type=previous_match['round'], team1=team1_local['local_name'], team2=team2_local['local_name'], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, bet_result=bet_result)
 
             # find match_day it does not exist create it
             match_day = None
@@ -137,7 +138,7 @@ def prev_bets():
         modified_days = []
 
         for i, day in enumerate(days):
-            day.matches.sort(key=lambda match : datetime.strptime(match.time, "%H:%M"))
+            day.matches.sort(key=lambda match : datetime.strptime(match.time, '%H:%M'))
 
             modifed_matches = []
 
@@ -150,7 +151,7 @@ def prev_bets():
             day.matches.clear()
             modified_days.append(day._replace(number = i + 1, matches = modifed_matches))
 
-            day_date_object = datetime.strptime(day.date, "%Y-%m-%d")
+            day_date_object = datetime.strptime(day.date, '%Y-%m-%d')
 
             #if checked day is group evaulation date than add group win amount at end
             if day_date_object.date() == group_evaluation_time_object.date():
@@ -159,7 +160,7 @@ def prev_bets():
 
         days.clear()     
 
-        group_evaluation_date = group_evaluation_time_object.date().strftime("%Y-%m-%d")
+        group_evaluation_date = group_evaluation_time_object.date().strftime('%Y-%m-%d')
 
         final_bet_object = get_final_bet(user_name=user_name)
 
@@ -175,11 +176,11 @@ def prev_bets():
         else:
             success_rate = number_of_successful_bets / number_of_match_bets
 
-        return render_template("previous-bet/previous-day-match.html", days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
+        return render_template('previous-bet/previous-day-match.html', days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
 
     # if no user name provided send down the username list and render the base page
     cursor = get_db().cursor()
     cursor.execute("SELECT username FROM bet_user WHERE NOT username='RESULT'", ())
     players = cursor.fetchall()
 
-    return render_template("previous-bet/previous-bets.html", username = g.user["username"], admin=g.user["admin"], players=players)
+    return render_template('previous-bet/previous-bets.html', username = g.user['username'], admin=g.user['admin'], players=players)
