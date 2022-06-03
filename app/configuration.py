@@ -41,10 +41,6 @@ default_max_bet_per_match = int(os.environ['default_max_bet_per_match'])
 #language identifier only used for emailresource identifying
 resource_language = os.environ['resource_language']
 
-# TODO remove this
-invalid_bet_amount = "Invalid bet amount"
-invalid_goal_value = "Invalid goal value"
-
 # remark configuration values
 REMARK42_URL = os.environ['REMARK42_URL']
 REMARK42_SITE_ID = os.environ['REMARK42_SITE_ID']

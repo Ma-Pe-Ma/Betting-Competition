@@ -2,18 +2,13 @@ import os
 
 # import Flask 
 from flask import Flask
-
 from flask import render_template, request, redirect
 from flask.helpers import make_response
 from jinja2  import TemplateNotFound
 
 from datetime import timedelta
 
-#from multiprocessing import Process, Value
-#from app import scheduler
 from app.scheduler import init_scheduler
-from app.database_manager import init_db_with_data_command
-
 from app.configuration import app_secret_key, session_timeout
 
 UPLOAD_FOLDER = './app'
@@ -28,7 +23,7 @@ def create_app(test_config = None):
         # a default secret that should be overridden by instance config
         SECRET_KEY=app_secret_key,
         # store the database in the instance folder
-        DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
+        #DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
         # file upload folder
         UPLOAD_FOLDER=UPLOAD_FOLDER,
         # extensions enabled for uploading
@@ -37,7 +32,7 @@ def create_app(test_config = None):
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile("config.py", silent=True)
+        app.config.from_pyfile('config.py', silent=True)
     else:
         # load the test config if passed in
         app.config.update(test_config)
@@ -52,7 +47,6 @@ def create_app(test_config = None):
     from app import db
 
     db.init_app(app)
-    app.cli.add_command(init_db_with_data_command)
 
     from flask import session
 
@@ -89,9 +83,7 @@ def create_app(test_config = None):
         # note that we set the 404 status explicitly
         return render_template('page-404.html'), 404
 
-    app.config.update(SCHEDULER_TIMEZONE = "utc")
-
-    #download_data_csv()
+    app.config.update(SCHEDULER_TIMEZONE = 'utc')
     init_scheduler(app)
 
     return app

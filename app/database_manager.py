@@ -69,12 +69,3 @@ def download_data_csv():
         return False
 
     return True
-
-@click.command("init-db-with-data")
-@with_appcontext
-def init_db_with_data_command():
-    """Clear existing data and create new tables."""    
-    init_db()
-    #initialize_teams("teams.csv")
-    #initialize_matches()
-    click.echo("Initialized the database.")
