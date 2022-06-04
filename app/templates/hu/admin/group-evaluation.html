@@ -1,0 +1,155 @@
+{% extends language + "/layouts/base.html" %}
+
+{% block title %} Admin/Csoportör-értékelés {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Csoportkör-kiértékelés</h3>
+                <!--ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol-->
+            </div>
+            <!--div class="col-md-7 col-4 align-self-center">
+                <a target="_blank"
+                   href="https://appseed.us"
+                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
+                    More Starters
+                </a>
+            </div-->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">                        
+                    
+                    <script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
+                        
+                    <script type="module">
+                        var sortableArray = [];
+
+                        window.onload = populateSortableArray();
+
+                        function populateSortableArray() {
+                            console.log("hm: " + document.getElementById("list-A"))
+
+                            {% for group in groups %}
+                            console.log("pushing sortable:  list-{{group.ID}}");
+                            sortableArray.push(["{{group.ID}}", new Sortable(document.getElementById('list-{{group.ID}}'), {
+                                animation: 150,
+                                ghostClass: 'blue-background-class'
+                            })]);
+                            {% endfor %}
+                        }
+
+                        var sendButton = document.getElementById("sendButton");
+                        sendButton.onclick = function() {
+                            console.log( 'Sending data' );
+
+                            const XHR = new XMLHttpRequest();
+
+                            XHR.onload = function() {
+                                var responseObject = JSON.parse(XHR.response);
+
+                                var message = "ismeretlen esemény.";
+                                var messageNode = document.getElementById("errorMessage");
+
+                                if (responseObject["result"] == "OK") {
+                                    message = "Beállítás sikeres.";
+                                    messageNode.style = "padding-left:1em; color:green;"
+                                }
+                                else if (responseObject["result"] == "error") {
+                                    message = "Beállítás sikertelen.";
+                                    messageNode.style = "padding-left:1em; color:red;"
+                                }
+                                
+                                messageNode.innerText = message;                                
+                            }
+
+                            XHR.onerror = function() {
+                                alert( 'Hiba történt a szerverrel való kommunikációban.' );
+                            }
+
+                            // Set up our request
+                            XHR.open( 'POST', '/admin/group-evaluation', true);
+
+                            // Add the required HTTP header for form data POST requests
+                            //XHR.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+                            XHR.setRequestHeader( 'Content-Type', 'application/json' );
+                            
+                            var groupsObject = {};
+
+                            for (const sortableElement of sortableArray) {
+                                let[groupID, group] = sortableElement;
+
+                                var groupObject = {}
+                                groupsObject[groupID] = group.toArray();
+                            }
+                                
+                            console.log("out: " + JSON.stringify(groupsObject));
+
+                            XHR.send(JSON.stringify(groupsObject));
+                        }
+                    </script>
+                
+                    Csoportkör-kiértékelés
+
+                    <div>Vonszolással állítsd be a csoportok sorrendjét!</div>
+                    {% for group in groups %}
+                        <div id="{{group.ID}}" class="row" style="width: 26em;">
+                            <h4 class="col-12" style="display:inline;">{{group.ID}}. csoport</h4>
+
+                            <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 1px;">
+                                <!--div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div-->
+                                <div class="list-group-item" style="width: 3em">1.</div>
+                                <div class="list-group-item" style="width: 3em">2.</div>
+                                <div class="list-group-item" style="width: 3em">3.</div>
+                                <div class="list-group-item" style="width: 3em">4.</div>
+                            </div>
+
+                            <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
+                                {% for team in group.teams %}
+                                    <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.local_name}}</div>
+                                {% endfor %}
+                            </div>
+                        </div> 
+ 
+                        <br>
+                    {% endfor %}
+
+                    <div style="padding-left:1em; color:red;" id="errorMessage">
+                            
+                    </div>
+
+                    <button type="button" id="sendButton"> Beküld</button>     
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- ============================================================== -->
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

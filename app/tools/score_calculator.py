@@ -8,8 +8,8 @@ from dateutil import tz
 from app.configuration import local_zone, starting_bet_amount, group_evaluation_time
 from app.tools.group_calculator import get_group_object
 
-DayPrefab = namedtuple("DayPrefab", "date, points")
-ResultValue = namedtuple("ResultValue", "actual, bet, bonus_multiplier")
+DayPrefab = namedtuple('DayPrefab', 'date, points')
+ResultValue = namedtuple('ResultValue', 'actual, bet, bonus_multiplier')
 
 # multiplier when the user guessed the correct result
 bullseye_multiplier = 4
@@ -23,20 +23,20 @@ def get_group_and_final_bet_amount(user_name):
 
     # get the final bet
     cursor = get_db().cursor()
-    cursor.execute("SELECT bet FROM final_bet WHERE username = %s", (user_name,))
+    cursor.execute('SELECT bet FROM final_bet WHERE username = %s', (user_name,))
     final_bet = cursor.fetchone()
 
     if final_bet is not None:
-        total_bet += final_bet["bet"]
+        total_bet += final_bet['bet']
     else:
         return 0
 
     # get the group bets and add them
     cursor1 = get_db().cursor()
-    cursor1.execute("SELECT bet FROM group_bet WHERE username = %s", (user_name,))
+    cursor1.execute('SELECT bet FROM group_bet WHERE username = %s', (user_name,))
 
     for group_bet in cursor1.fetchall():
-        total_bet += group_bet["bet"]
+        total_bet += group_bet['bet']
     
     return total_bet
 
@@ -55,7 +55,7 @@ def get_group_win_amount(user_name):
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
-    group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
+    group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
     group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
 
     if utc_now > group_evaluation_time_object:
@@ -99,16 +99,16 @@ def prize_result(result1, result2, goal1, goal2):
 def get_match_prize(match, match_bet):
     prize = 0
 
-    result1 = match["goal1"]
-    result2 = match["goal2"]
+    result1 = match['goal1']
+    result2 = match['goal2']
 
-    odd1 = match["odd1"]
-    oddX = match["oddx"]
+    odd1 = match['odd1']
+    oddX = match['oddx']
     odd2 = match["odd2"]
 
-    goal1 = match_bet["goal1"]
-    goal2 = match_bet["goal2"]
-    bet = match_bet["bet"]
+    goal1 = match_bet['goal1']
+    goal2 = match_bet['goal2']
+    bet = match_bet['bet']
 
     if result1 is not None :
         result_value = prize_result(result1, result2, goal1, goal2)
@@ -135,20 +135,20 @@ def get_daily_points_by_current_time(user_name):
     day_prefabs = []
 
     cursor = get_db().cursor()
-    cursor.execute("SELECT * FROM match WHERE time::date < %s::date", (utc_now.strftime("%Y-%m-%d %H:%M"),))
+    cursor.execute('SELECT * FROM match WHERE time::date < %s::date', (utc_now.strftime('%Y-%m-%d %H:%M'),))
 
     # get matches which has been started by current time
     for match in cursor.fetchall():
-        match_time_utc = datetime.strptime(match["time"], "%Y-%m-%d %H:%M")
+        match_time_utc = datetime.strptime(match['time'], '%Y-%m-%d %H:%M')
         match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
 
         match_time_local = match_time_utc.astimezone(local_zone)   
 
-        match_date = match_time_local.strftime("%Y-%m-%d")
-        match_time = match_time_local.strftime("%H:%M")        
+        match_date = match_time_local.strftime('%Y-%m-%d')
+        match_time = match_time_local.strftime('%H:%M')        
 
         cursor2 = get_db().cursor()
-        cursor2.execute("SELECT * FROM match_bet WHERE (username = %s AND match_id = %s)", (user_name, match["id"]))
+        cursor2.execute('SELECT * FROM match_bet WHERE (username = %s AND match_id = %s)', (user_name, match['id']))
         match_bet = cursor2.fetchone()
 
         prize = 0
@@ -156,7 +156,7 @@ def get_daily_points_by_current_time(user_name):
 
         if match_bet is not None:
             prize = get_match_prize(match, match_bet)
-            bet_amount = match_bet["bet"]
+            bet_amount = match_bet['bet']
         
         # find match day if it does not exist create it
         match_day = None
@@ -173,7 +173,7 @@ def get_daily_points_by_current_time(user_name):
         match_day.points.append(prize)
         match_day.points.append(-1 * bet_amount)
 
-    day_prefabs.sort(key=lambda day : datetime.strptime(day.date, "%Y-%m-%d"))
+    day_prefabs.sort(key=lambda day : datetime.strptime(day.date, '%Y-%m-%d'))
     return day_prefabs
 
 # get player's current balance 

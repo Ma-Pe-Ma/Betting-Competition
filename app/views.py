@@ -1,11 +1,6 @@
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 # Flask modules
-from flask   import render_template, request
-from jinja2  import TemplateNotFound
+from flask import render_template, request
+from jinja2 import TemplateNotFound
 
 # App modules
 from app import app
@@ -14,23 +9,19 @@ from app import app
 @app.route('/', defaults={'path': 'index.html'})
 @app.route('/<path>')
 def index(path):
-
     try:
-
         # Detect the current page
-        segment = get_segment( request )
+        segment = get_segment(request)
 
         # Serve the file (if exists) from app/templates/FILE.html
-        return render_template( path, segment=segment )
+        return render_template(path, segment=segment)
     
     except TemplateNotFound:
-        return render_template('page-404.html'), 404
+        return render_template(g.user['language'] + '/page-404.html'), 404
 
 # Helper - Extract current page name from request 
-def get_segment( request ): 
-
+def get_segment(request): 
     try:
-
         segment = request.path.split('/')[-1]
 
         if segment == '':

@@ -1,18 +1,18 @@
-from fileinput import filename
 from flask_apscheduler import APScheduler
 from flask import render_template_string
-from app.db import get_db
-from pytz import utc
+from flask import current_app
+from flask.cli import with_appcontext
+import click
+
 from dateutil import tz
 from datetime import datetime, timedelta
-from app.gmail_handler import create_draft, create_message, create_message_with_attachment, send_messages, get_email_resource_by_tag, create_drafts
-from app.database_manager import download_data_csv
-from app.configuration import match_base_time, match_extra_time, local_zone
-from flask import current_app
-import click
-from flask.cli import with_appcontext
 
+from app.db import get_db
+from app.gmail_handler import create_message, create_message_with_attachment, send_messages, get_email_resource_by_tag
+from app.database_manager import download_data_csv
+from app.configuration import match_base_time, match_extra_time, local_zone, supported_languages
 from app.standings import create_standings
+
 scheduler = APScheduler()
 
 from collections import namedtuple
@@ -62,17 +62,17 @@ def match_reminder_per_match(match):
         match_time_local = match_time_utc.astimezone(local_zone)
         match_time = match_time_local.strftime('%H:%M')
 
-        #read email resource from file
-        email_object = get_email_resource_by_tag('MatchReminder')
+        email_map = {}
 
-        #format subject by match info
-        subject = email_object[0].format(team1_local, team2_local, match_time)
+        #read email resource from file
+        for lan in supported_languages:
+            email_map[lan] = get_email_resource_by_tag('MatchReminder', lan)
 
         notifiable_users = []
         #find users who must be notified
 
         cursor3 = get_db().cursor()
-        cursor3.execute('SELECT username, email FROM bet_user WHERE user.reminder=%s', (0,))
+        cursor3.execute('SELECT username, email, language FROM bet_user WHERE user.reminder=%s', (0,))
 
         for user in cursor3.fetchall():
             cursor4 = get_db().cursor()
@@ -84,7 +84,12 @@ def match_reminder_per_match(match):
 
         #create proper emails
         for notifiable_user in notifiable_users:
+            #format subject by match info
+            email_object = email_map[notifiable_user['language']]
+
+            subject = email_object[0].format(team1_local, team2_local, match_time)
             message_text = email_object[1].format(notifiable_user[1], team1_local, team2_local, match_time)
+
             sendable_emails.append(create_message(sender='me', to=notifiable_user[0], subject=subject, message_text=message_text))
 
         send_messages(sendable_emails)
@@ -94,7 +99,7 @@ def match_reminder_once_per_day(matches):
         sendable_emails = []
 
         cursor = get_db().cursor()
-        cursor.execute('SELECT email, username, reminder FROM bet_user WHERE (user.reminder = %s OR user.reminder = %s)', (0,1))
+        cursor.execute('SELECT email, username, reminder, language FROM bet_user WHERE (user.reminder = %s OR user.reminder = %s)', (0,1))
 
         for user in cursor.fetchall():
             missing_bets = []
@@ -136,7 +141,7 @@ def match_reminder_once_per_day(matches):
                     continue
                 
             #create email message
-            email_object = get_email_resource_by_tag('MatchReminder')
+            email_object = get_email_resource_by_tag('MatchReminder', user['language'])
 
             subject = render_template_string(email_object[0], missing_bets=missing_bets)
             message_text = render_template_string(email_object[1], non_missing_bets=non_missing_bets, missing_bets=missing_bets)
@@ -163,17 +168,23 @@ def daily_standings():
 
         messages = []
 
-        #create email message
-        email_object = get_email_resource_by_tag('DailyStandings')
-        subject = render_template_string(email_object[0], date=local_date)
+        email_map = {}
+
+        for lan in supported_languages:
+            email_map[lan] = get_email_resource_by_tag('DailyStandings', lan)
 
         standings = create_standings()
 
         cursor = get_db().cursor()
-        cursor.execute('SELECT username, email from bet_user WHERE summary=%s', (1,))
+        cursor.execute('SELECT username, email, language from bet_user WHERE summary=%s', (1,))
 
         for user in cursor.fetchall():
+            #create email message
+            email_object = email_map[user['language']]
+
+            subject = render_template_string(email_object[0], date=local_date)
             message_text = render_template_string(email_object[1], username=user['username'], date=local_date, standings=standings[1])
+
             messages.append(create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
 
         send_messages(messages=messages)

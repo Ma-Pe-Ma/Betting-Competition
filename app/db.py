@@ -1,11 +1,10 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
-
-import click
 from flask import current_app
 from flask import g
 from flask.cli import with_appcontext
-import os
+import click
+
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 from app.configuration import DATABASE_URL
 

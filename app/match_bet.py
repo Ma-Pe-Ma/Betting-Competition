@@ -1,13 +1,12 @@
-from os import error
-from app.auth import login_required
 from flask import Blueprint
 from flask import redirect
 from flask import g
 from flask import flash
 from flask import render_template
 from flask import request
-from flask import session
 from flask import url_for
+
+from app.auth import login_required
 from app.db import get_db
 
 bp = Blueprint('match', __name__, '''url_prefix="/group"''')
@@ -94,7 +93,7 @@ def match_bet():
         elif match_bet_object.state == MatchState.started:
             return redirect(url_for('home.homepage', match_state='started', match_id = match_id))
         
-        return render_template('match-bet.html', match=match_bet_object.match)            
+        return render_template(g.user['language'] + '/match-bet.html', match=match_bet_object.match)            
 
     elif request.method == 'POST':
         match_id = request.form['matchID']
@@ -120,7 +119,7 @@ def match_bet():
 
         except ValueError:
             flash('invalid_bet')
-            return render_template('match-bet.html', match=match_bet_object.match)
+            return render_template(g.user['language'] + '/match-bet.html', match=match_bet_object.match)
 
         try:
             goal1_number = int(goal1)
@@ -128,7 +127,7 @@ def match_bet():
         except ValueError:
             flash('invalid_goal')
             match = match_bet_object.match._replace(bet=bet_number)
-            return render_template('match-bet.html', match=match)
+            return render_template(g.user['language'] + '/match-bet.html', match=match)
 
         cursor = get_db().cursor()
         cursor.execute('SELECT * FROM match_bet WHERE match_id=%s AND username=%s', (match_id, user_name))

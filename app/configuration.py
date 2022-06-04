@@ -1,6 +1,9 @@
 import os
 from dateutil import tz
 
+# supported languages
+supported_languages = os.environ['supported_languages'].split(',')
+
 # secret key for signing session cookie
 app_secret_key = os.environ['app_secret_key']
 
@@ -37,9 +40,6 @@ starting_bet_amount = int(os.environ['starting_bet_amount'])
 max_group_bet_value = int(os.environ['max_group_bet_value'])
 max_final_bet_value = int(os.environ['max_final_bet_value'])
 default_max_bet_per_match = int(os.environ['default_max_bet_per_match'])
-
-#language identifier only used for emailresource identifying
-resource_language = os.environ['resource_language']
 
 # remark configuration values
 REMARK42_URL = os.environ['REMARK42_URL']

@@ -119,6 +119,6 @@ def homepage():
         elif final_bet_object.success == 2:
             pass
 
-    return render_template('home-page.html', username = g.user['username'], admin=g.user['admin'],
-                                            days=modified_days, current_amount=current_amount, match_id=match_id, match_state=match_state,
-                                            REMARK42_URL=REMARK42_URL, REMARK42_SITE_ID=REMARK42_SITE_ID)
+    return render_template(g.user['language'] + '/home-page.html', days=modified_days, current_amount=current_amount,
+                                                                    match_id=match_id, match_state=match_state,
+                                                                    REMARK42_URL=REMARK42_URL, REMARK42_SITE_ID=REMARK42_SITE_ID)

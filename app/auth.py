@@ -1,7 +1,4 @@
-from datetime import timedelta
-import functools
-
-from flask import Blueprint, app
+from flask import Blueprint
 from flask import redirect
 from flask import g
 from flask import flash
@@ -10,16 +7,20 @@ from flask import request
 from flask import session
 from flask import url_for
 from flask import render_template_string
+
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-from app.db import get_db
-from app.configuration import user_invitation_key, admin_invitation_key
-from app.configuration import register_deadline_time
-from app.gmail_handler import get_email_resource_by_tag
+import functools
 
 from datetime import datetime
 from dateutil import tz
 
+from app.db import get_db
+from app.configuration import user_invitation_key, admin_invitation_key
+from app.configuration import register_deadline_time
+from app.configuration import supported_languages
+
+from app.gmail_handler import get_email_resource_by_tag
 from app.gmail_handler import send_messages, create_message
 
 bp = Blueprint('auth', __name__, '''url_prefix="/auth"''')
@@ -64,7 +65,7 @@ def admin_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if not g.user['admin']:
-            return render_template('page-404.html'), 404
+            return render_template(g.user['language'] + '/page-404.html'), 404
 
         return view(**kwargs)
 
@@ -84,12 +85,13 @@ def register():
     register_deadline = register_deadline.replace(tzinfo=tz.gettz('UTC'))
 
     if utc_now > register_deadline:
-        return render_template('auth/register-fail.html')
+        return render_template(g.user['language'] + '/auth/register-fail.html')
 
     if g.user is not None:
         return redirect(url_for('home.homepage'))
 
     if request.method == 'POST':
+        language = request.form.get('language')
         name = request.form.get('fullname')
         username = request.form.get('username')
         password = request.form.get('password')
@@ -142,8 +144,8 @@ def register():
                 admin = True
 
             db.cursor().execute(
-                'INSERT INTO bet_user (username, name, password, email, reminder, summary, admin) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                (username, name, generate_password_hash(password), email, reminder, summary, admin),
+                'INSERT INTO bet_user (username, name, password, email, reminder, summary, language, admin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                (username, name, generate_password_hash(password), email, reminder, summary, language, admin),
             )
 
             db.commit()
@@ -153,7 +155,7 @@ def register():
 
             # sending welcome email
             emails = []
-            email_object = get_email_resource_by_tag('Welcome')
+            email_object = get_email_resource_by_tag('Welcome', language)
             subject = render_template_string(email_object[0], )
             message_text = render_template_string(email_object[1], username=username)
             emails.append(create_message(sender='me', to=email, subject=subject, message_text=message_text, subtype='html'))
@@ -170,9 +172,10 @@ def register():
 
         flash(error)
 
-        return render_template('auth/register.html', username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
+        return render_template(language + '/auth/register.html', language=language, username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
 
-    return render_template('auth/register.html', reminder=0, summary=1)
+    return render_template(supported_languages[0] +'/auth/register.html', reminder=0, summary=1, language=supported_languages[0])
+
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
@@ -204,9 +207,9 @@ def login():
 
         flash(error)
 
-        return render_template('auth/login.html', username_form=username)
+        return render_template(supported_languages[0] + '/auth/login.html', username_form=username)
 
-    return render_template('auth/login.html')
+    return render_template(supported_languages[0] + '/auth/login.html')
 
 @bp.route('/logout')
 def logout():
@@ -227,4 +230,4 @@ def page_profile():
     cursor.execute('SELECT username, name, email, reminder, summary FROM bet_user WHERE username=%s', (g.user['username'],))
     user_data = cursor.fetchone()
 
-    return render_template('auth/modify.html', username = g.user['username'], email=user_data['email'], name=user_data['name'], reminder=user_data['reminder'], summary=user_data['summary'])
+    return render_template(g.user['language'] + '/auth/modify.html', email=user_data['email'], name=user_data['name'], reminder=user_data['reminder'], summary=user_data['summary'])
