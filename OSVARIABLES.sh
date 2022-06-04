@@ -1,4 +1,5 @@
-#!/bin/bash
+export supported_languages="en,hu"
+
 export app_secret_key="dev"
 
 export DATABASE_URL="dbname=flask_db user=flask password=bet host=localhost"
@@ -23,8 +24,6 @@ export starting_bet_amount=2000
 export max_group_bet_value=50
 export max_final_bet_value=200
 export default_max_bet_per_match=50
-
-export resource_language="hu"
 
 export REMARK42_URL="https://remarkhost.com:8080"
 export REMARK42_SITE_ID="remark"

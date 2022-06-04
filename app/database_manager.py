@@ -1,10 +1,10 @@
+from flask import current_app
+
 from datetime import datetime
-from app.db import get_db, init_db
 import urllib.request
 import csv
-from flask import current_app
-import click
-from flask.cli import with_appcontext
+
+from app.db import get_db
 from app.configuration import default_max_bet_per_match, match_url
 
 url = match_url

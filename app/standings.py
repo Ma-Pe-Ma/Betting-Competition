@@ -1,37 +1,26 @@
-from copy import copy
-from os import name
-
-from dateutil.tz.tz import datetime_ambiguous
-from app import auth
 from flask import Blueprint
-from flask import redirect
 from flask import g
-from flask import flash
 from flask import render_template
-from flask import request
-from flask import session
-from flask import url_for
-from app.db import get_db
-from app.auth import login_required
 
-bp = Blueprint("standings", __name__, '''url_prefix="/group"''')
-
-from datetime import timezone, datetime
-from datetime import timedelta
+from copy import copy
+from datetime import datetime, timedelta
 from dateutil import tz
 from collections import namedtuple
+
+from app.db import get_db
+from app.auth import login_required
 
 from app.configuration import starting_bet_amount
 from app.configuration import group_deadline_time, group_evaluation_time
 
-from app.tools.score_calculator import get_group_win_amount
-from app.tools.score_calculator import get_group_and_final_bet_amount
-from app.tools.score_calculator import get_daily_points_by_current_time
+from app.tools.score_calculator import get_group_win_amount, get_group_and_final_bet_amount, get_daily_points_by_current_time
 from app.tools.group_calculator import get_final_bet
 
-Player = namedtuple("Player", "nick, days")
-Day = namedtuple("Day", "year, month, day, point")
-CurrentPlayerStanding = namedtuple("CurrentPlayerStanding", "name, point, previous_point, position_diff")
+bp = Blueprint('standings', __name__, '''url_prefix="/group"''')
+
+Player = namedtuple('Player', 'nick, days')
+Day = namedtuple('Day', 'year, month, day, point')
+CurrentPlayerStanding = namedtuple('CurrentPlayerStanding', 'name, point, previous_point, position_diff')
 
 def create_standings():
     players = []
@@ -42,17 +31,17 @@ def create_standings():
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
     #create unique time objects
-    group_deadline_time_object = datetime.strptime(group_deadline_time, "%Y-%m-%d %H:%M")
+    group_deadline_time_object = datetime.strptime(group_deadline_time, '%Y-%m-%d %H:%M')
     two_days_before_deadline = group_deadline_time_object - timedelta(days=2)
     one_day_before_deadline = group_deadline_time_object - timedelta(days=1)
-    group_evaluation_time_object = datetime.strptime(group_evaluation_time, "%Y-%m-%d %H:%M")
+    group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
 
     #iterate through users
     cursor = get_db().cursor()
-    cursor.execute("SELECT username FROM bet_user", ())
+    cursor.execute('SELECT username FROM bet_user', ())
 
     for player in cursor.fetchall():
-        user_name = player["username"]
+        user_name = player['username']
 
         # find group bet/win amount
         group_bet_amount = get_group_and_final_bet_amount(user_name)
@@ -156,11 +145,8 @@ def create_standings():
 
     return (players, modified_current_player_standings)
 
-@bp.route("/standings", methods=("GET",))
+@bp.route('/standings', methods=('GET',))
 @login_required
 def standings():
     standings = create_standings()
-    return render_template("standings.html", username = g.user["username"], admin=g.user["admin"], players=standings[0], standings=standings[1])
-
-#https://canvasjs.com/html5-javascript-line-chart/
-#https://stackoverflow.com/questions/35854244/how-can-i-create-a-horizontal-scrolling-chart-js-line-chart-with-a-locked-y-axis
+    return render_template(g.user['language'] + '/standings.html', username = g.user['username'], admin=g.user['admin'], players=standings[0], standings=standings[1])

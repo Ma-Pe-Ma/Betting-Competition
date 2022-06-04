@@ -12,26 +12,25 @@ from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
 import json
 
-from app.configuration import resource_language
 import xml.etree.ElementTree as ET
 
 import base64
 import mimetypes
 import os.path
 
-from flask import current_app
+from flask import current_app, g
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
-def get_email_resource_by_tag(tag):    
-    with current_app.open_resource("./templates/email-messages.xml", 'r') as email_file:
+def get_email_resource_by_tag(tag, lan):
+    with current_app.open_resource('./templates/' + lan + '/email-messages.xml', 'r') as email_file:
         tree = ET.ElementTree(ET.fromstring(email_file.read()))
         root = tree.getroot()
 
         for item in root:
             if item.tag == 'Collection':
-                if item.attrib['lan'] == resource_language:
+                if item.attrib['lan'] == lan:
                     for res in item:
                         if res.tag == tag:
                             for sub_item in res:

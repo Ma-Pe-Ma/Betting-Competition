@@ -1,9 +1,9 @@
-import sqlite3
-
-import click
 from flask import current_app
 from flask import g
 from flask.cli import with_appcontext
+import click
+
+import sqlite3
 
 def get_db():
     """Connect to the application's configured database. The connection

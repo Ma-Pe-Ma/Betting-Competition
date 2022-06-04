@@ -5,16 +5,18 @@ from flask import g
 from flask import flash
 from flask import render_template
 from flask import request
-from flask import session
 from flask import url_for
-from app.database_manager import download_data_csv, initialize_matches, initialize_teams
-from app.db import get_db
 from flask import jsonify
-from app.auth import admin_required, login_required
-from app.gmail_handler import create_message, send_messages
+from flask import current_app
+
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import current_app
+
+from app.database_manager import download_data_csv, initialize_matches, initialize_teams
+from app.db import get_db
+from app.auth import admin_required, login_required
+from app.gmail_handler import create_message, send_messages
+
 import os
 
 bp = Blueprint('admin', __name__, '''url_prefix="/group"''')
@@ -29,13 +31,18 @@ bp = Blueprint('admin', __name__, '''url_prefix="/group"''')
 # backlog:
 # flask babel - multilanguage
 
+# profile language changer
+# multilanguage team csv (en same as fixture!!!)
+# email resource one common file, or multi per lang?
+# english logo
+# default lang for reg and signin
 #README: gmail, remark [docker], heroku (+sql backup!), configuration, cli standing, cli checker, first as admin upload csv + apache2 + wsgi, fixture note, init-db-with data, TESTING: POSTGRES + OSVARIABLES
 
 @bp.route('/admin', methods=('GET',))
 @login_required
 @admin_required
 def admin_page():
-    return render_template('admin/admin.html', username = g.user['username'], admin=g.user['admin'])
+    return render_template(g.user['language'] + '/admin/admin.html')
 
 @bp.route('/admin/fetch-match', methods=('GET',))
 @login_required
@@ -68,7 +75,7 @@ def message():
     for message_prefab in cursor.fetchall():
         messages.append(Message(id=message_prefab['id'], text=message_prefab['message']))
 
-    return render_template('admin/message.html', username = g.user['username'], admin=g.user['admin'], messages = messages, success_message=success_message)
+    return render_template(g.user['language'] + '/admin/message.html', messages = messages, success_message=success_message)
 
 @bp.route('/admin/send-email', methods=('GET', 'POST'))
 @login_required
@@ -100,7 +107,7 @@ def send_email():
             print('Error sending admin email to everyone')
             send_success = False
 
-    return render_template('admin/send-email.html', username = g.user['username'], admin=g.user['admin'], send_success=send_success, note = note)
+    return render_template(g.user['language'] + '/admin/send-email.html', send_success=send_success, note = note)
 
 @bp.route('/admin/odd', methods=('GET', 'POST'))
 @login_required
@@ -129,7 +136,7 @@ def odd():
 
     matches.sort(key=lambda match : datetime.strptime(match.time, '%Y-%m-%d %H:%M'))
 
-    return render_template('admin/odd.html', username = g.user['username'], admin=g.user['admin'], matches=matches)
+    return render_template(g.user['language'] + '/admin/odd.html', matches=matches)
 
 @bp.route('/admin/odd/edit', methods=('GET', 'POST'))
 @login_required
@@ -174,7 +181,7 @@ def odd_edit():
 
         return redirect(url_for('admin.odd'))
     
-    return render_template('admin/odd-edit.html', admin=g.user['admin'], match=match)
+    return render_template(g.user['language'] + '/admin/odd-edit.html', match=match)
 
 @bp.route('/admin/group-evaluation', methods=('GET', 'POST'))
 @login_required
@@ -229,7 +236,7 @@ def group_evaluation():
         for group in groups:
             group.teams.sort(key=lambda team : team.position)
 
-    return render_template('admin/group-evaluation.html', username = g.user['username'], admin=g.user['admin'], groups = groups)
+    return render_template(g.user['language'] + '/admin/group-evaluation.html', groups = groups)
 
 @bp.route('/admin/final-bet', methods=('GET', 'POST'))
 @login_required
@@ -260,7 +267,7 @@ def final_bet():
         team = cursor1.fetchone()
         players.append(Player(name=final_bet['username'], team=team['local_name'], result=final_bet['result'], success=final_bet['success']))
 
-    return render_template('admin/final-bet.html', username = g.user['username'], admin=g.user['admin'], players=players)
+    return render_template(g.user['language'] + '/admin/final-bet.html', players=players)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -292,4 +299,4 @@ def upload_team_data():
             flash('UPLOAD_OK')
             return redirect(url_for('admin.admin_page'))
 
-    return render_template('admin/upload-team-data.html', username = g.user['username'], admin=g.user['admin'])
+    return render_template(g.user['language'] + '/admin/upload-team-data.html')

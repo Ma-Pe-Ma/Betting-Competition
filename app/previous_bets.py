@@ -1,18 +1,11 @@
-from app import auth
 from flask import Blueprint
-from flask import redirect
 from flask import g
-from flask import flash
 from flask import render_template
 from flask import request
-from flask import session
-from flask import url_for
-from flask import Markup
 from app.db import get_db
 from app.auth import login_required
 
 from collections import namedtuple
-
 from datetime import datetime
 from dateutil import tz
 
@@ -176,11 +169,11 @@ def prev_bets():
         else:
             success_rate = number_of_successful_bets / number_of_match_bets
 
-        return render_template('previous-bet/previous-day-match.html', days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
+        return render_template(g.user['language'] + '/previous-bet/previous-day-match.html', days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
 
     # if no user name provided send down the username list and render the base page
     cursor = get_db().cursor()
-    cursor.execute("SELECT username FROM bet_user WHERE NOT username='RESULT'", ())
+    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\'', ())
     players = cursor.fetchall()
 
-    return render_template('previous-bet/previous-bets.html', username = g.user['username'], admin=g.user['admin'], players=players)
+    return render_template(g.user['language'] + '/previous-bet/previous-bets.html', players=players)

@@ -3,13 +3,12 @@ import os
 # import Flask 
 from flask import Flask
 from flask import render_template, request, redirect
-from flask.helpers import make_response
-from jinja2  import TemplateNotFound
+from flask import g
 
 from datetime import timedelta
 
 from app.scheduler import init_scheduler
-from app.configuration import app_secret_key, session_timeout
+from app.configuration import app_secret_key, session_timeout, supported_languages
 
 UPLOAD_FOLDER = './app'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -80,11 +79,35 @@ def create_app(test_config = None):
 
     @app.errorhandler(404)
     def page_not_found(e):
+        if g.user is not None:
+            resource_language = g.user['language']
+        else:
+            resource_language = supported_languages[0]
+
         # note that we set the 404 status explicitly
-        return render_template('page-404.html'), 404
+        return render_template(resource_language + '/page-404.html'), 404
+
+    @app.errorhandler(500)
+    def page_not_found(e):
+        if g.user is not None:
+            resource_language = g.user['language']
+        else:
+            resource_language = supported_languages[0]
+
+        # note that we set the 404 status explicitly
+        return render_template(resource_language + '/page-500.html'), 500
 
     app.config.update(SCHEDULER_TIMEZONE = 'utc')
     init_scheduler(app)
+
+    @app.context_processor
+    def set_jinja_global_variables():
+        if g.user is not None:
+            resource_language = g.user['language']
+        else:
+            resource_language = supported_languages[0]
+
+        return dict(language=resource_language)
 
     return app
 
