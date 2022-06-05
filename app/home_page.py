@@ -66,21 +66,21 @@ def homepage():
         goal2 = "" if match_bet is None else match_bet['goal2']
 
         cursor2 = get_db().cursor()
-        cursor2.execute('SELECT local_name FROM team WHERE (name = %s)', (match['team1'],))
+        cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match['team1'], g.user['language']))
         team1_local = cursor2.fetchone()
 
         cursor3 = get_db().cursor()
-        cursor3.execute('SELECT local_name FROM team WHERE (name = %s)', (match['team2'],))
+        cursor3.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match['team2'], g.user['language']))
         team2_local = cursor3.fetchone()
 
-        if team1_local is None or team2_local is None or team1_local['local_name'] == '' or team2_local['local_name'] == '':
+        if team1_local is None or team2_local is None or team1_local['translation'] == '' or team2_local['translation'] == '':
             continue
 
         odd1 = '-' if match['odd1'] is None else match['odd1']
         odd2 = '-' if match['odd2'] is None else match['odd2']
         oddX = '-' if match['oddx'] is None else match['oddx']
 
-        match_object = Match(ID=match['id'], time=match_time, type=match['round'], team1=team1_local['local_name'], team2=team2_local['local_name'], odd1=odd1, oddX=oddX, odd2=odd2, bet=bet, goal1=goal1, goal2=goal2, max_bet=match['max_bet'])
+        match_object = Match(ID=match['id'], time=match_time, type=match['round'], team1=team1_local['translation'], team2=team2_local['translation'], odd1=odd1, oddX=oddX, odd2=odd2, bet=bet, goal1=goal1, goal2=goal2, max_bet=match['max_bet'])
 
         # found the day object of the match if it doesn't exist create it
         match_day = None

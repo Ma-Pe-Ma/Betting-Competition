@@ -9,14 +9,31 @@ from app.configuration import default_max_bet_per_match, match_url
 
 url = match_url
 
-def initialize_teams(file_name):
-    with current_app.open_resource(file_name, 'rb') as team_file: 
+def initialize_teams(team_file_name, translation_file_name):
+    with current_app.open_resource(team_file_name, 'rb') as team_file: 
         data_reader = csv.reader(team_file.read().decode('utf-8').splitlines(), delimiter='|')
 
         fields = next(data_reader)
         for i, row in enumerate(data_reader):
             position = i % 4 + 1
-            get_db().cursor().execute("INSERT INTO team (name, local_name, group_id, position, top1, top2, top4, top16) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",(row[0], row[1], row[2], position, row[3], row[4], row[5], row[6]))
+            get_db().cursor().execute('INSERT INTO team (name, group_id, position, top1, top2, top4, top16) VALUES (%s, %s, %s, %s, %s, %s, %s)',(row[0], row[1], position, row[2], row[3], row[4], row[5]))
+
+        get_db().commit()
+    
+    with current_app.open_resource(translation_file_name, 'rb') as translation_file:
+        data_reader = csv.reader(translation_file.read().decode('utf-8').splitlines(), delimiter='|')
+
+        fields = next(data_reader)
+
+        for field in fields:
+            print('field: ' + field)
+
+        for i, row in enumerate(data_reader):
+            for j, column in enumerate(row):
+                if j == 0:
+                    continue                
+
+                get_db().cursor().execute('INSERT INTO team_translation (name, language, translation) VALUES (%s, %s, %s)',(row[0], fields[j], column))
 
         get_db().commit()
 

@@ -9,33 +9,12 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-
     <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
                 <h3 class="text-themecolor m-b-0 m-t-0">Admin</h3>
-                <!--ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
-                </ol-->
             </div>
-            <!--div class="col-md-7 col-4 align-self-center">
-                <a target="_blank"
-                   href="https://appseed.us"
-                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
-                    More Starters
-                </a>
-            </div-->
         </div>
-        <!-- ============================================================== -->
-        <!-- End Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -67,55 +46,18 @@
                 </div>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
     </div>
 
 {% endblock content %}
 
 {% block javascripts %}
-<script>
-    var fetchResult = document.getElementById("fetchResult");
 
-    var button = document.getElementById("")
-    var sendButton = document.getElementById("fetchMatch");
-    sendButton.onclick = function() {
-        const XHR = new XMLHttpRequest();
+{% set update_success = 'Meccsadatbázis sikeresen frissítve!' %}
+{% set update_failure = 'Meccsadatbázis frissítése sikertelen!' %}
+{% set update_timeout = 'Időtúllépés miatt a meccsadatbázis frissítése sikertelen!' %}
+{% set update_error = 'Hiba történt a szerverrel való kommunikációban.' %}
+{% set update_in_progress = 'Szinkronizálás folyamatban...' %}
 
-        XHR.onload = function() {
-            var responseObject = JSON.parse(XHR.response);
-            var result = responseObject["result"];          
-            
-            if (result == true) {
-                fetchResult.style.color = "green";
-                fetchResult.innerText = "Meccsadatbázis sikeresen frissítve!";
-            }
-            else {
-                fetchResult.style.color = "red";
-                fetchResult.innerText = "Meccsadatbázis frissítése sikertelen!";
-            }
-        };
+{% include "/common/admin_fetch.js" %}
 
-        XHR.ontimeout = function() {
-            fetchResult.innerText = "Időtúllépés miatt a meccsadatbázis frissítése sikertelen!";
-            fetchResult.style.color = "red";
-        };
-
-        XHR.onerror = function() {
-            alert('Hiba történt a szerverrel való kommunikációban.' );
-        };
-
-        XHR.open('GET', '/admin/fetch-match', true);
-
-        console.log("Button clicked!");
-
-        //XHR.setRequestHeader( 'Content-Type', 'application/json');
-
-        fetchResult.innerText = "Szinkronizálás folyamatban...";
-        fetchResult.style.color = "blue";
-
-        XHR.send(null);
-    };
-</script>
 {% endblock javascripts %}

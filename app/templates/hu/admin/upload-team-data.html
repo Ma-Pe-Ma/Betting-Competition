@@ -11,9 +11,6 @@
 {% block content %}
 
     <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
                 <h3 class="text-themecolor m-b-0 m-t-0">Dashboard</h3>
@@ -22,20 +19,7 @@
                     <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
             </div>
-            <!--div class="col-md-7 col-4 align-self-center">
-                <a target="_blank"
-                   href="https://appseed.us"
-                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
-                    More Starters
-                </a>
-            </div-->
         </div>
-        <!-- ============================================================== -->
-        <!-- End Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -50,7 +34,10 @@
 
                         <h2>A csapatleíró fájl feltöltése</h2>
                         <form method=post enctype=multipart/form-data>
-                            <input type=file name=file>
+                            <label for="team">Csapatleíró</label>
+                            <input type=file name=team id="team"><br>
+                            <label for="translation">Fordítás</label>
+                            <input type=file name=translation id="translation"><br>
                             <input type=submit value=Feltöltés>
                         </form>
                         
@@ -58,9 +45,6 @@
                 </div>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
     </div>
 
 {% endblock content %}

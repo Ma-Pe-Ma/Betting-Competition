@@ -11,31 +11,11 @@
 {% block content %}
 
     <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Pontverseny állása</h3>
-                <!--ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
-                </ol-->
+                <h3 class="text-themecolor m-b-0 m-t-0">Pontverseny állása</h3>              
             </div>
-            <!--div class="col-md-7 col-4 align-self-center">
-                <a target="_blank"
-                   href="https://appseed.us"
-                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
-                    More Starters
-                </a>
-            </div-->
         </div>
-        <!-- ============================================================== -->
-        <!-- End Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -65,80 +45,20 @@
                         <br><br>
 
                         <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-                        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
-                        <script>
-                           window.onload = function () {
-
-                            var chart = new CanvasJS.Chart("chartContainer", {
-                                title: {
-                                    text: "Tippverseny-állás története"
-                                },
-                                axisX: {
-                                    valueFormatString: "MMM-DD",
-                                    labelFontSize: 10,
-                                    //tickLength: 1,f
-                                    intervalType: "day",
-                                    interval: 1
-                                },
-                                axisY2: {
-                                    title: "",
-                                    //prefix: "$",
-                                    suffix: " tallér"
-                                },
-                                toolTip: {
-                                    shared: true
-                                },
-                                legend: {
-                                    cursor: "pointer",
-                                    verticalAlign: "top",
-                                    horizontalAlign: "center",
-                                    dockInsidePlotArea: true,
-                                    itemclick: toogleDataSeries
-                                },
-
-                                data: [
-                                {% for player in players %}
-                                {
-                                    type:"line",
-                                    axisYType: "secondary",
-                                    name: "{{player.nick}}",
-                                    showInLegend: true,
-                                    markerSize: 0,
-                                    yValueFormatString: ",###",
-                                    dataPoints: [
-                                        {% for day in player.days %}
-                                        {x: new Date({{day.year}}, {{day.month}}, {{day.day}} ), y:{{day.point}}},
-                                        {% endfor %}
-                                    ]
-                                },
-                                {% endfor %}
-                                ]
-                            });
-                            chart.render();
-
-                            function toogleDataSeries(e){
-                                if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                                    e.dataSeries.visible = false;
-                                } else{
-                                    e.dataSeries.visible = true;
-                                }
-                                chart.render();
-                            }
-
-                            }
-                            </script>
-
-
                     </div>
                 </div>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
     </div>
 
 {% endblock content %}
 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+    {% set bet_unit = 'tallér' %}
+    {% set graph_title = 'Tippverseny-állás története' %}
+
+    {% include "common/standings.js" %}
+
+{% endblock javascripts %}

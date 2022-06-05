@@ -11,7 +11,6 @@
 {% set dummy = day_names.update({6 : 'vasárnap'}) %}
 
 {% for day in days %}
-<!--div-->
     {%if loop.index % 10 == 1 %}
 
     <table style="width:90%;margin-left:20px;background-color: lightblue">
@@ -101,10 +100,6 @@
             <td style="text-align:center;">{{match.balance|round(2)}}</th>
         </tr>
 
-        <!--div style="padding-left:1em;position: relative;">
-            <div style="display: inline-block;">{{match.team1}} - {{match.team2}} : {{match.result1}} - {{match.result2}}</div>
-            <div style="display: inline-block; left: 300px;"></div>
-        </div-->
         {% endfor %}
     </table>
     <br>
@@ -117,8 +112,6 @@
     </div>
     <br>
     {% endif %}
-
-<!--/div-->
 {% endfor %}
 
 {% if final_bet and final_bet.success is not none %} 

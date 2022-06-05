@@ -62,18 +62,21 @@ def get_match_bet(match_id, user_name):
     user_match_bet = cursor0.fetchone()
 
     cursor1 = get_db().cursor()
-    cursor1.execute('SELECT local_name FROM team WHERE (name = %s)', (match_from_db['team1'],))
+    cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_from_db['team1'], g.user['language']))
     team1_local = cursor1.fetchone()
     
     cursor2 = get_db().cursor()
-    cursor2.execute('SELECT local_name FROM team WHERE (name = %s)', (match_from_db['team2'],))
+    cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_from_db['team2'], g.user['language']))
     team2_local = cursor2.fetchone()
+
+    if team1_local is None or team2_local is None:
+        return MatchContainer(state=MatchState.invalid, match=None)        
 
     goal1 = user_match_bet['goal1'] if user_match_bet is not None else ""
     goal2 = user_match_bet['goal2'] if user_match_bet is not None else ""
     bet = user_match_bet['bet'] if user_match_bet is not None else 0
 
-    match = Match(ID=match_id, team1=team1_local['local_name'], team2=team2_local['local_name'],
+    match = Match(ID=match_id, team1=team1_local['translation'], team2=team2_local['translation'],
                     odd1=match_from_db['odd1'], oddX=match_from_db['oddx'], odd2=match_from_db['odd2'],
                     date=match_date, time=match_time, day_id=match_time_local.weekday(), type=typeString,
                     goal1 = goal1, goal2 = goal2, bet=bet, max_bet=match_from_db['max_bet'])

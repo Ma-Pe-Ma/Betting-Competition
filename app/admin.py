@@ -25,18 +25,12 @@ bp = Blueprint('admin', __name__, '''url_prefix="/group"''')
 # rethink url paths
 # LOGGING!!!!!!!!!!! (printek törlése)
 
-#FRONTEND
-# javascriptek + html-ek átnézése, remove comments from HTML
-
 # backlog:
 # flask babel - multilanguage
 
-# profile language changer
-# multilanguage team csv (en same as fixture!!!)
-# email resource one common file, or multi per lang?
 # english logo
 # default lang for reg and signin
-#README: gmail, remark [docker], heroku (+sql backup!), configuration, cli standing, cli checker, first as admin upload csv + apache2 + wsgi, fixture note, init-db-with data, TESTING: POSTGRES + OSVARIABLES
+#README: gmail, remark [docker], heroku (+sql backup!), configuration, cli standing, cli checker, first as admin upload team/lan csv + apache2 + wsgi, fixture note, init-db-with data, TESTING: POSTGRES + OSVARIABLES
 
 @bp.route('/admin', methods=('GET',))
 @login_required
@@ -122,17 +116,17 @@ def odd():
 
     for match_prefab in cursor.fetchall():
         cursor1 = get_db().cursor()
-        cursor1.execute('SELECT local_name FROM team WHERE name=%s', (match_prefab['team1'],))
+        cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team1'], g.user['language']))
         team1_local = cursor1.fetchone()
 
         cursor2 = get_db().cursor()
-        cursor2.execute('SELECT local_name FROM team WHERE name=%s', (match_prefab['team2'],))
+        cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team2'], g.user['language']))
         team2_local = cursor2.fetchone()
 
-        if team1_local is None or team2_local is None or team1_local['local_name'] == '' or team2_local['local_name'] == '':
+        if team1_local is None or team2_local is None or team1_local['translation'] == '' or team2_local['translation'] == '':
             continue
 
-        matches.append(Match(ID=match_prefab['id'], time=match_prefab['time'], team1=team1_local['local_name'], team2=team2_local['local_name'], odd1=match_prefab['odd1'], oddX=match_prefab['oddx'], odd2=match_prefab['odd2'], max_bet=match_prefab['max_bet']))
+        matches.append(Match(ID=match_prefab['id'], time=match_prefab['time'], team1=team1_local['translation'], team2=team2_local['translation'], odd1=match_prefab['odd1'], oddX=match_prefab['oddx'], odd2=match_prefab['odd2'], max_bet=match_prefab['max_bet']))
 
     matches.sort(key=lambda match : datetime.strptime(match.time, '%Y-%m-%d %H:%M'))
 
@@ -156,14 +150,14 @@ def odd_edit():
             match_prefab = cursor.fetchone()
 
             cursor1 = get_db().cursor()
-            cursor1.execute('SELECT local_name FROM team WHERE name=%s', (match_prefab['team1'],))
+            cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team1'], g.user['language']))
             team1_local = cursor1.fetchone()
 
             cursor2 = get_db().cursor()
-            cursor2.execute('SELECT local_name FROM team WHERE name=%s', (match_prefab['team2'],))
+            cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team2'], g.user['language']))
             team2_local = cursor2.fetchone()
 
-            match = Match(ID=matchID, team1=team1_local['local_name'], team2=team2_local['local_name'], odd1=match_prefab['odd1'], oddX=match_prefab['oddx'], odd2=match_prefab['odd2'], time=match_prefab['time'], type=match_prefab['round'], max_bet=match_prefab['max_bet'])
+            match = Match(ID=matchID, team1=team1_local['translation'], team2=team2_local['translation'], odd1=match_prefab['odd1'], oddX=match_prefab['oddx'], odd2=match_prefab['odd2'], time=match_prefab['time'], type=match_prefab['round'], max_bet=match_prefab['max_bet'])
         else:
             return redirect(url_for('admin.odd'))
 
@@ -208,7 +202,7 @@ def group_evaluation():
     groups = []
 
     cursor = get_db().cursor()
-    cursor.execute('SELECT name, local_name, group_id, position FROM team')
+    cursor.execute('SELECT name, group_id, position FROM team')
 
     for team in cursor.fetchall():
         group_of_team = None
@@ -222,7 +216,11 @@ def group_evaluation():
             group_of_team = Group(ID=team['group_id'], teams=[])
             groups.append(group_of_team)
 
-        group_of_team.teams.append(Team(name=team['name'], local_name=team['local_name'], position=team['position']))
+        cursor2 = get_db().cursor()
+        cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (team['name'], g.user['language']))
+        team_local = cursor2.fetchone()
+
+        group_of_team.teams.append(Team(name=team['name'], local_name=team_local['translation'], position=team['position']))
 
     already_submitted = True
 
@@ -262,10 +260,10 @@ def final_bet():
 
     for final_bet in cursor.fetchall():
         cursor1 = get_db().cursor()
-        cursor1.execute('SELECT local_name FROM team WHERE name=%s', (final_bet['team'],))
-
+        cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (final_bet['team'], g.user['language'],))
         team = cursor1.fetchone()
-        players.append(Player(name=final_bet['username'], team=team['local_name'], result=final_bet['result'], success=final_bet['success']))
+
+        players.append(Player(name=final_bet['username'], team=team['translation'], result=final_bet['result'], success=final_bet['success']))
 
     return render_template(g.user['language'] + '/admin/final-bet.html', players=players)
 
@@ -279,21 +277,30 @@ def allowed_file(filename):
 def upload_team_data():
     if request.method == 'POST':
         # check if the post request has the file part
-        if 'file' not in request.files:
+        if 'team' not in request.files and 'translation' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        file = request.files['file']
+        team_file = request.files['team']
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
-        if file.filename == '':
+        if team_file.filename == '':
             flash('No selected file')
             return redirect(request.url)
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+        translation_file = request.files['translation']
 
-            initialize_teams(file_name=filename)
+        if translation_file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if team_file and allowed_file(team_file.filename) and translation_file and allowed_file(translation_file.filename):
+            team_file_name = secure_filename(team_file.filename)
+            team_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], team_file_name))
+
+            translation_file_name = secure_filename(translation_file.filename)
+            translation_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], translation_file_name))
+
+            initialize_teams(team_file_name=team_file_name, translation_file_name=translation_file_name)
             initialize_matches()
             
             flash('UPLOAD_OK')

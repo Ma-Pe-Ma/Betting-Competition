@@ -42,58 +42,6 @@ def backup_sqlite_database():
     
     #create_draft(message_body=message)
 
-#in the end this is not used
-def match_reminder_per_match(match):
-    with scheduler.app.app_context():        
-        #get team properties
-
-        cursor1 = get_db().cursor()
-        cursor1.execute('SELECT local_name FROM team WHERE name=%s', (match['team1'],))
-        team1_local = cursor1.fetchone()
-
-        cursor2 = get_db().cursor()
-        cursor2.execute('SELECT local_name FROM team WHERE name=%s', (match['team2'],))
-        team2_local = cursor2.fetchone()
-        
-        match_time_utc = datetime.strptime(match['time'], '%Y-%m-%d %H:%M')
-        match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
-        
-        #object holding the correct time adjusted to timezone
-        match_time_local = match_time_utc.astimezone(local_zone)
-        match_time = match_time_local.strftime('%H:%M')
-
-        email_map = {}
-
-        #read email resource from file
-        for lan in supported_languages:
-            email_map[lan] = get_email_resource_by_tag('MatchReminder', lan)
-
-        notifiable_users = []
-        #find users who must be notified
-
-        cursor3 = get_db().cursor()
-        cursor3.execute('SELECT username, email, language FROM bet_user WHERE user.reminder=%s', (0,))
-
-        for user in cursor3.fetchall():
-            cursor4 = get_db().cursor()
-            cursor4.execute('SELECT * FROM match_bet WHERE username=%s AND match_id=%s', (user['username'], match['id']))
-            if cursor4.fetchone() is None:
-                notifiable_users.append((user['email'], user['username']))
-
-        sendable_emails = []
-
-        #create proper emails
-        for notifiable_user in notifiable_users:
-            #format subject by match info
-            email_object = email_map[notifiable_user['language']]
-
-            subject = email_object[0].format(team1_local, team2_local, match_time)
-            message_text = email_object[1].format(notifiable_user[1], team1_local, team2_local, match_time)
-
-            sendable_emails.append(create_message(sender='me', to=notifiable_user[0], subject=subject, message_text=message_text))
-
-        send_messages(sendable_emails)
-
 def match_reminder_once_per_day(matches):
     with scheduler.app.app_context():
         sendable_emails = []
@@ -107,11 +55,11 @@ def match_reminder_once_per_day(matches):
 
             for match in matches:
                 cursor1 = get_db().cursor()
-                cursor1.execute('SELECT local_name FROM team WHERE name=%s', (match['team1'],))
+                cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match['team1'], user['language']))
                 team1_local = cursor1.fetchone()
 
                 cursor2 = get_db().cursor()
-                cursor2.execute('SELECT local_name FROM team WHERE name=%s', (match['team2'],))
+                cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match['team2'], user['language']))
                 team2_local = cursor2.fetchone()
 
                 #match time in utc
@@ -128,12 +76,12 @@ def match_reminder_once_per_day(matches):
 
                 # find matches with missing bets
                 if match_bet is None or match_bet['goal1'] is None or match_bet['goal2'] is None:
-                    missing_bets.append(Bet(team1=team1_local, team2=team2_local, date=match_time, goal1=None, goal2=None))
+                    missing_bets.append(Bet(team1=team1_local['translation'], team2=team2_local['translation'], date=match_time, goal1=None, goal2=None))
                 # find matches with valid bets
                 else:
                     goal1 = match_bet['goal1']
                     goal2 = match_bet['goal2']
-                    non_missing_bets.append(Bet(team1=team1_local, team2=team2_local, date=match_time, goal1=goal1, goal2=goal2))
+                    non_missing_bets.append(Bet(team1=team1_local['translation'], team2=team2_local['translation'], date=match_time, goal1=goal1, goal2=goal2))
             
             # if user only cares about missing bets then continue to next user
             if user['reminder'] == 0:
@@ -211,10 +159,8 @@ def daily_checker():
                 match_time_object = match_time_object.replace(tzinfo=tz.gettz('UTC'))
 
                 hour_before_match = match_time_object - timedelta(hours=1, minutes=0)
-                match_before_task_id = str(match['id']) + '. match before'
 
                 #schedule reminder about missing betting
-                #scheduler.add_job(id = match_before_task_id, func=match_reminder_per_match, trigger="date", run_date=hour_before_match, args=[match])
                 if i == 0:
                     #schedule reminder about matches once before first match
 

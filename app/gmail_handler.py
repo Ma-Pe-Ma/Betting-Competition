@@ -30,18 +30,15 @@ def get_email_resource_by_tag(tag, lan):
 
         for item in root:
             if item.tag == 'Collection':
-                if item.attrib['lan'] == lan:
-                    for res in item:
-                        if res.tag == tag:
-                            for sub_item in res:
-                                if sub_item.tag == 'Subject':
-                                    subject = sub_item.text
-                                elif sub_item.tag == 'Content':
-                                    content = sub_item.text
+                for res in item:
+                    if res.tag == tag:
+                        for sub_item in res:
+                            if sub_item.tag == 'Subject':
+                                subject = sub_item.text
+                            elif sub_item.tag == 'Content':
+                                content = sub_item.text
 
-                            email_object = (subject, content)
-
-                            return email_object
+                        return (subject, content)
 
 def get_credentials():
     creds = None

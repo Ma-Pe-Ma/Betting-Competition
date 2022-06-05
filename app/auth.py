@@ -92,6 +92,10 @@ def register():
 
     if request.method == 'POST':
         language = request.form.get('language')
+
+        if language not in supported_languages:
+            language = supported_languages[0]
+
         name = request.form.get('fullname')
         username = request.form.get('username')
         password = request.form.get('password')
@@ -156,7 +160,7 @@ def register():
             # sending welcome email
             emails = []
             email_object = get_email_resource_by_tag('Welcome', language)
-            subject = render_template_string(email_object[0], )
+            subject = render_template_string(email_object[0])
             message_text = render_template_string(email_object[1], username=username)
             emails.append(create_message(sender='me', to=email, subject=subject, message_text=message_text, subtype='html'))
             send_messages(emails)
@@ -221,10 +225,15 @@ def logout():
 @login_required
 def page_profile():
     if request.method == 'POST':
+        language = request.form['language']
+        if language not in supported_languages:
+            language = supported_languages[0]
         reminder = request.form['reminder']
         summary = request.form['summary']
-        get_db().cursor().execute('UPDATE bet_user SET reminder=%s, summary=%s WHERE username=%s', (reminder, summary, g.user['username']))
+        get_db().cursor().execute('UPDATE bet_user SET reminder=%s, summary=%s, language=%s WHERE username=%s', (reminder, summary, language, g.user['username']))
         get_db().commit()
+        
+        g.user['language'] = language
 
     cursor = get_db().cursor()
     cursor.execute('SELECT username, name, email, reminder, summary FROM bet_user WHERE username=%s', (g.user['username'],))
