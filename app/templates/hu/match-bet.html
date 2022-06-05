@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+{% extends language + "/layouts/base.html" %}
 
 {% block title %} Blank Page {% endblock %} 
 
@@ -11,31 +11,11 @@
 {% block content %}
 
     <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
                 <h3 class="text-themecolor m-b-0 m-t-0">Tippelés</h3>
-                <!--ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
-                </ol-->
             </div>
-            <!--div class="col-md-7 col-4 align-self-center">
-                <a target="_blank"
-                   href="https://appseed.us"
-                    class="btn waves-effect waves-light btn-danger pull-right hidden-sm-down">
-                    More Starters
-                </a>
-            </div-->
         </div>
-        <!-- ============================================================== -->
-        <!-- End Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
 
         {% set day_names = dict() %}
         {% set dummy = day_names.update({0 : 'hétfő'}) %}
@@ -115,21 +95,10 @@
                             <input type="submit" value="Beküld" form="betForm">
 
                         </form>
-
-                        <script>
-                            /*var sendButton = document.getElementById("sendButton");
-                            sendButton.onclick = function() {
-                                
-                            }*/
-                        </script>
-
                     </div>
                 </div>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
     </div>
 
 {% endblock content %}

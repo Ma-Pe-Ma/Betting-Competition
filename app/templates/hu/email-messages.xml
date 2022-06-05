@@ -1,8 +1,7 @@
 <EmailDrafts>
-    <Collection lan="hu">
-        <Welcome>
-            <Subject>Tippbajnokság - Sikeres regisztráció!</Subject>
-            <Content>Kedves {{username}}!
+    <Welcome>
+        <Subject>Tippbajnokság - Sikeres regisztráció!</Subject>
+        <Content>Kedves {{username}}!
 
 Sikeresen regisztráltál a tippbajnokságra.
 
@@ -10,11 +9,11 @@ Ha bármilyen kérdésed van, vagy valamilyen bugot találtál, akkor azokat elk
 Ha valamilyen szerver-probléma miatt nem tudod leadni a tipped, akkor erre a címre küldd el időben, és írd mellé a hibajelenséget.
 
 Üdvözlettel: A Tippmester
-            </Content>
-        </Welcome>
-        <MatchReminder>
-            <Subject>{% if missing_bets|length > 0 %}Hiányzó tipp {% else %} Meccsértesítő {% endif %}</Subject>
-            <Content>Kedves {{username}}!
+        </Content>
+    </Welcome>
+    <MatchReminder>
+        <Subject>{% if missing_bets|length > 0 %}Hiányzó tipp {% else %} Meccsértesítő {% endif %}</Subject>
+        <Content>Kedves {{username}}!
 {% if missing_bets|length > 0 %}
 Ma ismét meccsnap van, ne felejts el tippelni a következő meccs(ek)re:
 {% for missing in missing_bets %}    {{missing.date}} : {{missing.team1}} - {{missing.team2}}
@@ -23,10 +22,10 @@ Ma ismét meccsnap van, ne felejts el tippelni a következő meccs(ek)re:
 {% for non_missing in non_missing_bets %}    {{non_missing.date}} : {{non_missing.team1}} - {{non_missing.team2}}    {{goal1}} - {{goal2}}
 {% endfor %}
 {% endif %}Üdvözlettel: a Tippmester</Content>
-        </MatchReminder>
-        <DailyStandings>
-            <Subject>Állásközlő - {{date}}</Subject>
-            <Content><![CDATA[<div>Kedves {{username}}!</div><br>
+    </MatchReminder>
+    <DailyStandings>
+        <Subject>Állásközlő - {{date}}</Subject>
+        <Content><![CDATA[<div>Kedves {{username}}!</div><br>
 
 A {{date}}. nap végén a tippbajnokság állása a következő:
                         <table style="width:100%;margin-left:20px;">
@@ -53,7 +52,6 @@ A {{date}}. nap végén a tippbajnokság állása a következő:
 <br>
 
 Üdvözlettel: A Tippmester]]>
-            </Content>
-        </DailyStandings>
-    </Collection>
+        </Content>
+    </DailyStandings>
 </EmailDrafts>

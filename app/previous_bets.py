@@ -102,14 +102,14 @@ def prev_bets():
                     bet_result = 2
 
             cursor1 = get_db().cursor()
-            cursor1.execute('SELECT local_name FROM team WHERE name=%s', (previous_match['team1'],))
+            cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (previous_match['team1'], g.user['language']))
             team1_local = cursor1.fetchone()
 
             cursor2 = get_db().cursor()
-            cursor2.execute('SELECT local_name FROM team WHERE name=%s', (previous_match['team2'],))
+            cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (previous_match['team2'], g.user['language']))
             team2_local = cursor2.fetchone()
 
-            match_object = Match(previous_match['id'], time = match_time_string, type=previous_match['round'], team1=team1_local['local_name'], team2=team2_local['local_name'], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, bet_result=bet_result)
+            match_object = Match(previous_match['id'], time = match_time_string, type=previous_match['round'], team1=team1_local['translation'], team2=team2_local['translation'], result1=result1, result2=result2, odd1=odd1, oddX=oddX, odd2=odd2, goal1=goal1, goal2=goal2, bet=bet, prize=prize, bonus=bonus, balance=0, bet_result=bet_result)
 
             # find match_day it does not exist create it
             match_day = None

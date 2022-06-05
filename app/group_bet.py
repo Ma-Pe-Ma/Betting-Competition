@@ -207,10 +207,13 @@ def final_bet_odds():
     Team = namedtuple('Team', 'name, top1, top2, top4, top16')
 
     cursor = get_db().cursor()
-    cursor.execute('SELECT local_name, top1, top2, top4, top16 FROM team')
-
+    cursor.execute('SELECT top1, top2, top4, top16 FROM team')
 
     for team in cursor.fetchall():
-        teams.append(Team(name=team['local_name'], top1=team['top1'], top2=team['top2'], top4=team['top4'], top16=team['top16']))
+        cursor1 = get_db().cursor()
+        cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (team['name'], g.user['language']))
+        local_name = cursor1.fetchone()
+
+        teams.append(Team(name=local_name['translation'], top1=team['top1'], top2=team['top2'], top4=team['top4'], top16=team['top16']))
 
     return render_template(g.user['language'] + '/group-bet/final-odds.html', teams=teams)

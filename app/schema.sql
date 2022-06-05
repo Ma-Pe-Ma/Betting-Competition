@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS match_bet;
 DROP TABLE IF EXISTS final_bet;
 DROP TABLE IF EXISTS team_bet;
 DROP TABLE IF EXISTS group_bet;
+DROP TABLE IF EXISTS team_translation;
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS match;
 DROP TABLE IF EXISTS bet_user;
@@ -40,13 +41,20 @@ CREATE TABLE match (
 -- Table containing team details 
 CREATE TABLE team (
   name TEXT NOT NULL PRIMARY KEY,
-  local_name TEXT,
   group_id CHAR,
   position INTEGER,
   top1 FLOAT,
   top2 FLOAT,
   top4 FLOAT,
   top16 FLOAT
+);
+
+-- Table containing team name translations
+CREATE TABLE team_translation (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  language TEXT,
+  translation TEXT
 );
 
 -- Table holding a player's bet on a specific group
