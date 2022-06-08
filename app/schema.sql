@@ -14,7 +14,6 @@ DROP TABLE IF EXISTS bet_user;
 -- Table containing user data
 CREATE TABLE bet_user (
   username TEXT UNIQUE NOT NULL PRIMARY KEY,
-  name TEXT NOT NULL,
   password TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   reminder INTEGER NOT NULL,  -- 0: on days when there is a match on which betting did not happen, 1: every match day, 2: no reminder

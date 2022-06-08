@@ -13,17 +13,17 @@
     <div class="container-fluid">
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Csoportkör-kiértékelés</h3>                
+                <h3 class="text-themecolor m-b-0 m-t-0">Group bet evaluation</h3>                
             </div>
         </div>        
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-block">
-                        <div>Vonszolással állítsd be a csoportok sorrendjét!</div>
+                        <div>Set the order of the teams by dragging</div>
                         {% for group in groups %}
                             <div id="{{group.ID}}" class="row" style="width: 26em;">
-                                <h4 class="col-12" style="display:inline;">{{group.ID}}. csoport</h4>
+                                <h4 class="col-12" style="display:inline;">{{group.ID}}. group</h4>
 
                                 <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 1px;">
                                     <!--div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div-->
@@ -47,7 +47,7 @@
                                 
                         </div>
 
-                    <button type="button" id="sendButton">Beküld</button>     
+                    <button type="button" id="sendButton">Send</button>     
                     </div>
                 </div>
             </div>
@@ -59,10 +59,10 @@
 {% block javascripts %}
     <script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
 
-    {% set unknown_event = 'Ismeretlen esemény' %}
-    {% set set_success = 'Beállítás sikeres.' %}
-    {% set set_failure = 'Beállítás sikertelen.' %}
-    {% set communication_error = 'Hiba történt a szerverrel való kommunikációban.' %}
+    {% set unknown_event = 'Unknown event' %}
+    {% set set_success = 'Setting was successful.' %}
+    {% set set_failure = 'Setting failed.' %}
+    {% set communication_error = 'Error communicating with the server.' %}
 
     {% include "/common/group_evaluation.js" %}
 

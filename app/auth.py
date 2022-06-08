@@ -96,7 +96,6 @@ def register():
         if language not in supported_languages:
             language = supported_languages[0]
 
-        name = request.form.get('fullname')
         username = request.form.get('username')
         password = request.form.get('password')
         email = request.form.get('email')
@@ -113,10 +112,6 @@ def register():
             error = 'username_short'
         elif len(str(username)) > 20:
             error = 'username_long'
-        elif not name:
-            error = 'name_null'
-        elif len(str(name)) < 3:
-            error = 'name_short'
         elif not email:
             error = 'email_null'
         elif not password:
@@ -129,12 +124,12 @@ def register():
             error = 'invalid_invitation'
         else:
             cursor = db.cursor()
-            cursor.execute('SELECT name FROM bet_user WHERE username = %s', (username,))
+            cursor.execute('SELECT * FROM bet_user WHERE username = %s', (username,))
             if cursor.fetchone() is not None:         
                 error = 'username_taken'
             else:                
                 cursor = db.cursor()
-                cursor.execute('SELECT name FROM bet_user WHERE email = %s', (email,))
+                cursor.execute('SELECT * FROM bet_user WHERE email = %s', (email,))
                 if cursor.fetchone() is not None:
                     error = 'email_taken'
 
@@ -148,8 +143,8 @@ def register():
                 admin = True
 
             db.cursor().execute(
-                'INSERT INTO bet_user (username, name, password, email, reminder, summary, language, admin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                (username, name, generate_password_hash(password), email, reminder, summary, language, admin),
+                'INSERT INTO bet_user (username, password, email, reminder, summary, language, admin) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                (username, generate_password_hash(password), email, reminder, summary, language, admin),
             )
 
             db.commit()
@@ -176,7 +171,7 @@ def register():
 
         flash(error)
 
-        return render_template(language + '/auth/register.html', language=language, username_form = name, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
+        return render_template(language + '/auth/register.html', language=language, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
 
     return render_template(supported_languages[0] +'/auth/register.html', reminder=0, summary=1, language=supported_languages[0])
 
@@ -236,7 +231,7 @@ def page_profile():
         g.user['language'] = language
 
     cursor = get_db().cursor()
-    cursor.execute('SELECT username, name, email, reminder, summary FROM bet_user WHERE username=%s', (g.user['username'],))
+    cursor.execute('SELECT username, email, reminder, summary FROM bet_user WHERE username=%s', (g.user['username'],))
     user_data = cursor.fetchone()
 
-    return render_template(g.user['language'] + '/auth/modify.html', email=user_data['email'], name=user_data['name'], reminder=user_data['reminder'], summary=user_data['summary'])
+    return render_template(g.user['language'] + '/auth/modify.html', email=user_data['email'], reminder=user_data['reminder'], summary=user_data['summary'])
