@@ -149,4 +149,4 @@ def create_standings():
 @login_required
 def standings():
     standings = create_standings()
-    return render_template(g.user['language'] + '/standings.html', username = g.user['username'], admin=g.user['admin'], players=standings[0], standings=standings[1])
+    return render_template(g.user['language'] + '/standings.html', players=standings[0], standings=standings[1])

@@ -22,7 +22,7 @@ bp = Blueprint('previous', __name__, '''url_prefix="/group"''')
 Day = namedtuple('Day', 'number, date, id, matches')
 Match = namedtuple('Match', 'ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, bet_result')
 
-@bp.route('/prev', methods=('GET',))
+@bp.route('/previous-bets', methods=('GET',))
 @login_required
 def prev_bets():
     user_name = request.args.get('name')

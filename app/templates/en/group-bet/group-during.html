@@ -1,0 +1,36 @@
+<h4>Starting bet credit amount: {{starting_bet_amount}}</h4>
+
+<div>
+    <h4 style="display: inline-block;">Final bet:</h4>
+    <h4 style="display: inline-block;">{{final_bet.local_name}} -  </h4>
+    <h4 style="display: inline-block;" id="resultID">{{final_bet.result}} </h4>
+    <a href="./final-odds">(Odd: {{final_bet.multiplier}})</a>
+    <h4 style="display: inline-block; padding-left: 1.5em;">Bet: {{final_bet.betting_amount}}</h4>
+    <h4 style="display: inline-block; padding-left: 1em;">Expected prize: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</h4>
+
+    <br>
+    <h4>Available credit amount after group bets: {{amount_after}}</h4>
+</div>
+
+<br>
+<h4>Group bets:</h4>
+
+{% for group in groups %}
+
+{% if group.bets|length == 0 %}
+    <h4 class="col-12">Group {{group.ID}}: The player has not bet on this group</h4>
+{% else %}
+
+<div id="sorting-disabled" class="row" style="width: 30em;padding-left: 1em;">
+    <h4 class="col-12">Group {{group.ID}}: Bet - {{group.bet_property.amount}} tallér</h4>
+    <div id="example4-left" class="list-group col" style="padding-left: 2em;">
+        <div class="list-group-item" style="background-color: #b8b8b8;">Tipp</div>
+
+        {% for i in range(4) %}
+        <div class="list-group-item">{{i + 1}}. {{group.bets[i].local_name}}</div>
+        {% endfor %}
+    </div>
+</div>
+<br>
+{% endif %}
+{% endfor %}

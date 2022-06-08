@@ -19,6 +19,7 @@ from collections import namedtuple
 Match = namedtuple('Match', 'local1, local2, goal1, goal2, time')
 Bet = namedtuple('Bet', 'team1, team2, date, goal1, goal2')
 
+# obsoleted
 def backup_sqlite_database():
     #find admin adresses
     admin_address = ''

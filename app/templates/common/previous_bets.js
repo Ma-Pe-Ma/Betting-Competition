@@ -11,7 +11,7 @@
 
     function askPlayerPreviousBets(nameID) {
         var resultRequest = new XMLHttpRequest();
-        resultRequest.open("GET", "./prev?name=" +nameID);
+        resultRequest.open("GET", "./previous-bets?name=" +nameID);
         
 
         resultRequest.onload = function() {

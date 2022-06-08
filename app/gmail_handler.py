@@ -29,16 +29,14 @@ def get_email_resource_by_tag(tag, lan):
         root = tree.getroot()
 
         for item in root:
-            if item.tag == 'Collection':
-                for res in item:
-                    if res.tag == tag:
-                        for sub_item in res:
-                            if sub_item.tag == 'Subject':
-                                subject = sub_item.text
-                            elif sub_item.tag == 'Content':
-                                content = sub_item.text
+            if item.tag == tag:
+                for sub_item in item:
+                    if sub_item.tag == 'Subject':
+                        subject = sub_item.text
+                    elif sub_item.tag == 'Content':
+                        content = sub_item.text
 
-                        return (subject, content)
+                return (subject, content)
 
 def get_credentials():
     creds = None
