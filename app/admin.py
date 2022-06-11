@@ -21,17 +21,6 @@ import os
 
 bp = Blueprint('admin', __name__, '''url_prefix="/group"''')
 
-#BACKEND
-# rethink url paths
-# LOGGING!!!!!!!!!!! (printek törlése)
-
-# backlog:
-# flask babel - multilanguage
-
-# english logo
-# default lang for reg and signin
-#README: gmail, remark [docker], heroku (+sql backup!), configuration, cli standing, cli checker, first as admin upload team/lan csv + apache2 + wsgi, fixture note, init-db-with data, TESTING: POSTGRES + OSVARIABLES
-
 @bp.route('/admin', methods=('GET',))
 @login_required
 @admin_required
