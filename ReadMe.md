@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a hobby project which goal is to host on the web a simple betting competition among a group of friends for big football/sports tournaments.
+This is a hobby project which goal is to host a simple betting competition on the web among a group of friends for big football/sports tournaments.
 
 Earlier this game was carried out manually sending emails and editing files on a cloud service. This app was developed to automate many of the cumbersome tasks for the admin and to provide a user-friendly interface for the players where they can publish their tips.
 
@@ -58,7 +58,7 @@ Currently there are two languages available: English and Hungarian.
 
 ### Betting
 The homepage of the site lists the future matches (with their date and odds). Each of them can be edited until the start of the match.
-No other player can see a user's bet until the match has started.
+No other player can see the user's bet until the match has started.
 
 ### Discussing
 At the bottom of the homepage a [remark42](https://github.com/umputun/remark42) chat plugin can be found which can be used to discuss the tournament. However it does not uses the site account, but it can be configured to be used with its own simple accounts (without any personal data) or it can be configured to be used with some widely used chat services (eg. Discus, Google, Facebook etc).
@@ -66,7 +66,7 @@ At the bottom of the homepage a [remark42](https://github.com/umputun/remark42) 
 ### Previous bets
 After a match has started the match is moved to the 'previous bets' section. Here the players can see every player's earlier bets, their results and their credit amount at the end of the match.
 
-### Standing
+### Standings
 This section shows the current standings of the players of competition and the visualization of the history of the game's standings. (One data point means the credit amount of a player at the end of the examined match day so the credit amounts are not visualized after each match only at the end of the days).
 
 ### Automatic updating + notifications
@@ -88,43 +88,43 @@ This section only appears for admins they have permission to do this additional 
 ## Hosting
 The application (probably) can be hosted on any service which has Flask support.
 
-This readme presents you two techniques: self-hosting and [Heroku](https://heroku.com/).
+This ReadMe presents you two techniques: [Heroku](https://heroku.com/) and self-hosting.
 
 ### Heroku
 
-A [detailed guide](https://devcenter.heroku.com/articles/getting-started-with-python?singlepage=true) can be found here how to setup heroku properly.
+A [detailed guide](https://devcenter.heroku.com/articles/getting-started-with-python?singlepage=true) can be found here how to setup Heroku properly.
 
 Summarizing the steps:
-* Create a Heroku account and then create a project for it. The create an app inside the project.
-* Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli). This tool acts as the command-line tool for the remote hosting server.
-* Checkout a new branch locally which will be pushed for Heroku
-* Make this branch track the project branch and then push it to the Heroku remote
+* Create a Heroku account and then create a project for it, then create an app inside the project
+* Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli), this tool acts as the command-line tool for the remote hosting server
+* Checkout a new branch locally which will be pushed for Heroku and make this branch track the project branch and then push it to the Heroku remote
 * Then scale the app to start it
 
 If the repository is broken then it can be wiped with [heroku repo plugin](https://github.com/heroku/heroku-repo).
 
 ### Self-hosting
-First clone your app to a place where the server have read/write permissions like the default /var/www/,
+First clone your app to a place where the server has read/write permissions like the intended `/var/www/`,
 
 To prevent package-collision problems it is suggested to create new a [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environemnt. After cloning the project activate the new environment and install the dependencies:
 
     python -m pip install -r requirements.txt
 
-After [setting up](./Setting up/Configuration variables) you can run the application with Flask's server with the following command:
+After [setting up](#setting-up) you can run the application with Flask's server with the following command:
+
     python -m flask run
 
-While Flask's own server is suitable for developing the application, later it becomes a bottleneck when the app goes live.
+While Flask's own server is suitable for developing the application, later it becomes a bottleneck when the app goes live. The suggested solution is to use a web server. 
 
 <details>
   <summary>Self-hosting with Apache2</summary>
   
-  The suggested solution is to use a web server. This section guides you to set up the project it with [Apache2](https://httpd.apache.org/) through [mod_wsgi](https://modwsgi.readthedocs.io/en/master/) on Ubuntu.
+  This section guides you to set up the project it with [Apache2](https://httpd.apache.org/) through [mod_wsgi](https://modwsgi.readthedocs.io/en/master/) on Ubuntu.
 
   The first step is to install Apache2 and its developer tools.
 
     sudo apt install apache2 apache2-dev
 
-The next step is to open the apache configuration file for your site (the default is /etc/apache2/sites-enabled/000-default.conf) and configure and add the following lines:
+The next step is to open the apache configuration file for your site (the default is /etc/apache2/sites-enabled/000-default.conf) then configure and add the following lines:
 
     WSGIDaemonProcess betting python-path=/path/to/miniconda3/envs/%env_name%/lib/python3.x/site-packages
     WSGIScriptAlias / /path/to/BettingApp.wsgi
@@ -159,7 +159,7 @@ Logs for the apache can be found her: `/var/log/apache2/`
 
 You have to [create TLS certificate](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs) and [specify it to Apache](https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html) if you want your connection to be secure.
 
-Lastly the project configuration variables [have to be specifed]().
+Lastly the project configuration variables [have to be specifed](#setting-up).
 
 </details>
 
@@ -177,10 +177,6 @@ The project uses a PostgreSQL database.
 
 Heroku provides [PostgreSQL support](https://devcenter.heroku.com/articles/heroku-postgresql) out of the box.
 
-To add the PostgreSQL addon to heroku:
-
-    heroku addons:create heroku-postgresql:hobby-dev
-
 The linked guide also describes how to set up a database for your local machine.
 
 <!--heroku pg:backups:schedule DATABASE_URL --at '02:00 America/Los_Angeles' --app sush-->
@@ -190,9 +186,9 @@ Before first launching the applicication the [project](./app/configuration.py) v
 
 The default solution is to read them out from the environment variables this is solved differently for the various hosting options:
 
-* For Heroku you have to specify the correct key-value pairs in the Config Vars section
+* for Heroku you have to specify the correct key-value pairs in the Config Vars section
 * for the development Flask server specify them in the OSVARIABLES.sh bash script and execute it with `". OSVARIABLES.sh"`
-* for Apache2 self-hosting method there is no elegant solution as you cannot pass environment variables to it the easiest way to solve this is to edit the `configuration_container.py` script
+* for Apache2 self-hosting method there is no elegant solution as you cannot pass environment variables to it so the easiest way to solve this is by editting the `configuration_container.py` script
 
 After the configuration happened initialize the app with the following command:
 
@@ -239,7 +235,7 @@ To start scheduling (if app was rebooted midday)
 
 ### Commenting system
 
-This section is not really part of the project but it's quite useful to use it. The app uses the [remark42](https://github.com/umputun/remark42)) discussion plugin but it can be easily replaced in the [home-page.html](./app/templates/en/home-page.html) template. 
+This section is not really part of the project but it's quite useful to use it. The app uses the [remark42](https://github.com/umputun/remark42) discussion /chat plugin but it can be easily replaced in the [home-page.html](./app/templates/en/home-page.html) template. 
 
 To self-host remark42 the following steps are needed to be taken:
 * pull the image with docker from the hub: `docker pull umputun/remark42`
@@ -251,11 +247,13 @@ Or alternatively download and configure the [compose file](https://github.com/um
 
 ### Translation
 
-Currently only English and Hungarian languages are provided. To translate the app just simply copy one of the language folders from template and translate manually the html resources files. (Also check out the common subfolder in the templates folder!)
+Currently only English and Hungarian languages are provided. To translate the app just simply copy one of the language folders from template and translate manually the html resource files. (Also check out the common subfolder in the templates folder!)
 
 ## Developer notes
 
 I'm really bad at frontend so I used an existing template. The parts which I designed are quite ugly. Deriving from this mobile view is not supported.
+
+The language system should be rewritten as the templating capabilites are not utilized properly, the whole html templates are copied instead of passing the proper translation strings into the templates.
 
 ## TO-DO
 * New language system (flaskbabel?)
@@ -265,7 +263,7 @@ I'm really bad at frontend so I used an existing template. The parts which I des
 * Logging
 
 * How to backup POSTGRES database
-* Check if flaskscheduler works with heroku
+* Check if flaskscheduler works with Heroku
 * Gmail API description + test
 
 * DDNS for self-hosting (remark42)
