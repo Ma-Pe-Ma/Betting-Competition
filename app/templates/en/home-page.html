@@ -23,16 +23,16 @@
                     <div class="card-block">
                         {% if match_state %}
                             {% if match_state == "invalid" %}
-                                {% set text = "Érvénytelen meccs!" %}
+                                {% set text = "Invalid match!" %}
                                 {% set color = "lightcoral" %}
                             {% elif match_state == "started" %}
-                                {% set text = match_id + ". meccsre már nem lehet fogadni!" %}
+                                {% set text = "You can't bet on match " + match_id + ". anymore!" %}
                                 {% set color = "lightcoral" %}
                             {% elif match_state == "group" %}
-                                {% set text =  "Végső- és csoportkörfogadások sikeresen beállítva!" %}
+                                {% set text =  "Final and group bets successfully changed!" %}
                                 {% set color = "lime" %}                            
                             {% elif match_state == "nonstarted" %}
-                                {% set text = match_id + ". meccs-tipp sikeresen módosítva!" %}
+                                {% set text = "Tip of match " + match_id + ". was successfully changed!" %}
                                 {% set color = "lime" %}
                             {% endif %}
                         <div style="background-color: {{color}}; font-weight: bold;" >

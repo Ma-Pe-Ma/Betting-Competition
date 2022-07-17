@@ -135,7 +135,7 @@ def create_standings():
 
         for previous_position, previous_player_standing in enumerate(previous_player_standings):
             if previous_player_standing.name == current_player_standing.name:
-                position_diff = current_position - previous_position
+                position_diff = - (current_position - previous_position)
                 break
 
         modified_current_player_standings.append(current_player_standing._replace(position_diff=position_diff))
