@@ -207,7 +207,7 @@ def final_bet_odds():
     Team = namedtuple('Team', 'name, top1, top2, top4, top16')
 
     cursor = get_db().cursor()
-    cursor.execute('SELECT top1, top2, top4, top16 FROM team')
+    cursor.execute('SELECT top1, top2, top4, top16, name FROM team')
 
     for team in cursor.fetchall():
         cursor1 = get_db().cursor()

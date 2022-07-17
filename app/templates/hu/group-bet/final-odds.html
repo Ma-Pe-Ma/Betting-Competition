@@ -24,11 +24,11 @@
 
                         <table style="width:100%;margin-left:20px;">
                             <tr>
-                                <th rowspan="1" style="width: 34%;text-align:left;">Csapat</th>
-                                <th rowspan="1" style="width: 16%;text-align:center;">Top1</th>
-                                <th rowspan="1" style="width: 16%;text-align:center;">Top2</th>
-                                <th rowspan="1" style="width: 16%;text-align:center;">Top4</th>
-                                <th rowspan="1" style="width: 16%;text-align:center;">Top16</th>
+                                <th rowspan="1" style="width: 25%;text-align:left;">Csapat</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Győztes</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Döntős</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Elődöntős</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Egyenes kieséses szakasz</th>
                             </tr>
                     
                             {% for team in teams %}
@@ -45,6 +45,11 @@
                                 <td style="text-align:center;">{{team.top4}}</td>
                                 <td style="text-align:center;">{{team.top16}}</td>
                             </tr>
+
+                            {% if loop.index % 4 == 0 %}
+                            <tr><td><br></td></tr>
+                            {% endif %}
+
                             {% endfor %}
                         </table>
                     </div>

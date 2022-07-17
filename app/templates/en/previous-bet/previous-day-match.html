@@ -34,7 +34,7 @@
     {% endif %}
 
     <div id="ID_{{day.number}}" style="background-color: aquamarine; width: 20em; ">
-        {{day.number}}. nap: {{day.date}} - {{day_names[day.id]}}
+        {{day.number}}. day: {{day.date}} - {{day_names[day.id]}}
     </div>
 
     <table style="width:90%;margin-left:20px;">
@@ -63,7 +63,7 @@
                 {% set background = 'white' %}   
 
                 {% if match.bet_result == 1 %}
-                    {% set background = '#FF0000' %}
+                    {% set background = '#FF7070' %}
                 {% elif match.bet_result == 2 %}
                     {% set background = '#00FF00' %}
                 {% endif %}
@@ -71,7 +71,7 @@
                 {% set background = '#E8E8E8' %}
 
                 {% if match.bet_result == 1 %}
-                    {% set background = '#ff8080' %}
+                    {% set background = '#ff9090' %}
                 {% elif match.bet_result == 2 %}
                     {% set background = '#80ff80' %}
                 {% endif %}
