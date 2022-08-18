@@ -17,7 +17,7 @@ from app.configuration import starting_bet_amount
 from app.configuration import local_zone
 from app.configuration import group_evaluation_time
 
-bp = Blueprint('previous', __name__, '''url_prefix="/group"''')
+bp = Blueprint('previous', __name__, '''url_prefix="/previous"''')
 
 Day = namedtuple('Day', 'number, date, id, matches')
 Match = namedtuple('Match', 'ID, type, time, team1, team2, result1, result2, odd1, oddX, odd2, goal1, goal2, bet, prize, bonus, balance, bet_result')

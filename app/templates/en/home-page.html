@@ -141,16 +141,36 @@
                         {% if days|length == 0 %}
                         <div style="display: inline-block;">The betting competition has ended. </div> <div style="display: inline-block;">To see the result</div> <a href="./standings" style="display: inline-block;">click Here!</a>
                         {% endif %}
+                        <div style="background-color:aquamarine;">
+                            <h2 style="display: inline-flex;">Discussion</h2>
+                            <div >
+                                <button style="width: 20%; margin-left: 40%;" id="loadOldCommentsButton">Load older</button>
+                            </div>
+
+                            <div id="comments" style="height: 400px; overflow-y: scroll; margin-left: 5px;margin-right: 5px;">
+                                
+                            </div>
+
+                            <div >
+                                <button style="width: 20%; margin-left: 40%;" id="refreshCommentsButton">Refresh</button>
+                            </div>
+
+                            <br>
+
+                            <div style="background-color: orange; margin-left: 5px; margin-right: 5px;">
+                                <h4 style="margin-left: 10px;">New comment:</h4>
+
+                                <textarea id="commentField" name="commentName" rows="5" cols="100" style="margin-left: 10px; width: 98%;"></textarea><br>
+
+                                <button style="margin-left: 10px;margin-top: 10px; margin-bottom: 5px;" id="postCommentButton">Send</button>
+                            </div>        
+
+                        </div>                
+
                     </div>
                 </div>
             </div>
         </div>
-
-        <div id="remark42"></div>
-
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
     </div>
 
 {% endblock content %}
@@ -167,13 +187,10 @@
     window.history.pushState({}, "", url.split("?")[0]);
 </script>
 
-<script>
-    var remark_config = {
-        host: "{{REMARK42_URL}}",
-        site_id: "{{REMARK42_SITE_ID}}",
-    }
-</script>
+{% set invalid_data = 'Invalid data sent.' %}
+{% set short_message = 'Too short message.' %}
+{% set error_connection = 'Error with the communication.' %}
 
-<script>!function(e,n){for(var o=0;o<e.length;o++){var r=n.createElement("script"),c=".js",d=n.head||n.body;"noModule"in r?(r.type="module",c=".mjs"):r.async=!0,r.defer=!0,r.src=remark_config.host+"/web/"+e[o]+c,d.appendChild(r)}}(remark_config.components||["embed"],document);</script>
+{% include "/common/comment.js" %}
 
 {% endblock javascripts %}

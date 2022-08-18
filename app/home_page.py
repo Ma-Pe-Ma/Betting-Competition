@@ -2,20 +2,22 @@ from flask import Blueprint
 from flask import g
 from flask import flash
 from flask import render_template
-from flask import request
+from flask import request, jsonify
 from app.db import get_db
 from app.auth import login_required
 
 from dateutil import tz
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import namedtuple
+
+from markdown import markdown
 
 from app.tools.group_calculator import get_final_bet
 from app.tools.score_calculator import get_current_points_by_player
 
-from app.configuration import REMARK42_URL, REMARK42_SITE_ID, local_zone
+from app.configuration import local_zone
 
-bp = Blueprint('home', __name__, '''url_prefix="/group"''')
+bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
 Day = namedtuple('Day', 'number, date, id, matches')
 Match = namedtuple('MATCH', 'ID, time, type, team1, team2, odd1, oddX, odd2, bet, goal1, goal2, max_bet')
@@ -120,5 +122,77 @@ def homepage():
             pass
 
     return render_template(g.user['language'] + '/home-page.html', days=modified_days, current_amount=current_amount,
-                                                                    match_id=match_id, match_state=match_state,
-                                                                    REMARK42_URL=REMARK42_URL, REMARK42_SITE_ID=REMARK42_SITE_ID)
+                                                                    match_id=match_id, match_state=match_state)
+
+def get_comments(datetime_object, newer_comments):
+    comments_object = []
+
+    cursor = get_db().cursor()
+
+    if newer_comments:
+        cursor.execute('SELECT username, datetime, content FROM comment WHERE datetime::timestamp > %s::timestamp ORDER BY id ASC', (datetime.strftime(datetime_object, '%Y-%m-%d %H:%M:%S'),))
+        comments = cursor.fetchall()
+    else:
+        cursor.execute('SELECT username, datetime, content FROM comment WHERE datetime::timestamp < %s::timestamp ORDER BY id DESC', (datetime.strftime(datetime_object, '%Y-%m-%d %H:%M:%S'),))
+        comments = cursor.fetchall()[0:10]
+
+    for item in comments:
+        comment_object = {}
+
+        date_object = datetime.strptime(item['datetime'], '%Y-%m-%d %H:%M:%S')
+        date_object = date_object.replace(tzinfo=tz.gettz('UTC'))
+        local_date_object = date_object.astimezone(local_zone)
+
+        comment_object['datetime'] = local_date_object.strftime('%Y-%m-%d %H:%M:%S')
+        comment_object['user'] = item['username']
+        comment_object['comment'] = markdown(item['content'])
+
+        comments_object.append(comment_object)
+
+    return comments_object
+
+@bp.route('/comment', methods=('POST',))
+@login_required
+def comments():
+    utc_now = datetime.utcnow()
+    #utc_now = datetime.strptime('2022-11-22 8:00', '%Y-%m-%d %H:%M')
+    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+
+    request_object = request.get_json()
+
+    newer_comments = request_object['newerComments']
+    date_time_string = request_object['datetime']
+
+    if date_time_string is not None and date_time_string != "":
+        try:
+            date_time_object = datetime.strptime(date_time_string, '%Y-%m-%d %H:%M:%S')
+            date_time_object = date_time_object.replace(tzinfo=local_zone)
+            date_time_object = date_time_object.astimezone(tz=tz.gettz('UTC'))
+        except:
+            response_object = {}
+            response_object['STATUS'] = 'INVALID_DATA'
+            return jsonify(response_object)
+    else:
+        date_time_object = utc_now + timedelta(seconds=1)
+        newer_comments = False
+
+    response_object = {}
+    response_object['newerComments'] = newer_comments
+
+    if 'comment' in request_object:
+        if len(request_object['comment']) < 4:
+            response_object = {}
+            response_object['STATUS'] = 'SHORT_MESSAGE'
+            return jsonify(response_object)
+        try :
+            get_db().cursor().execute('INSERT INTO comment (username, datetime, content) VALUES (%s, %s, %s)',(g.user['username'], utc_now.strftime('%Y-%m-%d %H:%M:%S'), request_object['comment']))
+            get_db().commit()
+        except:
+            response_object = {}
+            response_object['STATUS'] = 'INVALID_DATA'
+            return jsonify(response_object)
+    
+    response_object['comments'] = get_comments(date_time_object, newer_comments)
+    response_object['STATUS'] = 'OK'
+
+    return jsonify(response_object)

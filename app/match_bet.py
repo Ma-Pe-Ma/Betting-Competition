@@ -9,7 +9,7 @@ from flask import url_for
 from app.auth import login_required
 from app.db import get_db
 
-bp = Blueprint('match', __name__, '''url_prefix="/group"''')
+bp = Blueprint('match', __name__, '''url_prefix="/match"''')
 
 import datetime
 from dateutil import tz

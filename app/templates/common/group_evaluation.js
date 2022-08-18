@@ -46,7 +46,7 @@
 
         // Add the required HTTP header for form data POST requests
         //XHR.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-        XHR.setRequestHeader( 'Content-Type', 'application/json' );
+        XHR.setRequestHeader('Content-Type', 'application/json');
         
         var groupsObject = {};
 

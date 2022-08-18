@@ -1,6 +1,7 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
+DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS match_bet;
 DROP TABLE IF EXISTS final_bet;
@@ -108,3 +109,12 @@ INSERT INTO messages (id, message) VALUES (2, '');
 INSERT INTO messages (id, message) VALUES (3, '');
 INSERT INTO messages (id, message) VALUES (4, '');
 INSERT INTO messages (id, message) VALUES (5, '');
+
+-- Table holding discussion comments
+CREATE TABLE comment (
+  id SERIAL PRIMARY KEY,
+  username TEXT,
+  datetime TEXT NOT NULL,
+  content TEXT,
+  FOREIGN KEY(username) REFERENCES bet_user(username)
+);

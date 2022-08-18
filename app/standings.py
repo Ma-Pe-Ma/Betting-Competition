@@ -16,7 +16,7 @@ from app.configuration import group_deadline_time, group_evaluation_time
 from app.tools.score_calculator import get_group_win_amount, get_group_and_final_bet_amount, get_daily_points_by_current_time
 from app.tools.group_calculator import get_final_bet
 
-bp = Blueprint('standings', __name__, '''url_prefix="/group"''')
+bp = Blueprint('standings', __name__, '''url_prefix="/standings"''')
 
 Player = namedtuple('Player', 'nick, days')
 Day = namedtuple('Day', 'year, month, day, point')
