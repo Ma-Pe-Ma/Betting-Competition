@@ -1,10 +1,14 @@
 # Betting Competition Web Application
 
+![status](https://badgen.net/badge/status/finished/green) ![license](https://badgen.net/github/license/Ma-Pe-Ma/BettingApp)
+
+![desktop browser](https://badgen.net/badge/desktop%20browser/working/green) 
+
 ## Description
 
-This is a hobby project which goal is to host a simple betting competition on the web among a group of friends for big football/sports tournaments.
+This hobby project's goal is to host a simple betting competition on the web among a group of friends for big football/sports tournaments.
 
-Earlier this game was carried out manually sending emails and editing files on a cloud service. This app was developed to automate many of the cumbersome tasks for the admin and to provide a user-friendly interface for the players where they can publish their tips.
+Earlier this game was carried out manually sending emails and editing files on a cloud service. This application was developed to automate many of the cumbersome tasks for the admin and to provide a user-friendly interface for the players where they can publish their tips.
 
 This application was developed with [Flask](https://flask.palletsprojects.com/en/2.1.x/) framework.
 
@@ -60,14 +64,27 @@ Currently there are two languages available: English and Hungarian.
 The homepage of the site lists the future matches (with their date and odds). Each of them can be edited until the start of the match.
 No other player can see the user's bet until the match has started.
 
+![Betting](./screenshots/Home.png)
+
 ### Discussing
-At the bottom of the homepage a [remark42](https://github.com/umputun/remark42) chat plugin can be found which can be used to discuss the tournament. However it does not uses the site account, but it can be configured to be used with its own simple accounts (without any personal data) or it can be configured to be used with some widely used chat services (eg. Discus, Google, Facebook etc).
+At the bottom of the homepage a simple chat plugin can be found which can be used to discuss the tournament with markdown formatting. It's quite primitive but using a dedicated commenting system would be an overkill for this project.
+
+![Betting](./screenshots/Discussing.png)
+
+### Group and final result bet
+At this section the player can set the group and final result bet.
+
+![Betting](./screenshots/Group.png)
 
 ### Previous bets
 After a match has started the match is moved to the 'previous bets' section. Here the players can see every player's earlier bets, their results and their credit amount at the end of the match.
 
+![Betting](./screenshots/Previous.png)
+
 ### Standings
 This section shows the current standings of the players of competition and the visualization of the history of the game's standings. (One data point means the credit amount of a player at the end of the examined match day so the credit amounts are not visualized after each match only at the end of the days).
+
+![Betting](./screenshots/Standings.png)
 
 ### Automatic updating + notifications
 The users can ask for automatic reminders about matches to prevent missing out bets on them.
@@ -233,18 +250,6 @@ To start scheduling (if app was rebooted midday)
 
 <!-- GMAIL API Token key os.environ[] read at only startup or at retrieving?-->
 
-### Commenting system
-
-This section is not really part of the project but it's quite useful to use it. The app uses the [remark42](https://github.com/umputun/remark42) discussion /chat plugin but it can be easily replaced in the [home-page.html](./app/templates/en/home-page.html) template. 
-
-To self-host remark42 the following steps are needed to be taken:
-* pull the image with docker from the hub: `docker pull umputun/remark42`
-* launch the docker image with the following (properly modifed) command:
-
-    sudo docker run -it --restart=always --mount src=/path/to/RM42,target='/srv/var',type=bind -p 8080:8080 -p 8443:8443 umputun/remark42 remark42 server --url=%hosting_url% --secret=%secret_key% --auth.anon --ssl.type=static --ssl.port=8443 --ssl.key=/srv/var/key.pem --ssl.cert=/srv/var/cert.pem
-
-Or alternatively download and configure the [compose file](https://github.com/umputun/remark42/blob/master/docker-compose.yml), run docker compose and then launch the container.
-
 ### Translation
 
 Currently only English and Hungarian languages are provided. To translate the app just simply copy one of the language folders from template and translate manually the html resource files. (Also check out the common subfolder in the templates folder!)
@@ -258,17 +263,12 @@ The language system should be rewritten as the templating capabilites are not ut
 ## TO-DO
 * New language system (flaskbabel?)
 * New frontend + mobile view (+ delete unnecessary css + js files)
-
-* Add images to features section
 * Logging
 
 * How to backup POSTGRES database
 * Check if flaskscheduler works with Heroku
-* Gmail API description + test
-
-* DDNS for self-hosting (remark42)
+* Gmail API description + test + option to turn off emailing 
 
 ## License
 The frontend part is based on the [Jinja Material Lite](https://github.com/app-generator/jinja-materialpro-lite) project which has [MIT license](https://github.com/app-generator/jinja-materialpro-lite/blob/master/LICENSE.md), my project meets these requirements.
-
-My part is licensed as GNU LGPL v3.
+My part is licensed as [GNU GENERAL PUBLIC LICENSE Version 3](LICENSE.md)

@@ -24,6 +24,3 @@ export starting_bet_amount=2000
 export max_group_bet_value=50
 export max_final_bet_value=200
 export default_max_bet_per_match=50
-
-export REMARK42_URL="https://remarkhost.com:8080"
-export REMARK42_SITE_ID="remark"

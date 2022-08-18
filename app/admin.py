@@ -19,7 +19,7 @@ from app.gmail_handler import create_message, send_messages
 
 import os
 
-bp = Blueprint('admin', __name__, '''url_prefix="/group"''')
+bp = Blueprint('admin', __name__, '''url_prefix="/admin"''')
 
 @bp.route('/admin', methods=('GET',))
 @login_required
