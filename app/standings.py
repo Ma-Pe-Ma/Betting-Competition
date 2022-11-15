@@ -10,7 +10,7 @@ from collections import namedtuple
 from app.db import get_db
 from app.auth import login_required
 
-from app.configuration import starting_bet_amount
+from app.configuration import starting_bet_amount, supported_languages
 from app.configuration import group_deadline_time, group_evaluation_time
 
 from app.tools.score_calculator import get_group_win_amount, get_group_and_final_bet_amount, get_daily_points_by_current_time
@@ -42,6 +42,7 @@ def create_standings():
 
     for player in cursor.fetchall():
         user_name = player['username']
+        language = supported_languages[0]
 
         # find group bet/win amount
         group_bet_amount = get_group_and_final_bet_amount(user_name)
@@ -102,7 +103,7 @@ def create_standings():
             prev_date = day_date
             prev_amount = amount
 
-        final_bet_object = get_final_bet(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name, language=language)
 
         # if there's a final result then display it on a new day
         if final_bet_object is not None and final_bet_object.success is not None:

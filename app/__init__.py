@@ -52,10 +52,10 @@ def create_app(test_config = None):
     #Setting session timeout
     @app.before_request
     def before_request():
-        if not request.is_secure:
-            url = request.url.replace('http://', 'https://', 1)
-            code = 301
-            return redirect(url, code=code)
+        #if not request.is_secure:
+        #    url = request.url.replace('http://', 'https://', 1)
+        #    code = 301
+        #    return redirect(url, code=code)
 
         session.permanent = True
         app.permanent_session_lifetime = timedelta(minutes=session_timeout)
@@ -79,7 +79,7 @@ def create_app(test_config = None):
 
     @app.errorhandler(404)
     def page_not_found(e):
-        if g.user is not None:
+        if g is not None and hasattr(g, 'user') and g.user is not None:
             resource_language = g.user['language']
         else:
             resource_language = supported_languages[0]
@@ -88,13 +88,13 @@ def create_app(test_config = None):
         return render_template(resource_language + '/page-404.html'), 404
 
     @app.errorhandler(500)
-    def page_not_found(e):
-        if g.user is not None:
+    def page_not_found(e): 
+        if g is not None and hasattr(g, 'user') and g.user is not None:
             resource_language = g.user['language']
         else:
             resource_language = supported_languages[0]
 
-        # note that we set the 404 status explicitly
+        # note that we set the 500 status explicitly
         return render_template(resource_language + '/page-500.html'), 500
 
     app.config.update(SCHEDULER_TIMEZONE = 'utc')
@@ -102,7 +102,7 @@ def create_app(test_config = None):
 
     @app.context_processor
     def set_jinja_global_variables():
-        if g.user is not None:
+        if g is not None and hasattr(g, 'user') and g.user is not None:
             resource_language = g.user['language']
         else:
             resource_language = supported_languages[0]

@@ -6,15 +6,16 @@ export DATABASE_URL="dbname=flask_db user=flask password=bet host=localhost"
 
 export MATCH_URL="https://path.com/fixture"
 
-export session_timeout=30
+export email_sending='True'
+export session_timeout=15
 
 export user_invitation_key="registration"
 export admin_invitation_key="admin"
 
 export local_zone="Europe/Budapest"
 
-export register_deadline_time="2022-11-21 11:00"
-export group_deadline_time="2022-11-21 10:00"
+export register_deadline_time="2022-11-20 23:59"
+export group_deadline_time="2022-11-20 23:59"
 export group_evaluation_time="2022-12-02 19:00"
 
 export match_base_time=2

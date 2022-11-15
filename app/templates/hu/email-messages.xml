@@ -1,54 +1,53 @@
 <EmailDrafts>
     <Welcome>
         <Subject>Tippbajnokság - Sikeres regisztráció!</Subject>
-        <Content>Kedves {{username}}!
-
-Sikeresen regisztráltál a tippbajnokságra.
-
-Ha bármilyen kérdésed van, vagy valamilyen bugot találtál, akkor azokat elküldheted erre a címre, vagy írj a közös chat beszélgetésbe.
-Ha valamilyen szerver-probléma miatt nem tudod leadni a tipped, akkor erre a címre küldd el időben, és írd mellé a hibajelenséget.
-
-Üdvözlettel: A Tippmester
+        <Content><![CDATA[Kedves {{username}}!<br>
+<br>
+Sikeresen regisztráltál a tippbajnokságra!<br>
+<br>
+Ha bármilyen kérdésed van, vagy valamilyen bugot találtál, akkor azokat elküldheted erre a címre, vagy írj a közös chat beszélgetésbe a főoldalon.<br>
+Ha valamilyen szerver-probléma miatt nem tudod leadni a tipped, akkor erre a címre küldd el időben, és írd mellé a hibajelenséget!<br>
+<br>
+Üdvözlettel: A Tippmester]]>
         </Content>
     </Welcome>
     <MatchReminder>
-        <Subject>{% if missing_bets|length > 0 %}Hiányzó tipp {% else %} Meccsértesítő {% endif %}</Subject>
-        <Content>Kedves {{username}}!
+        <Subject>{% if missing_bets|length > 0 %}Hiányzó tipp {% else %} Meccsértesítő {% endif %} - {{date}}</Subject>
+        <Content><![CDATA[Kedves {{username}}! <br>
 {% if missing_bets|length > 0 %}
-Ma ismét meccsnap van, ne felejts el tippelni a következő meccs(ek)re:
-{% for missing in missing_bets %}    {{missing.date}} : {{missing.team1}} - {{missing.team2}}
+<br>Ma ismét meccsnap van, ne felejts el tippelni a következő meccs(ek)re: <br>
+{% for missing in missing_bets %}&nbsp; &nbsp; &nbsp; &nbsp;{{missing.date}}&nbsp;:&nbsp; {{missing.team1}}&nbsp;-&nbsp;{{missing.team2}} <br>
 {% endfor %}{% endif %}
-{% if non_missing_bets|length > 0 %}{% if missing_bets|length > 0 %}Az alábbi meccs(ek)re a következő(ke)t tippelted:{% else %}Ma ismét meccsnap van, a következőket tippelted:{% endif %}
-{% for non_missing in non_missing_bets %}    {{non_missing.date}} : {{non_missing.team1}} - {{non_missing.team2}}    {{goal1}} - {{goal2}}
+{% if non_missing_bets|length > 0 %}{% if missing_bets|length > 0 %}<br>Az alábbi meccs(ek)re a következő(ke)t tippelted:{% else %}<br>Ma ismét meccsnap van, a következőket tippelted:{% endif %}<br>
+{% for non_missing in non_missing_bets %}&nbsp;&nbsp;&nbsp;&nbsp;{{non_missing.date}}&nbsp;:&nbsp;{{non_missing.team1}}&nbsp;-&nbsp;{{non_missing.team2}}&nbsp; &nbsp; &nbsp; &nbsp; {{non_missing.goal1}}&nbsp; - &nbsp; {{non_missing.goal2}}<br>
 {% endfor %}
-{% endif %}Üdvözlettel: a Tippmester</Content>
+{% endif %}<br>Üdvözlettel: a Tippmester]]>
+        </Content>
     </MatchReminder>
     <DailyStandings>
         <Subject>Állásközlő - {{date}}</Subject>
         <Content><![CDATA[<div>Kedves {{username}}!</div><br>
+A {{date}}. nap végén a tippbajnokság állása a következő:<br>
+    <table style="width:100%;margin-left:20px;">
+        <tr>
+            <th rowspan="1" style="width: 10%;text-align:left;">Pozíció</th>
+            <th rowspan="1" style="width: 22%;text-align:center;">Név</th>
+            <th rowspan="1" style="width: 22%;text-align:center;">Pontszám</th>
+            <th rowspan="1" style="width: 23%;text-align:center;">Pontszámváltozás</th>
+            <th rowspan="1" style="width: 23%;text-align:center;">Helyezésváltozás</th>
+        </tr>
 
-A {{date}}. nap végén a tippbajnokság állása a következő:
-                        <table style="width:100%;margin-left:20px;">
-                            <tr>
-                                <th rowspan="1" style="width: 10%;text-align:left;">Pozíció</th>
-                                <th rowspan="1" style="width: 22%;text-align:center;">Név</th>
-                                <th rowspan="1" style="width: 22%;text-align:center;">Pontszám</th>
-                                <th rowspan="1" style="width: 23%;text-align:center;">Pontszámváltozás</th>
-                                <th rowspan="1" style="width: 23%;text-align:center;">Helyezésváltozás</th>
-                            </tr>
-                    
-                            {% for standing in standings %}
-                            <tr style="padding-bottom:5px;">                            
-                                <td style="text-align:left;">{{loop.index}}.</td>
-                                <td style="text-align:center;">{{standing.name}}</td>
-                                <td style="text-align:center;">{{standing.point|round(2)}}</td>                            
-                                <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
-                                <td style="text-align:center;">{{standing.position_diff}}</td> 
-                            </tr>
-                            {% endfor %}
+        {% for standing in standings %}
+        <tr style="padding-bottom:5px;">                            
+            <td style="text-align:left;">{{loop.index}}.</td>
+            <td style="text-align:center;">{{standing.name}}</td>
+            <td style="text-align:center;">{{standing.point|round(2)}}</td>                            
+            <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
+            <td style="text-align:center;">{{standing.position_diff}}</td> 
+        </tr>
+        {% endfor %}
 
-                        </table>
-
+    </table>
 <br>
 
 Üdvözlettel: A Tippmester]]>

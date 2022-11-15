@@ -44,7 +44,15 @@ def backup_sqlite_database():
     #create_draft(message_body=message)
 
 def match_reminder_once_per_day(matches):
+    print('Running scheduled match reminder...')
+
     with scheduler.app.app_context():
+        utc_now = datetime.utcnow()
+        utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+        
+        #object holding the correct date adjusted to timezone
+        local_date = utc_now.astimezone(local_zone).strftime('%Y. %m. %d')
+
         sendable_emails = []
 
         cursor = get_db().cursor()
@@ -92,21 +100,23 @@ def match_reminder_once_per_day(matches):
             #create email message
             email_object = get_email_resource_by_tag('MatchReminder', user['language'])
 
-            subject = render_template_string(email_object[0], missing_bets=missing_bets)
-            message_text = render_template_string(email_object[1], non_missing_bets=non_missing_bets, missing_bets=missing_bets)
+            subject = render_template_string(email_object[0], missing_bets=missing_bets, date=local_date)
+            message_text = render_template_string(email_object[1], non_missing_bets=non_missing_bets, missing_bets=missing_bets, username=user['username'])
             
-            sendable_emails.append(create_message(sender='me', to=user['email'], subject=subject, message_text=message_text))
+            sendable_emails.append(create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
 
         send_messages(sendable_emails)
 
 def update_results():
+    print('Running scheduled result updater...')
+
     with scheduler.app.app_context():
         download_data_csv()
         #backup_sqlite_database()
 
-@click.command('standings-manual')
-@with_appcontext
 def daily_standings():
+    print('Running scheduled daily standings creator...')
+
     with scheduler.app.app_context():
         #match time in utc
         utc_now = datetime.utcnow()
@@ -139,13 +149,13 @@ def daily_standings():
         send_messages(messages=messages)
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
-@click.command('checker-manual')
-@with_appcontext
-def daily_checker():    
-    utc_now = datetime.utcnow()
-    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
-
+def daily_checker():
     with scheduler.app.app_context():
+        print('Running daily scheduler at midnight...')
+
+        utc_now = datetime.utcnow()
+        utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+
         #backup_sqlite_database()
 
         cursor = get_db().cursor()
@@ -169,21 +179,35 @@ def daily_checker():
                     if hour_before_match < utc_now:
                         hour_before_match = utc_now
 
+                    print('Scheduled match reminder at: ' + hour_before_match.strftime('%Y-%m-%d %H:%M'))
                     scheduler.add_job(id = 'Daily match reminder', func=match_reminder_once_per_day, trigger='date', run_date=hour_before_match, args=[matches])
     
                 after_base_time = match_time_object + timedelta(hours=match_base_time)
                 match_after_base_task_id = str(match['id']) + '. match after base'
                 # schedule database update
+                print('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
                 scheduler.add_job(id = match_after_base_task_id, func=update_results, trigger='date', run_date=after_base_time)
 
                 after_extra_time = match_time_object + timedelta(hours=match_extra_time)
                 match_after_extra_task_id = str(match['id']) + '. match after extra'
                 # schedule database update
+                print('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))
                 scheduler.add_job(id = match_after_extra_task_id, func=update_results, trigger='date', run_date=after_extra_time)
 
                 if i == len(matches) - 1:
                     #schedule sending daily standings
-                    scheduler.add_job(id = 'Daily standings reminder', func=daily_standings, trigger='date', run_date=after_extra_time + timedelta(minutes=1))
+                    print('Scheduled standings reminder at: ' + (after_extra_time + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M'))
+                    scheduler.add_job(id = 'Daily standings reminder', func=daily_standings, trigger='date', run_date=after_extra_time + timedelta(minutes=5))
+
+@click.command('checker-manual')
+@with_appcontext
+def manual_daily_checker():
+    daily_checker()
+
+@click.command('standings-manual')
+@with_appcontext
+def manual_daily_standings():
+    daily_standings()
 
 def init_scheduler(app):    
     # if you don't wanna use a config, you can set options here:
@@ -191,9 +215,9 @@ def init_scheduler(app):
     scheduler.init_app(app)
 
     #schedule checker to run at every day at midnight
-    scheduler.add_job(id = 'Daily Task', func=daily_checker, trigger='cron', hour=0, minute=0)
+    scheduler.add_job(id = 'Daily Task', func=daily_checker, trigger='cron', hour=0, minute=0, second=0)
 
-    app.cli.add_command(daily_checker)
-    app.cli.add_command(daily_standings)
+    app.cli.add_command(manual_daily_checker)
+    app.cli.add_command(manual_daily_standings)
 
     scheduler.start()

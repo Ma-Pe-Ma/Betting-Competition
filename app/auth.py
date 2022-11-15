@@ -85,7 +85,7 @@ def register():
     register_deadline = register_deadline.replace(tzinfo=tz.gettz('UTC'))
 
     if utc_now > register_deadline:
-        return render_template(g.user['language'] + '/auth/register-fail.html')
+        return render_template(supported_languages[0] + '/auth/register-fail.html')
 
     if g.user is not None:
         return redirect(url_for('home.homepage'))

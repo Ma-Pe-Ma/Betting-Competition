@@ -155,7 +155,7 @@ def prev_bets():
 
         group_evaluation_date = group_evaluation_time_object.date().strftime('%Y-%m-%d')
 
-        final_bet_object = get_final_bet(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name, language=g.user['language'])
 
         # if there's a final result then display it on a new day
         if final_bet_object is not None and final_bet_object.success is not None:

@@ -12,10 +12,10 @@ Bet2 = namedtuple('Bet2', 'team, local_name, position')
 BetProperty = namedtuple('BetProperty', 'amount, win, hit_number, multiplier')
 
 # map used to declare win amount multiplier for group
-hit_map = [0, 0, 2, 0, 4]
+hit_map = [0, 1.5, 2.5, 0, 4]
 
 # get's user's final bet, or create default if it does not exist
-def get_final_bet(user_name):
+def get_final_bet(user_name, language):
     cursor = get_db().cursor()
     cursor.execute('SELECT team, bet, result, success FROM final_bet WHERE username=%s', (user_name,))
     final_bet = cursor.fetchone()
@@ -44,10 +44,10 @@ def get_final_bet(user_name):
         final_team = cursor.fetchone()
         result = 0
         success = None
-        multiplier = 0
+        multiplier = 0    
 
     cursor1 = get_db().cursor()
-    cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (final_team['name'], g.user['language']))
+    cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (final_team['name'], language))
     local_name = cursor1.fetchone()
 
     return FinalBet(team=final_team['name'], local_name=local_name['translation'], result=result, betting_amount=bet, success=success, multiplier=multiplier)

@@ -19,10 +19,11 @@ bp = Blueprint('group', __name__, '''url_prefix="/group"''')
 
 def before_deadline():
     user_name = g.user['username']
+    language = g.user['language']
 
     if request.method == 'GET':
         groups = get_group_object(user_name=user_name)
-        final_bet_object = get_final_bet(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name, language=language)
 
         return render_template(g.user['language'] + '/group-bet/group-edit.html', start_amount=starting_bet_amount, max_group_bet_value = max_group_bet_value, max_final_bet_value=max_final_bet_value, final_bet = final_bet_object, groups = groups)
 
@@ -155,7 +156,7 @@ def during_groupstage():
     if user_name is not None:
         amount_after = starting_bet_amount - get_group_and_final_bet_amount(user_name=user_name)
         groups = get_group_object(user_name=user_name)
-        final_bet_object = get_final_bet(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name, language=g.user['language'])
 
         return render_template(g.user['language'] + '/group-bet/group-during.html', groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=starting_bet_amount)
     
@@ -169,7 +170,7 @@ def after_evaluation():
     user_name = request.args.get('name')
 
     if user_name is not None:
-        final_bet_object = get_final_bet(user_name=user_name)
+        final_bet_object = get_final_bet(user_name=user_name, language=g.user['language'])
         groups = get_group_object(user_name=user_name)
         total_group_bet = get_group_and_final_bet_amount(user_name=user_name)
         total_win_amount = get_group_win_amount2(groups)

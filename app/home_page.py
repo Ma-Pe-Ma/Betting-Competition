@@ -112,7 +112,7 @@ def homepage():
     # determine the current credit of the player
     current_amount = get_current_points_by_player(g.user['username'])
 
-    final_bet_object = get_final_bet(user_name=g.user['username'],)
+    final_bet_object = get_final_bet(user_name=g.user['username'], language=g.user['language'])
 
     # if there's a final result then display it on a new day
     if final_bet_object is not None and final_bet_object.success is not None:

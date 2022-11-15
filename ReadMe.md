@@ -143,7 +143,7 @@ While Flask's own server is suitable for developing the application, later it be
 
 The next step is to open the apache configuration file for your site (the default is /etc/apache2/sites-enabled/000-default.conf) then configure and add the following lines:
 
-    WSGIDaemonProcess betting python-path=/path/to/miniconda3/envs/%env_name%/lib/python3.x/site-packages
+    WSGIDaemonProcess betting python-path=/path/to/miniconda3/envs/%env_name%/lib/python3.x/site-packages locale='C.UTF-8'
     WSGIScriptAlias / /path/to/BettingApp.wsgi
     WSGIProcessGroup betting
 	WSGIApplicationGroup %{GLOBAL}
@@ -174,7 +174,7 @@ After finishing the configuration restart apache2
 
 Logs for the apache can be found her: `/var/log/apache2/`
 
-You have to [create TLS certificate](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs) and [specify it to Apache](https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html) if you want your connection to be secure.
+You have to [create TLS certificate](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs) (make sure it uses at least 2048-bit encryption) and [specify it to Apache](https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html) if you want your connection to be secure.
 
 Lastly the project configuration variables [have to be specifed](#setting-up).
 

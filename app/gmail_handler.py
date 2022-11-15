@@ -46,17 +46,17 @@ def get_credentials():
     # time.
 
     # version 1: if token file used
-    #if os.path.exists('token.json'):
-    #   creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists('token.json'):
+       creds = Credentials.from_authorized_user_file('token.json', SCOPES)
 
     # version 2: this variable holds the content of the token.json, and saved on heroku dash
     # with this you can use gmail api on heroku but token needs to be generated firstly
     # Token generation is currently made manually, see below
     # quite complicated to automatize it (not worth it) https://developers.google.com/identity/protocols/oauth2/web-server#python_1
-    if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') is not None:
-        json_str = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-        json_data = json.loads(json_str)
-        creds = Credentials.from_authorized_user_info(info=json_data, scopes=SCOPES)
+    #if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') is not None:
+    #    json_str = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    #    json_data = json.loads(json_str)
+    #    creds = Credentials.from_authorized_user_info(info=json_data, scopes=SCOPES)
     
     # only used to create token.json at the first time, both version 1-2 needs it
     # but version 2 cant be run on heroku, needs to be run first locally
@@ -127,18 +127,10 @@ def create_message_with_attachment(sender, to, subject, message_text, file):
 
         return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
-def create_draft(message_body):
-    creds = get_credentials()
-
+def create_draft(service, user_id, message):
     try:
-        # Call the Gmail API
-        service = build('gmail', 'v1', credentials=creds)
-        
-        message = {'message' : message_body}
-
-        draft = service.users().drafts().create(userId='me', body = message).execute()
-
-        #print('Draft id: %s\nDraft message: %s' % draft['id'], draft['message'])
+        message = {'message' : message}
+        draft = service.users().drafts().create(userId=user_id, body=message).execute()
 
         return draft
 
@@ -146,25 +138,43 @@ def create_draft(message_body):
         print(f'An error occurred while creating drafts: {error}')
 
 def create_drafts(drafts):
-    for draft in drafts:
-        create_draft(draft)
+    if os.environ.get('email_sending') == 'True':
+        creds = get_credentials()
+    else:
+        print(str(len(drafts)) + ' drafts were not created as sending is disabled.')
+        return
+
+    try:
+        # Call the Gmail API
+        service = build('gmail', 'v1', credentials=creds)
+
+        for draft in drafts:
+            create_draft(service=service, user_id='me', message_body=draft)
+
+    except HttpError as error:
+        print(f'An error occurred while sending messages: {error}')
 
 def send_message(service, user_id, message):
     try:
-        service.users().messages().send(userId=user_id, body=message.execute())
+        service.users().messages().send(userId=user_id, body=message).execute()
 
         return message
     except HttpError as error:
         print('An error occurred while sending a message: %s' % error)
 
 def send_messages(messages):
-    creds = get_credentials()
+    if os.environ.get('email_sending') == 'True':
+        creds = get_credentials()
+    else:
+        print(str(len(messages)) + ' messages were not sent as sending is disabled.')
+        return
 
     try:
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
 
-        for message in messages:
+        for message in messages: 
+            # create_draft(service=service, user_id='me', message=message)
             send_message(service=service, user_id='me', message=message)
 
     except HttpError as error:
