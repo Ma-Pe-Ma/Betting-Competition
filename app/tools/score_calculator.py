@@ -135,10 +135,13 @@ def get_daily_points_by_current_time(user_name):
     day_prefabs = []
 
     cursor = get_db().cursor()
-    cursor.execute('SELECT * FROM match WHERE time::date < %s::date', (utc_now.strftime('%Y-%m-%d %H:%M'),))
+    cursor.execute('SELECT * FROM match WHERE time::timestamp < %s::timestamp', (utc_now.strftime('%Y-%m-%d %H:%M'),))
 
     # get matches which has been started by current time
     for match in cursor.fetchall():
+        if match['goal1'] is None or match['goal2'] is None:
+            continue
+
         match_time_utc = datetime.strptime(match['time'], '%Y-%m-%d %H:%M')
         match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
 

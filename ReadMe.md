@@ -24,8 +24,9 @@ Firstly the user has to specify the results of the group stage. The reward will 
 
 The winning multiplier for a specific group betting can be determined this way:
 
-* 0× if zero or only one position was guessed right
-* 2× if two positions were guessed right
+* 0× if zero positions were guessed right
+* 1.5× if one position was guessed right
+* 2.5× if two positions were guessed right
 * 4× if every position was guessed right
 
 ### Final result bet
@@ -93,6 +94,8 @@ At the end of match days users can recieve the current standing of the game if t
 
 The application automatically updates its result database after every match (but the update can be invoked manually too).
 
+Note: the [self-hosted](#self-hosting) apache solution does not support these features yet.
+
 ### Additional scopes for the admins
 This section only appears for admins they have permission to do this additional tasks:
 
@@ -105,22 +108,10 @@ This section only appears for admins they have permission to do this additional 
 ## Hosting
 The application (probably) can be hosted on any service which has Flask support.
 
-This ReadMe presents you two techniques: [Heroku](https://heroku.com/) and self-hosting.
-
-### Heroku
-
-A [detailed guide](https://devcenter.heroku.com/articles/getting-started-with-python?singlepage=true) can be found here how to setup Heroku properly.
-
-Summarizing the steps:
-* Create a Heroku account and then create a project for it, then create an app inside the project
-* Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli), this tool acts as the command-line tool for the remote hosting server
-* Checkout a new branch locally which will be pushed for Heroku and make this branch track the project branch and then push it to the Heroku remote
-* Then scale the app to start it
-
-If the repository is broken then it can be wiped with [heroku repo plugin](https://github.com/heroku/heroku-repo).
+This ReadMe presents you two techniques: self-hosting and [Heroku](https://heroku.com/) .
 
 ### Self-hosting
-First clone your app to a place where the server has read/write permissions like the intended `/var/www/`,
+First clone your app to a place where the server has read/write permissions like the intended `/var/www/` (write permission is needed for saving [email tokens](#email-sending) and for saving uploaded [initialization files](#team-description-files)).
 
 To prevent package-collision problems it is suggested to create new a [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environemnt. After cloning the project activate the new environment and install the dependencies:
 
@@ -143,7 +134,7 @@ While Flask's own server is suitable for developing the application, later it be
 
 The next step is to open the apache configuration file for your site (the default is /etc/apache2/sites-enabled/000-default.conf) then configure and add the following lines:
 
-    WSGIDaemonProcess betting python-path=/path/to/miniconda3/envs/%env_name%/lib/python3.x/site-packages locale='C.UTF-8'
+    WSGIDaemonProcess betting python-path=/path/to/miniconda3/envs/%env_name%/lib/python3.x/site-packages locale='C.UTF-8' threads=15 maximum-requests=20000
     WSGIScriptAlias / /path/to/BettingApp.wsgi
     WSGIProcessGroup betting
 	WSGIApplicationGroup %{GLOBAL}
@@ -180,6 +171,20 @@ Lastly the project configuration variables [have to be specifed](#setting-up).
 
 </details>
 
+### Heroku
+
+Unfortunately, during development, Heroku terminated the free hobby tier which means the project now can be hosted for only for a given amount of money. By the nature of this project, it only needs to be operated for only 3-4 weeks, so it is a bit overkill to subscribe for a monthly fixed price plan.
+
+A [detailed guide](https://devcenter.heroku.com/articles/getting-started-with-python?singlepage=true) can be found here how to setup Heroku properly.
+
+Summarizing the steps:
+* Create a Heroku account and then create a project for it, then create an app inside the project
+* Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli), this tool acts as the command-line tool for the remote hosting server
+* Checkout a new branch locally which will be pushed for Heroku and make this branch track the project branch and then push it to the Heroku remote
+* Then scale the app to start it
+
+If the repository is broken then it can be wiped with [heroku repo plugin](https://github.com/heroku/heroku-repo).
+
 ## Setting up
 
 ### Fixture note
@@ -196,16 +201,16 @@ Heroku provides [PostgreSQL support](https://devcenter.heroku.com/articles/herok
 
 The linked guide also describes how to set up a database for your local machine.
 
-<!--heroku pg:backups:schedule DATABASE_URL --at '02:00 America/Los_Angeles' --app sush-->
+You can also create backups of the database with `pg_dump` and it is also possilbe to schedule creating backups with Heroku.
 
 ### Configuration variables
 Before first launching the applicication the [project](./app/configuration.py) variables have to be specified. All of them has an explanation.
 
 The default solution is to read them out from the environment variables this is solved differently for the various hosting options:
 
-* for Heroku you have to specify the correct key-value pairs in the Config Vars section
 * for the development Flask server specify them in the OSVARIABLES.sh bash script and execute it with `". OSVARIABLES.sh"`
-* for Apache2 self-hosting method there is no elegant solution as you cannot pass environment variables to it so the easiest way to solve this is by editting the `configuration_container.py` script
+* for the self-hosted Apache2 you can pass variables with the [BettingApp.wsgi](./BettingApp.wsgi) file
+* for Heroku you have to specify the correct key-value pairs in the Config Vars section
 
 After the configuration happened initialize the app with the following command:
 
@@ -236,9 +241,9 @@ The fields for this are the following:
 
 ### Email sending 
 
-<!--The email sending is implemented with the Google API. First you have to create an account and a cloud project.-->
+The email sending is implemented with the [Google API](https://developers.google.com/gmail/api/quickstart/python). First you have to create an account and a cloud project.
 
-This section will be updated.
+The process of setting up email sending is specified in [this source](./app/gmail_handler.py) file
 
 <!--To manually launch the automated reminders:
 
@@ -247,8 +252,6 @@ To immidiately send the standings (if it wasn't send due to some error):
 
 To start scheduling (if app was rebooted midday)
 * python -m flask checker-manual-->
-
-<!-- GMAIL API Token key os.environ[] read at only startup or at retrieving?-->
 
 ### Translation
 
@@ -261,13 +264,14 @@ I'm really bad at frontend so I used an existing template. The parts which I des
 The language system should be rewritten as the templating capabilites are not utilized properly, the whole html templates are copied instead of passing the proper translation strings into the templates.
 
 ## TO-DO
-* New language system (flaskbabel?)
+* Solve scheduling with apache2 (+test with heroku, but this is not important)
+* Test manually initiating: database update + sending reminder
+* Add result editing feature
+* Show group results at previous section after admin has set the results of them (currently it's timed)
+* Replace current html text string resources to sophisticated ones (both hu/en)
+* New language system (flaskbabel?) or create common template for every lang and specify string resources in seperate files for diff languages
 * New frontend + mobile view (+ delete unnecessary css + js files)
 * Logging
-
-* How to backup POSTGRES database
-* Check if flaskscheduler works with Heroku
-* Gmail API description + test + option to turn off emailing 
 
 ## License
 The frontend part is based on the [Jinja Material Lite](https://github.com/app-generator/jinja-materialpro-lite) project which has [MIT license](https://github.com/app-generator/jinja-materialpro-lite/blob/master/LICENSE.md), my project meets these requirements.

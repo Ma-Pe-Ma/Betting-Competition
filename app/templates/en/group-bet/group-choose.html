@@ -23,7 +23,7 @@
                         
                         <select name="players" id="players">
                             {% for player in players %}
-                            <option value="{{player["username"]}}" {% if player["username"] == username %} selected="selected" {% endif %}>{{player["username"]}}</option>
+                            <option value="{{player["username"]}}" {% if player["username"] == g.user.username %} selected="selected" {% endif %}>{{player["username"]}}</option>
                             {% endfor %}
                         </select>
 

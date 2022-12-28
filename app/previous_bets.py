@@ -147,7 +147,7 @@ def prev_bets():
             day_date_object = datetime.strptime(day.date, '%Y-%m-%d')
 
             #if checked day is group evaulation date than add group win amount at end
-            if day_date_object.date() == group_evaluation_time_object.date():
+            if utc_now > group_evaluation_time_object and day_date_object.date() == group_evaluation_time_object.date():
                 amount += group_bonus
                 balance_after_group = amount
 
@@ -173,7 +173,7 @@ def prev_bets():
 
     # if no user name provided send down the username list and render the base page
     cursor = get_db().cursor()
-    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\'', ())
+    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC', ())
     players = cursor.fetchall()
 
     return render_template(g.user['language'] + '/previous-bet/previous-bets.html', players=players)

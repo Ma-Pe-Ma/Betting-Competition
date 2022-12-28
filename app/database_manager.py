@@ -70,19 +70,18 @@ def download_data_csv():
 
             goals = row[7]
             if goals is not None and goals != '':
+                goals = goals.replace(" ", "")
+                
                 goals.split("-")
-        
-                for goal in goals:
-                    goal.replace(" ", "")
 
-                goal1 = goal[0]
-                goal2 = goal[1]
+                goal1 = goals[0]
+                goal2 = goals[2]
 
             get_db().cursor().execute("UPDATE match SET team1=%s, team2=%s, goal1=%s, goal2=%s WHERE id=%s", (row[4], row[5], goal1, goal2, row[0]))
         
         get_db().commit()
     except:
-        print("Error updating matches.da")
+        print("Error updating match database.")
         return False
 
     return True

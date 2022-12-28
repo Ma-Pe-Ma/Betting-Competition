@@ -161,7 +161,7 @@ def during_groupstage():
         return render_template(g.user['language'] + '/group-bet/group-during.html', groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=starting_bet_amount)
     
     cursor = get_db().cursor()
-    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\'', ())
+    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC', ())
     players = cursor.fetchall()
 
     return render_template(g.user['language'] + '/group-bet/group-choose.html', players=players)
