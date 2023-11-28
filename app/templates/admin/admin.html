@@ -1,0 +1,62 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Admin {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Admin</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block" style="display: flex; flex-direction: column;">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                            {% if message == 'UPLOAD_OK' %}
+                    <a style ="color:green;">File was successfully uploaded!</a>
+                    <br>
+                            {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <a href="/admin/message">Message on home-page</a>    
+                    <a href="/admin/send-email">Send email to every user</a>
+                    <a href="/admin/odd">Modify odds of matches</a>
+                    <br>
+                    <a href="/admin/group-evaluation">Group stage evaluation</a>
+                    <a href="/admin/final-bet">Final result bet evaluation</a>
+                       
+                    <br>
+                    <button type="button" id="fetchMatch">Update match-result database</button>
+                    <a style ="color:green;" id="fetchResult"></a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+{% set update_success = 'Match-result database has been successfully updated!' %}
+{% set update_failure = 'Match-result database update has failed!' %}
+{% set update_timeout = 'Match-result database update timed out.' %}
+{% set update_error = 'Error connecting to server.' %}
+{% set update_in_progress = 'Syncing in progress...' %}
+
+{% include "/common/admin_fetch.js" %}
+
+{% endblock javascripts %}

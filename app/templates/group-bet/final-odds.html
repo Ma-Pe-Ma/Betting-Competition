@@ -1,0 +1,63 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Végsőtipp-szorzók {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Odds for final result bet</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+
+                        <table style="width:100%;margin-left:20px;">
+                            <tr>
+                                <th rowspan="1" style="width: 25%;text-align:left;">Team</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Champion</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Finalist</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Semi-finalst</th>
+                                <th rowspan="1" style="width: 16%;text-align:center;">Knockout-stage</th>
+                            </tr>
+                    
+                            {% for team in teams %}
+                            {% set background = 'white' %}
+
+                            {% if loop.index %2 == 1 %}
+                            {% set background = '#E8E8E8' %}
+                            {% endif %}
+
+                            <tr style="padding-bottom:5px;background-color:{{background}};">                            
+                                <td style="text-align:left;">{{team.name}}</td>
+                                <td style="text-align:center;">{{team.top1}}</td>
+                                <td style="text-align:center;">{{team.top2}}</td>
+                                <td style="text-align:center;">{{team.top4}}</td>
+                                <td style="text-align:center;">{{team.top16}}</td>
+                            </tr>
+
+                            {% if loop.index % 4 == 0 %}
+                            <tr><td><br></td></tr>
+                            {% endif %}
+
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

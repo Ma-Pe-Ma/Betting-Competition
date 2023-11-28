@@ -13,9 +13,7 @@ from app.tools.score_calculator import get_group_and_final_bet_amount, get_group
 from app.tools.score_calculator import prize_result
 from app.tools.group_calculator import get_final_bet
 
-from app.configuration import starting_bet_amount
-from app.configuration import local_zone
-from app.configuration import group_evaluation_time
+from app.configuration import configuration
 
 bp = Blueprint('previous', __name__, '''url_prefix="/previous"''')
 
@@ -31,10 +29,11 @@ def prev_bets():
     if user_name is not None:
         utc_now = datetime.utcnow()
         utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+        local_zone =  tz.gettz(configuration.local_zone)
 
-        group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
+        group_evaluation_time_object = datetime.strptime(configuration.deadline_times.group_evaluation, '%Y-%m-%d %H:%M')
 
-        start_amount = starting_bet_amount - get_group_and_final_bet_amount(user_name)
+        start_amount = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(user_name)
         group_bonus = get_group_win_amount(user_name)
         balance_after_group = 0
 
@@ -169,11 +168,11 @@ def prev_bets():
         else:
             success_rate = number_of_successful_bets / number_of_match_bets
 
-        return render_template(g.user['language'] + '/previous-bet/previous-day-match.html', days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
+        return render_template('/previous-bet/previous-day-match.html', days=modified_days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=final_bet_object, finishing_balance = finishing_balance, success_rate=success_rate)
 
     # if no user name provided send down the username list and render the base page
     cursor = get_db().cursor()
     cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC', ())
     players = cursor.fetchall()
 
-    return render_template(g.user['language'] + '/previous-bet/previous-bets.html', players=players)
+    return render_template('/previous-bet/previous-bets.html', players=players)

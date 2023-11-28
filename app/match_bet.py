@@ -15,19 +15,19 @@ import datetime
 from dateutil import tz
 
 from collections import namedtuple
-Match = namedtuple('Match', 'ID, team1, team2, odd1, oddX, odd2, date, time, day_id, type, goal1, goal2, bet, max_bet')
-MatchContainer = namedtuple('MatchContainer', 'state, match')
-
 from enum import Enum
 
+Match = namedtuple('Match', 'ID, team1, team2, odd1, oddX, odd2, date, time, day_id, type, goal1, goal2, bet, max_bet')
+MatchContainer = namedtuple('MatchContainer', 'state, match')
 MatchState = Enum('MatchState', 'invalid started nonstarted')
 
 from datetime import datetime, time
-from app.configuration import local_zone
+from app.configuration import configuration
 
 def get_match_bet(match_id, user_name):
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+    local_zone =  tz.gettz(configuration.local_zone)
 
     try:
         match_id = int(match_id)
@@ -96,7 +96,7 @@ def match_bet():
         elif match_bet_object.state == MatchState.started:
             return redirect(url_for('home.homepage', match_state='started', match_id = match_id))
         
-        return render_template(g.user['language'] + '/match-bet.html', match=match_bet_object.match)            
+        return render_template('/match-bet.html', match=match_bet_object.match)            
 
     elif request.method == 'POST':
         match_id = request.form['matchID']
@@ -122,7 +122,7 @@ def match_bet():
 
         except ValueError:
             flash('invalid_bet')
-            return render_template(g.user['language'] + '/match-bet.html', match=match_bet_object.match)
+            return render_template('/match-bet.html', match=match_bet_object.match)
 
         try:
             goal1_number = int(goal1)
@@ -130,7 +130,7 @@ def match_bet():
         except ValueError:
             flash('invalid_goal')
             match = match_bet_object.match._replace(bet=bet_number)
-            return render_template(g.user['language'] + '/match-bet.html', match=match)
+            return render_template('/match-bet.html', match=match)
 
         cursor = get_db().cursor()
         cursor.execute('SELECT * FROM match_bet WHERE match_id=%s AND username=%s', (match_id, user_name))

@@ -1,0 +1,46 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Admin/Csaptleíró-fájl feltöltése {% endblock %} 
+
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Upload team description and translation files</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                {{message}}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <h2>Upload files</h2>
+                        <form method=post enctype=multipart/form-data>
+                            <label for="team">Team description</label>
+                            <input type=file name=team id="team"><br>
+                            <label for="translation">Team translation</label>
+                            <input type=file name=translation id="translation"><br>
+                            <input type=submit value=Feltöltés>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

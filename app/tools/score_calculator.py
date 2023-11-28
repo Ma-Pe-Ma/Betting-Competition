@@ -5,7 +5,7 @@ from app.db import get_db
 from datetime import datetime, timezone
 from dateutil import tz
 
-from app.configuration import local_zone, starting_bet_amount, group_evaluation_time
+from app.configuration import configuration
 from app.tools.group_calculator import get_group_object
 
 DayPrefab = namedtuple('DayPrefab', 'date, points')
@@ -55,7 +55,7 @@ def get_group_win_amount(user_name):
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
-    group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
+    group_evaluation_time_object = datetime.strptime(configuration.deadline_times.group_evaluation, '%Y-%m-%d %H:%M')
     group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
 
     if utc_now > group_evaluation_time_object:
@@ -131,6 +131,7 @@ def get_match_prize(match, match_bet):
 def get_daily_points_by_current_time(user_name):
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+    local_zone =  tz.gettz(configuration.local_zone)
 
     day_prefabs = []
 
@@ -181,7 +182,7 @@ def get_daily_points_by_current_time(user_name):
 
 # get player's current balance 
 def get_current_points_by_player(user_name):
-    amount = starting_bet_amount
+    amount = configuration.bet_values.starting_bet_amount
     # substract group and final bet amount
     amount -= get_group_and_final_bet_amount(user_name)
 

@@ -10,8 +10,7 @@ from collections import namedtuple
 from app.db import get_db
 from app.auth import login_required
 
-from app.configuration import starting_bet_amount, supported_languages
-from app.configuration import group_deadline_time, group_evaluation_time
+from app.configuration import configuration
 
 from app.tools.score_calculator import get_group_win_amount, get_group_and_final_bet_amount, get_daily_points_by_current_time
 from app.tools.group_calculator import get_final_bet
@@ -23,6 +22,8 @@ Day = namedtuple('Day', 'year, month, day, point')
 CurrentPlayerStanding = namedtuple('CurrentPlayerStanding', 'name, point, previous_point, position_diff')
 
 def create_standings():
+    deadline_times = configuration.deadline_times
+
     players = []
 
     current_player_standings = []
@@ -31,10 +32,10 @@ def create_standings():
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
     #create unique time objects
-    group_deadline_time_object = datetime.strptime(group_deadline_time, '%Y-%m-%d %H:%M')
+    group_deadline_time_object = datetime.strptime(deadline_times.group_bet, '%Y-%m-%d %H:%M')
     two_days_before_deadline = group_deadline_time_object - timedelta(days=2)
     one_day_before_deadline = group_deadline_time_object - timedelta(days=1)
-    group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
+    group_evaluation_time_object = datetime.strptime(deadline_times.group_evaluation, '%Y-%m-%d %H:%M')
 
     #iterate through users
     cursor = get_db().cursor()
@@ -42,7 +43,8 @@ def create_standings():
 
     for player in cursor.fetchall():
         user_name = player['username']
-        language = supported_languages[0]
+        # TODO eliminate this?
+        language = configuration.supported_languages[0]
 
         # find group bet/win amount
         group_bet_amount = get_group_and_final_bet_amount(user_name)
@@ -51,7 +53,7 @@ def create_standings():
         days = []
 
         #two days before starting show start amount, same for everyone
-        amount = starting_bet_amount
+        amount = configuration.bet_values.starting_bet_amount
         days.append(Day(year=two_days_before_deadline.year, month=two_days_before_deadline.month-1, day=two_days_before_deadline.day, point=amount))        
 
         #one day before starting show startin minus group+final betting amount
@@ -150,4 +152,4 @@ def create_standings():
 @login_required
 def standings():
     standings = create_standings()
-    return render_template(g.user['language'] + '/standings.html', players=standings[0], standings=standings[1])
+    return render_template('/standings.html', players=standings[0], standings=standings[1])

@@ -5,9 +5,9 @@ import urllib.request
 import csv
 
 from app.db import get_db
-from app.configuration import default_max_bet_per_match, match_url
+from app.configuration import configuration
 
-url = match_url
+url = configuration.MATCH_URL
 
 def initialize_teams(team_file_name, translation_file_name):
     with current_app.open_resource(team_file_name, 'rb') as team_file: 
@@ -38,6 +38,8 @@ def initialize_teams(team_file_name, translation_file_name):
         get_db().commit()
 
 def initialize_matches():
+    bet_values = configuration.bet_values
+
     try:
         response = urllib.request.urlopen(url)
         data = response.read()
@@ -49,7 +51,7 @@ def initialize_matches():
         for row in data_reader:        
             time_object = datetime.strptime(row[2], "%d/%m/%Y %H:%M")
             time_string = time_object.strftime("%Y-%m-%d %H:%M")
-            get_db().cursor().execute("INSERT INTO match (id, team1, team2, time, round, max_bet) VALUES (%s, %s, %s, %s, %s, %s)", (row[0], row[4], row[5], time_string, row[1], default_max_bet_per_match))
+            get_db().cursor().execute('INSERT INTO match (id, team1, team2, time, round, max_bet) VALUES (%s, %s, %s, %s, %s, %s)', (row[0], row[4], row[5], time_string, row[1], bet_values.default_max_bet_per_match))
     except:
         print("Error initializing matches.")
 

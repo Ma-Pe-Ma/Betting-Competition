@@ -1,42 +1,21 @@
-import os
-from dateutil import tz
+import json
 
-# supported languages
-supported_languages = os.environ['supported_languages'].split(',')
+from collections import namedtuple
 
-# secret key for signing session cookie
-app_secret_key = os.environ['app_secret_key']
+configuration_file_path : str = './configuration.json'
 
-# postgres connection details
-DATABASE_URL = os.environ['DATABASE_URL']
+configuration = None
 
-# location from where the match result fixture is fetched
-match_url = os.environ['MATCH_URL']
+def convert_to_named_tuple(tuple_name : str, dictionary : dict) -> namedtuple:
+    for key, value in dictionary.items():
+            if isinstance(value, dict):
+                dictionary[key] = convert_to_named_tuple(key, value) 
+    return namedtuple(tuple_name, dictionary.keys())(**dictionary)
 
-# browser session timeout in minutes
-session_timeout = int(os.environ['session_timeout'])
-
-# invitation/registration keys for the users
-user_invitation_key = os.environ['user_invitation_key']
-admin_invitation_key = os.environ['admin_invitation_key']
-
-# local time zone of application/users
-local_zone = tz.gettz(os.environ['local_zone'])
-
-# times are in UTC!
-# the time when registration closes
-register_deadline_time = os.environ['register_deadline_time']
-# the start time of the first match, format: '%Y-%m-%d %H:%M'
-group_deadline_time = os.environ['group_deadline_time']
-# 30 minutes after the last group stage match is finished, format: '%Y-%m-%d %H:%M'
-group_evaluation_time = os.environ['group_evaluation_time']
-
-#the match time with and without extra time (after this time the csv will be updated) [hours], format: float
-match_base_time = float(os.environ['match_base_time'])
-match_extra_time = float(os.environ['match_extra_time'])
-
-#values for configuring betting values, format: int
-starting_bet_amount = int(os.environ['starting_bet_amount'])
-max_group_bet_value = int(os.environ['max_group_bet_value'])
-max_final_bet_value = int(os.environ['max_final_bet_value'])
-default_max_bet_per_match = int(os.environ['default_max_bet_per_match'])
+def load_configuration() -> namedtuple:
+    with open(configuration_file_path) as config_file:
+        configuration_dict = json.load(config_file)
+        global configuration        
+        configuration = convert_to_named_tuple('Configuration', configuration_dict)
+        return configuration
+    

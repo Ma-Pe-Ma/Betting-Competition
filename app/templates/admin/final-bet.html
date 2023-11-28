@@ -1,0 +1,68 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Admin / Végsőtipp {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Final bet result evaluation</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        The results of the final bets can be set here.
+
+                        <form action="./final-bet" method="POST" id="finalForm" name="finalForm"></form>
+
+                        {% for player in players %} 
+                            <div>
+                                <label for="{{player.name}}">{{player.name}} - {{player.team}} - </label>
+                                <div style="display: inline-block;" id="result-{{loop.index}}">{{player.result}}</div>
+                                <select name ="{{player.name}}" id="{{player.name}}" form="finalForm" selected =>
+                                    <option value=""  {% if player.success is none %} selected {% endif %}>Undetermined</option>
+                                    <option value="1"  {% if player.success == 1 %} selected {% endif %}>Successful</option>
+                                    <option value="0"  {% if player.success == 0 %} selected {% endif %}>Failed</option>
+                                </select>
+
+                                </select>
+                            </div>
+                            
+                        {% endfor %}
+
+                            <input type="submit" value="Beküld" form="finalForm">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+<script type="module">
+    var resultNamemap = {
+        "0" : "Champion",
+        "1" : "Finalist",
+        "2" : "Semi-finalist",
+        "3" : "Knockout-Stage"
+    }
+
+    window.onload = function() {
+        {% for i in players %} 
+        document.getElementById("result-{{loop.index}}").innerText = resultNamemap[document.getElementById("result-{{loop.index}}").innerText];
+        {% endfor %}                                
+    }
+</script>
+
+{% endblock javascripts %}

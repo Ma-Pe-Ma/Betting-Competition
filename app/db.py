@@ -6,7 +6,7 @@ import click
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from app.configuration import DATABASE_URL
+from app.configuration import configuration
 
 def get_db():
     """Connect to the application's configured database. The connection
@@ -15,7 +15,7 @@ def get_db():
     """
 
     if "db" not in g:
-        g.db = psycopg2.connect(DATABASE_URL, sslmode='require', cursor_factory=RealDictCursor)
+        g.db = psycopg2.connect(configuration.DATABASE_URL, sslmode='require', cursor_factory=RealDictCursor)
 
     return g.db
 

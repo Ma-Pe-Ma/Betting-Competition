@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from app.db import get_db
 from app.gmail_handler import create_message, create_message_with_attachment, send_messages, get_email_resource_by_tag
 from app.database_manager import download_data_csv
-from app.configuration import match_base_time, match_extra_time, local_zone, supported_languages
+from app.configuration import configuration
 from app.standings import create_standings
 
 scheduler = APScheduler()
@@ -21,6 +21,8 @@ Bet = namedtuple('Bet', 'team1, team2, date, goal1, goal2')
 
 # obsoleted
 def backup_sqlite_database():
+    local_zone =  tz.gettz(configuration['local_zone'])
+
     #find admin adresses
     admin_address = ''
 
@@ -45,6 +47,7 @@ def backup_sqlite_database():
 
 def match_reminder_once_per_day(matches):
     print('Running scheduled match reminder...')
+    local_zone =  tz.gettz(configuration.local_zone)
 
     with scheduler.app.app_context():
         utc_now = datetime.utcnow()
@@ -115,6 +118,7 @@ def update_results():
         #backup_sqlite_database()
 
 def daily_standings():
+    local_zone =  tz.gettz(configuration.local_zone)
     print('Running scheduled daily standings creator...')
 
     with scheduler.app.app_context():
@@ -129,7 +133,7 @@ def daily_standings():
 
         email_map = {}
 
-        for lan in supported_languages:
+        for lan in configuration.supported_languages:
             email_map[lan] = get_email_resource_by_tag('DailyStandings', lan)
 
         standings = create_standings()
@@ -152,6 +156,8 @@ def daily_standings():
 def daily_checker():
     with scheduler.app.app_context():
         print('Running daily scheduler at midnight...')
+
+        match_time_length = configuration.match_time_length
 
         utc_now = datetime.utcnow()
         utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
@@ -182,13 +188,13 @@ def daily_checker():
                     print('Scheduled match reminder at: ' + hour_before_match.strftime('%Y-%m-%d %H:%M'))
                     scheduler.add_job(id = 'Daily match reminder', func=match_reminder_once_per_day, trigger='date', run_date=hour_before_match, args=[matches])
     
-                after_base_time = match_time_object + timedelta(hours=match_base_time)
+                after_base_time = match_time_object + timedelta(hours=match_time_length.base_time)
                 match_after_base_task_id = str(match['id']) + '. match after base'
                 # schedule database update
                 print('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
                 scheduler.add_job(id = match_after_base_task_id, func=update_results, trigger='date', run_date=after_base_time)
 
-                after_extra_time = match_time_object + timedelta(hours=match_extra_time)
+                after_extra_time = match_time_object + timedelta(hours=match_time_length.extra_time)
                 match_after_extra_task_id = str(match['id']) + '. match after extra'
                 # schedule database update
                 print('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))

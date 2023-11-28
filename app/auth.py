@@ -16,9 +16,7 @@ from datetime import datetime
 from dateutil import tz
 
 from app.db import get_db
-from app.configuration import user_invitation_key, admin_invitation_key
-from app.configuration import register_deadline_time
-from app.configuration import supported_languages
+from app.configuration import configuration
 
 from app.gmail_handler import get_email_resource_by_tag
 from app.gmail_handler import send_messages, create_message
@@ -65,7 +63,7 @@ def admin_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if not g.user['admin']:
-            return render_template(g.user['language'] + '/page-404.html'), 404
+            return render_template('/page-404.html'), 404
 
         return view(**kwargs)
 
@@ -81,11 +79,11 @@ def register():
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
-    register_deadline = datetime.strptime(register_deadline_time, '%Y-%m-%d %H:%M')
+    register_deadline = datetime.strptime(configuration.dead_line_times.register, '%Y-%m-%d %H:%M')
     register_deadline = register_deadline.replace(tzinfo=tz.gettz('UTC'))
 
     if utc_now > register_deadline:
-        return render_template(supported_languages[0] + '/auth/register-fail.html')
+        return render_template('/auth/register-fail.html')
 
     if g.user is not None:
         return redirect(url_for('home.homepage'))
@@ -93,8 +91,8 @@ def register():
     if request.method == 'POST':
         language = request.form.get('language')
 
-        if language not in supported_languages:
-            language = supported_languages[0]
+        if language not in configuration.supported_languages:
+            language = configuration.supported_languages[0]
 
         username = request.form.get('username')
         password = request.form.get('password')
@@ -120,7 +118,7 @@ def register():
             error = 'password_short'
         elif password != password_repeat:
             error = 'password_differ'
-        elif key != user_invitation_key and key != admin_invitation_key:
+        elif key != configuration.invitation_keys.user and key != configuration.invitation_keys.admin:
             error = 'invalid_invitation'
         else:
             cursor = db.cursor()
@@ -139,7 +137,7 @@ def register():
 
             admin = False
 
-            if key == admin_invitation_key:
+            if key == configuration.invitation_keys.admin:
                 admin = True
 
             db.cursor().execute(
@@ -171,9 +169,9 @@ def register():
 
         flash(error)
 
-        return render_template(language + '/auth/register.html', language=language, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
+        return render_template('/auth/register.html', language=language, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
 
-    return render_template(supported_languages[0] +'/auth/register.html', reminder=0, summary=1, language=supported_languages[0])
+    return render_template('/auth/register.html', reminder=0, summary=1, language=configuration.consupported_languages[0])
 
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -206,9 +204,9 @@ def login():
 
         flash(error)
 
-        return render_template(supported_languages[0] + '/auth/login.html', username_form=username)
+        return render_template('/auth/login.html', username_form=username)
 
-    return render_template(supported_languages[0] + '/auth/login.html')
+    return render_template('/auth/login.html')
 
 @bp.route('/logout')
 def logout():
@@ -221,8 +219,8 @@ def logout():
 def page_profile():
     if request.method == 'POST':
         language = request.form['language']
-        if language not in supported_languages:
-            language = supported_languages[0]
+        if language not in configuration.supported_languages:
+            language = configuration.supported_languages[0]
         reminder = request.form['reminder']
         summary = request.form['summary']
         get_db().cursor().execute('UPDATE bet_user SET reminder=%s, summary=%s, language=%s WHERE username=%s', (reminder, summary, language, g.user['username']))
@@ -234,4 +232,4 @@ def page_profile():
     cursor.execute('SELECT username, email, reminder, summary FROM bet_user WHERE username=%s', (g.user['username'],))
     user_data = cursor.fetchone()
 
-    return render_template(g.user['language'] + '/auth/modify.html', email=user_data['email'], reminder=user_data['reminder'], summary=user_data['summary'])
+    return render_template('/auth/modify.html', email=user_data['email'], reminder=user_data['reminder'], summary=user_data['summary'])

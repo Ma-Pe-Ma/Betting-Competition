@@ -1,0 +1,64 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Admin/E-mail küldés {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Sending email to the players</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        {% if send_success is not none %}
+                        
+                            {% if send_success is true %}
+                        <div style="color: green; font-weight: 500;">
+                            Email sending was successful.
+                            {% else %}
+                            <div style="color: red; font-weight: 500;">
+                            Email sending failed. {%if note is not none %} {% if note == 'short' %} Subject/message is too short. {% endif %} {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        {% endif %}
+
+                        By filling the following fields you can send email messages to the players.
+                        <br>
+                        <br>
+
+                        <form action="/admin/send-email" method="POST" >
+                            
+                            <div>
+                                <label for="subject" style="vertical-align: top;">Subject:</label>
+                                <input id="subject" name="subject" type="text">
+                            </div>
+                            <br>
+                            <div>
+                                <label for="email" style="vertical-align: top;">Message text:</label>
+                                <textarea id="email" name="email" rows="4" cols="50"></textarea>     
+                            </div>                            
+
+                            <br>
+
+                            <button class="btn btn-success">Send</button>
+                        </form>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,56 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Admin/Üzenetek beállítása {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Homepage message modification</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        {% if success_message is not none %}
+                        <div style="color: green; font-weight: 500;">
+                            Messages were modified successfully.
+                        </div>
+                        <br>
+                        {% endif %}                        
+                        The messages on the homepage can be set here!
+                        <br>
+
+                        <form action="/admin/message" method="POST" >
+                            {% for message in messages %} 
+                            <div>
+                                <label for="{{message.id}}" style="vertical-align: top;">Message {{loop.index}}:</label>
+
+                                <textarea id="{{message.id}}" name="{{message.id}}" rows="4" cols="50">{{message.text}}</textarea>     
+                            </div>                            
+
+                            <br>
+
+                            {% endfor %}
+
+                            <button class="btn btn-success">Save</button>
+                        </form>                         
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+{% endblock javascripts %}

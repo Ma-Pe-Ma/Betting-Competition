@@ -1,0 +1,64 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %} Pontverseny állása {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Standings of the competition</h3>              
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        
+                        Current standings
+                        <table style="width:100%;margin-left:20px;">
+                            <tr>
+                                <th rowspan="1" style="width: 10%;text-align:left;">Position</th>
+                                <th rowspan="1" style="width: 22%;text-align:center;">Username</th>
+                                <th rowspan="1" style="width: 22%;text-align:center;">Score</th>
+                                <th rowspan="1" style="width: 23%;text-align:center;">Score change</th>
+                                <th rowspan="1" style="width: 23%;text-align:center;">Position change</th>
+                            </tr>
+                    
+                            {% for standing in standings %}
+                            <tr style="padding-bottom:5px;">                            
+                                <td style="text-align:left;">{{loop.index}}.</td>
+                                <td style="text-align:center;">{{standing.name}}</td>
+                                <td style="text-align:center;">{{standing.point|round(2)}}</td>                            
+                                <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
+                                <td style="text-align:center;">{{standing.position_diff}}</td> 
+                            </tr>
+                            {% endfor %}
+                        </table>
+
+                        <br><br>
+
+                        <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+    {% set bet_unit = 'credit' %}
+    {% set graph_title = 'History of standings' %}
+
+    {% include "common/standings.js" %}
+
+{% endblock javascripts %}

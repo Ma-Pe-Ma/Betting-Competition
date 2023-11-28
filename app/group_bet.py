@@ -10,8 +10,7 @@ from collections import namedtuple
 
 from app.auth import login_required
 from app.db import get_db
-from app.configuration import starting_bet_amount, max_group_bet_value, max_final_bet_value
-from app.configuration import group_deadline_time, group_evaluation_time
+from app.configuration import configuration
 from app.tools.group_calculator import get_group_object, get_final_bet
 from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount2
 
@@ -21,11 +20,13 @@ def before_deadline():
     user_name = g.user['username']
     language = g.user['language']
 
+    bet_values = configuration.bet_values
+
     if request.method == 'GET':
         groups = get_group_object(user_name=user_name)
-        final_bet_object = get_final_bet(user_name=user_name, language=language)
+        user_final_bet = get_final_bet(user_name=user_name, language=language)
 
-        return render_template(g.user['language'] + '/group-bet/group-edit.html', start_amount=starting_bet_amount, max_group_bet_value = max_group_bet_value, max_final_bet_value=max_final_bet_value, final_bet = final_bet_object, groups = groups)
+        return render_template('/group-bet/group-edit.html', start_amount=bet_values.starting_bet_amount, user_final_bet = user_final_bet, groups = groups)
 
     elif request.method == 'POST':
         bet_object = request.get_json()
@@ -52,11 +53,11 @@ def before_deadline():
 
         try:
             final_bet_value = int(final['bet'])
-            if final_bet_value > max_final_bet_value:
-                final['bet'] = max_final_bet_value
+            if final_bet_value > bet_values.max_final_bet_value:
+                final['bet'] = bet_values.max_final_bet_value
 
             if final_bet_value < 0:
-                final['bet'] = max_final_bet_value
+                final['bet'] = bet_values.max_final_bet_value
 
         except ValueError:
             response_object['result'] = 'error'
@@ -72,8 +73,8 @@ def before_deadline():
             # checking and trimming bet value
             try:
                 bet_value = int(bet)
-                if bet_value > max_group_bet_value:
-                    bet_value = max_group_bet_value
+                if bet_value > bet_values.max_group_bet_value:
+                    bet_value = bet_values.max_group_bet_value
                 elif bet_value < 0:
                     bet_value = 0
 
@@ -154,17 +155,17 @@ def during_groupstage():
     user_name = request.args.get('name')
 
     if user_name is not None:
-        amount_after = starting_bet_amount - get_group_and_final_bet_amount(user_name=user_name)
+        amount_after = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(user_name=user_name)
         groups = get_group_object(user_name=user_name)
         final_bet_object = get_final_bet(user_name=user_name, language=g.user['language'])
 
-        return render_template(g.user['language'] + '/group-bet/group-during.html', groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=starting_bet_amount)
+        return render_template('/group-bet/group-during.html', groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=configuration.bet_values.starting_bet_amount)
     
     cursor = get_db().cursor()
     cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC', ())
     players = cursor.fetchall()
 
-    return render_template(g.user['language'] + '/group-bet/group-choose.html', players=players)
+    return render_template('/group-bet/group-choose.html', players=players)
 
 def after_evaluation():
     user_name = request.args.get('name')
@@ -175,23 +176,25 @@ def after_evaluation():
         total_group_bet = get_group_and_final_bet_amount(user_name=user_name)
         total_win_amount = get_group_win_amount2(groups)
 
-        return render_template(g.user['language'] + '/group-bet/group-after.html', group_containers=groups, total_bet=total_group_bet, total_win=total_win_amount, final_bet=final_bet_object)
+        return render_template('/group-bet/group-after.html', group_containers=groups, total_bet=total_group_bet, total_win=total_win_amount, final_bet=final_bet_object)
     
     cursor = get_db().cursor()
     cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\'', ())
     players = cursor.fetchall()
 
-    return render_template(g.user['language'] + '/group-bet/group-choose.html', players=players)
+    return render_template('/group-bet/group-choose.html', players=players)
 
 @bp.route('/group', methods=('GET', 'POST'))
 @login_required
 def group_order():
+    deadline_times = configuration.deadline_times
+
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
 
-    deadline = datetime.strptime(group_deadline_time, '%Y-%m-%d %H:%M')
+    deadline = datetime.strptime(deadline_times.group_bet, '%Y-%m-%d %H:%M')
     deadline = deadline.replace(tzinfo=tz.gettz('UTC'))
-    group_evaluation_time_object = datetime.strptime(group_evaluation_time, '%Y-%m-%d %H:%M')
+    group_evaluation_time_object = datetime.strptime(deadline_times.group_evaluation, '%Y-%m-%d %H:%M')
     group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
 
     if utc_now < deadline:
@@ -217,4 +220,4 @@ def final_bet_odds():
 
         teams.append(Team(name=local_name['translation'], top1=team['top1'], top2=team['top2'], top4=team['top4'], top16=team['top16']))
 
-    return render_template(g.user['language'] + '/group-bet/final-odds.html', teams=teams)
+    return render_template('/group-bet/final-odds.html', teams=teams)

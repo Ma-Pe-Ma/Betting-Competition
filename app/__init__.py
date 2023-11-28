@@ -1,5 +1,8 @@
 import os
 
+from app.configuration import load_configuration
+configuration = load_configuration()
+
 # import Flask 
 from flask import Flask
 from flask import render_template, request, redirect
@@ -8,7 +11,6 @@ from flask import g
 from datetime import timedelta
 
 from app.scheduler import init_scheduler
-from app.configuration import app_secret_key, session_timeout, supported_languages
 
 UPLOAD_FOLDER = './app'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -20,7 +22,7 @@ def create_app(test_config = None):
     # this is from the tutorial
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY=app_secret_key,
+        SECRET_KEY=configuration.app_secret_key,
         # store the database in the instance folder
         #DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
         # file upload folder
@@ -58,7 +60,7 @@ def create_app(test_config = None):
         #    return redirect(url, code=code)
 
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=session_timeout)
+        app.permanent_session_lifetime = timedelta(minutes=configuration.session_timeout)
 
     # apply the blueprints to the app
     from app import auth
@@ -79,34 +81,19 @@ def create_app(test_config = None):
 
     @app.errorhandler(404)
     def page_not_found(e):
-        if g is not None and hasattr(g, 'user') and g.user is not None:
-            resource_language = g.user['language']
-        else:
-            resource_language = supported_languages[0]
-
         # note that we set the 404 status explicitly
-        return render_template(resource_language + '/page-404.html'), 404
+        return render_template('/page-404.html'), 404
 
     @app.errorhandler(500)
-    def page_not_found(e): 
-        if g is not None and hasattr(g, 'user') and g.user is not None:
-            resource_language = g.user['language']
-        else:
-            resource_language = supported_languages[0]
-
+    def page_not_found(e):
         # note that we set the 500 status explicitly
-        return render_template(resource_language + '/page-500.html'), 500
+        return render_template('/page-500.html'), 500
 
     app.config.update(SCHEDULER_TIMEZONE = 'utc')
     init_scheduler(app)
 
     @app.context_processor
     def set_jinja_global_variables():
-        if g is not None and hasattr(g, 'user') and g.user is not None:
-            resource_language = g.user['language']
-        else:
-            resource_language = supported_languages[0]
-
-        return dict(language=resource_language)
+        return dict()
 
     return app

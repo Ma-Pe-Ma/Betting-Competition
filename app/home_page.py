@@ -15,7 +15,7 @@ from markdown import markdown
 from app.tools.group_calculator import get_final_bet
 from app.tools.score_calculator import get_current_points_by_player
 
-from app.configuration import local_zone
+from app.configuration import configuration
 
 bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
@@ -31,6 +31,7 @@ def homepage():
 
     utc_now = datetime.utcnow()
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+    local_zone =  tz.gettz(configuration.local_zone)
     
     # show messages for user!
     cursor = get_db().cursor()
@@ -121,7 +122,7 @@ def homepage():
         elif final_bet_object.success == 2:
             pass
 
-    return render_template(g.user['language'] + '/home-page.html', days=modified_days, current_amount=current_amount,
+    return render_template('/home-page.html', days=modified_days, current_amount=current_amount,
                                                                     match_id=match_id, match_state=match_state)
 
 def get_comments(datetime_object, newer_comments):
@@ -138,6 +139,7 @@ def get_comments(datetime_object, newer_comments):
 
     for item in comments:
         comment_object = {}
+        local_zone =  tz.gettz(configuration.local_zone)
 
         date_object = datetime.strptime(item['datetime'], '%Y-%m-%d %H:%M:%S')
         date_object = date_object.replace(tzinfo=tz.gettz('UTC'))
@@ -155,8 +157,8 @@ def get_comments(datetime_object, newer_comments):
 @login_required
 def comments():
     utc_now = datetime.utcnow()
-    #utc_now = datetime.strptime('2022-11-22 8:00', '%Y-%m-%d %H:%M')
     utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+    local_zone =  tz.gettz(configuration.local_zone)
 
     request_object = request.get_json()
 
