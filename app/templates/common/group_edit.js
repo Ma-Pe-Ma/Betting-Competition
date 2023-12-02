@@ -15,12 +15,12 @@
         })]);
         {% endfor %}
 
-        teamSelect.value = "{{final_bet.team}}";
-        resultSelect.value = "{{final_bet.result}}";
+        teamSelect.value = "{{tournament_bet.team}}";
+        resultSelect.value = "{{tournament_bet.result}}";
     }
 
     function calculateRemainingBetAmount() {
-        var remainingValue = {{start_amount}};
+        var remainingValue = {{bet_values.starting_bet_amount}}; //??
 
         for (const sortableElement of sortableArray) {
             let[groupID, group] = sortableElement;
@@ -80,9 +80,9 @@
     resultSelect.onchange = updateFinalBet;
 
     finalResultBet.oninput = function() {
-        if (this.value > {{max_final_bet_value}}) {
-            this.value = {{max_final_bet_value}};
-            this.innerText = {{max_final_bet_value}};
+        if (this.value > {{bet_values.max_final_bet_value}}) {
+            this.value = {{bet_values.max_final_bet_value}};
+            this.innerText = {{bet_values.max_final_bet_value}};
         }
 
         if (this.value < 0) {

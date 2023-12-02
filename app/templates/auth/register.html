@@ -10,14 +10,181 @@
 
 {% block content %}
 
-   {% include "common/register-page.html" %}
+<div class="container-fluid">
+    <div class="row page-titles">
+        <div class="col-md-5 col-8 align-self-center">
+            <h3 class="text-themecolor m-b-0 m-t-0">Registration</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 col-xlg-9 col-md-7">
+            <div class="card">
+                <div class="card-block">
+
+                    <form class="form-horizontal form-material" method="POST" id="registerForm">
+                        <div class="form-group">
+                            <label class="col-md-12">Language</label>
+                            <div class="col-md-12">
+                                <select type="text"
+                                       class="form-control form-control-line"
+                                       name="language"                                          
+                                       id = "langSelect"                                           
+                                       >
+                                       <option value="hu" {% if user_data.language == 'hu'%} selected="selected" {% endif %}>Hungarian</option>
+                                       <option value="en" {% if user_data.language == 'en'%} selected="selected" {% endif %}>English</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-12">Nickname/username</label>
+                            <div class="col-md-12">
+                                <input type="text"
+                                       class="form-control form-control-line"
+                                       name="username"
+                                       {%if user_data.username %}
+                                       value = "{{user_data.username}}"
+                                       {% endif %}
+                                       >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="example-email" class="col-md-12">Email-address</label>
+                            <div class="col-md-12">
+                                <input type="email"
+                                       class="form-control form-control-line" 
+                                       name="email"
+                                       id="email"
+                                        {%if user_data.email %}
+                                        value = "{{user_data.email}}"
+                                        {% endif %}
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-12">Password</label>
+                            <div class="col-md-12">
+                                <input type="password"
+                                        name="password"
+                                        class="form-control form-control-line"
+                                        {%if user_data.password %}
+                                        value = "{{user_data.password}}"
+                                        {% endif %}>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-12">Password again</label>
+                            <div class="col-md-12">
+                                <input type="password"
+                                        name="password_repeat"
+                                        {%if user_data.password_repeat %}
+                                        value = "{{user_data.password_repeat}}"
+                                        {% endif %}
+                                        class="form-control form-control-line">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-12">Invitation-key</label>
+                            <div class="col-md-12">
+                                <input type="text"
+                                        name="key"
+                                        class="form-control form-control-line"
+                                        {%if user_data.key %}
+                                        value = "{{user_data.key}}"
+                                        {% endif %}>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="padding-left:1em;">
+                            <label class="form-group" id="matchReminderDisplay">Match reminder emails (1 hour before the starting of the first match)</label>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reminder" id="exampleRadios1" value="0" {% if user_data.reminder == '0' %} checked {%endif%}>
+                                <label class="form-check-label" for="exampleRadios1" id="reminder1Display">
+                                    On those days when there is a match without a bet
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reminder" id="exampleRadios2" value="1" {% if user_data.reminder == '1' %} checked {%endif%}>
+                                <label class="form-check-label" for="exampleRadios2" id="reminder2Display">
+                                    Every matchday
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reminder" id="exampleRadios3" value="2" {% if user_data.reminder == '2' %} checked {%endif%}>
+                                <label class="form-check-label" for="exampleRadios3" id="reminder3Display">
+                                    I don't want to receive reminders
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="padding-left:1em;">
+                            <label class="form-group" id="standingsDisplay">Standings notification email at the end of matchdays</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="summary" id="summaryRadios2" value="1" {% if user_data.summary == '1' %} checked {%endif%}>
+                                <label class="form-check-label" for="summaryRadios2" id="standing1Display">
+                                    Yes
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="summary" id="summaryRadios1" value="0" {% if user_data.summary == '0' %} checked {%endif%}>
+                                <label class="form-check-label" for="summaryRadios1" id="standing2Display">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                        
+                        {# <div style="padding-left:1em; color:red;"></div>
+                        {% set error_message_dict = {
+                            RegisterError.UsernameShort : {% trans %}'Chosen fnickname is too short (min. 3 characters).'{% endtrans %},
+                            RegisterError.UsernameLong : 'Chosen nickname is too long (max. 20 characters).',
+                            RegisterError.EmailNull : 'E-mail address is required.',
+                            RegisterError.PasswordShort : 'The given password is too short (min. 8 characters).',
+                            RegisterError.PasswordDiffer : 'The two passwords are not identical.',
+                            RegisterError.InvalidInvitation : 'The invitation key is not valid.',
+                            RegisterError.UsernameTaken : 'The chosen nickname is already taken.',
+                            RegisterError.EmailTaken : 'The chosen email address is already taken.'
+                        } %}
+
+                        <h4>
+                            ENUM: {{status}}
+                            {{error_message_dict[status]}}
+                        </h4>
+
+                        </div>
+                        #}
+
+                        <div style="padding-left:1em; color:red;">
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {{message}}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                        </div>                    
+                        
+                        <br>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <button class="btn btn-success">Registration</button> &nbsp;&nbsp;&nbsp; <a>Already have an account?</a> <a href="/login" id="signIn">Sign-in</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock content %}
 
 {% block javascripts %}
-    <script src="/static/assets/js/language.js"></script>
-    <script>
-        languageSelect.value = "{{language}}";
-        languageSelect.onchange();
-    </script>
 {% endblock javascripts %}

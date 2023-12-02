@@ -23,8 +23,8 @@ from flask import current_app, g
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
-def get_email_resource_by_tag(tag, lan):
-    with current_app.open_resource('./templates/' + lan + '/email-messages.xml', 'r') as email_file:
+def get_email_resource_by_tag(tag):
+    with current_app.open_resource('./templates/email-messages.xml', 'r') as email_file:
         tree = ET.ElementTree(ET.fromstring(email_file.read()))
         root = tree.getroot()
 

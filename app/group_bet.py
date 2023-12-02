@@ -5,28 +5,30 @@ from flask import request
 from flask import jsonify
 
 from datetime import datetime
-from dateutil import tz
-from collections import namedtuple
 
 from app.auth import login_required
 from app.db import get_db
 from app.configuration import configuration
-from app.tools.group_calculator import get_group_object, get_final_bet
-from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount2
+from app.tools.group_calculator import get_group_object, get_tournament_bet
+from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount
+
+from app.tools import time_determiner
+
+from sqlalchemy import text
 
 bp = Blueprint('group', __name__, '''url_prefix="/group"''')
 
 def before_deadline():
-    user_name = g.user['username']
+    username = g.user['username']
     language = g.user['language']
 
     bet_values = configuration.bet_values
 
     if request.method == 'GET':
-        groups = get_group_object(user_name=user_name)
-        user_final_bet = get_final_bet(user_name=user_name, language=language)
+        groups = get_group_object(username=username)
+        tournament_bet = get_tournament_bet(username=username, language=language)
 
-        return render_template('/group-bet/group-edit.html', start_amount=bet_values.starting_bet_amount, user_final_bet = user_final_bet, groups = groups)
+        return render_template('/group-bet/group-edit.html', bet_values=bet_values, tournament_bet = tournament_bet, groups = groups)
 
     elif request.method == 'POST':
         bet_object = request.get_json()
@@ -36,10 +38,9 @@ def before_deadline():
         final = bet_object['final']
 
         final_team = final['team']
-        cursor = get_db().cursor()
-        cursor.execute('SELECT name FROM team WHERE name = %s', (final_team,))
-
-        if cursor.fetchone() is None:
+        query_string = text('SELECT name FROM team WHERE name = :final_team')
+        result = get_db().session.execute(query_string, {'final_team' : final_team})
+        if result.fetchone() is None:
             response_object['result'] = 'error'
             response_object['info'] = 'FINAL_TEAM'
         try:
@@ -85,9 +86,9 @@ def before_deadline():
                 response_object['info'] = 'GROUP_BET'
                 break
 
-            cursor = get_db().cursor()
-            cursor.execute('SELECT name FROM team WHERE group_id = %s', (group_id,))
-            db_teams = cursor.fetchall()
+            query_string = text('SELECT name FROM team WHERE group_id = :group_id')
+            result = get_db().session.execute(query_string, {'group_id' : group_id})
+            db_teams = result.fetchall()
             
             if db_teams is None or len(db_teams) == 0:
                 response_object['result'] = 'error'
@@ -98,7 +99,7 @@ def before_deadline():
                     team_found = False
 
                     for db_team in db_teams:
-                        if db_team['name'] == team:
+                        if db_team.name == team:
                             team_found = True
                             break
                         
@@ -111,76 +112,82 @@ def before_deadline():
             return jsonify(response_object)
         else:
             final_bet = final['bet']
-            cursor = get_db().cursor()
-            cursor.execute('SELECT id FROM final_bet WHERE username=%s', (user_name,))
-            id = cursor.fetchone()            
+            query_string = text('SELECT id FROM final_bet WHERE username=:username')
+            result = get_db().session.execute(query_string, {'username' : username})
+            id = result.fetchone()            
 
             if id is None:
-                get_db().cursor().execute('INSERT INTO final_bet (username, bet, team, result, success) VALUES(%s, %s, %s, %s, %s)', (user_name, final_bet, final_team, final_result, None))
+                query_string = text('INSERT INTO final_bet (username, bet, team, result, success) VALUES(:u, :b, :t, :r, :s)')
+                get_db().session.execute(query_string,{'u' : username, 'b' : final_bet, 't' : final_team, 'r' : final_result, 's' : None})
             else:
-                get_db().cursor().execute('UPDATE final_bet SET username = %s, bet = %s, team = %s, result = %s WHERE id = %s', (user_name, final_bet, final_team, final_result, id['id'],))
+                query_string = text('UPDATE final_bet SET username = :u, bet = :b, team = :t, result = :r WHERE id = :i')
+                get_db().session.execute(query_string, {'u' : username, 'b' : final_bet, 't' : final_team, 'r' : final_result, 'i' : id.id})
 
             for group_id in groups:
                 order = groups[group_id]['order']
                 bet = groups[group_id]['bet']
 
-                cursor1 = get_db().cursor()
-                cursor1.execute('SELECT id FROM group_bet WHERE username=%s AND group_id=%s', (user_name, group_id))
-                id = cursor1.fetchone()
+                query_string = text('SELECT id FROM group_bet WHERE username=:u AND group_id=:g')
+                result1 = get_db().session.execute(query_string, {'u' : username, 'g' : group_id})
+                id = result1.fetchone()
 
                 if id is None:
-                    get_db().cursor().execute('INSERT INTO group_bet (username, bet, group_ID) VALUES(%s, %s, %s)', (user_name, bet, group_id))
+                    query_string = text('INSERT INTO group_bet (username, bet, group_ID) VALUES(:u, :b, :g)')
+                    get_db().session.execute(query_string, {'u' : username, 'b' : bet, 'g' : group_id})
                 else:
-                    get_db().cursor().execute('UPDATE group_bet SET username=%s, bet=%s, group_ID=%s WHERE id=%s', (user_name, bet, group_id, id['id']))
+                    query_string = text('UPDATE group_bet SET username=:u, bet=:b, group_ID=:g WHERE id=:i')
+                    get_db().session.execute(query_string, {'u' : username, 'b' : bet, 'g' : group_id, 'i' : id.id})
 
                 position = 1
                 for team in order:
-                    cursor2 = get_db().cursor()
-                    cursor2.execute('SELECT id FROM team_bet WHERE username=%s AND team=%s', (user_name, team))
-                    id = cursor2.fetchone()
+                    query_string = text('SELECT id FROM team_bet WHERE username=:username AND team=:team')
+                    result2 = get_db().session.execute(query_string, {'username' : username, 'team' : team})
+                    id = result2.fetchone()
                     
                     if id is None:
-                        get_db().cursor().execute('INSERT INTO team_bet (username, team, position) VALUES(%s, %s, %s)', (user_name, team, position))
+                        query_string = text('INSERT INTO team_bet (username, team, position) VALUES(:u, :t, :p)')
+                        get_db().session.execute(query_string, {'u' : username, 't' : team, 'p' : position})
                     else:
-                        get_db().cursor().execute('UPDATE team_bet SET username=%s, team=%s, position=%s WHERE id=%s', (user_name, team, position, id['id']))                
+                        query_string = text('UPDATE team_bet SET username=:u, team=:t, position=:p WHERE id=:i')
+                        get_db().session.execute(query_string, {'u' : username, 't' : team, 'p' : position, 'i' : id.id})                
 
                     position += 1
 
-            get_db().commit()
+            get_db().session.commit()
             
             response_object['result'] = 'OK'
             return jsonify(response_object)
 
 def during_groupstage():
-    user_name = request.args.get('name')
+    username = request.args.get('name')
 
-    if user_name is not None:
-        amount_after = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(user_name=user_name)
-        groups = get_group_object(user_name=user_name)
-        final_bet_object = get_final_bet(user_name=user_name, language=g.user['language'])
+    if username is not None:
+        amount_after = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(username=username)
+        groups = get_group_object(username=username)
+        final_bet_object = get_tournament_bet(username=username, language=g.user['language'])
 
         return render_template('/group-bet/group-during.html', groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=configuration.bet_values.starting_bet_amount)
     
-    cursor = get_db().cursor()
-    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC', ())
-    players = cursor.fetchall()
+    query_string = text('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC')
+    result = get_db().session.execute(query_string)
+    players = result.fetchall()
 
     return render_template('/group-bet/group-choose.html', players=players)
 
 def after_evaluation():
-    user_name = request.args.get('name')
+    username = request.args.get('name')
 
-    if user_name is not None:
-        final_bet_object = get_final_bet(user_name=user_name, language=g.user['language'])
-        groups = get_group_object(user_name=user_name)
-        total_group_bet = get_group_and_final_bet_amount(user_name=user_name)
-        total_win_amount = get_group_win_amount2(groups)
+    if username is not None:
+        final_bet_object = get_tournament_bet(username=username, language=g.user['language'])
+        groups = get_group_object(username=username)
+        total_group_bet = get_group_and_final_bet_amount(username=username)
+        total_win_amount = get_group_win_amount(groups)
 
         return render_template('/group-bet/group-after.html', group_containers=groups, total_bet=total_group_bet, total_win=total_win_amount, final_bet=final_bet_object)
     
-    cursor = get_db().cursor()
-    cursor.execute('SELECT username FROM bet_user WHERE NOT username=\'RESULT\'', ())
-    players = cursor.fetchall()
+    query_string = text('SELECT username FROM bet_user WHERE NOT username=\'RESULT\'')
+    result = get_db().session.execute(query_string)
+    players = result.fetchall()
 
     return render_template('/group-bet/group-choose.html', players=players)
 
@@ -189,15 +196,11 @@ def after_evaluation():
 def group_order():
     deadline_times = configuration.deadline_times
 
-    utc_now = datetime.utcnow()
-    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
+    utc_now : datetime = time_determiner.get_now_time_object()
+    register_time : datetime = time_determiner.parse_datetime_string(deadline_times.register)
+    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.group_evaluation)
 
-    deadline = datetime.strptime(deadline_times.group_bet, '%Y-%m-%d %H:%M')
-    deadline = deadline.replace(tzinfo=tz.gettz('UTC'))
-    group_evaluation_time_object = datetime.strptime(deadline_times.group_evaluation, '%Y-%m-%d %H:%M')
-    group_evaluation_time_object = group_evaluation_time_object.replace(tzinfo=tz.gettz('UTC'))
-
-    if utc_now < deadline:
+    if utc_now < register_time:
         return before_deadline()
     elif utc_now < group_evaluation_time_object:
         return during_groupstage()
@@ -208,16 +211,18 @@ def group_order():
 @login_required
 def final_bet_odds():
     teams = []
-    Team = namedtuple('Team', 'name, top1, top2, top4, top16')
 
-    cursor = get_db().cursor()
-    cursor.execute('SELECT top1, top2, top4, top16, name FROM team')
+    query_string = text('SELECT top1, top2, top4, top16, name FROM team')
+    result = get_db().session.execute(query_string)
 
-    for team in cursor.fetchall():
-        cursor1 = get_db().cursor()
-        cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (team['name'], g.user['language']))
-        local_name = cursor1.fetchone()
+    for team in result.fetchall():
+        query_string = text('SELECT translation FROM team_translation WHERE name=:name AND language=:language')
+        result1 = get_db().session.execute(query_string, {'name' : team.name, 'language' : g.user['language']})
+        local_name = result1.fetchone()
 
-        teams.append(Team(name=local_name['translation'], top1=team['top1'], top2=team['top2'], top4=team['top4'], top16=team['top16']))
+        team_dict : dict = team._asdict()
+        team_dict['name'] = local_name.translation
+
+        teams.append(team_dict)
 
     return render_template('/group-bet/final-odds.html', teams=teams)

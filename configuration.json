@@ -3,7 +3,7 @@
 	"app_secret_key" : "dev",
 
 	"DATABASE_URL" : "dbname=flask_db user=flask password=bet host=localhost",
-	"MATCH_URL" : "https://path.com/fixture",
+	"MATCH_URL" : "https://path.fixture",
 
 	"email_sending" : false,
 	"session_timeout" : 15,
@@ -16,9 +16,8 @@
 	"local_zone" : "Europe/Budapest",
 
 	"deadline_times" :  {
-		"register" : "2022-11-20 23:59",
-		"group_bet" : "2022-11-20 23:59",
-		"group_evaluation" : "2022-12-02 19:00"
+		"register" : "2022-11-17 23:59",
+		"group_evaluation" : "2024-12-02 19:00"
 	},	
 
 	"match_time_length" : {
@@ -31,5 +30,12 @@
 	    "max_group_bet_value" : 50,
 	    "max_final_bet_value" : 200,
 	    "default_max_bet_per_match" : 50
-    }	
+    },
+
+	"group_bet_hit_map" : [0, 1.5, 2.5, 0, 4],
+
+	"bonus_multipliers" : {
+		"bullseye" : 4,
+		"difference" : 1
+	}
 }

@@ -1,4 +1,3 @@
-from collections import namedtuple
 from flask import Blueprint
 from flask import redirect
 from flask import g
@@ -16,6 +15,8 @@ from app.database_manager import download_data_csv, initialize_matches, initiali
 from app.db import get_db
 from app.auth import admin_required, login_required
 from app.gmail_handler import create_message, send_messages
+
+from sqlalchemy import text
 
 import os
 
@@ -43,20 +44,19 @@ def message():
 
     if request.method == 'POST':
         for key in request.form:
-            get_db().cursor().execute('UPDATE messages SET message=%s WHERE id=%s', (request.form[key],key))
+            query_string = text('UPDATE messages SET message=:message WHERE id=:id')
+            get_db().session.execute(query_string, {'message' : request.form[key], 'id' : key})
         
-        get_db().commit()
+        get_db().session.commit()
         success_message = True
-    
-    Message = namedtuple('Message', 'id, text')
 
     messages = []
 
-    cursor = get_db().cursor()
-    cursor.execute('SELECT * from messages')
+    query_string = text('SELECT * from messages')
+    result = get_db().session.execute(query_string)
 
-    for message_prefab in cursor.fetchall():
-        messages.append(Message(id=message_prefab['id'], text=message_prefab['message']))
+    for message in result.fetchall():
+        messages.append(message._asdict())
 
     return render_template('/admin/message.html', messages = messages, success_message=success_message)
 
@@ -78,11 +78,11 @@ def send_email():
             else:
                 messages = []
 
-                cursor = get_db().cursor()
-                cursor.execute('SELECT email from bet_user')
+                query_string = text('SELECT email from bet_user')
+                result = get_db().session.execute(query_string)
 
-                for user in cursor.fetchall():
-                    messages.append(create_message(sender='me', to=user['email'], subject=subject, message_text=email_message))
+                for user in result.fetchall():
+                    messages.append(create_message(sender='me', to=user.email, subject=subject, message_text=email_message))
 
                 send_messages(messages=messages)
                 send_success = True
@@ -96,28 +96,29 @@ def send_email():
 @login_required
 @admin_required
 def odd():
-    Match = namedtuple('Match', 'ID, time, team1, team2, odd1, oddX, odd2, max_bet')
-
     matches = []
 
-    cursor = get_db().cursor()
-    cursor.execute('SELECT id, time, team1, team2, odd1, oddX, odd2, max_bet FROM match')
+    query_string = text('SELECT id, time, team1, team2, odd1, oddX, odd2, max_bet FROM match')
+    result = get_db().session.execute(query_string)
 
-    for match_prefab in cursor.fetchall():
-        cursor1 = get_db().cursor()
-        cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team1'], g.user['language']))
-        team1_local = cursor1.fetchone()
+    for match in result.fetchall():
+        query_string = text('SELECT translation FROM team_translation WHERE name=:name AND language=:language')
 
-        cursor2 = get_db().cursor()
-        cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team2'], g.user['language']))
-        team2_local = cursor2.fetchone()
+        result1 = get_db().session.execute(query_string, {'name' : match.team1, 'language' :  g.user['language']})
+        team1_local = result1.fetchone()
+        result2 = get_db().session.execute(query_string, {'name' : match.team2, 'language' :  g.user['language']})
+        team2_local = result2.fetchone()
 
-        if team1_local is None or team2_local is None or team1_local['translation'] == '' or team2_local['translation'] == '':
+        if team1_local is None or team2_local is None or team1_local.translation == '' or team2_local.translation == '':
             continue
 
-        matches.append(Match(ID=match_prefab['id'], time=match_prefab['time'], team1=team1_local['translation'], team2=team2_local['translation'], odd1=match_prefab['odd1'], oddX=match_prefab['oddx'], odd2=match_prefab['odd2'], max_bet=match_prefab['max_bet']))
+        match_dict : dict = match._asdict()
+        match_dict['team1'] = team1_local.translation
+        match_dict['team2'] = team2_local.translation
 
-    matches.sort(key=lambda match : datetime.strptime(match.time, '%Y-%m-%d %H:%M'))
+        matches.append(match_dict)
+
+    matches.sort(key=lambda match : datetime.strptime(match['time'], '%Y-%m-%d %H:%M'))
 
     return render_template('/admin/odd.html', matches=matches)
 
@@ -128,25 +129,25 @@ def odd_edit():
     if request.method == 'GET':
         matchIDString = request.args.get('matchID')
 
-        from collections import namedtuple
-        Match = namedtuple('Match', 'ID, team1, team2, odd1, oddX, odd2, time, type, max_bet')
-
-        if (matchIDString is not None):
+        if matchIDString is not None:
             matchID : int = int(matchIDString)
 
-            cursor = get_db().cursor()
-            cursor.execute('SELECT team1, team2, ID, odd1, oddX, odd2, time, round, max_bet FROM match WHERE ID=%s', (matchID,))
-            match_prefab = cursor.fetchone()
+            query_string = text('SELECT team1, team2, ID, odd1, oddX, odd2, time, round, max_bet FROM match WHERE ID=:matchID')
+            result = get_db().session.execute(query_string, {'matchID,' : matchID})
+            match = result.fetchone()
 
-            cursor1 = get_db().cursor()
-            cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team1'], g.user['language']))
-            team1_local = cursor1.fetchone()
+            query_string = text('SELECT translation FROM team_translation WHERE name=:name AND language=:language')
+            
+            result1 = get_db().session.execute(query_string, {'name': match.team1, 'language' : g.user['language']})
+            team1_local = result1.fetchone()
 
-            cursor2 = get_db().cursor()
-            cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (match_prefab['team2'], g.user['language']))
-            team2_local = cursor2.fetchone()
+            result2 = get_db().session.execute(query_string, {'name': match.team2, 'language' : g.user['language']})
+            team2_local = result2.fetchone()
 
-            match = Match(ID=matchID, team1=team1_local['translation'], team2=team2_local['translation'], odd1=match_prefab['odd1'], oddX=match_prefab['oddx'], odd2=match_prefab['odd2'], time=match_prefab['time'], type=match_prefab['round'], max_bet=match_prefab['max_bet'])
+            match_dict : dict = match._asdict()
+            match_dict['team1'] = team1_local.translation
+            match_dict['team2'] = team2_local.translation
+            return render_template('/admin/odd-edit.html', match=match_dict)
         else:
             return redirect(url_for('admin.odd'))
 
@@ -159,12 +160,11 @@ def odd_edit():
         
         ID = dict['ID']
 
-        get_db().cursor().execute('UPDATE match SET odd1=%s, oddX=%s, odd2=%s, max_bet=%s WHERE ID=%s', (odd1, oddX, odd2, max_bet, ID))
-        get_db().commit()
+        query_string = text('UPDATE match SET odd1=:o1, oddX=:ox, odd2=:o2, max_bet=max_bet WHERE ID=:ID')
+        get_db().session.execute(query_string, {'o1' : odd1, 'ox' : oddX, 'o2' : odd2, 'max_bet ': max_bet, 'ID' : ID})
+        get_db().session.commit()
 
         return redirect(url_for('admin.odd'))
-    
-    return render_template('/admin/odd-edit.html', match=match)
 
 @bp.route('/admin/group-evaluation', methods=('GET', 'POST'))
 @login_required
@@ -176,52 +176,50 @@ def group_evaluation():
         for key in request.json:
             i = 1
             for team in request.json[key]:
-                get_db().cursor().execute('UPDATE team SET position=%s WHERE name=%s', (i, team))
+                query_string = text('UPDATE team SET position=:position WHERE name=:team')
+                get_db().session.execute(query_string, {'position' : i, 'team ' : team})
                 i += 1
 
-        get_db().commit()
+        get_db().session.commit()
 
         response_object['result'] = 'OK'
 
         return jsonify(response_object)
     
-    Group = namedtuple('Group', 'ID, teams')
-    Team = namedtuple('Team', 'name, local_name, position')
-
     groups = []
 
-    cursor = get_db().cursor()
-    cursor.execute('SELECT name, group_id, position FROM team')
+    query_string = text('SELECT name, group_id, position FROM team')
+    result = get_db().session.execute(query_string)
 
-    for team in cursor.fetchall():
+    for team in result.fetchall():
         group_of_team = None
 
         for group in groups:
-            if group.ID == team['group_id']:
+            if group['ID'] == team.group_id:
                 group_of_team = group
                 break
 
         if group_of_team == None:
-            group_of_team = Group(ID=team['group_id'], teams=[])
+            group_of_team = {'ID' : team.group_id, 'teams': [] }
             groups.append(group_of_team)
 
-        cursor2 = get_db().cursor()
-        cursor2.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (team['name'], g.user['language']))
-        team_local = cursor2.fetchone()
+        query_string = text('SELECT translation FROM team_translation WHERE name=:teamname AND language=:language')
+        result2 = get_db().session.execute(query_string, {'teamname' : team.name, 'language' :  g.user['language']})
+        team_local = result2.fetchone()
 
-        group_of_team.teams.append(Team(name=team['name'], local_name=team_local['translation'], position=team['position']))
+        group_of_team['teams'].append({'name' : team.name, 'local_name' : team_local.translation, 'position' :  team.position})
 
     already_submitted = True
 
     for group in groups:
-        for team in group.teams:
-            if team.position is None:
+        for team in group['teams']:
+            if team['position'] is None:
                 already_submitted = False
                 break    
 
     if already_submitted:
         for group in groups:
-            group.teams.sort(key=lambda team : team.position)
+            group['teams'].sort(key=lambda team : team['position'])
 
     return render_template('/admin/group-evaluation.html', groups = groups)
 
@@ -235,24 +233,24 @@ def final_bet():
             if success == '':
                 success = None
 
-            get_db().cursor().execute('UPDATE final_bet SET success=%s WHERE username=%s', (success, key))
+            query_string = text('UPDATE final_bet SET success=:success WHERE username=:username')
+            get_db().session.execute(query_string, {'success' : success, 'username' : key})
 
-        get_db().commit()
+        get_db().session.commit()
     else:
         pass
 
-    Player = namedtuple('Player', 'name, team, result, success')
     players = []
 
-    cursor = get_db().cursor()
-    cursor.execute('SELECT * FROM final_bet', ())
+    query_string = text('SELECT * FROM final_bet')
+    result = get_db().session.execute(query_string)
 
-    for final_bet in cursor.fetchall():
-        cursor1 = get_db().cursor()
-        cursor1.execute('SELECT translation FROM team_translation WHERE name=%s AND language=%s', (final_bet['team'], g.user['language'],))
-        team = cursor1.fetchone()
+    for final_bet in result.fetchall():
+        query_string = text('SELECT translation FROM team_translation WHERE name=:team AND language=:language')
+        result1 = get_db().session.execute(query_string, {'team' : final_bet.team, 'language' : g.user['language']})
+        team = result1.fetchone()
 
-        players.append(Player(name=final_bet['username'], team=team['translation'], result=final_bet['result'], success=final_bet['success']))
+        players.append({'name' : final_bet.username, 'team' : team.translation, 'result' : final_bet.result, 'success' : final_bet.success})
 
     return render_template('/admin/final-bet.html', players=players)
 

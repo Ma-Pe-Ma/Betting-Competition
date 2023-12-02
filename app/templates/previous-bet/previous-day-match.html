@@ -79,25 +79,26 @@
 
         <tr style="padding-bottom:5px; background-color: {{background}};">
             <td>{{match.ID}}</td>
-            <td style="text-align:center;">{{match.time}}</td>
-            <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
+            <td style="text-align:center;">{{match.match.time}}</td>
+            <td style="text-align:center;">{{match.match.team1}} - {{match.match.team2}}</td>
         {% if match.result1 is none or match.result2 is none %}    
             <td style="text-align:center;">In progress</td>
         {% else %}
-            <td style="text-align:center;">{{match.result1}} - {{match.result2}}</td>
+            <td style="text-align:center;">{{match.match.goal1}} - {{match.match.goal2}}</td>
         {% endif %}
-            <td style="text-align:center;">{{match.type}}</td>
-            <td style="text-align:center;">{{match.odd1}}</td>
-            <td style="text-align:center;">{{match.oddX}}</td>
-            <td style="text-align:center;">{{match.odd2}}</td>
-            <td style="text-align:center;">{{match.goal1}}-{{match.goal2}}</td>
-            <td style="text-align:center;">{{match.bet}}</td>
-        {% if (match.result1 is none or match.result2 is none) and match.bet > 0 %}
+            <td style="text-align:center;">{{match.match.round}}</td>
+            <td style="text-align:center;">{{match.match.odd1}}</td>
+            <td style="text-align:center;">{{match.match.oddX}}</td>
+            <td style="text-align:center;">{{match.match.odd2}}</td>
+            <td style="text-align:center;">{{match.bet_result.goal1}}-{{match.bet_result.goal2}}</td>
+            <td style="text-align:center;">{{match.bet_result.bet}}</td>
+        {% if (match.match.result1 is none or match.match.result2 is none) and match.bet_result.bet > 0 %}
             <td style="text-align:center;">In progress</td>
         {% else %}
-            <td style="text-align:center;">{{match.prize|round(2)}} + {{match.bonus|round(2)}}</td>
+            <td style="text-align:center;">{{match.bet_result.prize|round(2)}} + {{match.bet_result.bonus|round(2)}}</td>
+            
         {% endif %}
-            <td style="text-align:center;">{{match.balance|round(2)}}</th>
+            <td style="text-align:center;">{{match.bet_result.balance|round(2)}}</th>
         </tr>
 
         {% endfor %}

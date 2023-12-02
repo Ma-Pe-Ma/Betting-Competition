@@ -6,6 +6,7 @@ import csv
 
 from app.db import get_db
 from app.configuration import configuration
+from sqlalchemy import text
 
 url = configuration.MATCH_URL
 
@@ -16,26 +17,25 @@ def initialize_teams(team_file_name, translation_file_name):
         fields = next(data_reader)
         for i, row in enumerate(data_reader):
             position = i % 4 + 1
-            get_db().cursor().execute('INSERT INTO team (name, group_id, position, top1, top2, top4, top16) VALUES (%s, %s, %s, %s, %s, %s, %s)',(row[0], row[1], position, row[2], row[3], row[4], row[5]))
+            query_string = text('INSERT INTO team (name, group_id, position, top1, top2, top4, top16) VALUES (:n, :g, :p, :t1, :t2, :t4, :t16)')
+            get_db().session.execute(query_string, {'n' : row[0], 'g' : row[1], 'p' : position, 't1' : row[2], 't2' : row[3], 't4' : row[4], 't16' : row[5]})
 
-        get_db().commit()
+        get_db().session.commit()
     
     with current_app.open_resource(translation_file_name, 'rb') as translation_file:
         data_reader = csv.reader(translation_file.read().decode('utf-8').splitlines(), delimiter='|')
 
         fields = next(data_reader)
 
-        for field in fields:
-            print('field: ' + field)
-
         for i, row in enumerate(data_reader):
             for j, column in enumerate(row):
                 if j == 0:
                     continue                
 
-                get_db().cursor().execute('INSERT INTO team_translation (name, language, translation) VALUES (%s, %s, %s)',(row[0], fields[j], column))
+                query_string = text('INSERT INTO team_translation (name, language, translation) VALUES (:n, :l, :t)')
+                get_db().session.execute(query_string, {'n' : row[0], 'l' : fields[j], 't' : column})
 
-        get_db().commit()
+        get_db().session.commit()
 
 def initialize_matches():
     bet_values = configuration.bet_values
@@ -43,19 +43,20 @@ def initialize_matches():
     try:
         response = urllib.request.urlopen(url)
         data = response.read()
-        text = data.decode("utf-8")
+        decoded_text = data.decode("utf-8")
 
-        data_reader = csv.reader(text.splitlines(), delimiter=',')
+        data_reader = csv.reader(decoded_text.splitlines(), delimiter=',')
         fields = next(data_reader)
 
         for row in data_reader:        
             time_object = datetime.strptime(row[2], "%d/%m/%Y %H:%M")
             time_string = time_object.strftime("%Y-%m-%d %H:%M")
-            get_db().cursor().execute('INSERT INTO match (id, team1, team2, time, round, max_bet) VALUES (%s, %s, %s, %s, %s, %s)', (row[0], row[4], row[5], time_string, row[1], bet_values.default_max_bet_per_match))
+            query_string = text('INSERT INTO match (id, team1, team2, time, round, max_bet) VALUES (:id, :t1, :t2, :t, :r, :m)')
+            get_db().session.execute(query_string, {'id' : row[0], 't1' : row[4], 't2' : row[5], 't' : time_string, 'r' : row[1], 'm' : bet_values.default_max_bet_per_match})
+
+        get_db().session.commit()
     except:
         print("Error initializing matches.")
-
-    get_db().commit()
 
 def download_data_csv():
     try:
@@ -79,9 +80,10 @@ def download_data_csv():
                 goal1 = goals[0]
                 goal2 = goals[2]
 
-            get_db().cursor().execute("UPDATE match SET team1=%s, team2=%s, goal1=%s, goal2=%s WHERE id=%s", (row[4], row[5], goal1, goal2, row[0]))
+            query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:od')
+            get_db().session.execute(query_string, {'t1' : row[4], 't2' : row[5], 'g1' : goal1, 'g2' : goal2, 'id' : row[0]})
         
-        get_db().commit()
+        get_db().session.commit()
     except:
         print("Error updating match database.")
         return False

@@ -2,7 +2,10 @@ flask
 gunicorn
 psycopg2-binary
 Flask-APScheduler
+Flask-SQLAlchemy
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 markdown
+sqlalchemy
+flask-babel

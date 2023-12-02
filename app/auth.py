@@ -7,47 +7,47 @@ from flask import request
 from flask import session
 from flask import url_for
 from flask import render_template_string
+from flask import current_app
 
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 import functools
 
 from datetime import datetime
+
+from sqlalchemy import text
+from enum import Enum
+from flask_babel import gettext
 from dateutil import tz
 
 from app.db import get_db
 from app.configuration import configuration
+
+from app.tools import time_determiner
 
 from app.gmail_handler import get_email_resource_by_tag
 from app.gmail_handler import send_messages, create_message
 
 bp = Blueprint('auth', __name__, '''url_prefix="/auth"''')
 
-#https://docs.python.org/3/library/sqlite3.html
-
 @bp.before_app_request
-def load_logged_in_user():
-    """If a user id is stored in the session, load the user object from
-    the database into ``g.user``."""
-
-    #session.permanent = True
-    #app.permanent_session_lifetime = timedelta(minutes=1)
-
+def load_logged_in_user() -> None:
     username = session.get('username')
 
     if username is None:
         g.user = None
     else:
-        cursor = get_db().cursor()
-        cursor.execute('SELECT * FROM bet_user WHERE username = %s', (username,))
+        query_string = text('SELECT * FROM bet_user WHERE username = :username')
+        result = get_db().session.execute(query_string, {'username' : username})
+
+        user_dict = result.fetchone()._asdict()
+        user_dict['tz'] = tz.gettz(configuration.local_zone)
 
         g.user = (
-            cursor.fetchone()
+            user_dict
         )
 
 def login_required(view):
-    """View decorator that redirects anonymous users to the login page."""
-
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
@@ -58,29 +58,34 @@ def login_required(view):
     return wrapped_view
 
 def admin_required(view):
-    """View decorator that redirects anonymous users to the login page."""
-
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if not g.user['admin']:
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+        elif not g.user['admin']:
             return render_template('/page-404.html'), 404
 
         return view(**kwargs)
 
     return wrapped_view
 
+RegisterError = Enum('RegisterError', ['UsernameNull', 'UsernameShort', 'UsernameLong', 'EmailNull', 'PasswordNull', 'PasswordShort', 'PasswordDiffer', 'InvalidInvitation', 'UsernameTaken', 'EmailTaken'])
+
+error_message_dict = {
+    RegisterError.UsernameShort : gettext('Chosen nickname is too short (min. 3 characters).'),
+    RegisterError.UsernameLong : gettext('Chosen nickname is too long (max. 20 characters).'),
+    RegisterError.EmailNull : gettext('E-mail address is required.'),
+    RegisterError.PasswordShort : gettext('The given password is too short (min. 8 characters).'),
+    RegisterError.PasswordDiffer : gettext('The two passwords are not identical.'),
+    RegisterError.InvalidInvitation : gettext('The invitation key is not valid.'),
+    RegisterError.UsernameTaken : gettext('The chosen nickname is already taken.'),
+    RegisterError.EmailTaken : gettext('The chosen email address is already taken.')
+}
+
 @bp.route('/register', methods=('GET', 'POST'))
-def register():
-    """Register a new user.
-
-    Validates that the username is not already taken. Hashes the
-    password for security.
-    """
-    utc_now = datetime.utcnow()
-    utc_now = utc_now.replace(tzinfo=tz.gettz('UTC'))
-
-    register_deadline = datetime.strptime(configuration.dead_line_times.register, '%Y-%m-%d %H:%M')
-    register_deadline = register_deadline.replace(tzinfo=tz.gettz('UTC'))
+def register() -> str:
+    utc_now : datetime = time_determiner.get_now_time_object()
+    register_deadline : datetime = time_determiner.parse_datetime_string(configuration.deadline_times.register)    
 
     if utc_now > register_deadline:
         return render_template('/auth/register-fail.html')
@@ -89,147 +94,153 @@ def register():
         return redirect(url_for('home.homepage'))
 
     if request.method == 'POST':
-        language = request.form.get('language')
+        user_data = request.form.to_dict(flat=True)
 
-        if language not in configuration.supported_languages:
-            language = configuration.supported_languages[0]
-
-        username = request.form.get('username')
-        password = request.form.get('password')
-        email = request.form.get('email')
-        password_repeat = request.form.get('password_repeat')
-        key = request.form.get('key')
-        reminder = request.form.get('reminder')
-        summary = request.form.get('summary')
+        if user_data['language'] not in configuration.supported_languages:
+            user_data['language'] = configuration.supported_languages[0]        
 
         db = get_db()
-        error = None
-        if not username:
-            error = 'username_null'
-        elif len(str(username)) < 3:
-            error = 'username_short'
-        elif len(str(username)) > 20:
-            error = 'username_long'
-        elif not email:
-            error = 'email_null'
-        elif not password:
-            error = 'password_null'
-        elif len(str(password)) < 8:
-            error = 'password_short'
-        elif password != password_repeat:
-            error = 'password_differ'
-        elif key != configuration.invitation_keys.user and key != configuration.invitation_keys.admin:
-            error = 'invalid_invitation'
+        error : RegisterError = None
+        if not user_data['username'] or len(str(user_data['username'])) < 3:
+            error = RegisterError.UsernameShort
+        elif len(str(user_data['username'])) > 20:
+            error = RegisterError.UsernameLong
+        elif not user_data['email']:
+            error = RegisterError.EmailNull
+        elif not user_data['password'] or len(user_data['password']) < 8:
+            error = RegisterError.PasswordShort
+        elif user_data['password'] != user_data['password_repeat']:
+            error = RegisterError.PasswordDiffer
+        elif user_data['key'] != configuration.invitation_keys.user and user_data['key'] != configuration.invitation_keys.admin:
+            error = RegisterError.InvalidInvitation
         else:
-            cursor = db.cursor()
-            cursor.execute('SELECT * FROM bet_user WHERE username = %s', (username,))
-            if cursor.fetchone() is not None:         
-                error = 'username_taken'
-            else:                
-                cursor = db.cursor()
-                cursor.execute('SELECT * FROM bet_user WHERE email = %s', (email,))
-                if cursor.fetchone() is not None:
-                    error = 'email_taken'
+            query_string = text('SELECT * FROM bet_user WHERE username = :username')
+            result = db.session.execute(query_string, {'username' : user_data['username'] })
+            if result.fetchone() is not None:         
+                error = RegisterError.UsernameTaken
+            else:
+                query_string = text('SELECT * FROM bet_user WHERE email = :email')
+                result = db.session.execute(query_string, {'email' : user_data['email']})
+                if result.fetchone() is not None:
+                    error = RegisterError.EmailTaken
+
+        # TODO CHECK AND ADD TIMEZONE!
 
         if error is None:
-            # the name is available, store it in the database and go to
-            # the login page
+            admin : bool = (user_data['key'] == configuration.invitation_keys.admin)
 
-            admin = False
-
-            if key == configuration.invitation_keys.admin:
-                admin = True
-
-            db.cursor().execute(
-                'INSERT INTO bet_user (username, password, email, reminder, summary, language, admin) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                (username, generate_password_hash(password), email, reminder, summary, language, admin),
+            query_string = text('INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone) VALUES (:u, :p, :e, :r, :s, :l, :a, :t)')
+            result = db.session.execute(query_string, {
+                'u' : user_data['username'],
+                'p' : generate_password_hash(user_data['password']),
+                'e' : user_data['email'],
+                'r' : user_data['reminder'],
+                's' : user_data['summary'],
+                'l' : user_data['language'],
+                'a' : admin,
+                't' : 'Europe/Budapest'}
             )
-
-            db.commit()
+            db.session.commit()
 
             session.clear()
-            session['username'] = username
+            session['username'] = user_data['username']
 
             # sending welcome email
             emails = []
-            email_object = get_email_resource_by_tag('Welcome', language)
+            email_object = get_email_resource_by_tag('Welcome')
             subject = render_template_string(email_object[0])
-            message_text = render_template_string(email_object[1], username=username)
-            emails.append(create_message(sender='me', to=email, subject=subject, message_text=message_text, subtype='html'))
+            message_text = render_template_string(email_object[1], username=user_data['username'])
+            emails.append(create_message(sender='me', to=user_data['email'], subject=subject, message_text=message_text, subtype='html'))
             send_messages(emails)
 
             # if first time sign in upload team data
-            player_cursor = db.cursor()
-            player_cursor.execute('SELECT * FROM bet_user')
+            result = db.session.execute(text('SELECT * FROM bet_user'))
 
-            if len(player_cursor.fetchall()) <= 1:
+            if len(result.fetchall()) <= 1:
                 return redirect(url_for('admin.upload_team_data'))
 
             return redirect(url_for('group.group_order'))
 
-        flash(error)
+        flash(error_message_dict[error])
 
-        return render_template('/auth/register.html', language=language, username = username, email = email, password = password, password_repeat = password_repeat, key=key, reminder=int(reminder), summary=int(summary))
+        return render_template('/auth/register.html', user_data = user_data)
 
-    return render_template('/auth/register.html', reminder=0, summary=1, language=configuration.consupported_languages[0])
+    user_data = {
+        'reminder' : '0',
+        'summary' : '1',
+        'language' : configuration.supported_languages[0]
+    }
+
+    # TODO: 
+    if current_app.debug:
+        user_data = {
+        'username' : 'MPM',
+        'email' : 'mpm@mpm.mpm',
+        'password' : 'aaaaaaaa',
+        'password_repeat' : 'aaaaaaaa',
+        'key' : 'admin',
+        'reminder' : '0',
+        'summary' : '1',        
+        'language' : configuration.supported_languages[0]
+    }   
+
+    return render_template('/auth/register.html', user_data = user_data)
 
 
 @bp.route('/login', methods=('GET', 'POST'))
-def login():
+def login() -> str:
     # Redirect to homepage if user is already signed in
     if g.user is not None:
         return redirect(url_for('home.homepage'))
 
-    """Log in a registered user by adding the user id to the session."""
-
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
+        
+        query_string = text('SELECT * FROM bet_user WHERE username = :username')
+        result = get_db().session.execute(query_string, {'username' : username})
+        user = result.fetchone()
+
         error = None
-        cursor = db.cursor()
-        cursor.execute('SELECT * FROM bet_user WHERE username = %s', (username,))
-        user = cursor.fetchone()
 
         if user is None:
-            error = 'username_invalid'
-        elif not check_password_hash(user['password'], password):
-            error = 'password_invalid'
+            error = gettext('Invalid username!')
+        elif not check_password_hash(user.password, password):
+            error = gettext('Invalid password!')
 
-        if error is None:
-            # store the user id in a new session and return to the index
-            session.clear()
-            session['username'] = user['username']
-            return redirect(url_for('home.homepage'))
+        if error is not None:
+            flash(error)
+            return render_template('/auth/login.html', username_form=username)
+        
+        session.clear()
+        session['username'] = user.username          
 
-        flash(error)
-
-        return render_template('/auth/login.html', username_form=username)
+        return redirect(url_for('home.homepage'))
 
     return render_template('/auth/login.html')
 
 @bp.route('/logout')
-def logout():
-    """Clear the current session, including the stored user id."""
+def logout() -> str:
     session.clear()
     return redirect(url_for('auth.login'))
 
 @bp.route('/page-profile', methods=('GET', 'POST'))
 @login_required
-def page_profile():
+def page_profile() -> str:
     if request.method == 'POST':
-        language = request.form['language']
-        if language not in configuration.supported_languages:
-            language = configuration.supported_languages[0]
-        reminder = request.form['reminder']
-        summary = request.form['summary']
-        get_db().cursor().execute('UPDATE bet_user SET reminder=%s, summary=%s, language=%s WHERE username=%s', (reminder, summary, language, g.user['username']))
-        get_db().commit()
-        
-        g.user['language'] = language
+        user_data = request.form.to_dict(flat=True)
 
-    cursor = get_db().cursor()
-    cursor.execute('SELECT username, email, reminder, summary FROM bet_user WHERE username=%s', (g.user['username'],))
-    user_data = cursor.fetchone()
+        if user_data['language'] not in configuration.supported_languages:
+            user_data['language'] = configuration.supported_languages[0]
 
-    return render_template('/auth/modify.html', email=user_data['email'], reminder=user_data['reminder'], summary=user_data['summary'])
+        query_string = text('UPDATE bet_user SET reminder=:r, summary=:s, language=:l WHERE username=:u')
+        get_db().session.execute(query_string, {'r' : user_data['reminder'], 's' : user_data['summary'], 'l' : user_data['language'], 'u' : g.user['username']})
+        get_db().session.commit()
+
+        g.user['language'] = user_data['language']
+
+    query_string = text('SELECT username, email, reminder, summary, language FROM bet_user WHERE username=:username')
+    result = get_db().session.execute(query_string, {'username' : g.user['username']})
+    user_data = result.fetchone()
+
+    return render_template('/auth/modify.html', user_data = user_data)

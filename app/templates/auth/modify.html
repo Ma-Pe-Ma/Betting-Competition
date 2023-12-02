@@ -22,7 +22,7 @@
                     <div class="card-block">
                         
                         <div>Nickname/Username: {{g.user.username}}</div>
-                        <div>Email: {{email}}</div>
+                        <div>Email: {{user_data.email}}</div>
                         <br>
                         <form class="form-horizontal form-material" method="POST">
 
@@ -35,8 +35,8 @@
                                                name="language"                                          
                                                id = "langSelect"                                           
                                                >
-                                               <option value="hu" {% if language == 'hu'%} selected="selected" {% endif %}>Hungarian</option>
-                                               <option value="en" {% if language == 'en'%} selected="selected" {% endif %}>English</option>
+                                               <option value="hu" {% if user_data.language == 'hu'%} selected="selected" {% endif %}>Hungarian</option>
+                                               <option value="en" {% if user_data.language == 'en'%} selected="selected" {% endif %}>English</option>
                                         </select>
                                     </div>
                                 </div>
@@ -45,20 +45,20 @@
                                 <label class="form-group">Match reminder emails (1 hour before the starting of the first match)</label>
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios1" value="0" {% if reminder == 0 %} checked {%endif%}>
+                                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios1" value="0" {% if user_data.reminder == 0 %} checked {%endif%}>
                                     <label class="form-check-label" for="exampleRadios1">
                                         On those days when there is a match without a bet
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios2" value="1" {% if reminder == 1 %} checked {%endif%}>
+                                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios2" value="1" {% if user_data.reminder == 1 %} checked {%endif%}>
                                     <label class="form-check-label" for="exampleRadios2">
                                         Every matchday
                                     </label>
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios3" value="2" {% if reminder == 2 %} checked {%endif%}>
+                                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios3" value="2" {% if user_data.reminder == 2 %} checked {%endif%}>
                                     <label class="form-check-label" for="exampleRadios3">
                                         I don't want to receive reminders
                                     </label>
@@ -69,14 +69,14 @@
                                 <label class="form-group">Standing notification email at the end of matchdays</label>
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="summary" id="summaryRadios2" value="1" {% if summary == 1 %} checked {%endif%}>
+                                    <input class="form-check-input" type="radio" name="summary" id="summaryRadios2" value="1" {% if user_data.summary == 1 %} checked {%endif%}>
                                     <label class="form-check-label" for="summaryRadios2">
                                         Yes
                                     </label>
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="summary" id="summaryRadios1" value="0" {% if summary == 0 %} checked {%endif%}>
+                                    <input class="form-check-input" type="radio" name="summary" id="summaryRadios1" value="0" {% if user_data.summary == 0 %} checked {%endif%}>
                                     <label class="form-check-label" for="summaryRadios1">
                                         No
                                     </label>

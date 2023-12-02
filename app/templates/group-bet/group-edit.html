@@ -22,7 +22,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-block">
-                        <div>Staring bet credit amount: {{start_amount}}</div>
+                        <div>Staring bet credit amount: {{bet_values.starting_bet_amount}}</div>
 
                         <div>
                             <div style="display: inline-block;">Final result bet :</div>
@@ -34,7 +34,7 @@
                             <a href="./final-odds">(tabular form)</a>
 
                             <label for="finalResultBet" style="padding-left: 1em;">Bet: </label>
-                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{user_final_bet.betting_amount}}">
+                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{tournament_bet.betting_amount}}">
 
                             <label for="expectedWinAmount" style="padding-left: 1em;">Expected prize: </label>
                             <div style="display: inline-block;" id="expectedWinAmount"> </div>

@@ -10,33 +10,15 @@ from flask import g
 
 from datetime import timedelta
 
+from app import db
 from app.scheduler import init_scheduler
+from app.tools import time_determiner
 
 UPLOAD_FOLDER = './app'
 ALLOWED_EXTENSIONS = {'csv'}
 
 def create_app(test_config = None):
-    # Inject Flask magic
     app = Flask(__name__, instance_relative_config=True)
-
-    # this is from the tutorial
-    app.config.from_mapping(
-        # a default secret that should be overridden by instance config
-        SECRET_KEY=configuration.app_secret_key,
-        # store the database in the instance folder
-        #DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
-        # file upload folder
-        UPLOAD_FOLDER=UPLOAD_FOLDER,
-        # extensions enabled for uploading
-        ALLOWED_EXTENSIONS=ALLOWED_EXTENSIONS
-    )
-
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.update(test_config)
 
     # ensure the instance folder exists
     try:
@@ -44,10 +26,29 @@ def create_app(test_config = None):
     except OSError:
         pass
 
-    # register the database commands
-    from app import db
+    app.config.from_mapping(
+        # a default secret that should be overridden by instance config
+        SECRET_KEY=configuration.app_secret_key,
+        # store the database in the instance folder
+        #DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        SQLALCHEMY_DATABASE_URI='sqlite:///flaskr.sqlite',
+        # file upload folder
+        UPLOAD_FOLDER=UPLOAD_FOLDER,
+        # extensions enabled for uploading
+        ALLOWED_EXTENSIONS=ALLOWED_EXTENSIONS
+    )
 
-    db.init_app(app)
+    db.db.init_app(app)
+    db.add_db_commands(app)
+
+    time_determiner.init_time_calculator(app)
+
+    if test_config is None:
+        # load the instance config, if it exists, when not testing
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load the test config if passed in
+        app.config.update(test_config)
 
     from flask import session
 
