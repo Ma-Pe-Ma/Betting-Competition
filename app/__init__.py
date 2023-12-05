@@ -71,6 +71,7 @@ def create_app(test_config = None):
     from app import standings
     from app import admin    
     from app import match_bet
+    from app import comments
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(group_bet.bp)
@@ -79,6 +80,7 @@ def create_app(test_config = None):
     app.register_blueprint(standings.bp)
     app.register_blueprint(admin.bp)
     app.register_blueprint(match_bet.bp)
+    app.register_blueprint(comments.bp)
 
     @app.errorhandler(404)
     def page_not_found(e):

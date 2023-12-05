@@ -37,7 +37,7 @@ function parseReceivedComments(responseObject) {
         commentElement.style = "background-color: " + colors[(offset + i) % 2];
         commentElement.setAttribute("value", comment["datetime"]);
         commentElement.innerHTML =
-        `<h4 style="display:inline-flex; margin-left: 10px;">${comment["user"]}</h4>
+        `<h4 style="display:inline-flex; margin-left: 10px;">${comment["username"]}</h4>
         <h4 style="display:inline-flex;">-</h4>
         <h4 style="display:inline-flex;">${comment["datetime"]}</h4><br>
         <div style="margin-left: 20px;">${content}</div><br>`;

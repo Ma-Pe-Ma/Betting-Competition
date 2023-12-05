@@ -89,7 +89,7 @@ CREATE TABLE final_bet (
 
 -- Table containing a player's bet on a match
 CREATE TABLE match_bet (
-  id SERIAL,
+  id SERIAL PRIMARY KEY,
   username TEXT,
   match_id INTEGER NOT NULL,
   goal1 INTEGER,
@@ -100,7 +100,7 @@ CREATE TABLE match_bet (
 
 -- Messages which can be written on the default page by the admin
 CREATE TABLE messages (
-  id SERIAL,
+  id SERIAL PRIMARY KEY,
   message TEXT
 );
 

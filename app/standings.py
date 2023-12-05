@@ -11,7 +11,7 @@ from app.auth import login_required
 
 from app.configuration import configuration
 
-from app.tools.score_calculator import get_group_win_amount, get_group_and_final_bet_amount, get_daily_points_by_current_time, get_group_object
+from app.tools.score_calculator import get_group_win_amount, get_group_and_final_bet_amount, get_daily_points_by_current_time, get_group_object_for_user
 from app.tools.group_calculator import get_tournament_bet
 from app.tools import time_determiner
 
@@ -19,11 +19,13 @@ from sqlalchemy import text
 
 bp = Blueprint('standings', __name__, '''url_prefix="/standings"''')
 
-def create_standings():
+def create_standings(language = None):
+    if language is None:
+        language = g.user['language']
+
     deadline_times = configuration.deadline_times
 
     players = []
-
     current_player_standings = []
 
     utc_now = time_determiner.get_now_time_object()
@@ -40,12 +42,10 @@ def create_standings():
 
     for player in result.fetchall():
         username = player.username
-        # TODO eliminate this?
-        language = configuration.supported_languages[0]
-
+        
         # find group bet/win amount
         group_bet_amount = get_group_and_final_bet_amount(username)
-        group_object = get_group_object(username)
+        group_object = get_group_object_for_user(username, language=language)
         group_winning_amount = get_group_win_amount(group_object)
 
         days = []
@@ -108,7 +108,7 @@ def create_standings():
         # if there's a final result then display it on a new day
         if tournament_bet_dict is not None and tournament_bet_dict['success'] is not None:
             if tournament_bet_dict['success'] == 1:
-                amount += tournament_bet_dict['betting_amount'] * tournament_bet_dict['multiplier']
+                amount += tournament_bet_dict['prize']
             elif tournament_bet_dict['success'] == 2:
                 pass
             

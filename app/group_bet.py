@@ -9,7 +9,7 @@ from datetime import datetime
 from app.auth import login_required
 from app.db import get_db
 from app.configuration import configuration
-from app.tools.group_calculator import get_group_object, get_tournament_bet
+from app.tools.group_calculator import get_group_object_for_user, get_tournament_bet
 from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount
 
 from app.tools import time_determiner
@@ -18,6 +18,7 @@ from sqlalchemy import text
 
 bp = Blueprint('group', __name__, '''url_prefix="/group"''')
 
+# TODO rewrite this ugly input and error handling method
 def before_deadline():
     username = g.user['username']
     language = g.user['language']
@@ -25,8 +26,8 @@ def before_deadline():
     bet_values = configuration.bet_values
 
     if request.method == 'GET':
-        groups = get_group_object(username=username)
-        tournament_bet = get_tournament_bet(username=username, language=language)
+        groups = get_group_object_for_user(username=username)
+        tournament_bet = get_tournament_bet(username=username)
 
         return render_template('/group-bet/group-edit.html', bet_values=bet_values, tournament_bet = tournament_bet, groups = groups)
 
@@ -163,8 +164,8 @@ def during_groupstage():
 
     if username is not None:
         amount_after = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(username=username)
-        groups = get_group_object(username=username)
-        final_bet_object = get_tournament_bet(username=username, language=g.user['language'])
+        groups = get_group_object_for_user(username=username)
+        final_bet_object = get_tournament_bet(username=username)
 
         return render_template('/group-bet/group-during.html', groups=groups, final_bet=final_bet_object, amount_after=amount_after, starting_bet_amount=configuration.bet_values.starting_bet_amount)
     
@@ -178,8 +179,8 @@ def after_evaluation():
     username = request.args.get('name')
 
     if username is not None:
-        final_bet_object = get_tournament_bet(username=username, language=g.user['language'])
-        groups = get_group_object(username=username)
+        final_bet_object = get_tournament_bet(username=username)
+        groups = get_group_object_for_user(username=username)
         total_group_bet = get_group_and_final_bet_amount(username=username)
         total_win_amount = get_group_win_amount(groups)
 
@@ -212,17 +213,12 @@ def group_order():
 def final_bet_odds():
     teams = []
 
-    query_string = text('SELECT top1, top2, top4, top16, name FROM team')
-    result = get_db().session.execute(query_string)
+    query_string = text("SELECT top1, top2, top4, top16, tr.translation AS name "
+                        "FROM team "
+                        "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l ")
+    result = get_db().session.execute(query_string, {'l' : g.user['language']})
 
     for team in result.fetchall():
-        query_string = text('SELECT translation FROM team_translation WHERE name=:name AND language=:language')
-        result1 = get_db().session.execute(query_string, {'name' : team.name, 'language' : g.user['language']})
-        local_name = result1.fetchone()
-
-        team_dict : dict = team._asdict()
-        team_dict['name'] = local_name.translation
-
-        teams.append(team_dict)
+        teams.append(team._asdict())
 
     return render_template('/group-bet/final-odds.html', teams=teams)

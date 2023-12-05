@@ -21,10 +21,10 @@
                 <div class="card">
                     <div class="card-block">
                         <form action="./edit" method="POST" id="oddForm" name="oddForm">
-                            <div> {{match.ID}}. match ({{match.time}})</div>
+                            <div> {{match.id}}. match ({{match.time}})</div>
                             
                             <div style="display: inline-block;">
-                                {{match.team1}} - {{match.team2}} - {{match.type}}
+                                {{match.team1}} - {{match.team2}} - {{match.round}}
                             </div>
 
                             <div>
@@ -41,7 +41,7 @@
                                     <label>Max bet credit: </label>
                                     <input type="number" size="4" value="{{match.max_bet}}" name="max_bet" min="1" max="1000" form="oddForm"/>
 
-                                    <input type="hidden" id="ID" name="ID" value="{{match.ID}}"> 
+                                    <input type="hidden" id="ID" name="id" value="{{match.id}}"> 
                                 </div>
                             </div>
                             <input type="submit" value="Beküld" form="oddForm">

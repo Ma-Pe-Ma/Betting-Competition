@@ -66,7 +66,7 @@
                             {% set dummy = day_names.update({5 : 'Saturday'}) %}
                             {% set dummy = day_names.update({6 : 'Sunday'}) %}
 
-                            {% for day in days %}
+                            {% for date, day in days.items() %}
                             {%if loop.index % 12 == 1 %}
                             <table style="width:90%;margin-left:20px;background-color: lightblue">
                                 <tr>
@@ -87,7 +87,7 @@
                             {% endif %}
 
                             <div id="ID_{{day.number}}">
-                                {{day.number}}. day - {{day.date}} - {{day_names[day.id]}}
+                                {{day.number}}. day - {{date}} - {{day_names[day.weekday]}}
                             </div>
 
                             <table style="width:90%;margin-left:20px;{#%if loop.index % 10 == 1 %} background:yellow; {% endif %#}">
@@ -116,7 +116,7 @@
                                 {% endif %}
 
                                 <tr style="padding-bottom:5px;background-color:{{background}};">
-                                    <td>{{match.ID}}</td>
+                                    <td>{{match.id}}</td>
                                     <td>{{match.time}}</td>
                                     <td style="text-align:center;">{% if match.team1 =="" %} Unknown {%else%} {{match.team1}} {% endif %} - {% if match.team2 =="" %} Unknown {%else%} {{match.team2}} {% endif %}</td>
                                     <td style="text-align:center;">{{match.round}}</td>
@@ -126,7 +126,7 @@
                                     <td style="text-align:center;">{{match.goal1}}-{{match.goal2}}</td>
                                     <td style="text-align:center;">{{match.bet}} / {{match.max_bet}}</td>
                                     <!--input type="image" src="http://example.com/path/to/image.png" /-->
-                                    <td><button class="editbtn" value="{{match.ID}}" onclick="redirectToEdit(this.value)">Edit</button></td>
+                                    <td><button class="editbtn" value="{{match.id}}" onclick="redirectToEdit(this.value)">Edit</button></td>
                                 </tr>
 
                                 {% endfor %}

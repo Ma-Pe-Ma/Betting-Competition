@@ -98,27 +98,15 @@ def send_email():
 def odd():
     matches = []
 
-    query_string = text('SELECT id, time, team1, team2, odd1, oddX, odd2, max_bet FROM match')
-    result = get_db().session.execute(query_string)
+    query_string = text("SELECT match.id, match.time, match.odd1, match.oddX, match.odd2, match.max_bet, t1.translation AS team1, t2.translation as team2 "
+                        "FROM match "
+                        "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "
+                        "LEFT JOIN team_translation AS t2 ON t2.name = match.team2 AND t2.language = :l "
+                        "ORDER BY match.time")
+    result = get_db().session.execute(query_string, {'l' : g.user['language']})
 
-    for match in result.fetchall():
-        query_string = text('SELECT translation FROM team_translation WHERE name=:name AND language=:language')
-
-        result1 = get_db().session.execute(query_string, {'name' : match.team1, 'language' :  g.user['language']})
-        team1_local = result1.fetchone()
-        result2 = get_db().session.execute(query_string, {'name' : match.team2, 'language' :  g.user['language']})
-        team2_local = result2.fetchone()
-
-        if team1_local is None or team2_local is None or team1_local.translation == '' or team2_local.translation == '':
-            continue
-
-        match_dict : dict = match._asdict()
-        match_dict['team1'] = team1_local.translation
-        match_dict['team2'] = team2_local.translation
-
-        matches.append(match_dict)
-
-    matches.sort(key=lambda match : datetime.strptime(match['time'], '%Y-%m-%d %H:%M'))
+    for match in result.fetchall():        
+        matches.append(match._asdict())
 
     return render_template('/admin/odd.html', matches=matches)
 
@@ -132,36 +120,21 @@ def odd_edit():
         if matchIDString is not None:
             matchID : int = int(matchIDString)
 
-            query_string = text('SELECT team1, team2, ID, odd1, oddX, odd2, time, round, max_bet FROM match WHERE ID=:matchID')
-            result = get_db().session.execute(query_string, {'matchID,' : matchID})
+            query_string = text("SELECT match.id, match.odd1, match.oddX, match.odd2, match.time, match.round, match.max_bet, t1.translation AS team1, t2.translation AS team2 "
+                                "FROM match "
+                                "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "
+                                "LEFT JOIN team_translation AS t2 ON t2.name = match.team2 AND t2.language = :l "
+                                "WHERE match.id=:matchID")
+            result = get_db().session.execute(query_string, {'matchID' : matchID, 'l' : g.user['language']})
             match = result.fetchone()
 
-            query_string = text('SELECT translation FROM team_translation WHERE name=:name AND language=:language')
-            
-            result1 = get_db().session.execute(query_string, {'name': match.team1, 'language' : g.user['language']})
-            team1_local = result1.fetchone()
-
-            result2 = get_db().session.execute(query_string, {'name': match.team2, 'language' : g.user['language']})
-            team2_local = result2.fetchone()
-
-            match_dict : dict = match._asdict()
-            match_dict['team1'] = team1_local.translation
-            match_dict['team2'] = team2_local.translation
-            return render_template('/admin/odd-edit.html', match=match_dict)
+            return render_template('/admin/odd-edit.html', match=match._asdict())
         else:
             return redirect(url_for('admin.odd'))
 
     elif request.method == 'POST':
-        dict = request.form
-        odd1 = dict['odd1']
-        oddX = dict['oddX']
-        odd2 = dict['odd2']
-        max_bet = dict['max_bet']
-        
-        ID = dict['ID']
-
-        query_string = text('UPDATE match SET odd1=:o1, oddX=:ox, odd2=:o2, max_bet=max_bet WHERE ID=:ID')
-        get_db().session.execute(query_string, {'o1' : odd1, 'ox' : oddX, 'o2' : odd2, 'max_bet ': max_bet, 'ID' : ID})
+        query_string = text('UPDATE match SET odd1=:odd1, oddX=:oddX, odd2=:odd2, max_bet=:max_bet WHERE id=:id')
+        get_db().session.execute(query_string, request.form.to_dict())
         get_db().session.commit()
 
         return redirect(url_for('admin.odd'))
@@ -174,11 +147,9 @@ def group_evaluation():
         response_object = {}
 
         for key in request.json:
-            i = 1
-            for team in request.json[key]:
+            for index, team in enumerate(request.json[key]):
                 query_string = text('UPDATE team SET position=:position WHERE name=:team')
-                get_db().session.execute(query_string, {'position' : i, 'team ' : team})
-                i += 1
+                get_db().session.execute(query_string, {'position' : index + 1, 'team' : team})
 
         get_db().session.commit()
 
@@ -188,8 +159,10 @@ def group_evaluation():
     
     groups = []
 
-    query_string = text('SELECT name, group_id, position FROM team')
-    result = get_db().session.execute(query_string)
+    query_string = text("SELECT team.name, team.group_id, team.position, tr.translation AS local_name "
+                        "FROM team "
+                        "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l ")
+    result = get_db().session.execute(query_string, {'l' : g.user['language']})
 
     for team in result.fetchall():
         group_of_team = None
@@ -200,14 +173,10 @@ def group_evaluation():
                 break
 
         if group_of_team == None:
-            group_of_team = {'ID' : team.group_id, 'teams': [] }
+            group_of_team = {'ID' : team.group_id, 'teams' : [] }
             groups.append(group_of_team)
 
-        query_string = text('SELECT translation FROM team_translation WHERE name=:teamname AND language=:language')
-        result2 = get_db().session.execute(query_string, {'teamname' : team.name, 'language' :  g.user['language']})
-        team_local = result2.fetchone()
-
-        group_of_team['teams'].append({'name' : team.name, 'local_name' : team_local.translation, 'position' :  team.position})
+        group_of_team['teams'].append({'name' : team.name, 'local_name' : team.local_name, 'position' :  team.position})
 
     already_submitted = True
 

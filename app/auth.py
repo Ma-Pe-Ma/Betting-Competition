@@ -41,7 +41,9 @@ def load_logged_in_user() -> None:
         result = get_db().session.execute(query_string, {'username' : username})
 
         user_dict = result.fetchone()._asdict()
-        user_dict['tz'] = tz.gettz(configuration.local_zone)
+        user_dict['tz'] = tz.gettz(user_dict['timezone'])
+        #TODO calculate proper offset for user
+        user_dict['tz_offset'] = '-01:00'
 
         g.user = (
             user_dict
@@ -124,22 +126,15 @@ def register() -> str:
                 if result.fetchone() is not None:
                     error = RegisterError.EmailTaken
 
-        # TODO CHECK AND ADD TIMEZONE!
-
         if error is None:
-            admin : bool = (user_data['key'] == configuration.invitation_keys.admin)
+            user_data['password'] = generate_password_hash(user_data['password'])
+            user_data['admin'] = user_data['key'] == configuration.invitation_keys.admin
+            # TODO CHECK AND ADD TIMEZONE!
+            user_data['timezone'] = 'Europe/Budapest'
 
-            query_string = text('INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone) VALUES (:u, :p, :e, :r, :s, :l, :a, :t)')
-            result = db.session.execute(query_string, {
-                'u' : user_data['username'],
-                'p' : generate_password_hash(user_data['password']),
-                'e' : user_data['email'],
-                'r' : user_data['reminder'],
-                's' : user_data['summary'],
-                'l' : user_data['language'],
-                'a' : admin,
-                't' : 'Europe/Budapest'}
-            )
+            query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone) " 
+                                "VALUES (:username, :password, :email, :reminder, :summary, :language, :admin, :timezone)")
+            result = db.session.execute(query_string, user_data)
             db.session.commit()
 
             session.clear()
@@ -174,15 +169,15 @@ def register() -> str:
     # TODO: 
     if current_app.debug:
         user_data = {
-        'username' : 'MPM',
-        'email' : 'mpm@mpm.mpm',
-        'password' : 'aaaaaaaa',
-        'password_repeat' : 'aaaaaaaa',
-        'key' : 'admin',
-        'reminder' : '0',
-        'summary' : '1',        
-        'language' : configuration.supported_languages[0]
-    }   
+            'username' : 'MPM',
+            'email' : 'mpm@mpm.mpm',
+            'password' : 'aaaaaaaa',
+            'password_repeat' : 'aaaaaaaa',
+            'key' : configuration.invitation_keys.admin,
+            'reminder' : '0',
+            'summary' : '1',        
+            'language' : configuration.supported_languages[0]
+        }   
 
     return render_template('/auth/register.html', user_data = user_data)
 

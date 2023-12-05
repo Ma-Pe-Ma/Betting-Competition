@@ -46,7 +46,7 @@
                             {% endif %}
 
                             <tr style="padding-bottom:5px;background-color:{{background}};">
-                                <td>{{match.ID}}</td>
+                                <td>{{match.id}}</td>
                                 <td>{{match.time}}</td>
                                 <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
                                 <td style="text-align:center;">{{match.type}}</td>
@@ -54,7 +54,7 @@
                                 <td style="text-align:center;">{{match.odd1}}</td>
                                 <td style="text-align:center;">{{match.oddX}}</td>
                                 <td style="text-align:center;">{{match.odd2}}</td>
-                                <td><button class="editbtn" value="{{match.ID}}" onclick="redirectToEdit(this.value)">Edit</button></td>
+                                <td><button class="editbtn" value="{{match.id}}" onclick="redirectToEdit(this.value)">Edit</button></td>
                             </tr>
 
                             {% endfor %}

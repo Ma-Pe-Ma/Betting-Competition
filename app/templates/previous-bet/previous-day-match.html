@@ -78,7 +78,7 @@
             {% endif %}
 
         <tr style="padding-bottom:5px; background-color: {{background}};">
-            <td>{{match.ID}}</td>
+            <td>{{match.id}}</td>
             <td style="text-align:center;">{{match.match.time}}</td>
             <td style="text-align:center;">{{match.match.team1}} - {{match.match.team2}}</td>
         {% if match.result1 is none or match.result2 is none %}    
@@ -119,7 +119,7 @@
 <br>
 <div style="background-color: greenyellow;">
     {% if final_bet.success == 1 %}
-    <a href="group" style="display: inline-block;font-weight: bold;">Final result bet prize: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</a>
+    <a href="group" style="display: inline-block;font-weight: bold;">Final result bet prize: {{(final_bet.bet * final_bet.multiplier)|round(2)}}</a>
     {% else %}
     <a href="group" style="display: inline-block;font-weight: bold">Final result bet prize: 0</a>
     {% endif %}

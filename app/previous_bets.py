@@ -8,7 +8,7 @@ from app.auth import login_required
 from datetime import datetime
 from dateutil import tz
 
-from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount, get_group_object
+from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount, get_group_object_for_user
 from app.tools.score_calculator import get_bet_result_for_match
 from app.tools.group_calculator import get_tournament_bet
 from app.tools import time_determiner
@@ -28,49 +28,29 @@ def prev_bets():
     if username is not None:
         days : list = []
 
-        number_of_match_bets : int = 0
-        number_of_successful_bets : int = 0
-
-        query_string = text('SELECT * FROM match WHERE unixepoch(time) < unixepoch(:now)')
-        result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string()})
+        query_string = text("SELECT match.time, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_bet.goal1 AS bgoal1, match_bet.goal2 AS bgoal2, COALESCE(match_bet.bet, 0) AS bet, tr1.translation AS team1, tr2.translation AS team2 "
+                            "FROM match "
+                            "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
+                            "LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l "
+                            "LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l "
+                            "WHERE unixepoch(match.time) < unixepoch(:now)")
+        result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string(), 'l' : g.user['language'], 'u' : g.user['username']})
 
         utc_now = time_determiner.get_now_time_object()
 
         # iterate through matches which has already been played (more precisely started)
-        for previous_match in result.fetchall():
-            #match time in UTC
-            match_time = datetime.strptime(previous_match.time, '%Y-%m-%d %H:%M').replace(tzinfo=tz.gettz('UTC'))
-            
-            #match time in local time
-            match_time_local : datetime = match_time.astimezone(g.user['tz'])   
-
+        for match_and_bet_parameters in result.fetchall():
+            # calculating local timeparameters
+            match_time = datetime.strptime(match_and_bet_parameters.time, '%Y-%m-%d %H:%M').replace(tzinfo=tz.gettz('UTC'))
+            match_time_local : datetime = match_time.astimezone(g.user['tz'])
             match_date_string : str = match_time_local.strftime('%Y-%m-%d')
-            match_time_string : str = match_time_local.strftime('%H:%M')
-
-            # get the user's bet for the match 
-            query_string = text('SELECT * FROM match_bet WHERE username=:username AND match_id = :match_id')
-            result0 = get_db().session.execute(query_string, {'username' : username, 'match_id' : previous_match.id})
-            match_bet = result0.fetchone()
-
-            bet_result = {'bet' : 0, 'prize' : 0,'bonus' : 0}
-
-            if match_bet is not None:
-                number_of_match_bets += 1
-                bet_result : dict = get_bet_result_for_match(previous_match, match_bet)
-
-            query_string = text('SELECT translation FROM team_translation WHERE name=:teamname AND language=:language')
-
-            result1 = get_db().session.execute(query_string, {'teamname' : previous_match.team1, 'language' : g.user['language']})
-            team1_local = result1.fetchone()
-
-            result2 = get_db().session.execute(query_string, {'teamname' : previous_match.team2, 'language' : g.user['language']})
-            team2_local = result2.fetchone()
+            match_time_string : str = match_time_local.strftime('%H:%M')            
 
             # convert db match data to dict for template
-            match_dict : dict = previous_match._asdict()
+            match_dict : dict = match_and_bet_parameters._asdict()
             match_dict['time'] = match_time_string
-            match_dict['team1'] = team1_local.translation
-            match_dict['team2'] = team2_local.translation
+
+            get_bet_result_for_match(match_dict)            
 
             # find match_day it does not exist create it
             match_day = None
@@ -80,10 +60,10 @@ def prev_bets():
                     match_day = day
 
             if match_day is None:
-                match_day = { 'date' : match_date_string, 'id' : match_time_local.weekday(), 'matches' :[] }
+                match_day = { 'date' : match_date_string, 'dayID' : match_time_local.weekday(), 'matches' : []}
                 days.append(match_day) 
 
-            match_day['matches'].append({'match' : match_dict, 'bet_result' : bet_result })
+            match_day['matches'].append(match_dict)
 
         # order days by date
         days.sort(key=lambda day : datetime.strptime(day['date'], "%Y-%m-%d"))
@@ -91,27 +71,30 @@ def prev_bets():
         group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(configuration.deadline_times.group_evaluation) 
 
         start_amount = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(username)
-        amount_at_end_of_match : int = start_amount
-        group_object = get_group_object(username)
-        group_bonus : int = get_group_win_amount(group_object)
+        amount_at_end_of_match : int = start_amount    
         balance_after_group : int = 0
+        number_of_match_bets : int = 0
+        number_of_successful_bets : int = 0
+
+        group_object = get_group_object_for_user(username)
+        group_bonus : int = get_group_win_amount(group_object)
 
         for i, day in enumerate(days):
             day['number'] = i + 1
-            day['matches'].sort(key=lambda match : datetime.strptime(match['match']['time'], '%H:%M'))
+            day['matches'].sort(key=lambda match : datetime.strptime(match['time'], '%H:%M'))
 
             # calculate balance after match
             for match in day['matches']:
-                bet_result : dict = match['bet_result']
+                if match['bet_outcome'] is not None:
+                    if match['match_outcome'] is not None: 
+                        number_of_match_bets += 1
 
-                if bool(bet_result):
-                    if 'match_outcome' in bet_result and 'bet_outcome' in bet_result and bet_result['match_outcome'] == bet_result['bet_outcome']:
-                        number_of_successful_bets += 1
+                        if match['match_outcome'] == match['bet_outcome']:
+                            number_of_successful_bets += 1
+                            amount_at_end_of_match -= match['bet']
+                            amount_at_end_of_match += match['prize'] + match['bonus']
 
-                    amount_at_end_of_match -= int(bet_result['bet'])
-                    amount_at_end_of_match += int(bet_result['prize']) + int(bet_result['bonus'])
-
-                match['bet_result']['balance'] = amount_at_end_of_match
+                match['balance'] = amount_at_end_of_match
 
             day_date_object = datetime.strptime(day['date'], '%Y-%m-%d')
 
@@ -122,12 +105,12 @@ def prev_bets():
 
         group_evaluation_date = group_evaluation_time_object.date().strftime('%Y-%m-%d')
 
-        tournament_bet_dict : dict = get_tournament_bet(username=username, language=g.user['language'])
+        tournament_bet_dict : dict = get_tournament_bet(username=username)
 
         # if there's a final result then display it on a new day
         if tournament_bet_dict is not None and tournament_bet_dict['success'] is not None:
             if tournament_bet_dict['success'] == 1:
-                amount_at_end_of_match += tournament_bet_dict['betting_amount'] * tournament_bet_dict['multiplier']
+                amount_at_end_of_match += tournament_bet_dict['bet'] * tournament_bet_dict['multiplier']
                     
         finishing_balance = amount_at_end_of_match
 

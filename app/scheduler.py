@@ -124,13 +124,13 @@ def daily_standings():
         local_date = utc_now.astimezone(local_zone).strftime('%Y. %m. %d')
 
         messages = []
-
         email_map = {}
 
         for lan in configuration.supported_languages:
             email_map[lan] = get_email_resource_by_tag('DailyStandings', lan)
 
-        standings = create_standings()
+        # TODO: use users' chosen language
+        standings = create_standings(language=configuration.supported_languages[0])
 
         query_string = text('SELECT username, email, language from bet_user WHERE summary=1')
         result = get_db().session.execute(query_string)

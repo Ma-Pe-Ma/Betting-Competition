@@ -7,32 +7,22 @@ from dateutil import tz
 
 from app.configuration import configuration
 from app.tools import time_determiner
-from app.tools.group_calculator import get_group_object
+from app.tools.group_calculator import get_group_object_for_user
 
 from sqlalchemy import text
 
+from typing import Dict, List
+
 # this method returns the sum of group bets and the final bet of a user
 def get_group_and_final_bet_amount(username : str) -> int:
-    total_bet : int = 0
-
-    # get the final bet
-    query_string = text('SELECT bet FROM final_bet WHERE username = :username')
-    result = get_db().session.execute(query_string, {'username' : username})
-    final_bet = result.fetchone()
-
-    if final_bet is not None:
-        total_bet += final_bet.bet
-    else:
-        return 0
-
-    # get the group bets and add them
-    query_string = text('SELECT bet FROM group_bet WHERE username = :username')
+    query_string = text("SELECT (SUM(group_bet.bet) + final_bet.bet) AS total_bet "
+                        "FROM group_bet "
+                        "LEFT JOIN final_bet ON final_bet.username = :username "
+                        "WHERE group_bet.username = :username "
+                        "GROUP BY group_bet.username")
     result = get_db().session.execute(query_string, {'username' : username})
 
-    for group_bet in result.fetchall():
-        total_bet += group_bet.bet
-    
-    return total_bet
+    return result.fetchone()._asdict()['total_bet']
 
 def get_group_win_amount(group_object) -> int:
     win_amount : int = 0
@@ -47,103 +37,77 @@ def get_group_win_amount(group_object) -> int:
     return win_amount
 
 # simple mathematical sign function used by prize result
-def sign(x):
+def sign(x : int|float) -> int:
     if x > 0:
         return 1
     if x == 0:
         return 0
     if x < 0:
         return -1
-   
-# get the actual outcome information of a match_bet
-def get_bet_result_for_match(match, match_bet) -> dict:
-    bet_outcome = sign(match_bet.goal1 - match_bet.goal2)
-    match_outcome = None
-    odd = 0
-    bonus_multiplier = 0
 
-    if match.goal1 is not None:
-        # this values tell the result of the match if > 0 then team1 won, if < 0 then team2 won, if = 0 it's draw
-        match_outcome = sign(match.goal1 - match.goal2)        
-        bonus_multiplier : int = 0
-        odd : int = 0
+# TODO eliminate this ugly method with proper SQL query!
+def get_bet_result_for_match(mb_parameters):
+    if mb_parameters['rgoal1'] is None or mb_parameters['rgoal2'] is None:
+        mb_parameters['match_outcome'] = None
+    else:
+        mb_parameters['match_outcome'] = sign(mb_parameters['rgoal1'] - mb_parameters['rgoal2'])
 
-        if match_outcome == bet_outcome:
-            if match.goal1 == match.goal2:
-                if match.goal1 == match_bet.goal1:
+    if mb_parameters['bgoal1'] is None or mb_parameters['bgoal2'] is None:
+        mb_parameters['bet_outcome'] = None
+    else:
+        mb_parameters['bet_outcome'] = sign(mb_parameters['bgoal1'] - mb_parameters['bgoal2'])
+
+    bonus_multiplier : int = 0
+    odd : int = 0
+
+    if mb_parameters['match_outcome'] is not None and mb_parameters['bet_outcome'] is not None:
+        if mb_parameters['match_outcome'] == mb_parameters['bet_outcome']:
+            if mb_parameters['rgoal1'] == mb_parameters['rgoal2']:
+                if mb_parameters['rgoal1'] == mb_parameters['bgoal1']:
                     bonus_multiplier = configuration.bonus_multipliers.bullseye
             else:
-                if match.goal1 == match_bet.goal1 and match.goal2 == match_bet.goal2:
+                if mb_parameters['rgoal1'] == mb_parameters['bgoal1'] and mb_parameters['rgoal2'] == mb_parameters['bgoal2']:
                     bonus_multiplier = configuration.bonus_multipliers.bullseye
-                elif match_bet.goal1 - match_bet.goal2 == match.goal1 - match.goal2:
+                elif mb_parameters['bgoal1'] - mb_parameters['bgoal2'] == mb_parameters['rgoal1'] - mb_parameters['rgoal2']:
                     bonus_multiplier = configuration.bonus_multipliers.difference
 
-            if match_outcome == 1:
-                odd = match.odd1
-            elif match_outcome == -1:
-                odd = match.odd2
+            if mb_parameters['match_outcome'] == 1:
+                odd = mb_parameters['odd1']
+            elif mb_parameters['match_outcome'] == -1:
+                odd = mb_parameters['odd2']
             else:
-                odd = match.oddX
+                odd = mb_parameters['oddX']
 
-    bet_result_dict = {
-        'match_outcome' : match_outcome,
-        'bet_outcome' : bet_outcome,
-        'bet' : match_bet.bet,
-        'prize' : match_bet.bet * odd,
-        'bonus' : match_bet.bet * bonus_multiplier,
-        'goal1' : match_bet.goal1,
-        'goal2' : match_bet.goal2
-    }
+    mb_parameters['bonus'] = mb_parameters['bet'] * bonus_multiplier
+    mb_parameters['prize'] = mb_parameters['bet'] * odd
 
-    return bet_result_dict
+def get_daily_points_by_current_time(username : str) -> List[Dict[str, str|List[int]]]:
+    utc_now_string : str = time_determiner.get_now_time_string()
 
-def get_daily_points_by_current_time(username) -> list:
-    days = []
+    query_string = text("SELECT match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_bet.goal1 AS bgoal1, match_bet.goal2 AS bgoal2, COALESCE(match_bet.bet, 0) AS bet, "
+                        "date(match.time || :timezone) AS date, time(match.time || :timezone) AS time "
+                        "FROM match "
+                        "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
+                        "WHERE unixepoch(time) < unixepoch(:now) "
+                        "ORDER BY date")
+    result = get_db().session.execute(query_string, {'now' : utc_now_string, 'u' : username, 'timezone' : g.user['tz_offset'] })
 
-    query_string = text('SELECT * FROM match WHERE unixepoch(time) < unixepoch(\'now\')')
-    result = get_db().session.execute(query_string)
+    days : Dict[str, List[int]] = {}
 
     # get matches which has been started by current time
-    for match in result.fetchall():
-        if match.goal1 is None or match.goal2 is None:
+    for match_and_bet_parameters in result.fetchall():
+        if match_and_bet_parameters.rgoal1 is None or match_and_bet_parameters.rgoal2 is None:
             continue
 
-        match_time_utc = datetime.strptime(match.time, '%Y-%m-%d %H:%M')
-        match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
+        match_bet_dict = match_and_bet_parameters._asdict()
+        get_bet_result_for_match(match_bet_dict)
 
-        match_time_local = match_time_utc.astimezone(g.user['tz'])   
+        credit_change = match_bet_dict['prize'] + match_bet_dict['bonus'] - match_bet_dict['bet']
 
-        match_date = match_time_local.strftime('%Y-%m-%d')
-        match_time = match_time_local.strftime('%H:%M')        
-
-        query_string = text('SELECT * FROM match_bet WHERE (username = :username AND match_id = :match_id)')
-        result = get_db().session.execute(query_string, {'username' : username, 'match_id' : match.id})
-        match_bet = result.fetchone()
-
-        prize : int = 0
-        bet_amount : int = 0
-
-        if match_bet is not None:
-            bet_result_for_match = get_bet_result_for_match(match, match_bet)
-            prize = bet_result_for_match['prize'] + bet_result_for_match['bonus']
-            bet_amount = match_bet.bet
-        
-        # find match day if it does not exist create it
-        match_day : dict = None
-
-        for day in days:
-            if day['date'] == match_date:
-                match_day = day
-
-        if match_day is None:
-            match_day = {'date' : match_date, 'points' :[]}
-            days.append(match_day) 
-
-        # add prize and subtract bet
-        match_day['points'].append(prize)
-        match_day['points'].append(-1 * bet_amount)
-
-    days.sort(key=lambda day : datetime.strptime(day['date'], '%Y-%m-%d'))
+        if match_and_bet_parameters['date'] not in days:
+            days[match_and_bet_parameters['date']] = [credit_change]
+        else:
+            days[match_and_bet_parameters['date']].append(credit_change)
 
     return days
 
@@ -153,12 +117,14 @@ def get_current_points_by_player(username) -> int:
     # substract group and final bet amount
     amount -= get_group_and_final_bet_amount(username)
 
+    point_by_day : Dict[str, str|List[int]]
+
     # add daily point income (win) + outcome (bet)
     for point_by_day in get_daily_points_by_current_time(username):
         for point in point_by_day['points']:
             amount += point
 
-    group_object = get_group_object(username)
+    group_object = get_group_object_for_user(username)
     amount += get_group_win_amount(group_object)
 
     return amount
