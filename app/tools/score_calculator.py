@@ -2,129 +2,115 @@ from os import name
 from app.db import get_db
 from flask import g
 
-from datetime import datetime
-from dateutil import tz
+from datetime import datetime, timedelta
 
 from app.configuration import configuration
 from app.tools import time_determiner
-from app.tools.group_calculator import get_group_object_for_user
+from app.tools.group_calculator import get_group_bet_dict_for_user, get_tournament_bet_dict_for_user
 
 from sqlalchemy import text
 
-from typing import Dict, List
+# this method returns the sum of group bets and the tournament bet of a user
+def get_group_and_tournament_bet_amount(username : str) -> int:    
+    query_string = text("SELECT COALESCE(SUM(group_bet.bet) + tournament_bet.bet, 0) AS total_bet "
+                        "FROM bet_user "
+                        "LEFT JOIN group_bet ON group_bet.username = bet_user.username "
+                        "LEFT JOIN tournament_bet ON tournament_bet.username = bet_user.username "
+                        "WHERE bet_user.username = :username "
+                        "GROUP BY group_bet.username"
+                        )
 
-# this method returns the sum of group bets and the final bet of a user
-def get_group_and_final_bet_amount(username : str) -> int:
-    query_string = text("SELECT (SUM(group_bet.bet) + final_bet.bet) AS total_bet "
-                        "FROM group_bet "
-                        "LEFT JOIN final_bet ON final_bet.username = :username "
-                        "WHERE group_bet.username = :username "
-                        "GROUP BY group_bet.username")
     result = get_db().session.execute(query_string, {'username' : username})
 
     return result.fetchone()._asdict()['total_bet']
 
-def get_group_win_amount(group_object) -> int:
-    win_amount : int = 0
-    
+match_evaluation_query_string = text(
+                            "WITH match_prize AS("
+	                        "SELECT match.id, m_outcome.match AS match_outcome, b_outcome.bet AS bet_outcome, COALESCE(m_outcome.match = b_outcome.bet, 0) AS success, "
+	                        "CASE m_outcome.match = b_outcome.bet WHEN 1 "
+                                "THEN CASE m_outcome.match WHEN 1 "
+                                    "THEN match.odd1 WHEN -1 THEN match.odd2 WHEN 0 THEN match.oddX ELSE 0 END "
+                                "ELSE 0 "
+                            "END AS multiplier, "
+	                        "CASE m_outcome.match = b_outcome.bet WHEN 1 "
+                                "THEN CASE WHEN match.goal1 = match_bet.goal1 AND match.goal2 = match_bet.goal2 "
+                                    "THEN :bullseye "
+                                    "ELSE CASE WHEN (match.goal1 - match.goal2) = (match_bet.goal1 - match_bet.goal2) "
+                                        "THEN :difference "
+                                        "ELSE 0 "
+                                        "END "
+		                            "END "
+	                            "ELSE 0 "
+                            "END AS bonus, "
+                            "COALESCE(match_bet.bet, 0) AS bet "
+	                        "FROM match "
+	                        "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
+	                        "LEFT JOIN (SELECT SIGN(match.goal1 - match.goal2) AS match, match.id AS id FROM match) AS m_outcome ON m_outcome.id = match.id "
+	                        "LEFT JOIN (SELECT SIGN(match_bet.goal1 - match_bet.goal2) AS bet, match_bet.match_id AS match_id FROM match_bet WHERE match_bet.username = :u) AS b_outcome ON b_outcome.match_id = match.id) ")
+
+def get_daily_points_by_current_time(username : str):
     utc_now = time_determiner.get_now_time_object()
-    group_evaluation_time_object = time_determiner.parse_datetime_string(configuration.deadline_times.group_evaluation)
+    deadline_times = configuration.deadline_times
 
-    if utc_now > group_evaluation_time_object:
-        for group in group_object:
-            win_amount += group.bet_property.multiplier * group.bet_property.amount
+    daily_point_query_string = match_evaluation_query_string.text + \
+                        """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet)) AS point, date(match.time) AS date, 
+                        strftime('%Y', match.time) as year, strftime('%m', match.time) -1 as month, strftime('%d', match.time) as day 
+                        FROM match 
+                        LEFT JOIN match_prize ON match_prize.id = match.id 
+                        WHERE unixepoch(time) < unixepoch(:now) AND unixepoch(time) {r} unixepoch(:group_evaluation_time)
+                        GROUP BY date 
+                        ORDER BY date """
 
-    return win_amount
+    daily_point_parameters = {'now' : utc_now.strftime('%Y-%m-%d %H:%M'), 'group_evaluation_time' : deadline_times.group_evaluation, 'u' : username, 'bullseye' : configuration.bonus_multipliers.bullseye, 'difference' : configuration.bonus_multipliers.difference}
 
-# simple mathematical sign function used by prize result
-def sign(x : int|float) -> int:
-    if x > 0:
-        return 1
-    if x == 0:
-        return 0
-    if x < 0:
-        return -1
+    #create unique time objects
+    group_deadline_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.register)
+    two_days_before_deadline = group_deadline_time_object - timedelta(days=2)
+    one_day_before_deadline = group_deadline_time_object - timedelta(days=1)
+    
+    days = []
 
-# TODO eliminate this ugly method with proper SQL query!
-def get_bet_result_for_match(mb_parameters):
-    if mb_parameters['rgoal1'] is None or mb_parameters['rgoal2'] is None:
-        mb_parameters['match_outcome'] = None
-    else:
-        mb_parameters['match_outcome'] = sign(mb_parameters['rgoal1'] - mb_parameters['rgoal2'])
+    # two days before starting show start amount, same for everyone
+    amount = configuration.bet_values.starting_bet_amount
+    days.append({'year' : two_days_before_deadline.year, 'month' : two_days_before_deadline.month - 1, 'day' : two_days_before_deadline.day, 'point' : amount})
 
-    if mb_parameters['bgoal1'] is None or mb_parameters['bgoal2'] is None:
-        mb_parameters['bet_outcome'] = None
-    else:
-        mb_parameters['bet_outcome'] = sign(mb_parameters['bgoal1'] - mb_parameters['bgoal2'])
+    # one day before starting show startin minus group+tournament betting amount
+    amount -=  get_group_and_tournament_bet_amount(username)
+    days.append({'year' : one_day_before_deadline.year, 'month' : one_day_before_deadline.month - 1, 'day' : one_day_before_deadline.day, 'point' : amount})
 
-    bonus_multiplier : int = 0
-    odd : int = 0
+    # add the days of the group stage section
+    group_query_string = text(daily_point_query_string.format(r='<'))
+    result = get_db().session.execute(group_query_string, daily_point_parameters)
 
-    if mb_parameters['match_outcome'] is not None and mb_parameters['bet_outcome'] is not None:
-        if mb_parameters['match_outcome'] == mb_parameters['bet_outcome']:
-            if mb_parameters['rgoal1'] == mb_parameters['rgoal2']:
-                if mb_parameters['rgoal1'] == mb_parameters['bgoal1']:
-                    bonus_multiplier = configuration.bonus_multipliers.bullseye
-            else:
-                if mb_parameters['rgoal1'] == mb_parameters['bgoal1'] and mb_parameters['rgoal2'] == mb_parameters['bgoal2']:
-                    bonus_multiplier = configuration.bonus_multipliers.bullseye
-                elif mb_parameters['bgoal1'] - mb_parameters['bgoal2'] == mb_parameters['rgoal1'] - mb_parameters['rgoal2']:
-                    bonus_multiplier = configuration.bonus_multipliers.difference
+    for day_parameters in result.fetchall():
+        day_dict = day_parameters._asdict()
+        amount += day_dict['point']
+        day_dict['point'] = amount
+        days.append(day_dict)
 
-            if mb_parameters['match_outcome'] == 1:
-                odd = mb_parameters['odd1']
-            elif mb_parameters['match_outcome'] == -1:
-                odd = mb_parameters['odd2']
-            else:
-                odd = mb_parameters['oddX']
+    # add the group stage bonus
+    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.group_evaluation)
+    if utc_now > group_deadline_time_object:
+        group_deadline_time_object += timedelta(days=1)
+        amount += sum(group['prize'] for group in get_group_bet_dict_for_user(username=username).values())
+        days.append({'year' : group_evaluation_time_object.year, 'month' : group_evaluation_time_object.month - 1, 'day' : group_evaluation_time_object.day, 'point' : amount})
 
-    mb_parameters['bonus'] = mb_parameters['bet'] * bonus_multiplier
-    mb_parameters['prize'] = mb_parameters['bet'] * odd
+    # add the days of the knockout stage section
+    knockout_query_string = text(daily_point_query_string.format(r='>'))
+    result = get_db().session.execute(knockout_query_string, daily_point_parameters)
 
-def get_daily_points_by_current_time(username : str) -> List[Dict[str, str|List[int]]]:
-    utc_now_string : str = time_determiner.get_now_time_string()
+    for day_parameters in result.fetchall():
+        day_dict = day_parameters._asdict()
+        amount += day_dict['point']
+        day_dict['point'] = amount
+        days.append(day_dict)
 
-    query_string = text("SELECT match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_bet.goal1 AS bgoal1, match_bet.goal2 AS bgoal2, COALESCE(match_bet.bet, 0) AS bet, "
-                        "date(match.time || :timezone) AS date, time(match.time || :timezone) AS time "
-                        "FROM match "
-                        "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
-                        "WHERE unixepoch(time) < unixepoch(:now) "
-                        "ORDER BY date")
-    result = get_db().session.execute(query_string, {'now' : utc_now_string, 'u' : username, 'timezone' : g.user['tz_offset'] })
-
-    days : Dict[str, List[int]] = {}
-
-    # get matches which has been started by current time
-    for match_and_bet_parameters in result.fetchall():
-        if match_and_bet_parameters.rgoal1 is None or match_and_bet_parameters.rgoal2 is None:
-            continue
-
-        match_bet_dict = match_and_bet_parameters._asdict()
-        get_bet_result_for_match(match_bet_dict)
-
-        credit_change = match_bet_dict['prize'] + match_bet_dict['bonus'] - match_bet_dict['bet']
-
-        if match_and_bet_parameters['date'] not in days:
-            days[match_and_bet_parameters['date']] = [credit_change]
-        else:
-            days[match_and_bet_parameters['date']].append(credit_change)
+    tournament_end_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.tournament_end)
+    
+    if utc_now > tournament_end_time_object:
+        tournament_end_time_object += timedelta(days=1)
+        tournament_bet_dict = get_tournament_bet_dict_for_user(username=username, language=g.user['language'])
+        amount += tournament_bet_dict['prize']
+        days.append({'year' : tournament_end_time_object.year, 'month' : tournament_end_time_object.month - 1, 'day' : tournament_end_time_object.day, 'point' : amount})
 
     return days
-
-# get player's current balance 
-def get_current_points_by_player(username) -> int:
-    amount : int = configuration.bet_values.starting_bet_amount
-    # substract group and final bet amount
-    amount -= get_group_and_final_bet_amount(username)
-
-    point_by_day : Dict[str, str|List[int]]
-
-    # add daily point income (win) + outcome (bet)
-    for point_by_day in get_daily_points_by_current_time(username):
-        for point in point_by_day['points']:
-            amount += point
-
-    group_object = get_group_object_for_user(username)
-    amount += get_group_win_amount(group_object)
-
-    return amount

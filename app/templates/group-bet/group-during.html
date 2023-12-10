@@ -1,12 +1,12 @@
 <h4>Starting bet credit amount: {{starting_bet_amount}}</h4>
 
 <div>
-    <h4 style="display: inline-block;">Final bet:</h4>
-    <h4 style="display: inline-block;">{{final_bet.local_name}} -  </h4>
-    <h4 style="display: inline-block;" id="resultID">{{final_bet.result}} </h4>
-    <a href="./final-odds">(Odd: {{final_bet.multiplier}})</a>
-    <h4 style="display: inline-block; padding-left: 1.5em;">Bet: {{final_bet.betting_amount}}</h4>
-    <h4 style="display: inline-block; padding-left: 1em;">Expected prize: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</h4>
+    <h4 style="display: inline-block;">Tournament bet:</h4>
+    <h4 style="display: inline-block;">{{tournament_bet.local_name}} -  </h4>
+    <h4 style="display: inline-block;" id="resultID">{{tournament_bet.result}} </h4>
+    <a href="./tournament-odds">(Odd: {{tournament_bet.multiplier}})</a>
+    <h4 style="display: inline-block; padding-left: 1.5em;">Bet: {{tournament_bet.betting_amount}}</h4>
+    <h4 style="display: inline-block; padding-left: 1em;">Expected prize: {{(tournament_bet.betting_amount * tournament_bet.multiplier)|round(2)}}</h4>
 
     <br>
     <h4>Available credit amount after group bets: {{amount_after}}</h4>

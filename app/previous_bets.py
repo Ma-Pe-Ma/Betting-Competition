@@ -8,9 +8,9 @@ from app.auth import login_required
 from datetime import datetime
 from dateutil import tz
 
-from app.tools.score_calculator import get_group_and_final_bet_amount, get_group_win_amount, get_group_object_for_user
-from app.tools.score_calculator import get_bet_result_for_match
-from app.tools.group_calculator import get_tournament_bet
+from app.tools.score_calculator import get_group_and_tournament_bet_amount
+from app.tools.score_calculator import match_evaluation_query_string
+from app.tools.group_calculator import get_tournament_bet_dict_for_user, get_group_bet_dict_for_user
 from app.tools import time_determiner
 
 from app.configuration import configuration
@@ -28,101 +28,75 @@ def prev_bets():
     if username is not None:
         days : list = []
 
-        query_string = text("SELECT match.time, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_bet.goal1 AS bgoal1, match_bet.goal2 AS bgoal2, COALESCE(match_bet.bet, 0) AS bet, tr1.translation AS team1, tr2.translation AS team2 "
-                            "FROM match "
-                            "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
-                            "LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l "
-                            "LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l "
-                            "WHERE unixepoch(match.time) < unixepoch(:now)")
-        result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string(), 'l' : g.user['language'], 'u' : g.user['username']})
+        match_list_query_string = match_evaluation_query_string.text + \
+                            """SELECT match.id, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_bet.goal1 AS bgoal1, match_bet.goal2 AS bgoal2, match.odd1, match.odd2, match.oddX, match.round, 
+                            match_prize.bonus * match_prize.bet AS bonus, match_prize.multiplier * match_prize.bet AS prize, match_prize.bet AS bet, tr1.translation AS team1, tr2.translation AS team2, 
+                            (match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet) AS credit_diff, match_prize.success, 
+                            date(match.time || :timezone) AS date, strftime('%H:%M', match.time || :timezone) AS time, (strftime('%w', match.time) + 6) % 7 AS weekday 
+                            FROM match 
+                            LEFT JOIN match_prize ON match_prize.id = match.id 
+                            LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u 
+                            LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l 
+                            LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l 
+                            WHERE unixepoch(match.time) {r} unixepoch(:group_evaluation_time) AND unixepoch(match.time) < unixepoch(:now) 
+                            ORDER BY date, time"""
 
-        utc_now = time_determiner.get_now_time_object()
+        match_list_query_parameters = {'now' : time_determiner.get_now_time_string(), 'group_evaluation_time' : configuration.deadline_times.group_evaluation, 'l' : g.user['language'], 'u' : g.user['username'], 'timezone' : g.user['timezone'], 'bullseye' : configuration.bonus_multipliers.bullseye, 'difference' : configuration.bonus_multipliers.difference}
 
-        # iterate through matches which has already been played (more precisely started)
-        for match_and_bet_parameters in result.fetchall():
-            # calculating local timeparameters
-            match_time = datetime.strptime(match_and_bet_parameters.time, '%Y-%m-%d %H:%M').replace(tzinfo=tz.gettz('UTC'))
-            match_time_local : datetime = match_time.astimezone(g.user['tz'])
-            match_date_string : str = match_time_local.strftime('%Y-%m-%d')
-            match_time_string : str = match_time_local.strftime('%H:%M')            
+        def add_to_days(match_rows):
+            for match_row in match_rows:
+                if match_row.date not in days:
+                    days[match_row.date] = {'dayID' : len(days) + 1, 'date' : match_row.date, 'weekday' : match_row.weekday, 'matches' : []}
 
-            # convert db match data to dict for template
-            match_dict : dict = match_and_bet_parameters._asdict()
-            match_dict['time'] = match_time_string
+                match_dict = match_row._asdict()
+                del match_dict['weekday']
+                del match_dict['date']
 
-            get_bet_result_for_match(match_dict)            
+                if match_row.bet > 0:
+                    nonlocal number_of_match_bets
+                    nonlocal number_of_successful_bets
 
-            # find match_day it does not exist create it
-            match_day = None
+                    number_of_match_bets =+ 1
+                    number_of_successful_bets += match_row.success
 
-            for day in days:
-                if day['date'] == match_date_string:
-                    match_day = day
+                nonlocal amount_at_end_of_match
+                amount_at_end_of_match += match_dict['credit_diff']
+                match_dict['balance'] = amount_at_end_of_match
 
-            if match_day is None:
-                match_day = { 'date' : match_date_string, 'dayID' : match_time_local.weekday(), 'matches' : []}
-                days.append(match_day) 
+                days[match_row.date]['matches'].append(match_dict)
 
-            match_day['matches'].append(match_dict)
-
-        # order days by date
-        days.sort(key=lambda day : datetime.strptime(day['date'], "%Y-%m-%d"))
-        
-        group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(configuration.deadline_times.group_evaluation) 
-
-        start_amount = configuration.bet_values.starting_bet_amount - get_group_and_final_bet_amount(username)
-        amount_at_end_of_match : int = start_amount    
-        balance_after_group : int = 0
+        start_amount = configuration.bet_values.starting_bet_amount - get_group_and_tournament_bet_amount(username)
+        amount_at_end_of_match : int = start_amount
         number_of_match_bets : int = 0
         number_of_successful_bets : int = 0
 
-        group_object = get_group_object_for_user(username)
-        group_bonus : int = get_group_win_amount(group_object)
+        days = {}        
 
-        for i, day in enumerate(days):
-            day['number'] = i + 1
-            day['matches'].sort(key=lambda match : datetime.strptime(match['time'], '%H:%M'))
+        # add the group stage matches
+        query_string = text(match_list_query_string.format(r='<'))
+        group_matches = get_db().session.execute(query_string, match_list_query_parameters)
+        add_to_days(group_matches.fetchall())
 
-            # calculate balance after match
-            for match in day['matches']:
-                if match['bet_outcome'] is not None:
-                    if match['match_outcome'] is not None: 
-                        number_of_match_bets += 1
+        # add the group bet results
+        group_bonus : int = sum(group['prize'] for group in get_group_bet_dict_for_user(username=username).values())
+        amount_at_end_of_match += group_bonus
+        balance_after_group = amount_at_end_of_match
 
-                        if match['match_outcome'] == match['bet_outcome']:
-                            number_of_successful_bets += 1
-                            amount_at_end_of_match -= match['bet']
-                            amount_at_end_of_match += match['prize'] + match['bonus']
+        # add the knockout stage results
+        query_string = text(match_list_query_string.format(r='>'))
+        knockout_matches = get_db().session.execute(query_string, match_list_query_parameters)
+        add_to_days(knockout_matches)
 
-                match['balance'] = amount_at_end_of_match
+        # add the tournament bet results
+        tournament_bet_dict : dict = get_tournament_bet_dict_for_user(username=username)
+        amount_at_end_of_match += tournament_bet_dict['prize']
 
-            day_date_object = datetime.strptime(day['date'], '%Y-%m-%d')
+        success_rate = number_of_successful_bets / number_of_match_bets if number_of_match_bets > 0 else 0
 
-            #if checked day is group evaulation date than add group win amount at end
-            if utc_now > group_evaluation_time_object and day_date_object.date() == group_evaluation_time_object.date():
-                amount_at_end_of_match += group_bonus
-                balance_after_group = amount_at_end_of_match  
-
-        group_evaluation_date = group_evaluation_time_object.date().strftime('%Y-%m-%d')
-
-        tournament_bet_dict : dict = get_tournament_bet(username=username)
-
-        # if there's a final result then display it on a new day
-        if tournament_bet_dict is not None and tournament_bet_dict['success'] is not None:
-            if tournament_bet_dict['success'] == 1:
-                amount_at_end_of_match += tournament_bet_dict['bet'] * tournament_bet_dict['multiplier']
-                    
-        finishing_balance = amount_at_end_of_match
-
-        if number_of_match_bets == 0:
-            success_rate = 0        
-        else:
-            success_rate = number_of_successful_bets / number_of_match_bets
-
-        return render_template('/previous-bet/previous-day-match.html', days=days, group_evaluation_date=group_evaluation_date, start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, final_bet=tournament_bet_dict, finishing_balance = finishing_balance, success_rate=success_rate)
+        return render_template('/previous-bet/previous-day-match.html', days=days, group_evaluation_date=time_determiner.parse_datetime_string(configuration.deadline_times.group_evaluation).date().strftime('%Y-%m-%d'), start_amount=start_amount, group_bonus=group_bonus, balance_after_group=balance_after_group, tournament_bet=tournament_bet_dict, finishing_balance = amount_at_end_of_match, success_rate=success_rate)
 
     # if no user name provided send down the username list and render the base page
-    query_string = text('SELECT username FROM bet_user WHERE NOT username=\'RESULT\' ORDER BY username ASC')
+    query_string = text('SELECT username FROM bet_user ORDER BY username ASC')
     result = get_db().session.execute(query_string)
     players = result.fetchall()
 

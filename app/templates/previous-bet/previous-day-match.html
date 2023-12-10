@@ -10,7 +10,7 @@
 {% set dummy = day_names.update({5 : 'Saturday'}) %}
 {% set dummy = day_names.update({6 : 'Sunday'}) %}
 
-{% for day in days %}
+{% for index, day in days.items() %}
     {%if loop.index % 10 == 1 %}
 
     <table style="width:90%;margin-left:20px;background-color: lightblue">
@@ -34,7 +34,7 @@
     {% endif %}
 
     <div id="ID_{{day.number}}" style="background-color: aquamarine; width: 20em; ">
-        {{day.number}}. day: {{day.date}} - {{day_names[day.id]}}
+        {{day.dayID}}. day: {{day.date}} - {{day_names[day.weekday]}}
     </div>
 
     <table style="width:90%;margin-left:20px;">
@@ -79,26 +79,26 @@
 
         <tr style="padding-bottom:5px; background-color: {{background}};">
             <td>{{match.id}}</td>
-            <td style="text-align:center;">{{match.match.time}}</td>
-            <td style="text-align:center;">{{match.match.team1}} - {{match.match.team2}}</td>
+            <td style="text-align:center;">{{match.time}}</td>
+            <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
         {% if match.result1 is none or match.result2 is none %}    
             <td style="text-align:center;">In progress</td>
         {% else %}
-            <td style="text-align:center;">{{match.match.goal1}} - {{match.match.goal2}}</td>
+            <td style="text-align:center;">{{match.rgoal1|default('?', true)}} - {{match.rgoal2|default('?', true)}}</td>
         {% endif %}
-            <td style="text-align:center;">{{match.match.round}}</td>
-            <td style="text-align:center;">{{match.match.odd1}}</td>
-            <td style="text-align:center;">{{match.match.oddX}}</td>
-            <td style="text-align:center;">{{match.match.odd2}}</td>
-            <td style="text-align:center;">{{match.bet_result.goal1}}-{{match.bet_result.goal2}}</td>
-            <td style="text-align:center;">{{match.bet_result.bet}}</td>
-        {% if (match.match.result1 is none or match.match.result2 is none) and match.bet_result.bet > 0 %}
+            <td style="text-align:center;">{{match.round}}</td>
+            <td style="text-align:center;">{{match.odd1|default('-', true)}}</td>
+            <td style="text-align:center;">{{match.oddX|default('-', true)}}</td>
+            <td style="text-align:center;">{{match.odd2|default('-', true)}}</td>
+            <td style="text-align:center;">{{match.bgoal1}}-{{match.bgoal2}}</td>
+            <td style="text-align:center;">{{match.bet}}</td>
+        {% if (match.result1 is none or match.result2 is none) and match.bet > 0 %}
             <td style="text-align:center;">In progress</td>
         {% else %}
-            <td style="text-align:center;">{{match.bet_result.prize|round(2)}} + {{match.bet_result.bonus|round(2)}}</td>
+            <td style="text-align:center;">{{match.prize|round(2)}} + {{match.bonus|round(2)}}</td>
             
         {% endif %}
-            <td style="text-align:center;">{{match.bet_result.balance|round(2)}}</th>
+            <td style="text-align:center;">{{match.balance|round(2)}}</th>
         </tr>
 
         {% endfor %}
@@ -115,13 +115,13 @@
     {% endif %}
 {% endfor %}
 
-{% if final_bet and final_bet.success is not none %} 
+{% if tournament_bet and tournament_bet.success is not none %} 
 <br>
 <div style="background-color: greenyellow;">
-    {% if final_bet.success == 1 %}
-    <a href="group" style="display: inline-block;font-weight: bold;">Final result bet prize: {{(final_bet.bet * final_bet.multiplier)|round(2)}}</a>
+    {% if tournament_bet.success == 1 %}
+    <a href="group" style="display: inline-block;font-weight: bold;">Tournament result bet prize: {{(tournament_bet.bet * tournament_bet.multiplier)|round(2)}}</a>
     {% else %}
-    <a href="group" style="display: inline-block;font-weight: bold">Final result bet prize: 0</a>
+    <a href="group" style="display: inline-block;font-weight: bold">Tournament result bet prize: 0</a>
     {% endif %}
     <div style="display: inline-block;padding-left: 4em;font-weight: bold">Finishing balance: {{finishing_balance|round(2)}}</div>
 </div>

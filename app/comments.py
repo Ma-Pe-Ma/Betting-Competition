@@ -67,7 +67,7 @@ def comments():
             response_object['STATUS'] = 'INVALID_DATA'
             return jsonify(response_object), 400
     
-    response_object['comments'] = get_comments(request_object['datetime'], newer_comments, g.user['tz_offset'])
+    response_object['comments'] = get_comments(request_object['datetime'], newer_comments, g.user['timezone'])
     response_object['STATUS'] = 'OK'
 
     return jsonify(response_object)

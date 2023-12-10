@@ -40,10 +40,13 @@ def load_logged_in_user() -> None:
         query_string = text('SELECT * FROM bet_user WHERE username = :username')
         result = get_db().session.execute(query_string, {'username' : username})
 
-        user_dict = result.fetchone()._asdict()
-        user_dict['tz'] = tz.gettz(user_dict['timezone'])
-        #TODO calculate proper offset for user
-        user_dict['tz_offset'] = '-01:00'
+        user_row = result.fetchone()
+
+        #TODO REDIRECT properly when session cookie is invalid?
+        #if user_row is None:
+        #     return redirect(url_for('auth.login'))
+
+        user_dict = user_row._asdict()
 
         g.user = (
             user_dict
@@ -130,7 +133,7 @@ def register() -> str:
             user_data['password'] = generate_password_hash(user_data['password'])
             user_data['admin'] = user_data['key'] == configuration.invitation_keys.admin
             # TODO CHECK AND ADD TIMEZONE!
-            user_data['timezone'] = 'Europe/Budapest'
+            user_data['timezone'] = '-01:00'
 
             query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone) " 
                                 "VALUES (:username, :password, :email, :reminder, :summary, :language, :admin, :timezone)")

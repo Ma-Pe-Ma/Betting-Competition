@@ -192,17 +192,17 @@ def group_evaluation():
 
     return render_template('/admin/group-evaluation.html', groups = groups)
 
-@bp.route('/admin/final-bet', methods=('GET', 'POST'))
+@bp.route('/admin/tournament-bet', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def final_bet():
+def tournament_bet():
     if request.method == 'POST':
         for key in request.form:
             success = request.form[key]
             if success == '':
                 success = None
 
-            query_string = text('UPDATE final_bet SET success=:success WHERE username=:username')
+            query_string = text('UPDATE tournament_bet SET success=:success WHERE username=:username')
             get_db().session.execute(query_string, {'success' : success, 'username' : key})
 
         get_db().session.commit()
@@ -211,17 +211,17 @@ def final_bet():
 
     players = []
 
-    query_string = text('SELECT * FROM final_bet')
+    query_string = text('SELECT * FROM tournament_bet')
     result = get_db().session.execute(query_string)
 
-    for final_bet in result.fetchall():
+    for tournament_bet in result.fetchall():
         query_string = text('SELECT translation FROM team_translation WHERE name=:team AND language=:language')
-        result1 = get_db().session.execute(query_string, {'team' : final_bet.team, 'language' : g.user['language']})
+        result1 = get_db().session.execute(query_string, {'team' : tournament_bet.team, 'language' : g.user['language']})
         team = result1.fetchone()
 
-        players.append({'name' : final_bet.username, 'team' : team.translation, 'result' : final_bet.result, 'success' : final_bet.success})
+        players.append({'name' : tournament_bet.username, 'team' : team.translation, 'result' : tournament_bet.result, 'success' : tournament_bet.success})
 
-    return render_template('/admin/final-bet.html', players=players)
+    return render_template('/admin/tournament-bet.html', players=players)
 
 def allowed_file(filename):
     return '.' in filename and \

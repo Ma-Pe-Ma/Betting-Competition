@@ -21,33 +21,14 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-block">
-                        {% if match_state %}
-                            {% if match_state == "invalid" %}
-                                {% set text = "Invalid match!" %}
-                                {% set color = "lightcoral" %}
-                            {% elif match_state == "started" %}
-                                {% set text = "You can't bet on match " + match_id + ". anymore!" %}
-                                {% set color = "lightcoral" %}
-                            {% elif match_state == "group" %}
-                                {% set text =  "Final and group bets successfully changed!" %}
-                                {% set color = "lime" %}                            
-                            {% elif match_state == "nonstarted" %}
-                                {% set text = "Tip of match " + match_id + ". was successfully changed!" %}
-                                {% set color = "lime" %}
-                            {% endif %}
-                        <div style="background-color: {{color}}; font-weight: bold;" >
-                            {{text}}
-                        </div>
-                        {% endif %}
-
                         {% with messages = get_flashed_messages() %}
-                            {% if messages and messages|length > 0 %}
+                            {% if messages  %}
                         <br>
                             <div>Üzenetek: </div>
-                            {% for message in messages %}
-                                {%if message != "" %}
-                            <div style="background-color:rgb(255, 238, 0);">{{loop.index}}: {{message}}</div>
-                                {% endif %}
+
+                            {% for category, message in messages %}
+                                <li class="{{ category }}">{{ message }}</li>
+                                <div style="background-color:rgb(255, 238, 0);">{{loop.index}}: {{message}}</div>
                             {% endfor %}
                         <br>
                         <br>

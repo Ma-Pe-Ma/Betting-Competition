@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS match_bet;
-DROP TABLE IF EXISTS final_bet;
+DROP TABLE IF EXISTS tournament_bet;
 DROP TABLE IF EXISTS team_bet;
 DROP TABLE IF EXISTS group_bet;
 DROP TABLE IF EXISTS team_translation;
@@ -60,30 +60,34 @@ CREATE TABLE team_translation (
 
 -- Table holding a player's bet on a specific group
 CREATE TABLE group_bet (
-  id SERIAL PRIMARY KEY,
-  group_ID TEXT NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  group_id TEXT NOT NULL,
   username TEXT,
   bet INTEGER,
-  FOREIGN KEY(username) REFERENCES bet_user(username)
+  --FOREIGN KEY (group_id) REFERENCES team(group_id),
+  FOREIGN KEY(username) REFERENCES bet_user(username),
+  UNIQUE(username, group_id)
 );
 
 -- Table used by group bet, contains player's tip for the result of a team
 CREATE TABLE team_bet (
   id SERIAL PRIMARY KEY,
   username TEXT,
-  team TEXT,
   position INTEGER,
-  FOREIGN KEY(username) REFERENCES bet_user(username)
+  team TEXT,
+  FOREIGN KEY(username) REFERENCES bet_user(username),
+  UNIQUE(username, team)
 );
 
--- Table containing the final bet per player
-CREATE TABLE final_bet (
+-- Table containing the tournament bet per player
+CREATE TABLE tournament_bet (
   id SERIAL PRIMARY KEY,
   username TEXT,
   team TEXT NOT NULL,
   bet INTEGER NOT NULL,
   result INTEGER NOT NULL,
-  success INTEGER,
+  success INTEGER, -- NULL = undetermined, 0 = failure, 1 = success
+  UNIQUE(username)
   FOREIGN KEY(username) REFERENCES bet_user(username)
 );
 
@@ -95,7 +99,8 @@ CREATE TABLE match_bet (
   goal1 INTEGER,
   goal2 INTEGER,
   bet INTEGER,
-  FOREIGN KEY(username) REFERENCES bet_user(username)
+  FOREIGN KEY(username) REFERENCES bet_user(username),
+  UNIQUE(username, match_id)
 );
 
 -- Messages which can be written on the default page by the admin

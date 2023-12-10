@@ -25,25 +25,25 @@
                         <div>Staring bet credit amount: {{bet_values.starting_bet_amount}}</div>
 
                         <div>
-                            <div style="display: inline-block;">Final result bet :</div>
+                            <div style="display: inline-block;">Tournament bet :</div>
 
                             <select name="teamSelect" id="teamSelect" style="display: inline-block;"> </select>
                             <select name="resultSelect" id="resultSelect" style="display: inline-block;"> </select>
                             <label for="finalResultOdd" style="padding-left: 1em;">Odd: </label>
                             <div id="finalResultOdd" style="display: inline-block;"></div>
-                            <a href="./final-odds">(tabular form)</a>
+                            <a href="./tournament-odds">(tabular form)</a>
 
                             <label for="finalResultBet" style="padding-left: 1em;">Bet: </label>
-                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{tournament_bet.betting_amount}}">
+                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{tournament_bet.bet}}">
 
                             <label for="expectedWinAmount" style="padding-left: 1em;">Expected prize: </label>
                             <div style="display: inline-block;" id="expectedWinAmount"> </div>
                         </div>                        
                         
                         <div>Set the order of the group by dragging!</div>
-                        {% for group in groups %}
-                            <div id="{{group.ID}}" class="row" style="width: 26em;">
-                                <h4 class="col-12" style="display:inline;">Group - {{group.ID}}</h4>
+                        {% for group_id, group in groups.items() %}
+                            <div id="{{group_id}}" class="row" style="width: 26em;">
+                                <h4 class="col-12" style="display:inline;">Group - {{group_id}}</h4>
 
                                 <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 1px;">
                                     <!--div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div-->
@@ -53,21 +53,15 @@
                                     <div class="list-group-item" style="width: 3em">4.</div>
                                 </div>
 
-                                <div id="list-{{group.ID}}" class="list-group col" style="padding-left: 2em; width: 25em;">
-                                    {% if group.bets|length > 0 %}
-                                    {% for team in group.bets %}
-                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.team}}">{{team.local_name}}</div>
-                                    {% endfor %}
-                                    {% else %}
+                                <div id="list-{{group_id}}" class="list-group col" style="padding-left: 2em; width: 25em;">
                                     {% for team in group.teams %}
                                         <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.local_name}}</div>
                                     {% endfor %}
-                                    {% endif %}
                                 </div>
                             </div> 
 
-                            <label for="bet-{{group.ID}}" style="padding-left: 3em; padding-top: 1em;">Bet: </label>
-                            <input type="number" size="3" value="{{group.bet_property.amount}}" id="bet-{{group.ID}}" name="bet-{{group.ID}}" min=0 max={{max_group_bet_value}} oninput="calculateRemainingBetAmount()">
+                            <label for="bet-{{group_id}}" style="padding-left: 3em; padding-top: 1em;">Bet: </label>
+                            <input type="number" size="3" value="{{group.bet}}" id="bet-{{group_id}}" name="bet-{{group_id}}" min=0 max={{max_group_bet_value}} oninput="calculateRemainingBetAmount()">
                             <br>
                         {% endfor %}
 
@@ -96,9 +90,9 @@
     {% set semi_final = 'Semi-finalist' %}
     {% set knockout = 'Knockout-stage' %}
 
-    {% set final_team = 'Invalid team for final result bet.' %}
-    {% set final_result = 'Invalid final result bet.' %}
-    {% set final_bet_message = 'Invalid bet amount at final result bet.' %}
+    {% set final_team = 'Invalid team for tournament  bet.' %}
+    {% set final_result = 'Invalid tournament bet.' %}
+    {% set tournament_bet_message = 'Invalid bet amount at tournament bet.' %}
     {% set group_bet = 'Invalid bet amount at group bet.' %}
     {% set group_id = 'Invalid group id.' %}
     {% set group_team = 'Invalid team name at the group bet.' %}

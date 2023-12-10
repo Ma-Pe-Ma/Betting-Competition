@@ -8,8 +8,8 @@
     var expectedWinAmount = document.getElementById("expectedWinAmount");
 
     function populateSortableArray() {
-        {% for group in groups %}
-        sortableArray.push(["{{group.ID}}", new Sortable(document.getElementById('list-{{group.ID}}'), {
+        {% for group_id, group in groups.items() %}
+        sortableArray.push(["{{group_id}}", new Sortable(document.getElementById('list-{{group_id}}'), {
             animation: 150,
             ghostClass: 'blue-background-class'
         })]);
@@ -39,16 +39,24 @@
     }
 
     var scores = {
-    {% for group in groups%}
+    {% for group in groups.values() %}
         {% for team in group.teams %} "{{team.name}}" : [{{team.top1}}, {{team.top2}}, {{team.top4}}, {{team.top16}}],{% endfor %}
     {% endfor %}
     }
 
     var namemap = {
-    {% for group in groups%}
+    {% for group in groups.values() %}
         {% for team in group.teams %} "{{team.name}}" : "{{team.local_name}}",{% endfor %}
     {% endfor %}
     };
+
+    scores = Object.keys(scores).sort().reduce(
+        (obj, key) => { 
+          obj[key] = scores[key]; 
+          return obj;
+        }, 
+        {}
+      );
 
     for (const [key, value] of Object.entries(scores)) {
         teamSelect.options[teamSelect.options.length] = new Option(namemap[key], key);
@@ -80,9 +88,9 @@
     resultSelect.onchange = updateFinalBet;
 
     finalResultBet.oninput = function() {
-        if (this.value > {{bet_values.max_final_bet_value}}) {
-            this.value = {{bet_values.max_final_bet_value}};
-            this.innerText = {{bet_values.max_final_bet_value}};
+        if (this.value > {{bet_values.max_tournament_bet_value}}) {
+            this.value = {{bet_values.max_tournament_bet_value}};
+            this.innerText = {{bet_values.max_tournament_bet_value}};
         }
 
         if (this.value < 0) {
@@ -102,7 +110,7 @@
             var responseObject = JSON.parse(XHR.response);
             
             if (responseObject["result"] == "OK") {
-                window.location.href = "./?match_state=group";
+                //window.location.href = "./?match_state=group";
             }
             else if (responseObject["result"] == "error") {
                 var info = responseObject["info"];
@@ -118,8 +126,8 @@
                     errorMessage = "{{final_result}}";
                     break;
 
-                    case "FINAL_BET":
-                    errorMessage = "{{final_bet_message}}";
+                    case "tournament_bet":
+                    errorMessage = "{{tournament_bet_message}}";
                     break;
 
                     case "GROUP_BET":

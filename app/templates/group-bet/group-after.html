@@ -1,64 +1,64 @@
-<h3> Total bet credit on group and final result bets: {{total_bet}}</h3>
+<h3> Total bet credit on group and tournament result bets: {{total_bet}}</h3>
 <br>
 <h3 style="display: inline-block;"> Total winning prize credit on group bets: {{total_win}}, </h3>
-<h3 style="display: inline-block; padding-left: 2em;">Total bet: {{total_bet - final_bet.betting_amount}}</h3>
+<h3 style="display: inline-block; padding-left: 2em;">Total bet: {{total_bet - tournament_bet.bet}}</h3>
 <div>
-{%if final_bet.success is none %}
-    <h3 style="display: inline-block;">Team of final bet: {{final_bet.local_name}} - </h3>
-    <h3 style="display: inline-block;" id="resultID">{{final_bet.result}}</h3>
-    <h3 style="display: inline-block; padding-left: 0em;">(Odd: {{final_bet.multiplier}})</h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Bet: {{final_bet.betting_amount}} </h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Expected prize: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</h3>
+{%if tournament_bet.success is none %}
+    <h3 style="display: inline-block;">Team of tournament bet: {{tournament_bet.local_name}} - </h3>
+    <h3 style="display: inline-block;" id="resultID">{{tournament_bet.result}}</h3>
+    <h3 style="display: inline-block; padding-left: 0em;">(Odd: {{tournament_bet.multiplier}})</h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Bet: {{tournament_bet.betting_amount}} </h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Expected prize: {{(tournament_bet.betting_amount * tournament_bet.multiplier)|round(2)}}</h3>
     
-{%elif final_bet.success == 1 %}
-    <h3 style="display: inline-block;">Final bet - successful: {{final_bet.local_name}} - </h3>
-    <h3 style="display: inline-block; background-color: lime;" id="resultID">{{final_bet.result}}</h3>
-    <h3 style="display: inline-block; padding-left: 0em;">(Odd: {{final_bet.multiplier}})</h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Bet: {{final_bet.betting_amount}} </h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Prize: {{(final_bet.betting_amount * final_bet.multiplier)|round(2)}}</h3>
+{%elif tournament_bet.success == 1 %}
+    <h3 style="display: inline-block;">Tournament bet - successful: {{tournament_bet.local_name}} - </h3>
+    <h3 style="display: inline-block; background-color: lime;" id="resultID">{{tournament_bet.result}}</h3>
+    <h3 style="display: inline-block; padding-left: 0em;">(Odd: {{tournament_bet.multiplier}})</h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Bet: {{tournament_bet.bet}} </h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Prize: {{(tournament_bet.bet * tournament_bet.multiplier)|round(2)}}</h3>
 {% else %}
-    <h3 style="display: inline-block;">Final bet - failed: {{final_bet.local_name}} - </h3>
-    <h3 style="display: inline-block; background-color: lightcoral;" id="resultID">{{final_bet.result}}</h3>
-    <h3 style="display: inline-block; padding-left: 0em;">(Odd: {{final_bet.multiplier}})</h3>
-    <h3 style="display: inline-block; padding-left: 2em;">Bet: {{final_bet.betting_amount}} </h3>
+    <h3 style="display: inline-block;">Tournament bet - failed: {{tournament_bet.local_name}} - </h3>
+    <h3 style="display: inline-block; background-color: lightcoral;" id="resultID">{{tournament_bet.result}}</h3>
+    <h3 style="display: inline-block; padding-left: 0em;">(Odd: {{tournament_bet.multiplier}})</h3>
+    <h3 style="display: inline-block; padding-left: 2em;">Bet: {{tournament_bet.betting_amount}} </h3>
 {% endif %}
 </div>
 <br>
-{% for group_container in group_containers %}
+{% for groupID, group in groups.items() %}
 <h4>
-    Group {{group_container.ID}}:
+    Group {{groupID}}:
 </h4>
 
 <div style="padding-left: 1em;">
-    Hits: {{group_container.bet_property.hit_number}} - multiplier: {{group_container.bet_property.multiplier}}
+    Hits: {{group.hit_number}} - multiplier: {{group.multiplier}}
 </div>
 
 <div style="padding-left: 1em;">
-    Bet: {{group_container.bet_property.amount}} credit - winning: <b>{{group_container.bet_property.win}}</b> credit (change : {{group_container.bet_property.win|int - group_container.bet_property.amount|int}})
+    Bet: {{group.bet}} credit - winning: <b>{{group.prize}}</b> credit (change : {{group.prize|int - group.bet|int}})
 </div>
 
 <div id="sorting-disabled" class="row" style="padding-left: 1em;">
     <h4 class="col-12"></h4>
 
     <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 20em;">
-        <div class="list-group-item" style="background-color: #b8b8b8;">Final result</div>
+        <div class="list-group-item" style="background-color: #b8b8b8;">Tournament result</div>
         {%for i in range(4) %}
-        <div class="list-group-item">{{i+1}}. {{group_container.teams[i].local_name}}</div>
+        <div class="list-group-item">{{i+1}}. {{group.teams[i].rlocal_name}}</div>
         {% endfor %}
     </div>
 
     <div id="example4-right" class="list-group col" style="width: 30em;">
         <div class="list-group-item" style="background-color: #b8b8b8;">Tipp</div>
         {%for i in range(4) %}
-            {% if group_container.bets|length < 4 or group_container.bet_property.amount == 0 %}
+            {% if group.teams|length < 4 or group.teams[i].bet == 0 %}
                 {% set color = "orange" %}
                 {% set text = "The player has not bet on the group!" %}
-            {% elif group_container.teams[i].name == group_container.bets[i].team %}
+            {% elif group.teams[i].hit %}
                 {% set color = "lime" %}
-                {% set text = group_container.bets[i].local_name %}
+                {% set text = group.teams[i].local_name %}
             {% else %} 
                 {% set color = "lightcoral" %}
-                {% set text = group_container.bets[i].local_name %}
+                {% set text = group.teams[i].local_name %}
             {% endif %}
                 <div class="list-group-item tinted" style="background-color: {{color}};">{{text}}</div>
         {% endfor %}

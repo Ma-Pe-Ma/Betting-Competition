@@ -5,102 +5,80 @@ from typing import Dict, List
 from app.db import get_db
 from app.configuration import configuration
 
-# get's user's final bet, or create default if it does not exist
-def get_tournament_bet(username : str, language = None) -> dict:
-    if language is None:
-        language = g.user['language']
+# get's user's tournament bet, or create default if it does not exist
+def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
+    language = language if language else g.user['language']
 
-    query_string = text("WITH prize_enum AS ("
-                        "SELECT final_bet.username, "
-                        "CASE final_bet.result WHEN 0 THEN team.top1 WHEN 1 THEN team.top2 WHEN 2 THEN team.top4 WHEN 3 THEN team.top16 ELSE 1 END AS multiplier "
-                        "FROM final_bet "
-                        "LEFT JOIN team ON team.name = final_bet.team "
+    query_string = text("WITH t_bet_with_result AS ("
+                        "SELECT tournament_bet.username, COALESCE(tournament_bet.bet, 0) AS bet, tournament_bet.result AS result, tournament_bet.success AS success, tournament_bet.team, "
+                        "CASE tournament_bet.result WHEN 0 THEN team.top1 WHEN 1 THEN team.top2 WHEN 2 THEN team.top4 WHEN 3 THEN team.top16 ELSE 0 END AS multiplier "
+                        "FROM tournament_bet "
+                        "LEFT JOIN team ON team.name = tournament_bet.team "
                         "WHERE username=:username) "
+                        
+                        ", default_team AS ("
+                        "SELECT team.name, tr.translation FROM team LEFT JOIN team_translation AS tr ON tr.name = team.name AND language = :l LIMIT 1"
+                        ")"
+                        
+                        "SELECT bet_user.username, COALESCE(t_bet_with_result.team, default_team.name) AS team, COALESCE(t_bet_with_result.bet, 0) AS bet, "
+                        "COALESCE(t_bet_with_result.result, 0) AS result, t_bet_with_result.success AS success, "
+                        "COALESCE(tr.translation, default_team.translation) as local_name, "
+                        "CASE t_bet_with_result.success WHEN 1 THEN (COALESCE(t_bet_with_result.bet, 0) * (t_bet_with_result.multiplier - 1)) ELSE 0 END AS prize, COALESCE(t_bet_with_result.multiplier, 0) AS multiplier "
+                        "FROM bet_user "
+                        "LEFT JOIN t_bet_with_result ON t_bet_with_result.username = :username "
+                        "LEFT JOIN team ON team.name = t_bet_with_result.team "
+                        "LEFT JOIN team_translation AS tr ON tr.name = t_bet_with_result.team AND tr.language = :l "
+                        "CROSS JOIN (SELECT * FROM default_team LIMIT 1) AS default_team "
+                        "WHERE bet_user.username = :username")
 
-                        "SELECT final_bet.team, COALESCE(final_bet.bet, 0) AS bet, final_bet.result, final_bet.success, tr.translation AS local_name, "
-                        "CASE final_bet.success WHEN 1 THEN (bet * (prize_enum.multiplier - 1)) ELSE 0 END AS prize, prize_enum.multiplier "
-                        "FROM final_bet "
-                        "LEFT JOIN prize_enum ON prize_enum.username = :username "
-                        "LEFT JOIN team ON team.name = final_bet.team "
-                        "LEFT JOIN team_translation AS tr ON tr.name = final_bet.team AND tr.language = :l "
-                        "WHERE final_bet.username=:username")
     result = get_db().session.execute(query_string, {'username' : username, 'l' : language})
 
     return result.fetchone()._asdict()
 
-# TODO rewrite this ugly method with proper SQL query!
 # get group object which contains both the results and both the user bets (used in every 3 contexts)
-def get_group_object_for_user(username : str, language = None):
-    if language is None:
-        language = g.user['language']
-
-    query_string = text("SELECT team.*, tr.translation AS local_name "
-                        "FROM team "
-                        "INNER JOIN team_translation AS tr ON tr.name = team.name "
-                        "ORDER BY team.group_id, team.position")
-    result0 = get_db().session.execute(query_string)
-    teams = result0.fetchall()
-
-    group_containers = []
-    groups = {}
-
-    # create an array of groups which hold the team properties from the team table
-    for team in teams:
-        group_of_team = None
-
-        bet_property : Dict[str, int] = {'amount' : 0, 'win' : 0, 'hit_number' : 0, 'multiplier' : 0}
-
-        for group_container in group_containers:
-            if group_container['ID'] == team.group_id:
-                group_of_team = group_container
-                break
-
-        if group_of_team == None:
-            group_of_team = {'ID' : team.group_id, 'teams' : [], 'bets' : [], 'bet_result' : bet_property}
-            group_containers.append(group_of_team)
-
-        group_of_team['teams'].append(team._asdict())
-
-    #order the teams in the groups
-    for group_container in group_containers:
-        group_container['teams'].sort(key=lambda team : team['position'])
-
-    # read out the order for teams from user bets
-    query_string = text("SELECT team_bet.team, team_bet.position, team.group_id, tr.translation AS local_name "
-                        "FROM team_bet " 
-                        "INNER JOIN team ON team_bet.team=team.name "
+def get_group_bet_dict_for_user(username : str, language = None):
+    language = language if language else g.user['language']
+    
+    query_string = text("WITH team_bet_with_group_id AS ( "
+                        "SELECT team_bet.team, team.group_id, (team.position = team_bet.position) AS hit, team_bet.position AS bposition, tr.translation AS local_name, team_bet.username "
+                        "FROM team_bet "
+                        "LEFT JOIN team ON team.name = team_bet.team "
                         "LEFT JOIN team_translation AS tr ON tr.name = team_bet.team AND tr.language = :language "
-                        "WHERE username=:username")
-    result = get_db().session.execute(query_string, {'username' : username, 'language' : language})
-    
-    for user_team_bet in result.fetchall():
-        for group_container in group_containers:
-            if group_container['ID'] == user_team_bet.group_id:
-                group_container['bets'].append(user_team_bet._asdict())
-                break      
-    
-    for j, group_container in enumerate(group_containers):
-        group_container['bets'].sort(key=lambda team : team['position'])
+                        "WHERE team_bet.username = :username "
+                        ") "
+                        ", group_hit AS ( "
+                        "SELECT team.group_id, COALESCE(SUM(team_bet_with_group_id.hit), 0) AS hit_number, COALESCE(group_bet.bet, 0) AS bet, "
+                        "CASE SUM(team_bet_with_group_id.hit) WHEN 1 THEN :h1 WHEN 2 THEN :h2 WHEN 4 THEN :h4 ELSE 0 END AS multiplier "
+                        "FROM TEAM "
+                        "LEFT JOIN team_bet_with_group_id ON team_bet_with_group_id.team = team.name " # AND team_bet_with_group_id.username = :username "
+                        "LEFT JOIN group_bet ON group_bet.group_ID = team.group_id AND group_bet.username = :username "
+                        "GROUP BY team.group_id "
+                        ") "
+                        "SELECT  team.position, team.top1, team.top2, team.top4, team.top16, team.group_id, tr.translation AS rlocal_name, COALESCE(team_bet_with_group_id.local_name, tr.translation) AS local_name, team_bet_with_group_id.hit, group_hit.hit_number, "
+                        "team.name, "#team_bet_with_group_id.bposition AS bposition, "
+                        "group_hit.bet, COALESCE(group_hit.multiplier * group_hit.bet, 0) AS prize, ((group_hit.multiplier - 1) * group_hit.bet) AS credit_diff "
+                        "FROM team "
+                        "LEFT JOIN group_hit ON group_hit.group_id=team.group_id "
+                        "LEFT JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :language "
+                        "LEFT JOIN team_bet_with_group_id ON (team_bet_with_group_id.bposition = team.position) AND team_bet_with_group_id.group_id = team.group_id "#AND team_bet.username = :username "
+                        "ORDER BY team.group_id, team.position "
+                        )
 
-        hit_number = 0
+    group_bet_hit_map = configuration.group_bet_hit_map
 
-        for i, team in enumerate(group_container['bets']):
-            if group_container['teams'][i]['name'] == group_container['bets'][i]['team']:
-                hit_number += 1
+    result = get_db().session.execute(query_string, {'username' : username, 'language' : language, 'h1' : group_bet_hit_map[1], 'h2' : group_bet_hit_map[2], 'h4' : group_bet_hit_map[4]})
+    team_rows = result.fetchall()
 
-        group_container['bet_property'] = {'amount' : 0, 'win' : 0, 'hit_number' : hit_number, 'multiplier' : configuration.group_bet_hit_map[hit_number]}
+    groups = {}
+    for team_row in team_rows:
+        if team_row.group_id not in groups:
+            groups[team_row.group_id] = {'hit_number' : team_row.hit_number, 'bet' : team_row.bet, 'prize' : team_row.prize, 'credit_diff' : team_row.credit_diff, 'teams' : []}
+        
+        team_dict = team_row._asdict()
+        del team_dict['hit_number']
+        del team_dict['bet']
+        del team_dict['prize']
 
-    # read out the group bet and add to existing object
-    query_string = text('SELECT group_id, bet FROM group_bet WHERE username=:username')
-    result0 = get_db().session.execute(query_string, {'username' : username})
-    user_group_bets = result0.fetchall()
-    if user_group_bets is not None:
-        for i, group_container in enumerate(group_containers):
-            for user_group_bet in user_group_bets:
-                if user_group_bet.group_ID == group_container['ID']:
-                    win_amount = user_group_bet.bet * group_container['bet_property']['multiplier']
-                    group_container['bet_property'] = {'amount' : user_group_bet.bet, 'win' : win_amount, 'hit_number' : group_container['bet_property']['hit_number'], 'multiplier' : group_container['bet_property']['multiplier']}
-                    break
+        groups[team_row.group_id]['teams'].append(team_dict)
 
-    group_containers.sort(key=lambda group : group['ID'])
-    return group_containers
+    return groups

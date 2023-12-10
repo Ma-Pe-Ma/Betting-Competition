@@ -4,13 +4,13 @@ from flask import current_app
 from flask.cli import with_appcontext
 
 import click
-from sqlalchemy import text
+from sqlalchemy import text, bindparam
 
 from dateutil import tz
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from app.db import get_db
-from app.gmail_handler import create_message, create_message_with_attachment, send_messages, get_email_resource_by_tag
+from app import gmail_handler
 from app.database_manager import download_data_csv
 from app.configuration import configuration
 from app.standings import create_standings
@@ -35,7 +35,7 @@ def backup_sqlite_database():
     subject = 'Backup at: ' + current_localtime.strftime('%Y-%m-%d %H:%M')
     
     #create draft with the attached sqlite database file
-    message = create_message_with_attachment(sender='me',
+    message = gmail_handler.create_message_with_attachment(sender='me',
         to=admin_address,
         subject=subject,
         message_text='Backing up result database at: ' + current_localtime.strftime('%Y-%m-%d %H:%M'),
@@ -43,67 +43,50 @@ def backup_sqlite_database():
     
     #create_draft(message_body=message)
 
-def match_reminder_once_per_day(matches):
+def match_reminder_once_per_day(match_ids : list):
     print('Running scheduled match reminder...')
 
     with scheduler.app.app_context():
-        utc_now = time_determiner.get_now_time_object()
-        
-        #object holding the correct date adjusted to timezone
-        local_date = utc_now.astimezone(tz.gettz('Europe/Budapest')).strftime('%Y. %m. %d')
+        query_string = text("SELECT date(match.time || bet_user.timezone) AS date, time(match.time || bet_user.timezone) AS time, tr1.translation AS team1, tr2.translation AS team2, "                            
+                            "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) as bet "
+                            "FROM match "
+                            "LEFT JOIN match_bet ON match_bet.match_id = match.id "
+                            "LEFT JOIN bet_user ON bet_user.reminder IN (0, 1) "
+                            "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = bet_user.language "
+                            "LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = bet_user.language "
+                            "WHERE match.id IN :match_ids "
+                            "ORDER BY bet_user.username, date, time "
+                            )
+        query_string = query_string.bindparams(bindparam('match_ids', expanding=True))
+        result = get_db().session.execute(query_string, {'match_ids' : match_ids} )
+
+        user_map = {}
+
+        for user in result.fetchall():
+            if user.username not in user_map:
+                user_map[user.username] = {'username' : user.username, 'email' : user.email, 'reminder' : user.reminder, 'language' : user.language, 'date' : user.date, 'missing' : [], 'nonmissing' : []}
+
+            user_dict = user._asdict()
+            del user_dict['username']
+            del user_dict['email']
+            del user_dict['language']
+            del user_dict['date']
+
+            if user.bet == 0 or user.goal1 is None or user.goal2 is None:
+                user_map[user.username]['missing'].append(user_dict)
+            else:
+                user_map[user.username]['nonmissing'].append(user_dict)
 
         sendable_emails = []
 
-        query_string = text('SELECT email, username, reminder, language FROM bet_user WHERE (user.reminder = 0 OR user.reminder = 1)')
-        result = get_db().session.execute(query_string)
-        for user in result.fetchall():
-            missing_bets = []
-            non_missing_bets = []
+        for user in user_map.values():
+            # TODO solve translating
+            email_object = gmail_handler.get_email_resource_by_tag('MatchReminder')
+            subject = render_template_string(email_object[0], missing_bets=user['missing'], date=user['date'])
+            message_text = render_template_string(email_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
+            sendable_emails.append(gmail_handler.create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
 
-            for match in matches:
-                query_string = text('SELECT translation FROM team_translation WHERE name=:teamname AND language=:language')
-
-                result1 = get_db().session.execute(query_string, {'teamname' : match.team1, 'language' :  user.language})
-                team1_local = result1.fetchone()
-
-                result2 = get_db().session.execute(query_string, {'teamname' : match.team2, 'language' : user.language})
-                team2_local = result2.fetchone()
-
-                #match time in utc
-                match_time_utc = datetime.strptime(match.time, '%Y-%m-%d %H:%M')
-                match_time_utc = match_time_utc.replace(tzinfo=tz.gettz('UTC'))
-        
-                #object holding the correct time adjusted to timezone
-                match_time_local = match_time_utc.astimezone(local_zone)
-                match_time = match_time_local.strftime('%H:%M')
-
-                query_string = text('SELECT goal1, goal2 from match_bet WHERE match_id=:match_id AND username=:username')
-                result3 = get_db().session.execute(query_string, {'match_id' : match.id, 'username' : user.username})
-                match_bet = result3.fetchone()
-
-                # find matches with missing bets
-                if match_bet is None or match_bet.goal1 is None or match_bet.goal2 is None:
-                    missing_bets.append( {'team1' : team1_local.translation, 'team2' : team2_local.translation, 'date' : match_time, 'goal1' : None, 'goal2' : None} )
-                # find matches with valid bets
-                else:
-                    goal1 = match_bet.goal1
-                    goal2 = match_bet.goal2
-                    non_missing_bets.append({'team1' : team1_local.translation, 'team2' : team2_local.translation, 'date' : match_time, 'goal1' : goal1, 'goal2' : goal2})
-            
-            # if user only cares about missing bets then continue to next user
-            if user.reminder == 0:
-                if len(missing_bets) == 0:
-                    continue
-                
-            #create email message
-            email_object = get_email_resource_by_tag('MatchReminder', user['language'])
-
-            subject = render_template_string(email_object[0], missing_bets=missing_bets, date=local_date)
-            message_text = render_template_string(email_object[1], non_missing_bets=non_missing_bets, missing_bets=missing_bets, username=user.username)
-            
-            sendable_emails.append(create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
-
-        send_messages(sendable_emails)
+        gmail_handler.send_messages(sendable_emails)
 
 def update_results():
     print('Running scheduled result updater...')
@@ -113,37 +96,35 @@ def update_results():
         #backup_sqlite_database()
 
 def daily_standings():
-    local_zone =  tz.gettz(configuration.local_zone)
     print('Running scheduled daily standings creator...')
 
     with scheduler.app.app_context():
         #match time in utc
         utc_now = time_determiner.get_now_time_object()
-        
-        #object holding the correct date adjusted to timezone
-        local_date = utc_now.astimezone(local_zone).strftime('%Y. %m. %d')
 
         messages = []
         email_map = {}
+        standings_map = {}
 
-        for lan in configuration.supported_languages:
-            email_map[lan] = get_email_resource_by_tag('DailyStandings', lan)
-
-        # TODO: use users' chosen language
-        standings = create_standings(language=configuration.supported_languages[0])
-
-        query_string = text('SELECT username, email, language from bet_user WHERE summary=1')
-        result = get_db().session.execute(query_string)
+        query_string = text("SELECT username, email, language, date(:now || tz_offset) AS date"
+                            "FROM bet_user "
+                            "WHERE summary = 1")
+        result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string()})
         for user in result.fetchall():
-            #create email message
+            if user.langugage not in email_map:
+                email_map[user.language] = gmail_handler.get_email_resource_by_tag('DailyStandings', user.language)
+            
+            if user.language not in standings_map:
+                standings_map[user.language] = create_standings(language=user.language)
+
             email_object = email_map[user.language]
 
-            subject = render_template_string(email_object[0], date=local_date)
-            message_text = render_template_string(email_object[1], username=user.username, date=local_date, standings=standings[1])
+            subject = render_template_string(email_object[0], date=user.date)
+            message_text = render_template_string(email_object[1], username=user.username, date=user.date, standings=standings_map[user.language])
 
-            messages.append(create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
+            messages.append(gmail_handler.create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
 
-        send_messages(messages=messages)
+        gmail_handler.send_messages(messages=messages)
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():
@@ -155,46 +136,50 @@ def daily_checker():
         utc_now = time_determiner.get_now_time_object()
         #backup_sqlite_database()
 
-        query_string = text('SELECT * FROM match WHERE date(time) = date(:now_date) AND unixepoch(time) > unixepoch(:now_time)')
-        result = get_db().session.execute(query_string, {'now_date' : utc_now.strftime('%Y-%m-%d'), 'now_time' : utc_now.strftime('%Y-%m-%d %H:%M')})
+        query_string = text("SELECT * "
+                            "FROM match "
+                            "WHERE date(time) = date(:now_date) AND unixepoch(time) > unixepoch(:now_time) "
+                            "ORDER BY unixepoch(match.time)")
+        result = get_db().session.execute(query_string, {'now_date' : utc_now.strftime('%Y-%m-%d'), 'now_time' : utc_now.strftime('%Y-%m-%d %H:%M'), 'language' : 'hu', 'timezone' : '-01:00'})
+            
+        one_hour_before_first_match = None
+        time_after_last_match = None
+
         matches = result.fetchall()
+        match_ids_today = []
+        for i, match in enumerate(matches):
+            match_ids_today.append(match.id)
+            match_time_object = time_determiner.parse_datetime_string(match.time) 
 
-        if matches is not None and len(matches) > 0:
-            matches.sort(key=lambda match : datetime.strptime(match['time'], '%Y-%m-%d %H:%M'))
+            if i == 0:
+                one_hour_before_first_match = match_time_object - timedelta(hours = 1, minutes = 0)
+                if utc_now > one_hour_before_first_match:
+                    one_hour_before_first_match = None                    
 
-            for i, match in enumerate(matches):
-                match_time_object = datetime.strptime(match.time, '%Y-%m-%d %H:%M')
-                match_time_object = match_time_object.replace(tzinfo=tz.gettz('UTC'))
+            after_base_time = match_time_object + timedelta(hours=match_time_length.base_time)
+            match_after_base_task_id = str(match.id) + '. match after base'
+            # schedule database update
+            print('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
+            scheduler.add_job(id = match_after_base_task_id, func=update_results, trigger='date', run_date=after_base_time)
 
-                hour_before_match = match_time_object - timedelta(hours=1, minutes=0)
+            after_extra_time = match_time_object + timedelta(hours=match_time_length.extra_time)
+            match_after_extra_task_id = str(match.id) + '. match after extra'
+            # schedule database update
+            print('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))
+            scheduler.add_job(id = match_after_extra_task_id, func=update_results, trigger='date', run_date=after_extra_time)
 
-                #schedule reminder about missing betting
-                if i == 0:
-                    #schedule reminder about matches once before first match
+            if i == len(matches) - 1:
+                time_after_last_match = match_time_object + timedelta(hours=match_time_length.extra_time, minutes=5)
+                
+        # send out first
+        if one_hour_before_first_match is not None:
+            print('Scheduled match reminder at: ' + one_hour_before_first_match.strftime('%Y-%m-%d %H:%M'))
+            scheduler.add_job(id = 'Daily match reminder', func=match_reminder_once_per_day, trigger='date', run_date=one_hour_before_first_match, args=[match_ids_today])
 
-                    # if starting server midday, and time > (first match - 1h) then send email immidiately
-                    if hour_before_match < utc_now:
-                        hour_before_match = utc_now
-
-                    print('Scheduled match reminder at: ' + hour_before_match.strftime('%Y-%m-%d %H:%M'))
-                    scheduler.add_job(id = 'Daily match reminder', func=match_reminder_once_per_day, trigger='date', run_date=hour_before_match, args=[matches])
-    
-                after_base_time = match_time_object + timedelta(hours=match_time_length.base_time)
-                match_after_base_task_id = str(match.id) + '. match after base'
-                # schedule database update
-                print('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
-                scheduler.add_job(id = match_after_base_task_id, func=update_results, trigger='date', run_date=after_base_time)
-
-                after_extra_time = match_time_object + timedelta(hours=match_time_length.extra_time)
-                match_after_extra_task_id = str(match.id) + '. match after extra'
-                # schedule database update
-                print('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))
-                scheduler.add_job(id = match_after_extra_task_id, func=update_results, trigger='date', run_date=after_extra_time)
-
-                if i == len(matches) - 1:
-                    #schedule sending daily standings
-                    print('Scheduled standings reminder at: ' + (after_extra_time + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M'))
-                    scheduler.add_job(id = 'Daily standings reminder', func=daily_standings, trigger='date', run_date=after_extra_time + timedelta(minutes=5))
+        #schedule sending daily standings
+        if time_after_last_match is not None:
+            print('Scheduled standings reminder at: ' + (after_extra_time + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M'))
+            scheduler.add_job(id = 'Daily standings reminder', func=daily_standings, trigger='date', run_date=after_extra_time + timedelta(minutes=5))
 
 @click.command('checker-manual')
 @with_appcontext
@@ -212,7 +197,7 @@ def init_scheduler(app):
     scheduler.init_app(app)
 
     #schedule checker to run at every day at midnight
-    scheduler.add_job(id = 'Daily Task', func=daily_checker, trigger='cron', hour=0, minute=0, second=0)
+    scheduler.add_job(id = 'Daily Task', func = daily_checker, trigger = 'cron', hour = 0, minute = 0, second = 0)
 
     app.cli.add_command(manual_daily_checker)
     app.cli.add_command(manual_daily_standings)

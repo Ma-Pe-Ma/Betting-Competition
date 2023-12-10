@@ -11,8 +11,10 @@ from flask import g
 from datetime import timedelta
 
 from app import db
-from app.scheduler import init_scheduler
+from app import scheduler
 from app.tools import time_determiner
+
+from flask_babel import Babel
 
 UPLOAD_FOLDER = './app'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -42,6 +44,8 @@ def create_app(test_config = None):
     db.add_db_commands(app)
 
     time_determiner.init_time_calculator(app)
+
+    babel = Babel(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -93,7 +97,7 @@ def create_app(test_config = None):
         return render_template('/page-500.html'), 500
 
     app.config.update(SCHEDULER_TIMEZONE = 'utc')
-    init_scheduler(app)
+    scheduler.init_scheduler(app)
 
     @app.context_processor
     def set_jinja_global_variables():
