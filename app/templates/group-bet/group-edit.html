@@ -1,105 +1,150 @@
 {% extends "/layouts/base.html" %}
 
-{% block title %} Csoportkör-tippek {% endblock %} 
+{% import '/includes/tournament-bet-result.html' as tournament_bet_result %}
+{% import "/includes/alert.html" as alert %}
 
-<!-- Plugins CSS goes HERE  -->
-{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+{% block title%}{% trans %}Home page{% endtrans %}{% endblock %}
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% set active_nav_index = 3 %}
 
 {% block content %}
 
-    <div class="container-fluid">
-        <div class="row page-titles">
-            <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Group bets</h3>
+
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="row">
+                <div class="col">
+                    <h5 class="">{% trans %}Starting credit amount{% endtrans %}: {{bet_values.starting_bet_amount}}</h5>
+                </div>
             </div>
-        </div>
-        <script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
+            <div class="row mb-2">
+                <div class="col">
+                    <h5 class="">{% trans %}Tournament-bet: {% endtrans %}</h5>
+                </div>
+            </div>
+            
+            <div class="row d-flex justify-content-start align-items-center">
+                <label class="col-5 col-md-3 ms-3" for="teamSelector">Team: </label>
+                <div class="col-5 col-md-4 d-flex align-items-center">
+                    <select class="form-select" aria-label="Team selector" id="teamSelector" data-user-team="{{tournament_bet.team}}">
+                    </select>
+                </div>
+            </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-block">
-                        <div>Staring bet credit amount: {{bet_values.starting_bet_amount}}</div>
-
-                        <div>
-                            <div style="display: inline-block;">Tournament bet :</div>
-
-                            <select name="teamSelect" id="teamSelect" style="display: inline-block;"> </select>
-                            <select name="resultSelect" id="resultSelect" style="display: inline-block;"> </select>
-                            <label for="finalResultOdd" style="padding-left: 1em;">Odd: </label>
-                            <div id="finalResultOdd" style="display: inline-block;"></div>
-                            <a href="./tournament-odds">(tabular form)</a>
-
-                            <label for="finalResultBet" style="padding-left: 1em;">Bet: </label>
-                            <input id="finalResultBet" style="display: inline-block;" type="number" min="0" max="200" size="3" value="{{tournament_bet.bet}}">
-
-                            <label for="expectedWinAmount" style="padding-left: 1em;">Expected prize: </label>
-                            <div style="display: inline-block;" id="expectedWinAmount"> </div>
-                        </div>                        
-                        
-                        <div>Set the order of the group by dragging!</div>
-                        {% for group_id, group in groups.items() %}
-                            <div id="{{group_id}}" class="row" style="width: 26em;">
-                                <h4 class="col-12" style="display:inline;">Group - {{group_id}}</h4>
-
-                                <div id="example4-left" class="list-group col" style="padding-left: 1em; width: 1px;">
-                                    <!--div class="list-group-item" style="background-color: #b8b8b8;">Végeredmény</div-->
-                                    <div class="list-group-item" style="width: 3em">1.</div>
-                                    <div class="list-group-item" style="width: 3em">2.</div>
-                                    <div class="list-group-item" style="width: 3em">3.</div>
-                                    <div class="list-group-item" style="width: 3em">4.</div>
-                                </div>
-
-                                <div id="list-{{group_id}}" class="list-group col" style="padding-left: 2em; width: 25em;">
-                                    {% for team in group.teams %}
-                                        <div class="list-group-item" style="width: 20em;" data-id ="{{team.name}}">{{team.local_name}}</div>
-                                    {% endfor %}
-                                </div>
-                            </div> 
-
-                            <label for="bet-{{group_id}}" style="padding-left: 3em; padding-top: 1em;">Bet: </label>
-                            <input type="number" size="3" value="{{group.bet}}" id="bet-{{group_id}}" name="bet-{{group_id}}" min=0 max={{max_group_bet_value}} oninput="calculateRemainingBetAmount()">
-                            <br>
+            <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
+                <label class="col-5 col-md-3 ms-3" for="resultSelector">Result: </label>
+                <div class="col-5 col-md-4 d-flex align-items-center">
+                    <select class="form-select" aria-label="Result selector" id="resultSelector">
+                        {% for result in tournament_bet_result.name_map %}
+                        <option value="{{loop.index0}}" {% if tournament_bet.result == loop.index0 %}selected="selected"{% endif %}>{{result}}</option>
                         {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-                        <div>
-                            <div style="display: inline-block;">Remaining bet credit amount: </div>
-                            <div style="display: inline-block;" id="remainingAmount">0 credit</div>
+            <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
+                <div class="col-5 col-md-3 ms-3">
+                    <button type="button" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tabularModal">{% trans%}Odd{% endtrans %}:</button>
+                </div>                    
+                <div class="col-5 col-md-4 d-flex">
+                    <p class="col-4 col-md-3 ms-2 badge bg-info" id="tournamentBetOdd"></p>
+                </div>
+            </div>
+
+            <div class="row mt-2 d-flex justify-content-start align-items-center">
+                <label class="col-5 col-md-3 ms-3" for="tournamentBetCredit">Bet: </label>
+                <input class="col-2 col-md-2 ms-3" type="number" value={{tournament_bet.bet}} id="tournamentBetCredit" min=0 max={{bet_values.max_tournament_bet_value}}>
+            </div>
+    
+            <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
+                <p class="col-5 col-md-3 ms-3">Expected prize: </p>
+                <div class="col-5 col-md-4 d-flex">
+                    <p class="col-4 col-md-3 ms-2 badge bg-info" id="tournamentExpectedPrize" data-start-credit="{{bet_values.starting_bet_amount}}"></p>
+                </div>  
+            </div>
+
+            <h4 class="row mt-5 mb-2 d-flex justify-content-left">{% trans %}Set the order of the groups by dragging!{% endtrans %}</h4>
+            {% for group_id, group in groups.items() %}    
+            <div class="row d-flex justify-content-center">
+                <h4 class="row col-12 justify-content-left">Group - {{group_id}}</h4>
+                <div class="row mb-3 d-flex justify-content-start" id="{{group_id}}" name="sortableGroup" value="{{group_id}}">
+                    <div class="list-group col-1 ms-3">
+                        <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+                    {% for team in group.teams %}
+                        <div class="list-group-item d-flex justify-content-center">{{loop.index}}.</div>
+                    {% endfor %}
+                    </div>
+
+                    <div class="list-group col-8 col-md-6 ms-3">
+                        <div class="list-group-item bg-secondary">Tip</div>
+                        <div value="{{group_id}}" id="sortableOrder">
+                            {% for team in group.teams %}
+                            <div class="list-group-item" data-id ="{{team.name}}">{{team.local_name}}</div>
+                            {% endfor %}
                         </div>
+                    </div>
 
-                        <div style="padding-left:1em; color:red;" id="errorMessage">
-                            
+                    <div class="col-5 col-md-4 mt-2">
+                        <div class="row">
+                            <label class="col-4 col-md-3" for="sortableCredit">Bet: </label>
+                            <input class="col-8 col-md-3 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max={{bet_values.max_group_bet_value}}>
                         </div>
-
-                        <button type="button" id="sendButton">Send</button> 
-                        
                     </div>
                 </div>
             </div>
-        </div>
+            {% endfor %}
+
+            <div class="row mt-5">
+                <p class="col-5 col-md-3">{% trans %}Remaining credit: {% endtrans %}</p>
+                <p class="col-2 col-md-1 badge bg-info align-items-center justify-content-center" id="remainingCredit"></p>
+            </div>
+    
+            {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!')}}
+            <div id="alertNode"></div>
+            <div class="d-none" id="connectionError">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
+            <div class="d-none" id="internalError">{% trans %}An internal server error occured!{% endtrans %}</div>
+    
+            <button class="btn btn-primary btn-sm mt-3 mb-5" type="button" id="sendButton">Send</button> 
+        </div>        
     </div>
+</div>
+
+<div class="modal fade" id="tabularModal" ata-bs-backdrop="static"d data-bs-keyboard="false" tabi   ndex="-1" aria-labelledby="tabularLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 ms-2" id="tabularLabel">{% trans %}Tournament bet odds{% endtrans %}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">{% trans %}Team{% endtrans %}</th>
+                    {% for result_name in tournament_bet_result.name_map %}
+                    <th scope="col">{{result_name}}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody id="oddBody">
+                    <template id="teamTemplate">
+                        <tr>
+                            <th scope="row" id="team">1</th>
+                            <td id="t1"></td>
+                            <td id="t2"></td>
+                            <td id="t4"></td>
+                            <td id="t16"></td>
+                        </tr>
+                    </template>
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
+<script type="module" src="/static/assets/js/group-edit.js"></script>
 
 {% endblock content %}
-
-{% block javascripts %}
-    {% set champion = 'Champion' %}
-    {% set finalist = 'Finalist' %}
-    {% set semi_final = 'Semi-finalist' %}
-    {% set knockout = 'Knockout-stage' %}
-
-    {% set final_team = 'Invalid team for tournament  bet.' %}
-    {% set final_result = 'Invalid tournament bet.' %}
-    {% set tournament_bet_message = 'Invalid bet amount at tournament bet.' %}
-    {% set group_bet = 'Invalid bet amount at group bet.' %}
-    {% set group_id = 'Invalid group id.' %}
-    {% set group_team = 'Invalid team name at the group bet.' %}
-    
-    {% set bet_unit = 'credit' %}
-    {% set communication_error = 'Error communicating with the server.' %}
-
-    {% include "/common/group_edit.js" %}
-
-{% endblock javascripts %}

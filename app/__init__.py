@@ -5,8 +5,7 @@ configuration = load_configuration()
 
 # import Flask 
 from flask import Flask
-from flask import render_template, request, redirect
-from flask import g
+from flask import render_template
 
 from datetime import timedelta
 
@@ -19,8 +18,15 @@ from flask_babel import Babel
 UPLOAD_FOLDER = './app'
 ALLOWED_EXTENSIONS = {'csv'}
 
+# TODO: builtin default filter not working with zero values despite using true as second argument
+def custom_default(value, text):
+    if value is None:
+        return text
+    return value
+
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config=True)
+    app.jinja_env.filters['default0'] = custom_default
 
     # ensure the instance folder exists
     try:
@@ -37,7 +43,9 @@ def create_app(test_config = None):
         # file upload folder
         UPLOAD_FOLDER=UPLOAD_FOLDER,
         # extensions enabled for uploading
-        ALLOWED_EXTENSIONS=ALLOWED_EXTENSIONS
+        ALLOWED_EXTENSIONS=ALLOWED_EXTENSIONS,
+        CACHE_TYPE='SimpleCache',  # Flask-Caching related configs
+        CACHE_DEFAULT_TIMEOUT=300
     )
 
     db.db.init_app(app)
@@ -75,7 +83,7 @@ def create_app(test_config = None):
     from app import standings
     from app import admin    
     from app import match_bet
-    from app import comments
+    from app import chat
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(group_bet.bp)
@@ -84,17 +92,20 @@ def create_app(test_config = None):
     app.register_blueprint(standings.bp)
     app.register_blueprint(admin.bp)
     app.register_blueprint(match_bet.bp)
-    app.register_blueprint(comments.bp)
+    app.register_blueprint(chat.bp)
+
+    @app.errorhandler(403)
+    def page_not_found(e):
+        return render_template('/error-handling/page-403.html'), 403
 
     @app.errorhandler(404)
     def page_not_found(e):
-        # note that we set the 404 status explicitly
-        return render_template('/page-404.html'), 404
+        return render_template('/error-handling/page-404.html'), 404
 
     @app.errorhandler(500)
     def page_not_found(e):
         # note that we set the 500 status explicitly
-        return render_template('/page-500.html'), 500
+        return render_template('/error-handling/page-500.html'), 500
 
     app.config.update(SCHEDULER_TIMEZONE = 'utc')
     scheduler.init_scheduler(app)

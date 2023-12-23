@@ -1,64 +1,38 @@
 {% extends "/layouts/base.html" %}
 
-{% block title %} Pontverseny állása {% endblock %} 
+{% block title%}{% trans %}Home page{% endtrans %}{% endblock %}
 
-<!-- Plugins CSS goes HERE  -->
-{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
-
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% set active_nav_index = 2 %}
 
 {% block content %}
 
-    <div class="container-fluid">
-        <div class="row page-titles">
-            <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Standings of the competition</h3>              
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-block">
-                        
-                        Current standings
-                        <table style="width:100%;margin-left:20px;">
-                            <tr>
-                                <th rowspan="1" style="width: 10%;text-align:left;">Position</th>
-                                <th rowspan="1" style="width: 22%;text-align:center;">Username</th>
-                                <th rowspan="1" style="width: 22%;text-align:center;">Score</th>
-                                <th rowspan="1" style="width: 23%;text-align:center;">Score change</th>
-                                <th rowspan="1" style="width: 23%;text-align:center;">Position change</th>
-                            </tr>
-                    
-                            {% for standing in standings %}
-                            <tr style="padding-bottom:5px;">                            
-                                <td style="text-align:left;">{{loop.index}}.</td>
-                                <td style="text-align:center;">{{standing.name}}</td>
-                                <td style="text-align:center;">{{standing.point|round(2)}}</td>                            
-                                <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
-                                <td style="text-align:center;">{{standing.position_diff}}</td> 
-                            </tr>
-                            {% endfor %}
-                        </table>
+<div class="container">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans %}Position{% endtrans %}</th>
+            <th scope="col">{% trans %}Username{% endtrans %}</th>
+            <th scope="col">{% trans %}Score{% endtrans %}</th>
+            <th scope="col">{% trans %}Score change{% endtrans %}</th>
+            <th scope="col">{% trans %}Position change{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for standing in standings %}
+            <tr>
+                <th scope="row">{{loop.index}}.</th>
+                <td>{{standing.name}}</td>
+                <td>{{standing.point|round(1)}}</td>
+                <td>{{(standing.point - standing.previous_point)|round(1)}}</td>
+                <td>{{standing.position_diff}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-                        <br><br>
-
-                        <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="chartContainer" data-title="History of standings" data-unit="credit"></div>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="/static/assets/js/standings.js"></script>
+</div>
 
 {% endblock content %}
-
-{% block javascripts %}
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
-    {% set bet_unit = 'credit' %}
-    {% set graph_title = 'History of standings' %}
-
-    {% include "common/standings.js" %}
-
-{% endblock javascripts %}

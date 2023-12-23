@@ -1,62 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+  {% include "includes/header.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <meta name="keywords"
-          content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 4 admin, bootstrap 4, css3 dashboard, bootstrap 4 dashboard, Material Pro lite admin bootstrap 4 dashboard, frontend, responsive bootstrap 4 admin template, Material Pro lite design, Material Pro lite dashboard bootstrap 4 dashboard template">
-    <meta name="description"
-          content="Material Pro Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework">
+  {% block header %}{% endblock header %}
 
-    <meta name="robots" content="noindex,nofollow">
-
-    <title>
-        Betting Competition - {% block title %}{% endblock %}
-    </title>
-
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/images/favicon.png">
-    <!-- Bootstrap Core CSS -->
-    <link href="/static/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Plugins CSS goes HERE  -->
-    {% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
-
-    <!-- Custom CSS -->
-    <link href="/static/assets/css/style.css" rel="stylesheet">
-    <!-- You can change the theme colors from here -->
-    <link href="/static/assets/css/colors/blue.css" id="theme" rel="stylesheet">
-
-    <!-- Specific Page CSS goes HERE  -->
-    {% block stylesheets %}{% endblock stylesheets %}
-
-</head>
-
-<body class="fix-header fix-sidebar card-no-border">
-    <div class="preloader">
-        <svg class="circular" viewBox="25 25 50 50">
-            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
-    </div>
-
-    <div id="main-wrapper">
-        
-        {% include '/includes/navigation.html' %}
-
-        {% include '/includes/sidebar.html' %}
-
-        <div class="page-wrapper">
-            {% block content %}{% endblock content %}
+  </head>
+  <body>
+    {% include "/includes/theme-switcher.html" %}
+  <main>
+    <div class="container">
+      <header class="py-3 mb-4 border-bottom">
+        <div class="d-flex flex-wrap justify-content-between">
+          <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+              <svg class="bi me-2" width="40" height="32"><image xlink:href="/static/assets/ball.svg" width="40" height="32"/></svg>
+              <span class="fs-4">Betting competition!</span>
+            </a>
+      
+            <div class="d-flex dropdown text-end align-items-center">
+              <a class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+                {{g.user['username']}}
+              </a>
+              <ul class="dropdown-menu text-small">
+                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+              </ul>
+            </div>
         </div>
 
+        {% set active_nav = "class=\"nav-link active\" aria-current=\"page\"" %}
+        {% set inactive_nav = "class=\"nav-link\"" %}
+
+        <ul class="nav nav-pills justify-content-center">
+          <li class="nav-item"><a href="/" {{active_nav|safe if active_nav_index == 0 else inactive_nav|safe}}>Betting</a></li>
+          <li class="nav-item"><a href="/previous-bets" {{ active_nav|safe if active_nav_index == 1 else inactive_nav|safe}}>Results</a></li>
+          <li class="nav-item"><a href="/standings" {{active_nav|safe if active_nav_index == 2 else inactive_nav|safe}}>Standings</a></li>
+          <li class="nav-item"><a href="/group-bet" {{active_nav|safe if active_nav_index == 3 else inactive_nav|safe}}>Group bet</a></li>
+          <li class="nav-item"><a href="/chat" {{active_nav|safe if active_nav_index == 4 else inactive_nav|safe}}>Chat</a></li>
+          {% if g.user['admin'] %} <li class="nav-item"><a href="/admin" {{active_nav|safe if active_nav_index == 5 else inactive_nav|safe}}>Admin</a></li> {% endif %}
+        </ul>
+
+      </header>
     </div>
 
-    {% include '/includes/scripts.html' %}
-
-    {% block javascripts %}{% endblock javascripts %}
-
-</body>
+    {% block content %}{% endblock content %}
+  </main>
+    </body>
 </html>

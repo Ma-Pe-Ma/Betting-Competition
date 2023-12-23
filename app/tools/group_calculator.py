@@ -23,7 +23,9 @@ def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
                         "SELECT bet_user.username, COALESCE(t_bet_with_result.team, default_team.name) AS team, COALESCE(t_bet_with_result.bet, 0) AS bet, "
                         "COALESCE(t_bet_with_result.result, 0) AS result, t_bet_with_result.success AS success, "
                         "COALESCE(tr.translation, default_team.translation) as local_name, "
-                        "CASE t_bet_with_result.success WHEN 1 THEN (COALESCE(t_bet_with_result.bet, 0) * (t_bet_with_result.multiplier - 1)) ELSE 0 END AS prize, COALESCE(t_bet_with_result.multiplier, 0) AS multiplier "
+                        "CASE t_bet_with_result.success WHEN 1 THEN (COALESCE(t_bet_with_result.bet, 0) * (t_bet_with_result.multiplier - 1)) ELSE 0 END AS prize, "
+                        "(COALESCE(t_bet_with_result.bet, 0) * (t_bet_with_result.multiplier - 1)) AS expected_prize, "
+                        "COALESCE(t_bet_with_result.multiplier, 0) AS multiplier "
                         "FROM bet_user "
                         "LEFT JOIN t_bet_with_result ON t_bet_with_result.username = :username "
                         "LEFT JOIN team ON team.name = t_bet_with_result.team "
@@ -54,14 +56,14 @@ def get_group_bet_dict_for_user(username : str, language = None):
                         "LEFT JOIN group_bet ON group_bet.group_ID = team.group_id AND group_bet.username = :username "
                         "GROUP BY team.group_id "
                         ") "
-                        "SELECT  team.position, team.top1, team.top2, team.top4, team.top16, team.group_id, tr.translation AS rlocal_name, COALESCE(team_bet_with_group_id.local_name, tr.translation) AS local_name, team_bet_with_group_id.hit, group_hit.hit_number, "
-                        "team.name, "#team_bet_with_group_id.bposition AS bposition, "
-                        "group_hit.bet, COALESCE(group_hit.multiplier * group_hit.bet, 0) AS prize, ((group_hit.multiplier - 1) * group_hit.bet) AS credit_diff "
+                        "SELECT team.position, team.top1, team.top2, team.top4, team.top16, team.group_id, tr.translation AS rlocal_name, COALESCE(team_bet_with_group_id.local_name, tr.translation) AS local_name, team_bet_with_group_id.hit, group_hit.hit_number, "
+                        "team.name AS rname, team_bet_with_group_id.bposition AS bposition, COALESCE(team_bet_with_group_id.team, team.name) as name, "
+                        "group_hit.bet, COALESCE(group_hit.multiplier * group_hit.bet, 0) AS prize, ((group_hit.multiplier - 1) * group_hit.bet) AS credit_diff, group_hit.multiplier "
                         "FROM team "
                         "LEFT JOIN group_hit ON group_hit.group_id=team.group_id "
                         "LEFT JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :language "
                         "LEFT JOIN team_bet_with_group_id ON (team_bet_with_group_id.bposition = team.position) AND team_bet_with_group_id.group_id = team.group_id "#AND team_bet.username = :username "
-                        "ORDER BY team.group_id, team.position "
+                        "ORDER BY team_bet_with_group_id.group_id, team_bet_with_group_id.bposition "
                         )
 
     group_bet_hit_map = configuration.group_bet_hit_map
@@ -72,12 +74,13 @@ def get_group_bet_dict_for_user(username : str, language = None):
     groups = {}
     for team_row in team_rows:
         if team_row.group_id not in groups:
-            groups[team_row.group_id] = {'hit_number' : team_row.hit_number, 'bet' : team_row.bet, 'prize' : team_row.prize, 'credit_diff' : team_row.credit_diff, 'teams' : []}
+            groups[team_row.group_id] = {'hit_number' : team_row.hit_number, 'bet' : team_row.bet, 'prize' : team_row.prize, 'credit_diff' : team_row.credit_diff, 'teams' : [], 'multiplier' : team_row.multiplier}
         
         team_dict = team_row._asdict()
         del team_dict['hit_number']
         del team_dict['bet']
         del team_dict['prize']
+        del team_dict['multiplier']
 
         groups[team_row.group_id]['teams'].append(team_dict)
 

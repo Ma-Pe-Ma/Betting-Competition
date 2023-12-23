@@ -1,0 +1,93 @@
+{% import "/includes/alert.html" as alert %}
+
+{% macro modal(admin) %}
+<div class="modal fade" id="matchModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="matchModalLabel" aria-hidden="true" data-admin="{{admin|lower}}">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">{% trans %}Match: {% endtrans %}</h1><h1 class="modal-title fs-5 ms-2" id="matchModalLabel">{% trans %}Loading...{% endtrans %}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <form>
+                <div class="row mb-3">
+                    <div class="col-3">Date: </div>
+                    <div class="col-5" id="matchDate"></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-3">Teams:</div>
+                    <div class="col-3 text-center" id="teamLabel1"></div>
+                    <div class="col-1 align-items-center">-</div>
+                    <div class="col-3 text-center" id="teamLabel2"></div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    <div class="col-3 d-flex align-items-center">{{'Tip' if not admin else 'Result'}}:</div>
+                    
+                    <div class="col-3">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-center" id="goalInput1" min="0">
+                    </div>
+                    <div class="col-1">-</div>
+                    <div class="col-3">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="goalInput2" min="0">
+                    </div>
+                </div>
+                
+                {% if admin %}
+                <div class="form-group row mt-2">
+                    <label for="creditInput" class="col-3 col-form-label">Odd-1: </label>
+                    <div class="col-3">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="odd1">
+                    </div>
+                </div>
+
+                <div class="form-group row mt-2">
+                    <label for="creditInput" class="col-3 col-form-label">Odd-X: </label>
+                    <div class="col-3">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="oddX">
+                    </div>
+                </div>
+
+                <div class="form-group row mt-2">
+                    <label for="creditInput" class="col-3 col-form-label">Odd-2: </label>
+                    <div class="col-3">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="odd2">
+                    </div>
+                </div>
+
+                {% else %}
+                <div class="row mb-3">
+                    <div class="col-3">Odds:</div>
+                    <div class="col-3 text-left" id="odd1">1: </div>
+                    <div class="col-3 text-left" id="oddX">X: </div>
+                    <div class="col-3 text-left" id="odd2">2: </div>
+                </div>
+                {% endif %}
+
+                <div class="form-group row mt-2">
+                    <label for="creditInput" class="col-3 col-form-label">{{'Bet credit' if not admin else 'Max bet credit'}}: </label>
+                    <div class="col-3">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="creditInput" min="1" value="1">
+                    </div>
+                    {% if not admin %}<div class="col-3 d-flex align-items-center justify-content-left" id="maxCredit"></div>{% endif %}
+                </div>
+            </form>
+
+            <div id="matchAlertNode"></div>
+
+            {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!')}}
+            {{alert.alertStrings()}}
+            <div class="d-none" id="invalidType">{% trans %}Invalid input for goal or credit!{% endtrans %}</div>
+            <div class="d-none" id="invalidValue">{% trans %}Invalid value (negative) for goal or credit!{% endtrans %}</div>
+            <div class="d-none" id="differentGoals">{% trans %}Specify both or neither goals!{% endtrans %}</div>
+        </div>
+        <div class="modal-footer">
+          <!--button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-->
+          <button type="button" class="btn btn-primary" id="sendMatchButton">Send</button>
+        </div>
+        <script src="/static/assets/js/match.js"></script>
+      </div>
+    </div>
+  </div>
+{% endmacro %}

@@ -1,0 +1,97 @@
+{% extends "/layouts/base.html" %}
+
+{% block title %}{% trans %}Profile{% endtrans %}{% endblock %} 
+
+{% block content %}
+
+<main class="container">
+    <div class="form-signin w-100 m-auto d-flex justify-content-center">
+        <form class="col-10 col-md-6" method="POST">
+            <h1 class="h3 mb-3 fw-normal">Profile</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="row ms-1 me-1">
+                <div class="mt-3 alert alert-dismissible alert-{{category}}">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong id="header">{{'Success!' if category == 'success' else 'Failure!'}}</strong>
+                    <div id="message">{{message}}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endwith %}
+
+            <div class="col-12">
+                <label for="lastName" class="form-label">Username</label>
+                <input type="text" class="form-control" id="lastName" name="username" placeholder="" value="{{g.user.username}}" required disabled>
+                <div class="invalid-feedback">
+                A valid username is required.
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="email" class="form-label">Email <span class="text-body-secondary"></span></label>
+                <input type="email" class="form-control" id="email" placeholder="email@address.com" name="email" value="{{g.user.email}}" disabled>
+                <div class="invalid-feedback">
+                Please enter a valid email address.
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="col-md-12">Language</label>
+                <div class="col-md-12">
+                    <select class="form-control form-control-line" type="form-select" name="language" id="langSelect">
+                        {% for language_id, language in languages.items() %}
+                        <option value="{{language_id}}" {% if user_data.language == language_id %} selected="selected" {% endif %}>{{language}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+           
+            <div class="form-group">
+                <label class="form-group" id="matchReminderDisplay">Match reminder emails (1 hour before the starting of the first match)</label>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios1" value="0" {% if user_data.reminder == 0 %} checked {%endif%}>
+                    <label class="form-check-label" for="exampleRadios1" id="reminder1Display">
+                        On those days when there is a match without a bet
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios2" value="1" {% if user_data.reminder == 1 %} checked {%endif%}>
+                    <label class="form-check-label" for="exampleRadios2" id="reminder2Display">
+                        Every matchday
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="reminder" id="exampleRadios3" value="2" {% if user_data.reminder == 2 %} checked {%endif%}>
+                    <label class="form-check-label" for="exampleRadios3" id="reminder3Display">
+                        I don't want to receive reminders
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-group" id="standingsDisplay">Standings notification email at the end of matchdays</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="summary" id="summaryRadios2" value="1" {% if user_data.summary == 1 %} checked {%endif%}>
+                    <label class="form-check-label" for="summaryRadios2" id="standing1Display">
+                        Yes
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="summary" id="summaryRadios1" value="0" {% if user_data.summary == 0 %} checked {%endif%}>
+                    <label class="form-check-label" for="summaryRadios1" id="standing2Display">
+                        No
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100 py-2 col-6 form-group" type="submit">Save</button>
+        </form>
+    </div>
+</main>
+
+{% endblock content %}

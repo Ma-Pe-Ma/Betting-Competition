@@ -14,18 +14,19 @@ from flask_babel import gettext
 
 bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
-# TODO create proper feedback messages
 def process_arguments(args):
     feedback_messages = []
 
     if 'match' in args:
-        if 'started' not in args['match']:
-            # TODO: can this be reached?
-            feedback_messages.append(gettext(u'Invalid match'))
-        elif args['match']['started'] == 1:
-            feedback_messages.append(gettext(u'Match with %(id) already started!', id=args['match']['id']))
-        elif args['match']['started'] == 0:
-            feedback_messages.append(gettext(u'Betting on match with %(id) was sucessful!', id=args['match']['id']))
+        if 'started' not in args or args['started'] == None:
+            feedback_messages.append((gettext(u'Match does not exist with  {id}!'.format(id=args['match'])), 'danger'))
+        elif args['started'] == "1":
+            feedback_messages.append((gettext(u'Match with {id} already started!'.format(id=args['match'])), 'danger'))
+        elif args['started'] == "0":
+            feedback_messages.append((gettext(u'Betting on match with {id} was sucessful!'.format(id=args['match'])), 'success'))
+
+    if 'group' in args:
+        feedback_messages.append((gettext(u'Group bet sucessfully updated!'), 'success'))
 
     return feedback_messages
 
@@ -38,21 +39,20 @@ def homepage():
 
     for row in result.fetchall():
         if row.message is not None and row.message != '':
-            flash(row.message, 'admin')
+            flash(row.message, 'info')
 
-    # TODO create proper feedback responses
-    #for state_message in process_arguments(request.args.to_dict()):
-    #    flash(state_message, 'state')
+    for state_message in process_arguments(request.args.to_dict()):
+        flash(state_message[0], state_message[1])
 
     # list future matches with set bets
     days = []
-    query_string = text("SELECT match.id, match.time AS datetime, match.round, match.odd1, match.oddX, match.odd2, match.max_bet, tr1.translation AS team1, tr2.translation AS team2, match_bet.goal1, match_bet.goal2, match_bet.bet, "
-                        "date(match.time || :timezone) AS date, strftime('%H:%M', match.time || :timezone) AS time, (strftime('%w', match.time) + 6) % 7 AS weekday "
+    query_string = text("SELECT match.id, match.datetime AS datetime, match.round, match.odd1, match.oddX, match.odd2, match.max_bet, tr1.translation AS team1, tr2.translation AS team2, match_bet.goal1, match_bet.goal2, match_bet.bet, "
+                        "date(match.datetime || :timezone) AS date, strftime('%H:%M', match.datetime || :timezone) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday "
                         "FROM match "
                         "LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l "
                         "LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l "
                         "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
-                        "WHERE unixepoch(match.time) > unixepoch(:now) "
+                        "WHERE unixepoch(match.datetime) > unixepoch(:now) "
                         "ORDER BY date ASC, time ASC")
     
     result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string(), 'l' : g.user['language'], 'u' : g.user['username'], 'timezone' : g.user['timezone']})
@@ -71,4 +71,4 @@ def homepage():
 
     amount = score_calculator.get_daily_points_by_current_time(g.user['username'])[-1]['point']
 
-    return render_template('/home-page.html', days=days, current_amount=amount)
+    return render_template('/home-page.html', days=days, current_balance=amount)

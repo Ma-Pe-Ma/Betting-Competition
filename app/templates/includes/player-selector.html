@@ -1,0 +1,23 @@
+<div id="alertNode"></div>
+<template id="alertTemplate">
+    <div class="mt-3 alert alert-danger alert-dismissible" id="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Failure!</strong><div id="message">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
+    </div>
+</template>
+
+<div class="row">
+    <h5 class="col-3 col-md1 d-flex align-items-center">{% trans %}Player: {% endtrans %}</h5>
+    <div class="col-5 col-md-2 d-flex align-items-center">
+        <select class="form-select" aria-label="Player selector" id="playerSelector">
+            {% for player in players %}
+            <option value="{{player["username"]}}" {% if player["username"] == g.user.username %} selected="selected" {% endif %}>{{player["username"]}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-1 spinner-border d-flex align-items-center" role="status" id="playerSpinner">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div id="resultNode"></div>

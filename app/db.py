@@ -11,19 +11,7 @@ db = SQLAlchemy()
 def get_db() -> SQLAlchemy:
     return db
 
-# TODO CHECK THIS
-def close_db(e=None):
-    """If this request connected to the database, close the
-    connection.
-    """
-    db = g.pop('db', None)
-
-    if db is not None:
-        db.close()
-        print("close_db called!")
-
 def add_db_commands(app):
-    app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
 @click.command('init-db')

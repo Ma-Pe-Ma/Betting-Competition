@@ -1,5 +1,5 @@
 {
-    "supported_languages" : ["en", "hu"],
+    "supported_languages" : {"en" : "English", "hu" : "Hungarian"},
 	"app_secret_key" : "dev",
 
 	"DATABASE_URL" : "dbname=flask_db user=flask password=bet host=localhost",

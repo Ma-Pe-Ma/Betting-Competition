@@ -1,129 +1,62 @@
-<div style="display: inline-block;">Starting credit amount</div> <a href="./group" style="display: inline-block;">after group bet</a> <div style="display: inline-block;">: {{start_amount}}</div>
-<div>Success rate: {{success_rate|round(2)}}</div>
+{% import "/includes/day-name-map.html" as day_names %}
 
-{% set day_names = dict() %}
-{% set dummy = day_names.update({0 : 'Monday'}) %}
-{% set dummy = day_names.update({1 : 'Tuesday'}) %}
-{% set dummy = day_names.update({2 : 'Wednesday'}) %}
-{% set dummy = day_names.update({3 : 'Thursday'}) %}
-{% set dummy = day_names.update({4 : 'Friday'}) %}
-{% set dummy = day_names.update({5 : 'Saturday'}) %}
-{% set dummy = day_names.update({6 : 'Sunday'}) %}
+{% set ns = namespace(row=1) %}
 
-{% for index, day in days.items() %}
-    {%if loop.index % 10 == 1 %}
+<h5 class="mt-5">Current credit: {{extra_data.current_balance|round(1)}}</h5>
+<h5 class="">Success rate: {{extra_data.success_rate|round(1)}}</h5>
 
-    <table style="width:90%;margin-left:20px;background-color: lightblue">
-        <tr>
-            <th rowspan="2" style="width: 5%;">ID</th>
-            <th rowspan="2" style="width: 7%;text-align:center;">Time</th>
-            <th rowspan="2" style="width: 25%;text-align:center;">Teams</th>
-            <th rowspan="2" style="width: 10%;text-align:center;">Result</th>
-            <th rowspan="2" style="width: 15%;text-align:center;">Type</th>
-            <th scope="col" colspan="3" style="text-align:center;">Odds</th> 
-            <th rowspan="2" style="width: 7%;text-align:center;">Tip</th>
-            <th rowspan="2" style="width: 7%;text-align:center;">Bet</th>
-            <th rowspan="2" style="width: 8%;text-align:center;">Prize + Bonus</th>
-            <th rowspan="2" style="width: 15%;text-align:center;">Balance after match</th>
-        </tr>
+<h5 class="mt-5">Starting credit amount: {{extra_data.start_amount}}</h5>
+<h5 class="">Total group + tournament bet amount: {{extra_data.group_and_tournament_bet_credit}}</h5>
+<h5 class="mb-5">Remaining after group + tournament bet: {{extra_data.start_amount - extra_data.group_and_tournament_bet_credit}}</h5>
 
-        <th style="text-align:center;width: 3%;">1</td>
-        <th style="text-align:center;width: 3%;">X</td>
-        <th style="text-align:center;width: 3%;">2</td>
-    </table>   
-    {% endif %}
+{% for date, day in days.items() %}
 
-    <div id="ID_{{day.number}}" style="background-color: aquamarine; width: 20em; ">
-        {{day.dayID}}. day: {{day.date}} - {{day_names[day.weekday]}}
-    </div>
+{% if loop.index == 1 %}
+<div class="row mb-3 mt-3 me-3 text-center">
+    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Teams</div>
+    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
+    <div class="col-2 col-1-md themed-grid-col0 d-flex align-items-center justify-content-center">Result</div>
+    <div class="col-2 col-1-md themed-grid-col0 d-flex align-items-center justify-content-center">Tip</div>
+    <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">Bet</div>
+    <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">Prize</div>
+    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Balance</div>
+</div>
+{% endif %}
 
-    <table style="width:90%;margin-left:20px;">
-        <tr>
-            <th rowspan="2" style="width: 5%;"></th>
-            <th rowspan="2" style="width: 7%;text-align:center;"></th>
-            <th rowspan="2" style="width: 25%;text-align:center;"></th>
-            <th rowspan="2" style="width: 10%;text-align:center;"></th>
-            <th rowspan="2" style="width: 15%;text-align:center;" ></th>
-            <th scope="col" colspan="3" style="text-align:center;"></th> 
-            <th rowspan="2" style="width: 7%;text-align:center;"></th>
-            <th rowspan="2" style="width: 7%;text-align:center;"></th>
-            <th rowspan="2" style="width: 8%;text-align:center;"></th>
-            <th rowspan="2" style="width: 15%;text-align:center;"></th>
-        </tr>
+<div class="row mb-3 text-left">
+    <div class="col-8 themed-grid-col">{{day.number}}. day - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
+    <div class="col-4 themed-grid-col"></div>
+</div>
+    {% for match in day.matches %}            
+    {% set ns.row = (ns.row) % 2 + 1 %}
 
-          <th style="text-align:center;width: 3%;"></td>
-          <th style="text-align:center;width: 3%;"></td>
-          <th style="text-align:center;width: 3%;"></td>
+    {% set match_color = 'info' if (match.rgoal1 is none) else ('success' if match.success == 1 else 'danger') %}
 
-        {% for match in day.matches %}
+<div class="row mb-3 me-3 text-center">
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|default0('?')}} / {{match.oddX|default0('?')}} / {{match.odd2|default0('?')}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.rgoal1|default0('?')}} - {{match.rgoal2|default0('?')}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{match_color}}"</span>{{match.bgoal1|default0("?")}} - {{match.bgoal2|default0("?")}}</div>
+    <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|default0('0')}}</div>
+    <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.prize|round(1)}} + {{match.bonus|round(1)}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.balance|round(1)}}</div>
+</div>
+    {% endfor %}
 
-            {% set background = 'white' %}
+{%if day.date == group_evaluation_date %}
+<div class="row d-flex align-items-center">
+    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">Group bet total prize: {{extra_data.group_bonus|round(1)}}</p>
+    <div class="col-1"></div>
+    <p class="col-3 justify-content-center badge bg-warning">Balance after group bonus: {{extra_data.balance_after_group|round(1)}}</p>
+</div>
+{% endif %}
 
-            {% if loop.index % 2 == 1 %}
-                {% set background = 'white' %}   
-
-                {% if match.bet_result == 1 %}
-                    {% set background = '#FFAAAA' %}
-                {% elif match.bet_result == 2 %}
-                    {% set background = '#00FF00' %}
-                {% endif %}
-            {% else %}
-                {% set background = '#E8E8E8' %}
-
-                {% if match.bet_result == 1 %}
-                    {% set background = '#FFCCCC' %}
-                {% elif match.bet_result == 2 %}
-                    {% set background = '#80ff80' %}
-                {% endif %}
-            {% endif %}
-
-        <tr style="padding-bottom:5px; background-color: {{background}};">
-            <td>{{match.id}}</td>
-            <td style="text-align:center;">{{match.time}}</td>
-            <td style="text-align:center;">{{match.team1}} - {{match.team2}}</td>
-        {% if match.result1 is none or match.result2 is none %}    
-            <td style="text-align:center;">In progress</td>
-        {% else %}
-            <td style="text-align:center;">{{match.rgoal1|default('?', true)}} - {{match.rgoal2|default('?', true)}}</td>
-        {% endif %}
-            <td style="text-align:center;">{{match.round}}</td>
-            <td style="text-align:center;">{{match.odd1|default('-', true)}}</td>
-            <td style="text-align:center;">{{match.oddX|default('-', true)}}</td>
-            <td style="text-align:center;">{{match.odd2|default('-', true)}}</td>
-            <td style="text-align:center;">{{match.bgoal1}}-{{match.bgoal2}}</td>
-            <td style="text-align:center;">{{match.bet}}</td>
-        {% if (match.result1 is none or match.result2 is none) and match.bet > 0 %}
-            <td style="text-align:center;">In progress</td>
-        {% else %}
-            <td style="text-align:center;">{{match.prize|round(2)}} + {{match.bonus|round(2)}}</td>
-            
-        {% endif %}
-            <td style="text-align:center;">{{match.balance|round(2)}}</th>
-        </tr>
-
-        {% endfor %}
-    </table>
-    <br>
-
-    {%if day.date == group_evaluation_date %}
-    <br>
-    <div style="background-color: greenyellow;">
-        <a href="group" style="display: inline-block;font-weight: bold;">Group bet total winning: {{group_bonus}}</a>
-        <div style="display: inline-block;padding-left: 1em;">Balance after group bonus: {{balance_after_group}}</div>
-    </div>
-    <br>
-    {% endif %}
 {% endfor %}
 
-{% if tournament_bet and tournament_bet.success is not none %} 
-<br>
-<div style="background-color: greenyellow;">
-    {% if tournament_bet.success == 1 %}
-    <a href="group" style="display: inline-block;font-weight: bold;">Tournament result bet prize: {{(tournament_bet.bet * tournament_bet.multiplier)|round(2)}}</a>
-    {% else %}
-    <a href="group" style="display: inline-block;font-weight: bold">Tournament result bet prize: 0</a>
-    {% endif %}
-    <div style="display: inline-block;padding-left: 4em;font-weight: bold">Finishing balance: {{finishing_balance|round(2)}}</div>
+{%if tournament_bet.success is not none %}
+<div class="row d-flex align-items-center">
+    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">Tournament bet total prize: {{tournament_bet.prize|round(1)}}</p>
+    <div class="col-1"></div>
+    <p class="col-3 justify-content-center badge bg-warning">Final balance: {{extra_data.current_balance|round(1)}}</p>
 </div>
-<br>
 {% endif %}

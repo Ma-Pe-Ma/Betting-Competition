@@ -11,36 +11,40 @@ from sqlalchemy import text
 url = configuration.MATCH_URL
 
 def initialize_teams(team_file_name, translation_file_name):
-    with current_app.open_resource(team_file_name, 'rb') as team_file: 
-        data_reader = csv.reader(team_file.read().decode('utf-8').splitlines(), delimiter='|')
+    try:
+        with current_app.open_resource(team_file_name, 'rb') as team_file: 
+            data_reader = csv.reader(team_file.read().decode('utf-8').splitlines(), delimiter='|')
 
-        fields = next(data_reader)
-        for i, row in enumerate(data_reader):
-            position = i % 4 + 1
-            query_string = text('INSERT INTO team (name, group_id, position, top1, top2, top4, top16) VALUES (:n, :g, :p, :t1, :t2, :t4, :t16)')
-            get_db().session.execute(query_string, {'n' : row[0], 'g' : row[1], 'p' : position, 't1' : row[2], 't2' : row[3], 't4' : row[4], 't16' : row[5]})
+            fields = next(data_reader)
+            for i, row in enumerate(data_reader):
+                position = i % 4 + 1
+                query_string = text('INSERT INTO team (name, group_id, position, top1, top2, top4, top16) VALUES (:n, :g, :p, :t1, :t2, :t4, :t16)')
+                get_db().session.execute(query_string, {'n' : row[0], 'g' : row[1], 'p' : position, 't1' : row[2], 't2' : row[3], 't4' : row[4], 't16' : row[5]})
 
-        get_db().session.commit()
-    
-    with current_app.open_resource(translation_file_name, 'rb') as translation_file:
-        data_reader = csv.reader(translation_file.read().decode('utf-8').splitlines(), delimiter='|')
+            get_db().session.commit()
+        
+        with current_app.open_resource(translation_file_name, 'rb') as translation_file:
+            data_reader = csv.reader(translation_file.read().decode('utf-8').splitlines(), delimiter='|')
 
-        fields = next(data_reader)
+            fields = next(data_reader)
 
-        for i, row in enumerate(data_reader):
-            for j, column in enumerate(row):
-                if j == 0:
-                    continue                
+            for i, row in enumerate(data_reader):
+                for j, column in enumerate(row):
+                    if j == 0:
+                        continue
 
-                query_string = text('INSERT INTO team_translation (name, language, translation) VALUES (:n, :l, :t)')
-                get_db().session.execute(query_string, {'n' : row[0], 'l' : fields[j], 't' : column})
+                    query_string = text('INSERT INTO team_translation (name, language, translation) VALUES (:n, :l, :t)')
+                    get_db().session.execute(query_string, {'n' : row[0], 'l' : fields[j], 't' : column})
 
-        get_db().session.commit()
+            get_db().session.commit()
+    except:
+        return False
+
+    return True
 
 def initialize_matches():
-    bet_values = configuration.bet_values
-
     try:
+        bet_values = configuration.bet_values
         response = urllib.request.urlopen(url)
         data = response.read()
         decoded_text = data.decode("utf-8")
@@ -51,12 +55,14 @@ def initialize_matches():
         for row in data_reader:        
             time_object = datetime.strptime(row[2], "%d/%m/%Y %H:%M")
             time_string = time_object.strftime("%Y-%m-%d %H:%M")
-            query_string = text('INSERT INTO match (id, team1, team2, time, round, max_bet) VALUES (:id, :t1, :t2, :t, :r, :m)')
+            query_string = text('INSERT INTO match (id, team1, team2, datetime, round, max_bet) VALUES (:id, :t1, :t2, :t, :r, :m)')
             get_db().session.execute(query_string, {'id' : row[0], 't1' : row[4], 't2' : row[5], 't' : time_string, 'r' : row[1], 'm' : bet_values.default_max_bet_per_match})
 
         get_db().session.commit()
     except:
-        print("Error initializing matches.")
+        return False
+
+    return True
 
 def download_data_csv():
     try:

@@ -1,47 +1,19 @@
 {% extends "/layouts/base.html" %}
 
-{% block title %} Korábbi fogadások {% endblock %} 
+{% block title%}{% trans %}Previous bets{% endtrans %}{% endblock %}
 
-<!-- Plugins CSS goes HERE  -->
-{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+{% set active_nav_index = 1 %}
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block header %}
+{% include "/includes/list-style.html" %}
+{% endblock header %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row page-titles">
-            <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Previous bets</h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-block">
-                        
-                        <select name="players" id="players">
-                            {% for player in players %}
-                            <option value="{{player["username"]}}" {% if player["username"] == g.user.username %} selected="selected" {% endif %}>{{player["username"]}}</option>
-                            {% endfor %}
-                        </select>
 
-                        <div id="resultNode">
-                            Loading in progress...
-                        </div>                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container">
+    {% include '/includes/player-selector.html' %}
+</div>
+
+<script src="/static/assets/js/player-data.js" data-data-path="previous-bets"></script>
 
 {% endblock content %}
-
-{% block javascripts %}
-
-{% set load_in_progress = 'Loading in progress...' %}
-{% set load_timeout = 'Error communicating with the server.' %}
-
-{% include "common/previous_bets.js" %}
-
-{% endblock javascripts %}

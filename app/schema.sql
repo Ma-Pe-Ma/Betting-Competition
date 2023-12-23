@@ -27,7 +27,7 @@ CREATE TABLE bet_user (
 -- Table containing match data
 CREATE TABLE match (
   id INTEGER NOT NULL PRIMARY KEY,
-  time TEXT NOT NULL,
+  datetime TEXT NOT NULL,
   round TEXT,
   team1 TEXT NOT NULL,
   team2 TEXT NOT NULL,
@@ -89,6 +89,7 @@ CREATE TABLE tournament_bet (
   success INTEGER, -- NULL = undetermined, 0 = failure, 1 = success
   UNIQUE(username)
   FOREIGN KEY(username) REFERENCES bet_user(username)
+  FOREIGN KEY(team) REFERENCES team(name)
 );
 
 -- Table containing a player's bet on a match
@@ -110,11 +111,11 @@ CREATE TABLE messages (
 );
 
 -- Creating default 5 messages
+INSERT INTO messages (id, message) VALUES (0, '');
 INSERT INTO messages (id, message) VALUES (1, '');
 INSERT INTO messages (id, message) VALUES (2, '');
 INSERT INTO messages (id, message) VALUES (3, '');
 INSERT INTO messages (id, message) VALUES (4, '');
-INSERT INTO messages (id, message) VALUES (5, '');
 
 -- Table holding discussion comments
 CREATE TABLE comment (

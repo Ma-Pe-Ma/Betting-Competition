@@ -1,35 +1,12 @@
 
 {% extends "layouts/base-unsigned.html" %}
 
-{% block title %} Sikertelen regisztráció {% endblock %} 
-
-<!-- Plugins CSS goes HERE  -->
-{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
-
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block title %}{% trans %}Register failure!{% endtrans %}{% endblock %} 
 
 {% block content %}
 
-    <div class="container-fluid">
-        <div class="row page-titles">
-            <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Sign-in</h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8 col-xlg-9 col-md-7">
-                <div class="card">
-                    <div class="card-block">
-                        The betting competition has started so the registration is closed. Sorry!                     
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container justify-content-center">
+        <h1>{% trans %}Registering is not available anymore as the tournament has begun!{% endtrans %}</h1>
     </div>
 
 {% endblock content %}
-
-{% block javascripts %}
-
-{% endblock javascripts %}

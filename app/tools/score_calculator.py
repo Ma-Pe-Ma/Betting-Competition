@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from app.configuration import configuration
 from app.tools import time_determiner
-from app.tools.group_calculator import get_group_bet_dict_for_user, get_tournament_bet_dict_for_user
+from app.tools import group_calculator
 
 from sqlalchemy import text
 
@@ -53,11 +53,11 @@ def get_daily_points_by_current_time(username : str):
     deadline_times = configuration.deadline_times
 
     daily_point_query_string = match_evaluation_query_string.text + \
-                        """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet)) AS point, date(match.time) AS date, 
-                        strftime('%Y', match.time) as year, strftime('%m', match.time) -1 as month, strftime('%d', match.time) as day 
+                        """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet)) AS point, date(match.datetime) AS date, 
+                        strftime('%Y', match.datetime) as year, strftime('%m', match.datetime) -1 as month, strftime('%d', match.datetime) as day 
                         FROM match 
                         LEFT JOIN match_prize ON match_prize.id = match.id 
-                        WHERE unixepoch(time) < unixepoch(:now) AND unixepoch(time) {r} unixepoch(:group_evaluation_time)
+                        WHERE unixepoch(datetime) < unixepoch(:now) AND unixepoch(datetime) {r} unixepoch(:group_evaluation_time)
                         GROUP BY date 
                         ORDER BY date """
 
@@ -92,7 +92,7 @@ def get_daily_points_by_current_time(username : str):
     group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.group_evaluation)
     if utc_now > group_deadline_time_object:
         group_deadline_time_object += timedelta(days=1)
-        amount += sum(group['prize'] for group in get_group_bet_dict_for_user(username=username).values())
+        amount += sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
         days.append({'year' : group_evaluation_time_object.year, 'month' : group_evaluation_time_object.month - 1, 'day' : group_evaluation_time_object.day, 'point' : amount})
 
     # add the days of the knockout stage section
@@ -109,7 +109,7 @@ def get_daily_points_by_current_time(username : str):
     
     if utc_now > tournament_end_time_object:
         tournament_end_time_object += timedelta(days=1)
-        tournament_bet_dict = get_tournament_bet_dict_for_user(username=username, language=g.user['language'])
+        tournament_bet_dict = group_calculator.get_tournament_bet_dict_for_user(username=username, language=g.user['language'])
         amount += tournament_bet_dict['prize']
         days.append({'year' : tournament_end_time_object.year, 'month' : tournament_end_time_object.month - 1, 'day' : tournament_end_time_object.day, 'point' : amount})
 

@@ -13,7 +13,7 @@ from app.db import get_db
 from app import gmail_handler
 from app.database_manager import download_data_csv
 from app.configuration import configuration
-from app.standings import create_standings
+from app import standings
 from app.tools import time_determiner
 
 scheduler = APScheduler()
@@ -47,7 +47,7 @@ def match_reminder_once_per_day(match_ids : list):
     print('Running scheduled match reminder...')
 
     with scheduler.app.app_context():
-        query_string = text("SELECT date(match.time || bet_user.timezone) AS date, time(match.time || bet_user.timezone) AS time, tr1.translation AS team1, tr2.translation AS team2, "                            
+        query_string = text("SELECT date(match.datetime || bet_user.timezone) AS date, time(match.datetime || bet_user.timezone) AS time, tr1.translation AS team1, tr2.translation AS team2, "                            
                             "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) as bet "
                             "FROM match "
                             "LEFT JOIN match_bet ON match_bet.match_id = match.id "
@@ -115,7 +115,7 @@ def daily_standings():
                 email_map[user.language] = gmail_handler.get_email_resource_by_tag('DailyStandings', user.language)
             
             if user.language not in standings_map:
-                standings_map[user.language] = create_standings(language=user.language)
+                standings_map[user.language] = standings.create_standings(language=user.language)
 
             email_object = email_map[user.language]
 
@@ -139,7 +139,7 @@ def daily_checker():
         query_string = text("SELECT * "
                             "FROM match "
                             "WHERE date(time) = date(:now_date) AND unixepoch(time) > unixepoch(:now_time) "
-                            "ORDER BY unixepoch(match.time)")
+                            "ORDER BY unixepoch(match.datetime)")
         result = get_db().session.execute(query_string, {'now_date' : utc_now.strftime('%Y-%m-%d'), 'now_time' : utc_now.strftime('%Y-%m-%d %H:%M'), 'language' : 'hu', 'timezone' : '-01:00'})
             
         one_hour_before_first_match = None
@@ -149,7 +149,7 @@ def daily_checker():
         match_ids_today = []
         for i, match in enumerate(matches):
             match_ids_today.append(match.id)
-            match_time_object = time_determiner.parse_datetime_string(match.time) 
+            match_time_object = time_determiner.parse_datetime_string(match.datetime) 
 
             if i == 0:
                 one_hour_before_first_match = match_time_object - timedelta(hours = 1, minutes = 0)

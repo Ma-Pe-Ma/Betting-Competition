@@ -1,0 +1,198 @@
+{% extends "/layouts/base.html" %}
+
+{% import '/includes/tournament-bet-result.html' as tournament_bet_result %}
+{% import "/includes/alert.html" as alert %}
+{% import "/includes/match-modal.html" as match_modal %}
+
+{% block title%}{% trans %}Admin{% endtrans %}{% endblock %}
+
+{% set active_nav_index = 5 %}
+
+{% block header %}
+{% include "/includes/list-style.html" %}
+{% endblock header %}
+
+{% block content %}
+    <div class="container">
+        {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!', 'danger')}}
+        {{alert.alert(['alert-success', 'alert-dismissible'], 'Success!', 'success')}}
+        {{alert.alertStrings()}}
+        <div class="row" id="alertNode"></div>
+
+        <div class="accordion" id="myAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseOne">Match-data modifying</button>									
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="card-body ms-3 mt-3 me-3">
+                        <div class="container">                        
+                            <div class="row mb-3 text-center">
+                                <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">#</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Time</div>
+                                <div class="col-3 themed-grid-col0 d-flex align-items-center justify-content-center">Teams</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Result</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Max credit</div>
+                            </div>
+                            {% set ns = namespace(row=1) %}
+
+                            {% for match in matches %}            
+                            {% set ns.row = (ns.row) % 2 + 1 %}
+                            <div class="row mb-3 text-center">            
+                                <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}">{{match.id}}</button></div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.datetime}}</div>
+                                <div class="col-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|default0('?')}} / {{match.oddX|default0('?')}} / {{match.odd2|default0('?')}}</div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'info'}}">{{match.goal1|default0('?')}}-{{match.goal2|default0('?')}}</span></div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.max_bet}}</div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                        {{match_modal.modal(true)}}
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseTwo">Home page messages</button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#myAccordion">                    
+                    <div class="card-body">
+                        <div class="container mt-3">
+                            {% for message in messages %}
+                        <div class="mb-3">
+                            <label for="messsageArea{{message.id}}" class="form-label">Message {{message.id + 1}}</label>
+                            <textarea class="form-control" name="message" rows="1">{{message.message}}</textarea>
+                        </div>                        
+                            {% endfor %}
+                        <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSend">Send</button> 
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree">Sending email to users</button>                     
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="container card-body mt-3">
+                        <div class="container">
+                            <div class="mb-3">
+                                <label for="emailSubject" class="form-label">Subject</label>
+                                <input class="form-control" id="emailSubject">
+                            </div>
+                            <div class="mb-3">
+                                <label for="emailText" class="form-label">Message</label>
+                                <textarea class="form-control" id="emailText" rows="3"></textarea>
+                            </div>
+                            <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="emailSend">Send</button> 
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFour">Group result evaluation</button>                     
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row d-flex justify-content-center ">
+                                <div class="row col-12 col-md-8">
+                                    {% for group_id, group in groups.items() %}
+                                    {% if loop.first %}
+                                    <h4 class="row mt-5 mb-2 d-flex justify-content-left">{% trans %}Set the order of the groups by dragging!{% endtrans %}</h4>
+                                    {% endif %}
+
+                                    <div class="row d-flex justify-content-center">
+                                        <h4 class="row col-12 justify-content-left">Group - {{group_id}}</h4>
+                                        <div class="row mb-3 d-flex justify-content-start" name="sortableGroup" value="{{group_id}}">
+                                            <div class="list-group col-1 ms-3">
+                                                <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+                                            {% for team in group %}
+                                                <div class="list-group-item d-flex justify-content-center">{{loop.index}}.</div>
+                                            {% endfor %}
+                                            </div>
+                        
+                                            <div class="list-group col-8 col-md-6 ms-3">
+                                                <div class="list-group-item bg-secondary">Result</div>
+                                                <div id="sortableOrder">
+                                                    {% for team in group %}
+                                                    <div class="list-group-item" data-id ="{{team.name}}">{{team.local_name}}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                        
+                                                  
+                                        </div>
+                                    </div>
+                                    {% if loop.last %}
+                                    <button class="btn btn-primary btn-sm ms-3 mt-2 mb-1 col-2" type="button" id="groupSend">Send</button> 
+                                    <script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
+                                    {% endif %}
+                                    {% else %}
+                                    <h6 class="row mt-3 ms-2">Group evaluation will take place later.</h6>
+                                    {% endfor %}
+                                </div>        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFive">Tournament result evaluation</button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="card-body">
+                        <div class="container">
+                        {% for tournament_bet in tournament_bets %} 
+                            <div class="row ms-3 mt-2">
+                                <div class="col-1">{{loop.index}}</div>
+                                <div class="col-3 col-md-2">{{tournament_bet.username}}</div>
+                                <div class="col-3 col-md-2" id="result-{{loop.index}}">{{tournament_bet_result.name_map[tournament_bet.result]}}</div>
+                                <select class="col-3 col-md-2" name="tournamentBet" data-user="{{tournament_bet.username}}">
+                                    <option value=""  {% if tournament_bet.success is none %} selected {% endif %}>{% trans %}Undetermined{% endtrans %}</option>
+                                    <option value="1"  {% if tournament_bet.success == 1 %} selected {% endif %}>{% trans %}Successful{% endtrans %}</option>
+                                    <option value="0"  {% if tournament_bet.success == 0 %} selected {% endif %}>{% trans %}Failed{% endtrans %}</option>
+                                </select>
+                            </div>
+                            {% if loop.last %}
+                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="tournamentSend">Send</button> 
+                            {% endif %}
+                        {% else %}
+                        <h6 class="row mt-3 ms-2">Tournament bet evaluation will take place later.</h6>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSix">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseSix">Team-data initialization</button>
+                </h2>
+                <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row ms-2 mt-2">
+                                <label class="col-2" for="team">Team description</label>
+                                <input class="col-3" type=file name=team id="teamFile">
+                            </div>
+
+                            <div class="row ms-2">
+                                <label class="col-2" for="translation">Team translation</label>
+                                <input class="col-3" type=file name=translation id="translationFile">
+                            </div>
+
+                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="teamDataSend">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>     
+
+    <script src="/static/assets/js/admin.js"></script>
+
+{% endblock content %}
