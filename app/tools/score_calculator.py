@@ -90,8 +90,8 @@ def get_daily_points_by_current_time(username : str):
 
     # add the group stage bonus
     group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.group_evaluation)
-    if utc_now > group_deadline_time_object:
-        group_deadline_time_object += timedelta(days=1)
+    if utc_now > group_evaluation_time_object:
+        group_evaluation_time_object += timedelta(days=1)
         amount += sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
         days.append({'year' : group_evaluation_time_object.year, 'month' : group_evaluation_time_object.month - 1, 'day' : group_evaluation_time_object.day, 'point' : amount})
 

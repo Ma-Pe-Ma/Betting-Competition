@@ -12,6 +12,7 @@ from app.tools import time_determiner
 from app.configuration import configuration
 
 from sqlalchemy import text
+import datetime
 
 bp = Blueprint('previous', __name__, '''url_prefix="/previous"''')
 
@@ -37,7 +38,7 @@ def prev_bets():
                             WHERE unixepoch(match.datetime) {r} unixepoch(:group_evaluation_time) AND unixepoch(match.datetime) < unixepoch(:now) 
                             ORDER BY date, datetime"""
 
-        match_list_query_parameters = {'now' : time_determiner.get_now_time_string(), 'group_evaluation_time' : configuration.deadline_times.group_evaluation, 'l' : g.user['language'], 'u' : g.user['username'], 'timezone' : g.user['timezone'], 'bullseye' : configuration.bonus_multipliers.bullseye, 'difference' : configuration.bonus_multipliers.difference}
+        match_list_query_parameters = {'now' : time_determiner.get_now_time_string(), 'group_evaluation_time' : configuration.deadline_times.group_evaluation, 'l' : g.user['language'], 'u' : username, 'timezone' : g.user['timezone'], 'bullseye' : configuration.bonus_multipliers.bullseye, 'difference' : configuration.bonus_multipliers.difference}
 
         def add_to_days(match_rows):
             for match_row in match_rows:
@@ -74,9 +75,13 @@ def prev_bets():
         group_matches = get_db().session.execute(query_string, match_list_query_parameters)
         add_to_days(group_matches.fetchall())
 
-        # add the group bet results
-        group_bonus : int = sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
-        amount_at_end_of_match += group_bonus
+        # add the group stage bonus
+        group_bonus = 0
+        group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(configuration.deadline_times.group_evaluation)
+        if time_determiner.get_now_time_object() > group_evaluation_time_object:
+            group_bonus : int = sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
+            amount_at_end_of_match += group_bonus
+
         balance_after_group = amount_at_end_of_match
 
         # add the knockout stage results

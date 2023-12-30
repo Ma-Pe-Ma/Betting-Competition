@@ -46,7 +46,7 @@ def comments():
             query_string = text('INSERT INTO comment (username, datetime, content) VALUES (:u, :d, :c)')
             get_db().session.execute(query_string, {'u' : g.user['username'], 'd' : now_time_string, 'c' : request_object['comment']})
             get_db().session.commit()
-        except:
+        except Exception as err:
             return gettext('Invalid data sent!'), 400
 
     if request_object['datetime'] is None:

@@ -23,7 +23,7 @@ def process_arguments(args):
         elif args['started'] == "1":
             feedback_messages.append((gettext(u'Match with {id} already started!'.format(id=args['match'])), 'danger'))
         elif args['started'] == "0":
-            feedback_messages.append((gettext(u'Betting on match with {id} was sucessful!'.format(id=args['match'])), 'success'))
+            feedback_messages.append((gettext(u'Betting on match {id} was sucessful!'.format(id=args['match'])), 'success'))
 
     if 'group' in args:
         feedback_messages.append((gettext(u'Group bet sucessfully updated!'), 'success'))

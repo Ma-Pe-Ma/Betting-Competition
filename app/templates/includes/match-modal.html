@@ -35,26 +35,14 @@
                 </div>
                 
                 {% if admin %}
+                {% for odd in ['1', 'X', '2'] %}
                 <div class="form-group row mt-2">
-                    <label for="creditInput" class="col-3 col-form-label">Odd-1: </label>
+                    <label for="creditInput" class="col-3 col-form-label">Odd-{{odd}}: </label>
                     <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="odd1">
+                        <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" id="odd{{odd}}">
                     </div>
                 </div>
-
-                <div class="form-group row mt-2">
-                    <label for="creditInput" class="col-3 col-form-label">Odd-X: </label>
-                    <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="oddX">
-                    </div>
-                </div>
-
-                <div class="form-group row mt-2">
-                    <label for="creditInput" class="col-3 col-form-label">Odd-2: </label>
-                    <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-right" id="odd2">
-                    </div>
-                </div>
+                {% endfor %}
 
                 {% else %}
                 <div class="row mb-3">

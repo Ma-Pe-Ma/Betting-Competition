@@ -10,7 +10,7 @@ This hobby project's goal is to host a simple betting competition on the web amo
 
 Earlier this game was carried out manually sending emails and editing files on a cloud service. This application was developed to automate many of the cumbersome tasks for the admin and to provide a user-friendly interface for the players where they can publish their tips.
 
-This application was developed with [Flask](https://flask.palletsprojects.com/en/2.1.x/) framework.
+This application's backend was implemented with the [Flask](https://flask.palletsprojects.com/en/3.0.x/) framework while the frontend part was designed with [Bootstrap](https://getbootstrap.com/).
 
 ## Course/rules of the competition
 The logic of the game is quite simple. The players starts with a given amount of credits.
@@ -20,7 +20,7 @@ The reward for a betting is always calculated as simple as  `multiplier * bet am
 Obviously, at the end the player with the highest amount of credits wins the competition.
 
 ### Group bet
-Firstly the user has to specify the results of the group stage. The reward will be recevied logically after finishing the group stage. 
+First, the user has to specify the results of the group stage. The reward will be recevied logically after finishing the group stage. 
 
 The winning multiplier for a specific group betting can be determined this way:
 
@@ -29,8 +29,10 @@ The winning multiplier for a specific group betting can be determined this way:
 * 2.5× if two positions were guessed right
 * 4× if every position was guessed right
 
-### Final result bet
-Also at the start of the game the player may bet on a final result. 
+These values can be modified in the [configuration](#configuration-file) file.
+
+### Tournament result bet
+Also at the start of the game the player may bet on a team's tournament result. 
 
 The player can choose a team and bet that the team
 
@@ -59,33 +61,30 @@ The players have to register an account to take part in the competition. The pla
 
 There are two types of accounts `admin` and `generic user`. The `invitation key` determines the role of the player.
 
-Currently there are two languages available: English and Hungarian.
-
 ### Betting
 The homepage of the site lists the future matches (with their date and odds). Each of them can be edited until the start of the match.
 No other player can see the user's bet until the match has started.
-
-![Betting](./screenshots/Home.png)
-
-### Discussing
-At the bottom of the homepage a simple chat plugin can be found which can be used to discuss the tournament with markdown formatting. It's quite primitive but using a dedicated commenting system would be an overkill for this project.
-
-![Betting](./screenshots/Discussing.png)
-
-### Group and final result bet
-At this section the player can set the group and final result bet.
-
-![Betting](./screenshots/Group.png)
+<img width="50%" src="./screenshots/Home.png">
 
 ### Previous bets
 After a match has started the match is moved to the 'previous bets' section. Here the players can see every player's earlier bets, their results and their credit amount at the end of the match.
 
-![Betting](./screenshots/Previous.png)
+<img width="50%" src="./screenshots/Previous.png">
 
 ### Standings
 This section shows the current standings of the players of competition and the visualization of the history of the game's standings. (One data point means the credit amount of a player at the end of the examined match day so the credit amounts are not visualized after each match only at the end of the days).
 
-![Betting](./screenshots/Standings.png)
+<img width="50%" src="./screenshots/Standings.png">
+
+### Group and tournament result bet
+At this section the player can set the group and tournament result bet.
+
+<img width="50%" src="./screenshots/Group.png">
+
+### Discussing
+There is a built-in chat plugin which can be used to discuss the tournament with markdown formatting.
+
+<img width="50%" src="./screenshots/Discussing.png">
 
 ### Automatic updating + notifications
 The users can ask for automatic reminders about matches to prevent missing out bets on them.
@@ -94,8 +93,6 @@ At the end of match days users can recieve the current standing of the game if t
 
 The application automatically updates its result database after every match (but the update can be invoked manually too).
 
-Note: the [self-hosted](#self-hosting) apache solution does not support these features yet.
-
 ### Additional scopes for the admins
 This section only appears for admins they have permission to do this additional tasks:
 
@@ -103,21 +100,19 @@ This section only appears for admins they have permission to do this additional 
 * send email message to every user
 * modify the odds of the seperate mathces
 * determine the group stages final result order (as it is not automated)
-* determine if a user's final result bet was successful or not (as it is not automated)
+* determine if a user's tournament result bet was successful or not (as it is not automated)
 
 ## Hosting
 The application (probably) can be hosted on any service which has Flask support.
 
-This ReadMe presents you two techniques: self-hosting and [Heroku](https://heroku.com/) .
-
 ### Self-hosting
-First clone your app to a place where the server has read/write permissions like the intended `/var/www/` (write permission is needed for saving [email tokens](#email-sending) and for saving uploaded [initialization files](#team-description-files)).
+First clone your app to a place where the server has read/write permissions like the intended `/var/www/` (write permission is needed for saving uploaded [initialization files](#team-description-files)).
 
 To prevent package-collision problems it is suggested to create new a [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environemnt. After cloning the project activate the new environment and install the dependencies:
 
     python -m pip install -r requirements.txt
 
-After [setting up](#setting-up) you can run the application with Flask's server with the following command:
+After [setting up](#setting-up) you can run the application with Flask's development server with the following command:
 
     python -m flask run
 
@@ -163,27 +158,13 @@ After finishing the configuration restart apache2
     
     sudo systemctl restart apache2.service
 
-Logs for the apache can be found her: `/var/log/apache2/`
+Logs for the apache can be found here: `/var/log/apache2/`
 
 You have to [create TLS certificate](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs) (make sure it uses at least 2048-bit encryption) and [specify it to Apache](https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html) if you want your connection to be secure.
 
 Lastly the project configuration variables [have to be specifed](#setting-up).
 
 </details>
-
-### Heroku
-
-Unfortunately, during development, Heroku terminated the free hobby tier which means the project now can be hosted for only for a given amount of money. By the nature of this project, it only needs to be operated for only 3-4 weeks, so it is a bit overkill to subscribe for a monthly fixed price plan.
-
-A [detailed guide](https://devcenter.heroku.com/articles/getting-started-with-python?singlepage=true) can be found here how to setup Heroku properly.
-
-Summarizing the steps:
-* Create a Heroku account and then create a project for it, then create an app inside the project
-* Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli), this tool acts as the command-line tool for the remote hosting server
-* Checkout a new branch locally which will be pushed for Heroku and make this branch track the project branch and then push it to the Heroku remote
-* Then scale the app to start it
-
-If the repository is broken then it can be wiped with [heroku repo plugin](https://github.com/heroku/heroku-repo).
 
 ## Setting up
 
@@ -195,22 +176,10 @@ If an other fixture format is needed to be parsed then the [database_manager.py]
 
 ### Database
 
-The project uses a PostgreSQL database.
+The app uses `SQLAlchemy` for database connection, which is a implementation-agnostic solution. However many specific tasks have to be solved differently with various SQL implementations. Therefore some raw queries only work with `SQLite` as it was chosen for the implementation as it is a very lightweight solution.
 
-Heroku provides [PostgreSQL support](https://devcenter.heroku.com/articles/heroku-postgresql) out of the box.
-
-The linked guide also describes how to set up a database for your local machine.
-
-You can also create backups of the database with `pg_dump` and it is also possilbe to schedule creating backups with Heroku.
-
-### Configuration variables
-Before first launching the applicication the [project](./app/configuration.py) variables have to be specified. All of them has an explanation.
-
-The default solution is to read them out from the environment variables this is solved differently for the various hosting options:
-
-* for the development Flask server specify them in the OSVARIABLES.sh bash script and execute it with `". OSVARIABLES.sh"`
-* for the self-hosted Apache2 you can pass variables with the [BettingApp.wsgi](./BettingApp.wsgi) file
-* for Heroku you have to specify the correct key-value pairs in the Config Vars section
+### Configuration file
+Before launching the application the first time the correct values have to be specified in the [configuration file](./configuration.json).
 
 After the configuration happened initialize the app with the following command:
 
@@ -228,7 +197,7 @@ The fields for this are the following:
 
 * teamname: the key for a team it is the same as the key in the match fixtures
 * groupid: the id of its group
-* topX: odds for the final result bets
+* topX: odds for the tournament result bets
 
 The other file contains the translations for the teams:
 
@@ -239,13 +208,14 @@ The fields for this are the following:
 * teamname: the same key as in the previous csv file
 * the other columns hold the translations for the team names
 
+<!--
 ### Email sending 
 
 The email sending is implemented with the [Google API](https://developers.google.com/gmail/api/quickstart/python). First you have to create an account and a cloud project.
 
 The process of setting up email sending is specified in [this source](./app/gmail_handler.py) file
 
-<!--To manually launch the automated reminders:
+To manually launch the automated reminders:
 
 To immidiately send the standings (if it wasn't send due to some error):
     python -m flask standings-manual
@@ -255,24 +225,20 @@ To start scheduling (if app was rebooted midday)
 
 ### Translation
 
-Currently only English and Hungarian languages are provided. To translate the app just simply copy one of the language folders from template and translate manually the html resource files. (Also check out the common subfolder in the templates folder!)
-
-## Developer notes
-
-I'm really bad at frontend so I used an existing template. The parts which I designed are quite ugly. Deriving from this mobile view is not supported.
-
-The language system should be rewritten as the templating capabilites are not utilized properly, the whole html templates are copied instead of passing the proper translation strings into the templates.
+Currently only English version is available and it is planned to properly mark the translatable resource strings in the jinja templates. Then with flask-babel it will be possible to translate the pages easily.
 
 ## TO-DO
-* Solve scheduling with apache2 (+test with heroku, but this is not important)
 * Test manually initiating: database update + sending reminder
-* Add result editing feature
-* Show group results at previous section after admin has set the results of them (currently it's timed)
-* Replace current html text string resources to sophisticated ones (both hu/en)
-* New language system (flaskbabel?) or create common template for every lang and specify string resources in seperate files for diff languages
-* New frontend + mobile view (+ delete unnecessary css + js files)
+* Mark resource strings in HTML translatable with Jinja
 * Logging
+* Demo
 
-## License
-The frontend part is based on the [Jinja Material Lite](https://github.com/app-generator/jinja-materialpro-lite) project which has [MIT license](https://github.com/app-generator/jinja-materialpro-lite/blob/master/LICENSE.md), my project meets these requirements.
-My part is licensed as [GNU GENERAL PUBLIC LICENSE Version 3](LICENSE.md)
+### Backlog
+* hosting with pythonanywhere/digital ocean + let's encript
+* redirect to group bet before start + redirect to team data upload at very first startup for admin
+* Rethink scheduler plus reminders
+* do not render reminder option when email sending is turned off
+* RSS or browser notification
+* caching
+* generating custom profile picture for user
+* Add timezone selector for user

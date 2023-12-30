@@ -127,8 +127,6 @@ myModal.addEventListener('shown.bs.modal', (event) => {
             modalTitle.innerText = matchID;
             modalTitle.value = matchID;
 
-            matchDate.innerText = `${response['date']} ${response['time']} `;
-
             teamLabel1.innerText = response['team1'];
             teamLabel2.innerText = response['team2'];
 
@@ -136,7 +134,7 @@ myModal.addEventListener('shown.bs.modal', (event) => {
             goalInput2.value = response['goal2'];
 
             if (admin) {
-                matchDate.innerText = `${response['time']}`;
+                matchDate.innerText = `${response['datetime']}`;
                 creditInput.value = response['max_bet'];
 
                 odd1.value = response['odd1'];

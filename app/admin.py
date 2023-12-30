@@ -138,7 +138,7 @@ def odd_edit():
 
         get_db().session.commit()
 
-        return gettext('Match data successfully updated!'), 200
+        return jsonify({'id' : updated_data['id'] }), 200
 
 @bp.route('/admin/group-evaluation', methods=('POST',))
 @login_required

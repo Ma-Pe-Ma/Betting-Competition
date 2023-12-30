@@ -22,7 +22,6 @@ var playerDataMap = new Map();
 var resultNode = document.getElementById("resultNode");
 
 function getPlayerData(nameID) {
-    console.log('name: ' + nameID)
     playerSpinner.classList.remove("d-none");
     
     var request = new XMLHttpRequest();    
