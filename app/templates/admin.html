@@ -14,26 +14,26 @@
 
 {% block content %}
     <div class="container">
-        {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!', 'danger')}}
-        {{alert.alert(['alert-success', 'alert-dismissible'], 'Success!', 'success')}}
+        {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'), 'danger')}}
+        {{alert.alert(['alert-success', 'alert-dismissible'], gettext('Success!'), 'success')}}
         {{alert.alertStrings()}}
         <div class="row" id="alertNode"></div>
 
         <div class="accordion" id="myAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseOne">Match-data modifying</button>									
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseOne">{% trans %}Match-data modifying{% endtrans %}</button>									
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="card-body ms-3 mt-3 me-3">
                         <div class="container">                        
                             <div class="row mb-3 text-center">
                                 <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">#</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Time</div>
-                                <div class="col-3 themed-grid-col0 d-flex align-items-center justify-content-center">Teams</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Time{% endtrans %}</div>
+                                <div class="col-3 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Teams{% endtrans %}</div>
                                 <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Result</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Max credit</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Result{% endtrans %}</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Max credit{% endtrans %}</div>
                             </div>
                             {% set ns = namespace(row=1) %}
 
@@ -55,45 +55,45 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingTwo">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseTwo">Home page messages</button>
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseTwo">{% trans %}Home page messages{% endtrans %}</button>
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#myAccordion">                    
                     <div class="card-body">
                         <div class="container mt-3">
                             {% for message in messages %}
                         <div class="mb-3">
-                            <label for="messsageArea{{message.id}}" class="form-label">Message {{message.id + 1}}</label>
+                            <label for="messsageArea{{message.id}}" class="form-label">{% trans %}Message{% endtrans %} {{message.id + 1}}</label>
                             <textarea class="form-control" name="message" rows="1">{{message.message}}</textarea>
                         </div>                        
                             {% endfor %}
-                        <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSend">Send</button> 
+                        <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSend">{% trans %}Set{% endtrans %}</button> 
                         </div>                        
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingThree">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree">Sending email to users</button>                     
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree">{% trans %}Sending email to users{% endtrans %}</button>                     
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="container card-body mt-3">
                         <div class="container">
                             <div class="mb-3">
-                                <label for="emailSubject" class="form-label">Subject</label>
+                                <label for="emailSubject" class="form-label">{% trans %}Subject{% endtrans %}</label>
                                 <input class="form-control" id="emailSubject">
                             </div>
                             <div class="mb-3">
-                                <label for="emailText" class="form-label">Message</label>
+                                <label for="emailText" class="form-label">{% trans %}Message{% endtrans %}</label>
                                 <textarea class="form-control" id="emailText" rows="3"></textarea>
                             </div>
-                            <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="emailSend">Send</button> 
+                            <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="emailSend">{% trans %}Send{% endtrans %}</button> 
                         </div>                        
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFour">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFour">Group result evaluation</button>                     
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFour">{% trans %}Group result evaluation{% endtrans %}</button>                     
                 </h2>
                 <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="card-body">
@@ -106,7 +106,7 @@
                                     {% endif %}
 
                                     <div class="row d-flex justify-content-center">
-                                        <h4 class="row col-12 justify-content-left">Group - {{group_id}}</h4>
+                                        <h4 class="row col-12 justify-content-left">{% trans %}Group{% endtrans %} - {{group_id}}</h4>
                                         <div class="row mb-3 d-flex justify-content-start" name="sortableGroup" value="{{group_id}}">
                                             <div class="list-group col-1 ms-3">
                                                 <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
@@ -116,7 +116,7 @@
                                             </div>
                         
                                             <div class="list-group col-8 col-md-6 ms-3">
-                                                <div class="list-group-item bg-secondary">Result</div>
+                                                <div class="list-group-item bg-secondary">{% trans %}Result{% endtrans %}</div>
                                                 <div id="sortableOrder">
                                                     {% for team in group %}
                                                     <div class="list-group-item" data-id ="{{team.name}}">{{team.local_name}}</div>
@@ -128,11 +128,11 @@
                                         </div>
                                     </div>
                                     {% if loop.last %}
-                                    <button class="btn btn-primary btn-sm ms-3 mt-2 mb-1 col-2" type="button" id="groupSend">Send</button> 
+                                    <button class="btn btn-primary btn-sm ms-3 mt-2 mb-1 col-2" type="button" id="groupSend">{% trans %}Send{% endtrans %}</button> 
                                     <script src="https://sortablejs.github.io/Sortable/Sortable.js"></script>
                                     {% endif %}
                                     {% else %}
-                                    <h6 class="row mt-3 ms-2">Group evaluation will take place later.</h6>
+                                    <h6 class="row mt-3 ms-2">{% trans %}Group evaluation will take place later.{% endtrans %}</h6>
                                     {% endfor %}
                                 </div>        
                             </div>
@@ -142,7 +142,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFive">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFive">Tournament result evaluation</button>
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFive">{% trans %}Tournament result evaluation{% endtrans %}</button>
                 </h2>
                 <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="card-body">
@@ -159,10 +159,10 @@
                                 </select>
                             </div>
                             {% if loop.last %}
-                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="tournamentSend">Send</button> 
+                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="tournamentSend">{% trans %}Send{% endtrans %}</button> 
                             {% endif %}
                         {% else %}
-                        <h6 class="row mt-3 ms-2">Tournament bet evaluation will take place later.</h6>
+                        <h6 class="row mt-3 ms-2">{% trans %}Tournament bet evaluation will take place later.{% endtrans %}</h6>
                         {% endfor %}
                         </div>
                     </div>
@@ -170,22 +170,22 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSix">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseSix">Team-data initialization</button>
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseSix">{% trans %}Team-data initialization{% endtrans %}</button>
                 </h2>
                 <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="card-body">
                         <div class="container">
                             <div class="row ms-2 mt-2">
-                                <label class="col-2" for="team">Team description</label>
+                                <label class="col-2" for="team">{% trans %}Team description{% endtrans %}</label>
                                 <input class="col-3" type=file name=team id="teamFile">
                             </div>
 
                             <div class="row ms-2">
-                                <label class="col-2" for="translation">Team translation</label>
+                                <label class="col-2" for="translation">{% trans %}Team translation{% endtrans %}</label>
                                 <input class="col-3" type=file name=translation id="translationFile">
                             </div>
 
-                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="teamDataSend">Upload</button>
+                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="teamDataSend">{% trans %}Upload{% endtrans %}</button>
                         </div>
                     </div>
                 </div>
@@ -194,5 +194,4 @@
     </div>     
 
     <script src="/static/assets/js/admin.js"></script>
-
 {% endblock content %}

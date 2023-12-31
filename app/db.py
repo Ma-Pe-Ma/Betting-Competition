@@ -17,7 +17,7 @@ def add_db_commands(app):
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
-    with current_app.open_resource('schema.sql', 'rb') as f:
+    with current_app.open_resource('./resources/schema.sql', 'rb') as f:
         database_uri = current_app.config['SQLALCHEMY_DATABASE_URI']
         
         if db.engine.dialect.name == 'sqlite':            

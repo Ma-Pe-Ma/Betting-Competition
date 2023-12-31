@@ -15,7 +15,7 @@ from app.tools import time_determiner
 
 from flask_babel import Babel
 
-UPLOAD_FOLDER = './app'
+UPLOAD_FOLDER = './instance'
 ALLOWED_EXTENSIONS = {'csv'}
 
 # TODO: builtin default filter not working with zero values despite using true as second argument

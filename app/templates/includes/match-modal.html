@@ -11,19 +11,19 @@
         <div class="modal-body" id="modalBody">
             <form>
                 <div class="row mb-3">
-                    <div class="col-3">Date: </div>
+                    <div class="col-3">{% trans %}Date{% endtrans %}: </div>
                     <div class="col-5" id="matchDate"></div>
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-3">Teams:</div>
+                    <div class="col-3">{% trans %}Teams{% endtrans %}:</div>
                     <div class="col-3 text-center" id="teamLabel1"></div>
                     <div class="col-1 align-items-center">-</div>
                     <div class="col-3 text-center" id="teamLabel2"></div>
                 </div>
 
                 <div class="form-group row mb-3">
-                    <div class="col-3 d-flex align-items-center">{{'Tip' if not admin else 'Result'}}:</div>
+                    <div class="col-3 d-flex align-items-center">{{gettext('Tip') if not admin else gettext('Result')}}:</div>
                     
                     <div class="col-3">
                         <input type="number" class="form-control d-flex align-items-center justify-content-center" id="goalInput1" min="0">
@@ -37,7 +37,7 @@
                 {% if admin %}
                 {% for odd in ['1', 'X', '2'] %}
                 <div class="form-group row mt-2">
-                    <label for="creditInput" class="col-3 col-form-label">Odd-{{odd}}: </label>
+                    <label for="creditInput" class="col-3 col-form-label">{% trans %}Odd{% endtrans %}-{{odd}}: </label>
                     <div class="col-3">
                         <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" id="odd{{odd}}">
                     </div>
@@ -46,7 +46,7 @@
 
                 {% else %}
                 <div class="row mb-3">
-                    <div class="col-3">Odds:</div>
+                    <div class="col-3">{% trans %}Odds{% endtrans %}:</div>
                     <div class="col-3 text-left" id="odd1">1: </div>
                     <div class="col-3 text-left" id="oddX">X: </div>
                     <div class="col-3 text-left" id="odd2">2: </div>
@@ -54,7 +54,7 @@
                 {% endif %}
 
                 <div class="form-group row mt-2">
-                    <label for="creditInput" class="col-3 col-form-label">{{'Bet credit' if not admin else 'Max bet credit'}}: </label>
+                    <label for="creditInput" class="col-3 col-form-label">{{gettext('Bet credit') if not admin else gettext('Max bet credit')}}: </label>
                     <div class="col-3">
                         <input type="number" class="form-control d-flex align-items-center justify-content-right" id="creditInput" min="1" value="1">
                     </div>
@@ -64,15 +64,14 @@
 
             <div id="matchAlertNode"></div>
 
-            {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!')}}
+            {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'))}}
             {{alert.alertStrings()}}
             <div class="d-none" id="invalidType">{% trans %}Invalid input for goal or credit!{% endtrans %}</div>
             <div class="d-none" id="invalidValue">{% trans %}Invalid value (negative) for goal or credit!{% endtrans %}</div>
             <div class="d-none" id="differentGoals">{% trans %}Specify both or neither goals!{% endtrans %}</div>
         </div>
         <div class="modal-footer">
-          <!--button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-->
-          <button type="button" class="btn btn-primary" id="sendMatchButton">Send</button>
+          <button type="button" class="btn btn-primary" id="sendMatchButton">{% trans %}Send{% endtrans %}</button>
         </div>
         <script src="/static/assets/js/match.js"></script>
       </div>

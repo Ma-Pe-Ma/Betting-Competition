@@ -2,7 +2,7 @@
 <template id="alertTemplate">
     <div class="mt-3 alert alert-danger alert-dismissible" id="alert">
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        <strong>Failure!</strong><div id="message">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
+        <strong>{% trans %}Failure!{% endtrans %}</strong><div id="message">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
     </div>
 </template>
 
@@ -16,7 +16,7 @@
         </select>
     </div>
     <div class="col-1 spinner-border d-flex align-items-center" role="status" id="playerSpinner">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">{% trans %}Loading...{% endtrans %}</span>
     </div>
 </div>
 

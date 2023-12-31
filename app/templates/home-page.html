@@ -24,23 +24,23 @@
 
         {% set ns = namespace(row=1) %}
 
-        <h5 class="mt-5 mb-5">Current credit: {{current_balance|round(1)}}</h5>
+        <h5 class="mt-5 mb-5">{% trans %}Current credit{% endtrans %}: {{current_balance|round(1)}}</h5>
 
         {% for date, day in days.items() %}
 
         {% if loop.index == 1 %}
         <div class="row mb-3 ms-1 me-1 text-center">
             <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">#</div>
-            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Time</div>
-            <div class="col-3 themed-grid-col0 d-flex align-items-center justify-content-center">Teams</div>
+            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Time{% endtrans %}</div>
+            <div class="col-3 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Teams{% endtrans %}</div>
             <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
-            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Tip</div>
-            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Bet</div>
+            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Tip{% endtrans %}</div>
+            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Bet{% endtrans %}</div>
         </div>
         {% endif %}
 
         <div class="row mb-3 text-left">
-            <div class="col-8 themed-grid-col">{{day.number}}. day - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
+            <div class="col-8 themed-grid-col">{{day.number}}. {% trans %}day{% endtrans %} - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
             <div class="col-4 themed-grid-col"></div>
         </div>
             {% for match in day.matches %}            
@@ -56,7 +56,7 @@
             {% endfor %}
 
         {% else %}
-        {% trans %}<h3>The competition has ended! Please check out the results!</h3>{% endtrans %}
+        <h3>{% trans %}The competition has ended! Please check out the results!{% endtrans %}</h3>
         {% endfor %}
     </div>
 

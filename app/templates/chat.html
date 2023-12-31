@@ -8,8 +8,8 @@
 {% block content %}
 
 <div class="container">
-    {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!', 'danger')}}
-    {{alert.alert(['alert-success', 'alert-dismissible'], 'Success!', 'success', 'Comment posted successfully!')}}
+    {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'), 'danger')}}
+    {{alert.alert(['alert-success', 'alert-dismissible'], gettext('Success!'), 'success', gettext('Comment posted successfully!'))}}
     {{alert.alertStrings()}}
     <div class="row d-flex justify-content-center ">
         <div class="row col-12 col-md-8" id="alertNode"></div>
@@ -65,8 +65,8 @@
                 <div class="form-control mt-3" id="commentPreviewArea" rows="8" disabled></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="previewCommentButton">Preview</button>
-              <button type="button" class="btn btn-primary" id="postCommentButton">Send</button>
+                <button type="button" class="btn btn-primary" id="previewCommentButton">{% trans %}Preview{% endtrans %}</button>
+              <button type="button" class="btn btn-primary" id="postCommentButton">{% trans %}Send{% endtrans %}</button>
             </div>
           </div>
         </div>

@@ -25,7 +25,7 @@
             </div>
             
             <div class="row d-flex justify-content-start align-items-center">
-                <label class="col-5 col-md-3 ms-3" for="teamSelector">Team: </label>
+                <label class="col-5 col-md-3 ms-3" for="teamSelector">{% trans %}Team{% endtrans %}: </label>
                 <div class="col-5 col-md-4 d-flex align-items-center">
                     <select class="form-select" aria-label="Team selector" id="teamSelector" data-user-team="{{tournament_bet.team}}">
                     </select>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
-                <label class="col-5 col-md-3 ms-3" for="resultSelector">Result: </label>
+                <label class="col-5 col-md-3 ms-3" for="resultSelector">{% trans %}Result{% endtrans %}: </label>
                 <div class="col-5 col-md-4 d-flex align-items-center">
                     <select class="form-select" aria-label="Result selector" id="resultSelector">
                         {% for result in tournament_bet_result.name_map %}
@@ -45,7 +45,7 @@
 
             <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
                 <div class="col-5 col-md-3 ms-3">
-                    <button type="button" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tabularModal">{% trans%}Odd{% endtrans %}:</button>
+                    <button type="button" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tabularModal">{% trans %}Odd{% endtrans %}:</button>
                 </div>                    
                 <div class="col-5 col-md-4 d-flex">
                     <p class="col-4 col-md-3 ms-2 badge bg-info" id="tournamentBetOdd"></p>
@@ -53,12 +53,12 @@
             </div>
 
             <div class="row mt-2 d-flex justify-content-start align-items-center">
-                <label class="col-5 col-md-3 ms-3" for="tournamentBetCredit">Bet: </label>
+                <label class="col-5 col-md-3 ms-3" for="tournamentBetCredit">{% trans %}Bet{% endtrans %}: </label>
                 <input class="col-2 col-md-2 ms-3" type="number" value={{tournament_bet.bet}} id="tournamentBetCredit" min=0 max={{bet_values.max_tournament_bet_value}}>
             </div>
     
             <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
-                <p class="col-5 col-md-3 ms-3">Expected prize: </p>
+                <p class="col-5 col-md-3 ms-3">{% trans %}Expected prize{% endtrans %}: </p>
                 <div class="col-5 col-md-4 d-flex">
                     <p class="col-4 col-md-3 ms-2 badge bg-info" id="tournamentExpectedPrize" data-start-credit="{{bet_values.starting_bet_amount}}"></p>
                 </div>  
@@ -67,7 +67,7 @@
             <h4 class="row mt-5 mb-2 d-flex justify-content-left">{% trans %}Set the order of the groups by dragging!{% endtrans %}</h4>
             {% for group_id, group in groups.items() %}    
             <div class="row d-flex justify-content-center">
-                <h4 class="row col-12 justify-content-left">Group - {{group_id}}</h4>
+                <h4 class="row col-12 justify-content-left">{% trans %}Group{% endtrans %} - {{group_id}}</h4>
                 <div class="row mb-3 d-flex justify-content-start" id="{{group_id}}" name="sortableGroup" value="{{group_id}}">
                     <div class="list-group col-1 ms-3">
                         <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="list-group col-8 col-md-6 ms-3">
-                        <div class="list-group-item bg-secondary">Tip</div>
+                        <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
                         <div value="{{group_id}}" id="sortableOrder">
                             {% for team in group.teams %}
                             <div class="list-group-item" data-id ="{{team.name}}">{{team.local_name}}</div>
@@ -87,7 +87,7 @@
 
                     <div class="col-5 col-md-4 mt-2">
                         <div class="row">
-                            <label class="col-4 col-md-3" for="sortableCredit">Bet: </label>
+                            <label class="col-4 col-md-3" for="sortableCredit">{% trans %}Bet{% endtrans %}: </label>
                             <input class="col-8 col-md-3 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max={{bet_values.max_group_bet_value}}>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                 <p class="col-2 col-md-1 badge bg-info align-items-center justify-content-center" id="remainingCredit"></p>
             </div>
     
-            {{alert.alert(['alert-danger', 'alert-dismissible'], 'Failure!')}}
+            {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'))}}
             <div id="alertNode"></div>
             <div class="d-none" id="connectionError">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
             <div class="d-none" id="internalError">{% trans %}An internal server error occured!{% endtrans %}</div>

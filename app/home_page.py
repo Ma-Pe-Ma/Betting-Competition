@@ -19,14 +19,14 @@ def process_arguments(args):
 
     if 'match' in args:
         if 'started' not in args or args['started'] == None:
-            feedback_messages.append((gettext(u'Match does not exist with  {id}!'.format(id=args['match'])), 'danger'))
+            feedback_messages.append((gettext(u'Match does not exist with the following id: {id}!'.format(id=args['match'])), 'danger'))
         elif args['started'] == "1":
-            feedback_messages.append((gettext(u'Match with {id} already started!'.format(id=args['match'])), 'danger'))
+            feedback_messages.append((gettext(u'Match {id} has already started!'.format(id=args['match'])), 'danger'))
         elif args['started'] == "0":
-            feedback_messages.append((gettext(u'Betting on match {id} was sucessful!'.format(id=args['match'])), 'success'))
+            feedback_messages.append((gettext(u'Betting on match {id} was successful!'.format(id=args['match'])), 'success'))
 
     if 'group' in args:
-        feedback_messages.append((gettext(u'Group bet sucessfully updated!'), 'success'))
+        feedback_messages.append((gettext(u'Group bet successfully updated!'), 'success'))
 
     return feedback_messages
 

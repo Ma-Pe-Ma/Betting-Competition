@@ -2,7 +2,7 @@
 
 ![status](https://badgen.net/badge/status/finished/green) ![license](https://badgen.net/github/license/Ma-Pe-Ma/BettingApp)
 
-![desktop browser](https://badgen.net/badge/desktop%20browser/working/green) 
+![browser](https://badgen.net/badge/desktop%20browser/working/green) 
 
 ## Description
 
@@ -229,7 +229,7 @@ Currently only English version is available and it is planned to properly mark t
 
 ## TO-DO
 * Test manually initiating: database update + sending reminder
-* Mark resource strings in HTML translatable with Jinja
+* Translate marked strings with Babel
 * Logging
 * Demo
 

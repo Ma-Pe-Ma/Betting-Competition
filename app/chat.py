@@ -3,7 +3,6 @@ from flask import Blueprint
 from flask import g
 from flask import render_template
 
-from markdown import markdown
 from sqlalchemy import text
 
 from app.auth import login_required

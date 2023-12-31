@@ -2,29 +2,29 @@
 
 {% set ns = namespace(row=1) %}
 
-<h5 class="mt-5">Current credit: {{extra_data.current_balance|round(1)}}</h5>
-<h5 class="">Success rate: {{extra_data.success_rate|round(1)}}</h5>
+<h5 class="mt-5">{% trans %}Current credit{% endtrans %}: {{extra_data.current_balance|round(1)}}</h5>
+<h5 class="">{% trans %}Success rate{% endtrans %}: {{extra_data.success_rate|round(1)}}</h5>
 
-<h5 class="mt-5">Starting credit amount: {{extra_data.start_amount}}</h5>
-<h5 class="">Total group + tournament bet amount: {{extra_data.group_and_tournament_bet_credit}}</h5>
-<h5 class="mb-5">Remaining after group + tournament bet: {{extra_data.start_amount - extra_data.group_and_tournament_bet_credit}}</h5>
+<h5 class="mt-5">{% trans %}Starting credit amount{% endtrans %}: {{extra_data.start_amount}}</h5>
+<h5 class="">{% trans %}Total group + tournament bet amount{% endtrans %}: {{extra_data.group_and_tournament_bet_credit}}</h5>
+<h5 class="mb-5">{% trans %}Remaining after group + tournament bet{% endtrans %}: {{extra_data.start_amount - extra_data.group_and_tournament_bet_credit}}</h5>
 
 {% for date, day in days.items() %}
 
 {% if loop.index == 1 %}
 <div class="row mb-3 mt-3 me-3 text-center">
-    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Teams</div>
+    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Teams{% endtrans %}</div>
     <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
-    <div class="col-2 col-1-md themed-grid-col0 d-flex align-items-center justify-content-center">Result</div>
-    <div class="col-2 col-1-md themed-grid-col0 d-flex align-items-center justify-content-center">Tip</div>
-    <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">Bet</div>
-    <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">Prize</div>
-    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">Balance</div>
+    <div class="col-2 col-1-md themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Result{% endtrans %}</div>
+    <div class="col-2 col-1-md themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Tip{% endtrans %}</div>
+    <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Bet{% endtrans %}</div>
+    <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Prize{% endtrans %}</div>
+    <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Balance{% endtrans %}</div>
 </div>
 {% endif %}
 
 <div class="row mb-3 text-left">
-    <div class="col-8 themed-grid-col">{{day.number}}. day - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
+    <div class="col-8 themed-grid-col">{{day.number}}. {% trans %}day{% endtrans %} - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
     <div class="col-4 themed-grid-col"></div>
 </div>
     {% for match in day.matches %}            
@@ -45,18 +45,18 @@
 
 {%if day.date == group_evaluation_date %}
 <div class="row d-flex align-items-center">
-    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">Group bet total prize: {{extra_data.group_bonus|round(1)}}</p>
+    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">{% trans %}Group bet total prize{% endtrans %}: {{extra_data.group_bonus|round(1)}}</p>
     <div class="col-1"></div>
-    <p class="col-3 justify-content-center badge bg-warning">Balance after group bonus: {{extra_data.balance_after_group|round(1)}}</p>
+    <p class="col-3 justify-content-center badge bg-warning">{% trans %}Balance after group bonus{% endtrans %}: {{extra_data.balance_after_group|round(1)}}</p>
 </div>
 {% endif %}
 
 {% endfor %}
 
-{%if tournament_bet.success is not none %}
+{%if tournament_bet.result is not none %}
 <div class="row d-flex align-items-center">
-    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">Tournament bet total prize: {{tournament_bet.prize|round(1)}}</p>
+    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">{% trans %}Tournament bet total prize{% endtrans %}: {{tournament_bet.prize|round(1)}}</p>
     <div class="col-1"></div>
-    <p class="col-3 justify-content-center badge bg-warning">Final balance: {{extra_data.current_balance|round(1)}}</p>
+    <p class="col-3 justify-content-center badge bg-warning">{% trans %}Final balance{% endtrans %}: {{extra_data.current_balance|round(1)}}</p>
 </div>
 {% endif %}
