@@ -49,9 +49,9 @@
             <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}">{{match.id}}</button></div>
             <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.time}}</div>
             <div class="col-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
-            <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|default0('?')}} / {{match.oddX|default0('?')}} / {{match.odd2|default0('?')}}</div>
-            <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'danger'}}">{{match.goal1|default0('?')}}-{{match.goal2|default0('?')}}</span></div>
-            <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|default0('0')}} / {{match.max_bet}}</div>
+            <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_none('?')}} / {{match.oddX|d_none('?')}} / {{match.odd2|d_none('?')}}</div>
+            <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'danger'}}">{{match.goal1|d_none('?')}}-{{match.goal2|d_none('?')}}</span></div>
+            <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|d_none('0')}} / {{match.max_bet}}</div>
         </div>
             {% endfor %}
 

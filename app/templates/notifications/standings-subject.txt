@@ -1,0 +1,1 @@
+{% trans %}Standings{% endtrans %} - {{date}}

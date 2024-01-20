@@ -1,10 +1,9 @@
-from os import name
 from app.db import get_db
 from flask import g
+from flask import current_app
 
 from datetime import datetime, timedelta
 
-from app.configuration import configuration
 from app.tools import time_determiner
 from app.tools import group_calculator
 
@@ -50,7 +49,7 @@ match_evaluation_query_string = text(
 
 def get_daily_points_by_current_time(username : str):
     utc_now = time_determiner.get_now_time_object()
-    deadline_times = configuration.deadline_times
+    deadline_times = current_app.config['DEADLINE_TIMES']
 
     daily_point_query_string = match_evaluation_query_string.text + \
                         """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet)) AS point, date(match.datetime) AS date, 
@@ -61,17 +60,17 @@ def get_daily_points_by_current_time(username : str):
                         GROUP BY date 
                         ORDER BY date """
 
-    daily_point_parameters = {'now' : utc_now.strftime('%Y-%m-%d %H:%M'), 'group_evaluation_time' : deadline_times.group_evaluation, 'u' : username, 'bullseye' : configuration.bonus_multipliers.bullseye, 'difference' : configuration.bonus_multipliers.difference}
+    daily_point_parameters = {'now' : utc_now.strftime('%Y-%m-%d %H:%M'), 'group_evaluation_time' : deadline_times['group_evaluation'], 'u' : username, 'bullseye' : current_app.config['BONUS_MULTIPLIERS']['bullseye'], 'difference' : current_app.config['BONUS_MULTIPLIERS']['difference']}
 
     #create unique time objects
-    group_deadline_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.register)
+    group_deadline_time_object : datetime = time_determiner.parse_datetime_string(deadline_times['register'])
     two_days_before_deadline = group_deadline_time_object - timedelta(days=2)
     one_day_before_deadline = group_deadline_time_object - timedelta(days=1)
     
     days = []
 
     # two days before starting show start amount, same for everyone
-    amount = configuration.bet_values.starting_bet_amount
+    amount = current_app.config['BET_VALUES']['starting_bet_amount']
     days.append({'year' : two_days_before_deadline.year, 'month' : two_days_before_deadline.month - 1, 'day' : two_days_before_deadline.day, 'point' : amount})
 
     # one day before starting show startin minus group+tournament betting amount
@@ -89,7 +88,7 @@ def get_daily_points_by_current_time(username : str):
         days.append(day_dict)
 
     # add the group stage bonus
-    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.group_evaluation)
+    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times['group_evaluation'])
     if utc_now > group_evaluation_time_object:
         group_evaluation_time_object += timedelta(days=1)
         amount += sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
@@ -105,7 +104,7 @@ def get_daily_points_by_current_time(username : str):
         day_dict['point'] = amount
         days.append(day_dict)
 
-    tournament_end_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.tournament_end)
+    tournament_end_time_object : datetime = time_determiner.parse_datetime_string(deadline_times['tournament_end'])
     
     if utc_now > tournament_end_time_object:
         tournament_end_time_object += timedelta(days=1)

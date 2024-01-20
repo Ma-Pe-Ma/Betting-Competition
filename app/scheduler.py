@@ -10,9 +10,8 @@ from dateutil import tz
 from datetime import timedelta
 
 from app.db import get_db
-from app import gmail_handler
+from app.notification import notification_handler
 from app.database_manager import download_data_csv
-from app.configuration import configuration
 from app import standings
 from app.tools import time_determiner
 
@@ -35,7 +34,7 @@ def backup_sqlite_database():
     subject = 'Backup at: ' + current_localtime.strftime('%Y-%m-%d %H:%M')
     
     #create draft with the attached sqlite database file
-    message = gmail_handler.create_message_with_attachment(sender='me',
+    message = notification_handler.notifier.create_message_with_attachment(sender='me',
         to=admin_address,
         subject=subject,
         message_text='Backing up result database at: ' + current_localtime.strftime('%Y-%m-%d %H:%M'),
@@ -77,16 +76,16 @@ def match_reminder_once_per_day(match_ids : list):
             else:
                 user_map[user.username]['nonmissing'].append(user_dict)
 
-        sendable_emails = []
+        sendable_messages = []
 
         for user in user_map.values():
             # TODO solve translating
-            email_object = gmail_handler.get_email_resource_by_tag('MatchReminder')
-            subject = render_template_string(email_object[0], missing_bets=user['missing'], date=user['date'])
-            message_text = render_template_string(email_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
-            sendable_emails.append(gmail_handler.create_message(sender='me', to=user['email'], subject=subject, message_text=message_text, subtype='html'))
+            message_object = notification_handler.notifier.get_notification_resource_by_tag('MatchReminder')
+            message_subject = render_template_string(message_object[0], missing_bets=user['missing'], date=user['date'])
+            message_text = render_template_string(message_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
+            sendable_messages.append(notification_handler.notifier.create_message(sender='me', to=user['email'], subject=message_subject, message_text=message_text, subtype='html'))
 
-        gmail_handler.send_messages(sendable_emails)
+        notification_handler.notifier.send_messages(sendable_messages)
 
 def update_results():
     print('Running scheduled result updater...')
@@ -98,10 +97,8 @@ def update_results():
 def daily_standings():
     print('Running scheduled daily standings creator...')
 
+    #TODO
     with scheduler.app.app_context():
-        #match time in utc
-        utc_now = time_determiner.get_now_time_object()
-
         messages = []
         email_map = {}
         standings_map = {}
@@ -112,7 +109,7 @@ def daily_standings():
         result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string()})
         for user in result.fetchall():
             if user.langugage not in email_map:
-                email_map[user.language] = gmail_handler.get_email_resource_by_tag('DailyStandings', user.language)
+                email_map[user.language] = notification_handler.notifier.get_notification_resource_by_tag('DailyStandings', user.language)
             
             if user.language not in standings_map:
                 standings_map[user.language] = standings.create_standings(language=user.language)
@@ -122,16 +119,16 @@ def daily_standings():
             subject = render_template_string(email_object[0], date=user.date)
             message_text = render_template_string(email_object[1], username=user.username, date=user.date, standings=standings_map[user.language])
 
-            messages.append(gmail_handler.create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
+            messages.append(notification_handler.notifier.create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
 
-        gmail_handler.send_messages(messages=messages)
+        notification_handler.notifier.send_messages(messages=messages)
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():
     with scheduler.app.app_context():
         print('Running daily scheduler at midnight...')
 
-        match_time_length = configuration.match_time_length
+        match_time_length = current_app.config['MATCH_TIME_LENGTH']
 
         utc_now = time_determiner.get_now_time_object()
         #backup_sqlite_database()
@@ -156,20 +153,20 @@ def daily_checker():
                 if utc_now > one_hour_before_first_match:
                     one_hour_before_first_match = None                    
 
-            after_base_time = match_time_object + timedelta(hours=match_time_length.base_time)
+            after_base_time = match_time_object + timedelta(hours=match_time_length['base_time'])
             match_after_base_task_id = str(match.id) + '. match after base'
             # schedule database update
             print('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = match_after_base_task_id, func=update_results, trigger='date', run_date=after_base_time)
 
-            after_extra_time = match_time_object + timedelta(hours=match_time_length.extra_time)
+            after_extra_time = match_time_object + timedelta(hours=match_time_length['extra_time'])
             match_after_extra_task_id = str(match.id) + '. match after extra'
             # schedule database update
             print('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = match_after_extra_task_id, func=update_results, trigger='date', run_date=after_extra_time)
 
             if i == len(matches) - 1:
-                time_after_last_match = match_time_object + timedelta(hours=match_time_length.extra_time, minutes=5)
+                time_after_last_match = match_time_object + timedelta(hours=match_time_length['extra_time'], minutes=5)
                 
         # send out first
         if one_hour_before_first_match is not None:

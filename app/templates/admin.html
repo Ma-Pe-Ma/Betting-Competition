@@ -43,8 +43,8 @@
                                 <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}">{{match.id}}</button></div>
                                 <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.datetime}}</div>
                                 <div class="col-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
-                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|default0('?')}} / {{match.oddX|default0('?')}} / {{match.odd2|default0('?')}}</div>
-                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'info'}}">{{match.goal1|default0('?')}}-{{match.goal2|default0('?')}}</span></div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_none('?')}} / {{match.oddX|d_none('?')}} / {{match.odd2|d_none('?')}}</div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'info'}}">{{match.goal1|d_none('?')}}-{{match.goal2|d_none('?')}}</span></div>
                                 <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.max_bet}}</div>
                             </div>
                         {% endfor %}
@@ -71,26 +71,28 @@
                     </div>
                 </div>
             </div>
+{% if config['DIRECT_MESSAGING'] > 0 %}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingThree">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree">{% trans %}Sending email to users{% endtrans %}</button>                     
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseThree">{% trans %}Sending messeage to users{% endtrans %}</button>                     
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="container card-body mt-3">
                         <div class="container">
                             <div class="mb-3">
-                                <label for="emailSubject" class="form-label">{% trans %}Subject{% endtrans %}</label>
-                                <input class="form-control" id="emailSubject">
+                                <label for="notificationSubject" class="form-label">{% trans %}Subject{% endtrans %}</label>
+                                <input class="form-control" id="notificationSubject">
                             </div>
                             <div class="mb-3">
-                                <label for="emailText" class="form-label">{% trans %}Message{% endtrans %}</label>
-                                <textarea class="form-control" id="emailText" rows="3"></textarea>
+                                <label for="notificationText" class="form-label">{% trans %}Message{% endtrans %}</label>
+                                <textarea class="form-control" id="notificationText" rows="3"></textarea>
                             </div>
-                            <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="emailSend">{% trans %}Send{% endtrans %}</button> 
+                            <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="notificationSend">{% trans %}Send{% endtrans %}</button> 
                         </div>                        
                     </div>
                 </div>
             </div>
+{% endif %}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFour">
                     <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFour">{% trans %}Group result evaluation{% endtrans %}</button>                     
@@ -177,12 +179,12 @@
                         <div class="container">
                             <div class="row ms-2 mt-2">
                                 <label class="col-2" for="team">{% trans %}Team description{% endtrans %}</label>
-                                <input class="col-3" type=file name=team id="teamFile">
+                                <input class="col-3" type=file name="team" id="teamFile">
                             </div>
 
                             <div class="row ms-2">
                                 <label class="col-2" for="translation">{% trans %}Team translation{% endtrans %}</label>
-                                <input class="col-3" type=file name=translation id="translationFile">
+                                <input class="col-3" type=file name="translation" id="translationFile">
                             </div>
 
                             <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="teamDataSend">{% trans %}Upload{% endtrans %}</button>

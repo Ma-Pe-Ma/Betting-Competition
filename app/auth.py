@@ -16,22 +16,17 @@ import functools
 from datetime import datetime
 
 from sqlalchemy import text
-from enum import Enum
 from flask_babel import gettext
-from dateutil import tz
+from flask_babel import force_locale
 
 from app.db import get_db
-from app.configuration import configuration
-
 from app.tools import time_determiner
-
-from app.gmail_handler import get_email_resource_by_tag
-from app.gmail_handler import send_messages, create_message
+from app.notification import notification_handler
 
 bp = Blueprint('auth', __name__, '''url_prefix="/auth"''')
 
 @bp.before_app_request
-def load_logged_in_user() -> None:
+def load_signed_in_user() -> None:
     username = session.get('username')
 
     if username is None:
@@ -44,17 +39,17 @@ def load_logged_in_user() -> None:
 
         if user_row is None:
             session.clear()
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.sign_in'))
 
         g.user = (
             user_row._asdict()
         )
 
-def login_required(view):
+def sign_in_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.sign_in'))
 
         return view(**kwargs)
 
@@ -64,7 +59,7 @@ def admin_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.sign_in'))
         elif not g.user['admin']:
             return render_template('/page-404.html'), 404
 
@@ -75,7 +70,7 @@ def admin_required(view):
 @bp.route('/register', methods=('GET', 'POST'))
 def register() -> str:
     utc_now : datetime = time_determiner.get_now_time_object()
-    register_deadline : datetime = time_determiner.parse_datetime_string(configuration.deadline_times.register)    
+    register_deadline : datetime = time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
 
     if utc_now > register_deadline:
         return render_template('/auth/register-fail.html')
@@ -86,8 +81,10 @@ def register() -> str:
     if request.method == 'POST':
         user_data = request.form.to_dict(flat=True)
 
-        if user_data['language'] not in configuration.supported_languages._asdict():
-            user_data['language'] = list(configuration.supported_languages._asdict().keys())[0]
+        if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
+            user_data['language'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0]
+        
+        user_data['language_number'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(user_data['language'])
 
         db = get_db()
         error = None
@@ -101,7 +98,7 @@ def register() -> str:
             error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
         elif user_data['password1'] != user_data['password2']:
             error = (gettext('The two passwords are not identical.'), 'danger')
-        elif user_data['key'] != configuration.invitation_keys.user and user_data['key'] != configuration.invitation_keys.admin:
+        elif user_data['key'] != current_app.config['INVITATION_KEYS']['user'] and user_data['key'] != current_app.config['INVITATION_KEYS']['admin']:
             error = (gettext('The invitation key is not valid.'), 'danger')
         else:
             query_string = text('SELECT * FROM bet_user WHERE username = :username')
@@ -116,13 +113,17 @@ def register() -> str:
 
         if error is not None:
             flash(error[0], error[1])
-            return render_template('/auth/register.html', user_data = user_data, languages = configuration.supported_languages._asdict())
+            with force_locale(user_data['language']):
+                return render_template('/auth/register.html', user_data = user_data)
 
-    
         user_data['password'] = generate_password_hash(user_data['password1'])
-        user_data['admin'] = user_data['key'] == configuration.invitation_keys.admin
+        user_data['admin'] = user_data['key'] == current_app.config['INVITATION_KEYS']['admin']
         # TODO CHECK AND ADD TIMEZONE!
         user_data['timezone'] = '-01:00'
+
+        if 'reminder' not in user_data or 'summary' not in user_data:
+            user_data['reminder'] = 0
+            user_data['summary'] = 0
 
         query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone) " 
                             "VALUES (:username, :password, :email, :reminder, :summary, :language, :admin, :timezone)")
@@ -132,13 +133,14 @@ def register() -> str:
         session.clear()
         session['username'] = user_data['username']
 
-        # sending welcome email
-        emails = []
-        email_object = get_email_resource_by_tag('Welcome')
-        subject = render_template_string(email_object[0])
-        message_text = render_template_string(email_object[1], username=user_data['username'])
-        emails.append(create_message(sender='me', to=user_data['email'], subject=subject, message_text=message_text, subtype='html'))
-        send_messages(emails)
+        # sending welcome notification
+        messages = []
+        message_object = notification_handler.notifier.get_notification_resource_by_tag('welcome')
+        message_subject = render_template_string(message_object[0])
+        message_text = render_template_string(message_object[1], username=user_data['username'])
+        messages.append(notification_handler.notifier.create_message(sender='me', to=user_data['email'], subject=message_subject, message_text=message_text, subtype='html'))
+
+        notification_handler.notifier.send_messages(messages)
 
         # if first time sign in upload team data
         result = db.session.execute(text('SELECT * FROM bet_user'))
@@ -151,7 +153,8 @@ def register() -> str:
     user_data = {
         'reminder' : '0',
         'summary' : '1',
-        'language' : list(configuration.supported_languages._asdict().keys())[0]
+        'language' : list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0],
+        'language_number': 0
     }
 
     # TODO: 
@@ -161,17 +164,18 @@ def register() -> str:
             'email' : 'mpm@mpm.mpm',
             'password1' : 'aaaaaaaa',
             'password2' : 'aaaaaaaa',
-            'key' : configuration.invitation_keys.admin,
+            'key' : current_app.config['INVITATION_KEYS']['admin'],
             'reminder' : '0',
             'summary' : '1',        
-            'language' : list(configuration.supported_languages._asdict().keys())[0]
-        }   
+            'language' : list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0],
+            'language_number': 0
+        }
 
-    return render_template('/auth/register.html', user_data = user_data, languages=configuration.supported_languages._asdict())
+    with force_locale(user_data['language']):
+        return render_template('/auth/register.html', user_data = user_data)
 
-
-@bp.route('/login', methods=('GET', 'POST'))
-def login() -> str:
+@bp.route('/sign-in', methods=('GET', 'POST'))
+def sign_in() -> str:
     # Redirect to homepage if user is already signed in
     if g.user is not None:
         return redirect(url_for('home.homepage'))
@@ -193,28 +197,32 @@ def login() -> str:
 
         if error is not None:
             flash(error[0], error[1])
-            return render_template('/auth/login.html', username_form=username)
+            return render_template('/auth/sign-in.html', username_form=username)
         
         session.clear()
         session['username'] = user.username          
 
         return redirect(url_for('home.homepage'))
 
-    return render_template('/auth/login.html')
+    return render_template('/auth/sign-in.html')
 
-@bp.route('/logout')
-def logout() -> str:
+@bp.route('/sign_out')
+def sign_out() -> str:
     session.clear()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.sign_in'))
 
 @bp.route('/profile', methods=('GET', 'POST'))
-@login_required
+@sign_in_required
 def page_profile() -> str:
     if request.method == 'POST':
         user_data = request.form.to_dict(flat=True)
 
-        if user_data['language'] not in configuration.supported_languages._asdict():
-            user_data['language'] = list(configuration.supported_languages._asdict().keys())[0]
+        if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
+            user_data['language'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0]
+
+        if 'reminder' not in user_data or 'summary' not in user_data:
+            user_data['reminder'] = 0
+            user_data['summary'] = 0
 
         query_string = text('UPDATE bet_user SET reminder=:r, summary=:s, language=:l WHERE username=:u')
         get_db().session.execute(query_string, {'r' : user_data['reminder'], 's' : user_data['summary'], 'l' : user_data['language'], 'u' : g.user['username']})
@@ -226,6 +234,7 @@ def page_profile() -> str:
 
     query_string = text('SELECT username, email, reminder, summary, language FROM bet_user WHERE username=:username')
     result = get_db().session.execute(query_string, {'username' : g.user['username']})
-    user_data = result.fetchone()
+    user_data = result.fetchone()._asdict()
+    user_data['language_number'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(user_data['language'])
 
-    return render_template('/auth/profile.html', user_data = user_data, languages=configuration.supported_languages._asdict())
+    return render_template('/auth/profile.html', user_data = user_data, disabled = True)

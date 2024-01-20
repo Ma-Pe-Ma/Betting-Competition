@@ -9,11 +9,9 @@ from werkzeug.utils import secure_filename
 
 from app import database_manager
 from app.db import get_db
-from app.auth import admin_required, login_required
-from app.gmail_handler import create_message, send_messages
-
+from app.auth import admin_required, sign_in_required
+from app.notification import notification_handler
 from app.tools import time_determiner
-from app.configuration import configuration
 
 import os
 from flask_babel import gettext
@@ -22,7 +20,7 @@ from sqlalchemy import text
 bp = Blueprint('admin', __name__, '''url_prefix="/admin"''')
 
 @bp.route('/admin', methods=('GET',))
-@login_required
+@sign_in_required
 @admin_required
 def admin_page():
     query_string = text('SELECT * from messages')
@@ -30,7 +28,7 @@ def admin_page():
     messages = [message._asdict() for message in result.fetchall()]
 
     groups = {}    
-    if time_determiner.get_now_time_object() > time_determiner.parse_datetime_string(configuration.deadline_times.group_evaluation) :
+    if time_determiner.get_now_time_object() > time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']) :
         query_string = text("SELECT team.name, team.group_id, team.position, tr.translation AS local_name "
                             "FROM team "
                             "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
@@ -44,7 +42,7 @@ def admin_page():
             groups[team.group_id].append({'name' : team.name, 'local_name' : team.local_name, 'position' :  team.position})
 
     tournament_bets = []
-    if time_determiner.get_now_time_object() > time_determiner.parse_datetime_string(configuration.deadline_times.tournament_end):
+    if time_determiner.get_now_time_object() > time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']):
         query_string = text("SELECT tournament_bet.*, tr.translation as local_name "
                             "FROM tournament_bet "
                             "LEFT JOIN team_translation AS tr ON tr.name=tournament_bet.team AND tr.language = :language "
@@ -65,7 +63,7 @@ def admin_page():
     return render_template('/admin.html', matches = matches, messages = messages, groups = groups, tournament_bets = tournament_bets)
 
 @bp.route('/admin/message', methods=('POST',))
-@login_required
+@sign_in_required
 @admin_required
 def message():
     for message_id, message in enumerate(request.get_json()):
@@ -76,18 +74,18 @@ def message():
 
     return gettext('Messages updated successfully!'), 200    
 
-@bp.route('/admin/send-email', methods=('POST',))
-@login_required
+@bp.route('/admin/send-notification', methods=('POST',))
+@sign_in_required
 @admin_required
-def send_email():
+def send_notification():
     try:
-        email_message = request.get_json()['email']
-        subject = request.get_json()['subject']
+        message_text = request.get_json()['text']
+        message_subject = request.get_json()['subject']
         
-        if len(email_message) < 10:
+        if len(message_text) < 10:
             return gettext('Too short message!'), 400
             
-        if len(subject) < 6:
+        if len(message_subject) < 6:
             return gettext('Too short subject!'), 400
 
         messages = []
@@ -96,16 +94,16 @@ def send_email():
         result = get_db().session.execute(query_string)
 
         for user in result.fetchall():
-            messages.append(create_message(sender='me', to=user.email, subject=subject, message_text=email_message))
+            messages.append(notification_handler.notifier.create_message(sender='me', to=user.email, subject=message_subject, message_text=message_text))
 
-        send_messages(messages=messages)
+        notification_handler.notifier.send_messages(messages=messages)
     except:
-        return gettext('Error sending email to everyone!')
+        return gettext('Error sending notification to everyone!')
 
-    return gettext('Emails successfully sent!'), 200
+    return gettext('Notifications successfully sent!'), 200
 
 @bp.route('/admin/match', methods=('GET', 'POST'))
-@login_required
+@sign_in_required
 @admin_required
 def odd_edit():
     if request.method == 'GET':
@@ -141,7 +139,7 @@ def odd_edit():
         return jsonify({'id' : updated_data['id'] }), 200
 
 @bp.route('/admin/group-evaluation', methods=('POST',))
-@login_required
+@sign_in_required
 @admin_required
 def group_evaluation():    
     for key in request.json:
@@ -154,7 +152,7 @@ def group_evaluation():
     return gettext('Group results set successfully!'), 200
 
 @bp.route('/admin/tournament-bet', methods=('POST',))
-@login_required
+@sign_in_required
 @admin_required
 def tournament_bet():
     for username, success in request.get_json().items():
@@ -171,7 +169,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 @bp.route('/admin/team-data', methods=('POST',))
-@login_required
+@sign_in_required
 @admin_required
 def upload_team_data():
     # check if the post request has the file part
@@ -198,7 +196,7 @@ def upload_team_data():
         translation_file_name = secure_filename(translation_file.filename)
         translation_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], translation_file_name))
     except:
-        return gettext('Failing to write team-data files to local storage!');
+        return gettext('Failing to write team-data files to local storage!')
 
     if not database_manager.initialize_teams(team_file_name=team_file_name, translation_file_name=translation_file_name):
         return gettext('Error while initializing the teams!'), 400

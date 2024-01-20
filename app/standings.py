@@ -3,7 +3,7 @@ from flask import g
 from flask import render_template
 
 from app.db import get_db
-from app.auth import login_required
+from app.auth import sign_in_required
 from app.tools import score_calculator 
 
 from copy import copy
@@ -57,13 +57,13 @@ def create_standings(language = None):
     return (players, current_player_standings)
 
 @bp.route('/standings', methods=('GET',))
-@login_required
+@sign_in_required
 def standings():
     standings = create_standings()
     return render_template('/standings.html', players=standings[0], standings=standings[1])
 
 @bp.route('/standings.json', methods=('GET',))
-@login_required
+@sign_in_required
 def standings_json():
     import io, json
     from flask import send_file

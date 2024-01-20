@@ -4,7 +4,7 @@ from flask import flash
 from flask import render_template
 from flask import request
 from app.db import get_db
-from app.auth import login_required
+from app.auth import sign_in_required
 
 from app.tools import time_determiner
 from app.tools import score_calculator
@@ -31,7 +31,7 @@ def process_arguments(args):
     return feedback_messages
 
 @bp.route('/', methods=('GET',))
-@login_required
+@sign_in_required
 def homepage():
     # show messages for user!    
     query_string = text('SELECT * FROM messages')

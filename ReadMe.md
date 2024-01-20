@@ -228,17 +228,18 @@ To start scheduling (if app was rebooted midday)
 Currently only English version is available and it is planned to properly mark the translatable resource strings in the jinja templates. Then with flask-babel it will be possible to translate the pages easily.
 
 ## TO-DO
+* translate marked strings with Babel
+* logging
+* demo
+* session handling with Flask-login, eg. remember me, do not sign-out function etc.
+* make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean 
+* redirect to group bet before start + redirect to team data upload at very first startup for admin
+* rethink scheduler plus reminders (RSS or browser notification)
+* solve caching for standings
+* download database option for admin
+* clean-up ReadMe
 * Test manually initiating: database update + sending reminder
-* Translate marked strings with Babel
-* Logging
-* Demo
 
 ### Backlog
-* hosting with pythonanywhere/digital ocean + let's encript
-* redirect to group bet before start + redirect to team data upload at very first startup for admin
-* Rethink scheduler plus reminders
-* do not render reminder option when email sending is turned off
-* RSS or browser notification
-* caching
 * generating custom profile picture for user
 * Add timezone selector for user

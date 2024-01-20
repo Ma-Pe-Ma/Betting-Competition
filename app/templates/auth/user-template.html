@@ -1,0 +1,28 @@
+{% indclude "auth/alert-template.html" %}
+
+            <div class="col-12">
+                <label for="lastName" class="form-label">{% trans %}Username{% endtrans %}</label>
+                <input type="text" class="form-control" id="lastName" name="username" placeholder="" value="{{user_data['username']}}" {{'disabled' if disabled else 'required'}}>
+                <div class="invalid-feedback">
+                    {% trans %}A valid username is required.{% endtrans %}
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="email" class="form-label">Email <span class="text-body-secondary"></span></label>
+                <input type="email" class="form-control" id="email" placeholder="email@address.com" name="email" value="{{user_data['email']}}" {{'disabled' if disabled else 'required'}}>
+                <div class="invalid-feedback">
+                    {% trans %}Please enter a valid email address.{% endtrans %}
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="col-md-12">{% trans %}Language{% endtrans %}</label>
+                <div class="col-md-12">
+                    <select class="form-control form-control-line" type="form-select" name="language" id="langSelect">
+                        {% for language_id, language in config['SUPPORTED_LANGUAGES'].items() %}
+                        <option value="{{language_id}}" {% if user_data.language == language_id %} selected="selected" {% endif %}>{{language[user_data.language_number]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>

@@ -1,79 +1,53 @@
 import os
 
-from app.configuration import load_configuration
-configuration = load_configuration()
-
-# import Flask 
 from flask import Flask
 from flask import render_template
+from flask import session
+from flask import g
+from flask import request
 
 from datetime import timedelta
+import json
 
 from app import db
 from app import scheduler
 from app.tools import time_determiner
+from app.notification import notification_handler
 
 from flask_babel import Babel
 
-UPLOAD_FOLDER = './instance'
-ALLOWED_EXTENSIONS = {'csv'}
-
-# TODO: builtin default filter not working with zero values despite using true as second argument
-def custom_default(value, text):
-    if value is None:
-        return text
-    return value
-
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config=True)
-    app.jinja_env.filters['default0'] = custom_default
+    # create custom default filter for none object
+    app.jinja_env.filters['d_none'] = lambda value, default_text : value if value is not None else default_text
 
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
+        #TODO
         pass
 
-    app.config.from_mapping(
-        # a default secret that should be overridden by instance config
-        SECRET_KEY=configuration.app_secret_key,
-        # store the database in the instance folder
-        #DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
-        SQLALCHEMY_DATABASE_URI='sqlite:///flaskr.sqlite',
-        # file upload folder
-        UPLOAD_FOLDER=UPLOAD_FOLDER,
-        # extensions enabled for uploading
-        ALLOWED_EXTENSIONS=ALLOWED_EXTENSIONS,
-        CACHE_TYPE='SimpleCache',  # Flask-Caching related configs
-        CACHE_DEFAULT_TIMEOUT=300
-    )
+    # load configuration from file
+    app.config.from_object('app.config.Default')
+    app.config.from_file("config.json", load=json.load, silent=True)
 
+    # setup various tools
     db.db.init_app(app)
     db.add_db_commands(app)
 
     time_determiner.init_time_calculator(app)
+    scheduler.init_scheduler(app)
+    notification_handler.init_notifier(app)
 
-    babel = Babel(app)
+    def get_locale():
+        # if a user is signed in, use the locale from the user settings
+        user = getattr(g, 'user', None)
+        if user is not None:
+            return user['language']
+        return request.accept_languages.best_match(app.config['SUPPORTED_LANGUAGES'].keys())
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.update(test_config)
-
-    from flask import session
-
-    #Setting session timeout
-    @app.before_request
-    def before_request():
-        #if not request.is_secure:
-        #    url = request.url.replace('http://', 'https://', 1)
-        #    code = 301
-        #    return redirect(url, code=code)
-
-        session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=configuration.session_timeout)
+    babel = Babel(app, locale_selector=get_locale)
 
     # apply the blueprints to the app
     from app import auth
@@ -94,24 +68,22 @@ def create_app(test_config = None):
     app.register_blueprint(match_bet.bp)
     app.register_blueprint(chat.bp)
 
+    # setting session timeout TODO: check flask-login capabilities
+    @app.before_request
+    def before_request():
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=app.config['SESSION_TIMEOUT'])
+
     @app.errorhandler(403)
-    def page_not_found(e):
+    def page_403(e):
         return render_template('/error-handling/page-403.html'), 403
 
     @app.errorhandler(404)
-    def page_not_found(e):
+    def page_404(e):
         return render_template('/error-handling/page-404.html'), 404
 
     @app.errorhandler(500)
-    def page_not_found(e):
-        # note that we set the 500 status explicitly
+    def page_500(e):
         return render_template('/error-handling/page-500.html'), 500
-
-    app.config.update(SCHEDULER_TIMEZONE = 'utc')
-    scheduler.init_scheduler(app)
-
-    @app.context_processor
-    def set_jinja_global_variables():
-        return dict()
 
     return app

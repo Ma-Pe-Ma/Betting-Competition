@@ -34,10 +34,10 @@
 
 <div class="row mb-3 me-3 text-center">
     <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
-    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|default0('?')}} / {{match.oddX|default0('?')}} / {{match.odd2|default0('?')}}</div>
-    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.rgoal1|default0('?')}} - {{match.rgoal2|default0('?')}}</div>
-    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{match_color}}"</span>{{match.bgoal1|default0("?")}} - {{match.bgoal2|default0("?")}}</div>
-    <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|default0('0')}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_none('?')}} / {{match.oddX|d_none('?')}} / {{match.odd2|d_none('?')}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.rgoal1|d_none('?')}} - {{match.rgoal2|d_none('?')}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{match_color}}"</span>{{match.bgoal1|d_none("?")}} - {{match.bgoal2|d_none("?")}}</div>
+    <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|d_none('0')}}</div>
     <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.prize|round(1)}} + {{match.bonus|round(1)}}</div>
     <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.balance|round(1)}}</div>
 </div>

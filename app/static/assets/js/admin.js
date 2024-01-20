@@ -4,7 +4,7 @@ const sortableGroups = document.getElementsByName("sortableGroup");
 var groupSendButton = document.getElementById("groupSend");
 var tournamentSendButton = document.getElementById("tournamentSend");
 var messageSendButton = document.getElementById("messageSend");
-var emailSendButton = document.getElementById("emailSend");
+var notificationSendButton = document.getElementById("notificationSend");
 var teamDataSendButton = document.getElementById("teamDataSend");
 
 var tournamentBets = document.getElementsByName("tournamentBet");
@@ -96,13 +96,13 @@ messageSendButton.onclick = function() {
     postData("/admin/message", messageArray, this);
 }
 
-emailSendButton.onclick = function() {
-    var emailDict = {
-        "subject" : document.getElementById("emailSubject").value,
-        "email" : document.getElementById("emailText").value
+notificationSendButton.onclick = function() {
+    var notificationDict = {
+        "subject" : document.getElementById("messageSubject").value,
+        "text" : document.getElementById("messageText").value
     }
 
-    postData("/admin/send-email", emailDict, this);
+    postData("/admin/send-notification", notificationDict, this);
 }
 
 teamDataSendButton.onclick = function() {

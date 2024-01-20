@@ -4,11 +4,9 @@ from datetime import datetime
 import urllib.request
 import csv
 
-from app.db import get_db
-from app.configuration import configuration
 from sqlalchemy import text
 
-url = configuration.MATCH_URL
+from app.db import get_db
 
 def initialize_teams(team_file_name, translation_file_name):
     try:
@@ -44,8 +42,8 @@ def initialize_teams(team_file_name, translation_file_name):
 
 def initialize_matches():
     try:
-        bet_values = configuration.bet_values
-        response = urllib.request.urlopen(url)
+        bet_values = current_app.config['BET_VALUES']
+        response = urllib.request.urlopen(current_app.config['MATCH_URL'])
         data = response.read()
         decoded_text = data.decode("utf-8")
 
@@ -66,7 +64,7 @@ def initialize_matches():
 
 def download_data_csv():
     try:
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(current_app.config['MATCH_URL'])
         data = response.read()
         text = data.decode("utf-8")
 

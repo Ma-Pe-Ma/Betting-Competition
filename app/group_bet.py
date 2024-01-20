@@ -3,12 +3,12 @@ from flask import g
 from flask import render_template
 from flask import request
 from flask import jsonify
+from flask import current_app
 
 from datetime import datetime
 
-from app.auth import login_required
+from app.auth import sign_in_required
 from app.db import get_db
-from app.configuration import configuration
 from app.tools import group_calculator
 from app.tools import score_calculator
 from app.tools import time_determiner
@@ -20,9 +20,8 @@ bp = Blueprint('group', __name__, '''url_prefix="/group"''')
 
 def before_deadline():
     username = g.user['username']
-    language = g.user['language']
 
-    bet_values = configuration.bet_values
+    bet_values = current_app.config['BET_VALUES']
 
     if request.method == 'GET':
         groups = group_calculator.get_group_bet_dict_for_user(username=username)
@@ -51,7 +50,7 @@ def before_deadline():
 
         try:
             tournament_credit = int(tournament['bet'])
-            if tournament_credit < 0 or tournament_credit > bet_values.max_tournament_bet_value:
+            if tournament_credit < 0 or tournament_credit > bet_values['max_tournament_bet_value']:
                 raise ValueError
             tournament['bet'] = tournament_credit
         except ValueError:
@@ -67,7 +66,7 @@ def before_deadline():
             try:
                 group_bet = int(groups[group_id]['bet'])
 
-                if group_bet < 0 or group_bet > bet_values.max_group_bet_value:
+                if group_bet < 0 or group_bet > bet_values['max_group_bet_value']:
                     raise ValueError
 
                 groups[group_id]['bet'] = group_bet
@@ -114,11 +113,11 @@ def during_groupstage():
     username = request.args.get('name')
 
     if username is not None:
-        amount_after = configuration.bet_values.starting_bet_amount - score_calculator.get_group_and_tournament_bet_amount(username=username)
+        amount_after = current_app.config['BET_VALUES']['starting_bet_amount'] - score_calculator.get_group_and_tournament_bet_amount(username=username)
         groups = group_calculator.get_group_bet_dict_for_user(username=username)
         tournament_bet = group_calculator.get_tournament_bet_dict_for_user(username=username)
 
-        return render_template('/group-bet/group-during.html', groups=groups, tournament_bet=tournament_bet, amount_after=amount_after, starting_bet_amount=configuration.bet_values.starting_bet_amount)
+        return render_template('/group-bet/group-during.html', groups=groups, tournament_bet=tournament_bet, amount_after=amount_after, starting_bet_amount=current_app.config['BET_VALUES']['starting_bet_amount'])
     
     query_string = text('SELECT username FROM bet_user ORDER BY username ASC')
     result = get_db().session.execute(query_string)
@@ -131,12 +130,12 @@ def after_evaluation():
 
     if username is not None:
         total_bet = score_calculator.get_group_and_tournament_bet_amount(username=username)
-        amount_after = configuration.bet_values.starting_bet_amount - total_bet
+        amount_after = current_app.config['BET_VALUES']['starting_bet_amount'] - total_bet
         groups = group_calculator.get_group_bet_dict_for_user(username=username)
         tournament_bet_dict = group_calculator.get_tournament_bet_dict_for_user(username=username)
         total_win_amount = sum(group['prize'] for group in groups.values())        
 
-        return render_template('/group-bet/group-after.html', groups=groups, tournament_bet=tournament_bet_dict, amount_after=amount_after, starting_bet_amount=configuration.bet_values.starting_bet_amount, total_win=total_win_amount, total_bet=total_bet)
+        return render_template('/group-bet/group-after.html', groups=groups, tournament_bet=tournament_bet_dict, amount_after=amount_after, starting_bet_amount=current_app.config['BET_VALUES']['starting_bet_amount'], total_win=total_win_amount, total_bet=total_bet)
     
     query_string = text('SELECT username FROM bet_user')
     result = get_db().session.execute(query_string)
@@ -145,13 +144,13 @@ def after_evaluation():
     return render_template('/group-bet/group-choose.html', players=players)
 
 @bp.route('/group-bet', methods=('GET', 'POST'))
-@login_required
+@sign_in_required
 def group_order():
-    deadline_times = configuration.deadline_times
+    deadline_times = current_app.config['DEADLINE_TIMES']
 
     utc_now : datetime = time_determiner.get_now_time_object()
-    register_time : datetime = time_determiner.parse_datetime_string(deadline_times.register)
-    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times.group_evaluation)
+    register_time : datetime = time_determiner.parse_datetime_string(deadline_times['register'])
+    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times['group_evaluation'])
 
     if utc_now < register_time:
         return before_deadline()
@@ -161,8 +160,8 @@ def group_order():
         return after_evaluation()
 
 @bp.route('/tournament-bet.json', methods=('GET',))
-@login_required
-def tournament_bet_odds2():
+@sign_in_required
+def tournament_bet_odds():
     query_string = text("SELECT top1, top2, top4, top16, team.name, tr.translation as tr "
                         "FROM team "
                         "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "

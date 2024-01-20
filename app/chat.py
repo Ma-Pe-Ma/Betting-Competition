@@ -5,7 +5,7 @@ from flask import render_template
 
 from sqlalchemy import text
 
-from app.auth import login_required
+from app.auth import sign_in_required
 from app.tools import time_determiner
 from app.db import get_db
 
@@ -33,7 +33,7 @@ def get_comments(utc_datetime_string : str, newer_comments : bool, timezone : st
 
 # this method handles getting abd posting messages
 @bp.route('/comment', methods=('POST',))
-@login_required
+@sign_in_required
 def comments():
     request_object : dict = request.get_json()
 
@@ -61,6 +61,6 @@ def comments():
     return jsonify(response_object), 200
 
 @bp.route('/chat', methods=('GET',))
-@login_required
+@sign_in_required
 def chat_page():
     return render_template('/chat.html')

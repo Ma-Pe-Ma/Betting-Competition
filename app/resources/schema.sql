@@ -60,7 +60,7 @@ CREATE TABLE team_translation (
 
 -- Table holding a player's bet on a specific group
 CREATE TABLE group_bet (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   group_id TEXT NOT NULL,
   username TEXT,
   bet INTEGER,

@@ -1,0 +1,1 @@
+{% if missing_bets|length > 0 %}{% trans %}Missing bet{% endtrans %}{% else %}{% trans %}Match reminder{% endtrans %}{% endif %} - {{date}}

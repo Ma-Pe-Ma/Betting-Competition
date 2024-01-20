@@ -1,9 +1,10 @@
 from flask import g
+from flask import current_app
+
 from sqlalchemy import text
 from typing import Dict, List
 
 from app.db import get_db
-from app.configuration import configuration
 
 # get's user's tournament bet, or create default if it does not exist
 def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
@@ -66,7 +67,7 @@ def get_group_bet_dict_for_user(username : str, language = None):
                         "ORDER BY team_bet_with_group_id.group_id, team_bet_with_group_id.bposition "
                         )
 
-    group_bet_hit_map = configuration.group_bet_hit_map
+    group_bet_hit_map = current_app.config['GROUP_BET_HIT_MAP']
 
     result = get_db().session.execute(query_string, {'username' : username, 'language' : language, 'h1' : group_bet_hit_map[1], 'h2' : group_bet_hit_map[2], 'h4' : group_bet_hit_map[4]})
     team_rows = result.fetchall()

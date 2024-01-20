@@ -3,7 +3,7 @@ from flask import g
 from flask import request
 from flask import jsonify
 
-from app.auth import login_required
+from app.auth import sign_in_required
 from app.db import get_db
 
 from app.tools import time_determiner
@@ -14,7 +14,7 @@ from flask_babel import gettext
 bp = Blueprint('match', __name__, '''url_prefix="/match"''')
 
 @bp.route('/match', methods=('GET', 'POST'))
-@login_required
+@sign_in_required
 def match_bet():
     try:
         match_id = request.args.get('matchID') if request.method == 'GET' else request.get_json()['id']
