@@ -9,9 +9,10 @@ from flask import request
 from datetime import timedelta
 import json
 
-from app import db
-from app import scheduler
-from app.tools import time_determiner
+from app.tools import db_handler
+from app.tools import scheduler_handler
+from app.tools import time_handler
+from app.tools import cache_handler
 from app.notification import notification_handler
 
 from flask_babel import Babel
@@ -33,12 +34,11 @@ def create_app(test_config = None):
     app.config.from_file("config.json", load=json.load, silent=True)
 
     # setup various tools
-    db.db.init_app(app)
-    db.add_db_commands(app)
-
-    time_determiner.init_time_calculator(app)
-    scheduler.init_scheduler(app)
-    notification_handler.init_notifier(app)
+    db_handler.init_db(app)
+    cache_handler.init_cache(app)
+    time_handler.init_time_handler(app)
+    scheduler_handler.init_scheduler(app)
+    notification_handler.init_notifier(app)    
 
     def get_locale():
         # if a user is signed in, use the locale from the user settings

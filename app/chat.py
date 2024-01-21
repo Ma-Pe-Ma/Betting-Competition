@@ -6,8 +6,8 @@ from flask import render_template
 from sqlalchemy import text
 
 from app.auth import sign_in_required
-from app.tools import time_determiner
-from app.db import get_db
+from app.tools import time_handler
+from app.tools.db_handler import get_db
 
 from datetime import timedelta
 from flask_babel import gettext
@@ -41,7 +41,7 @@ def comments():
         if len(request_object['comment']) < 4:
             return gettext('Too short message!'), 400
         try:
-            now_time_string = time_determiner.get_now_time_string_with_seconds()
+            now_time_string = time_handler.get_now_time_string_with_seconds()
             query_string = text('INSERT INTO comment (username, datetime, content) VALUES (:u, :d, :c)')
             get_db().session.execute(query_string, {'u' : g.user['username'], 'd' : now_time_string, 'c' : request_object['comment']})
             get_db().session.commit()
@@ -49,9 +49,9 @@ def comments():
             return gettext('Invalid data sent!'), 400
 
     if request_object['datetime'] is None:
-        utc_date = time_determiner.get_now_time_object()
+        utc_date = time_handler.get_now_time_object()
     else:
-        utc_date = time_determiner.parse_datetime_string_with_seconds(request_object['datetime']) + timedelta(hours=int(g.user['timezone'][:3]), minutes=int(g.user['timezone'][4:]))
+        utc_date = time_handler.parse_datetime_string_with_seconds(request_object['datetime']) + timedelta(hours=int(g.user['timezone'][:3]), minutes=int(g.user['timezone'][4:]))
 
     response_object = {
         'newerComments' : request_object['newerComments'],

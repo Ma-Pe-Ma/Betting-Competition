@@ -2,23 +2,25 @@ from flask import Blueprint
 from flask import g
 from flask import render_template
 
-from app.db import get_db
+from app.tools.db_handler import get_db
 from app.auth import sign_in_required
 from app.tools import score_calculator 
+from app.tools.cache_handler import cache
 
 from copy import copy
 from sqlalchemy import text
 
 bp = Blueprint('standings', __name__, '''url_prefix="/standings"''')
 
-#@cache.cached(timeout=50, key_prefix='player_history')
-def create_player_history():
-    players = []
+cache_time = 5
 
+@cache.cached(timeout=cache_time, key_prefix='player_history')
+def create_player_history():
     #iterate through users
     query_string = text('SELECT username FROM bet_user')
     result = get_db().session.execute(query_string)
 
+    players = []
     for player in result.fetchall():
         username = player.username
         days = score_calculator.get_daily_points_by_current_time(username)
@@ -26,7 +28,7 @@ def create_player_history():
 
     return players
 
-#@cache.cached(timeout=50, key_prefix='standings')
+@cache.cached(timeout=cache_time, key_prefix='standings')
 def create_standings(language = None):
     if language is None:
         language = g.user['language']

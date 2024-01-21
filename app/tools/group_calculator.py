@@ -4,7 +4,7 @@ from flask import current_app
 from sqlalchemy import text
 from typing import Dict, List
 
-from app.db import get_db
+from app.tools.db_handler import get_db
 
 # get's user's tournament bet, or create default if it does not exist
 def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
@@ -35,7 +35,6 @@ def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
                         "WHERE bet_user.username = :username")
 
     result = get_db().session.execute(query_string, {'username' : username, 'l' : language})
-
     return result.fetchone()._asdict()
 
 # get group object which contains both the results and both the user bets (used in every 3 contexts)

@@ -3,9 +3,12 @@ const sortableGroups = document.getElementsByName("sortableGroup");
 
 var groupSendButton = document.getElementById("groupSend");
 var tournamentSendButton = document.getElementById("tournamentSend");
-var messageSendButton = document.getElementById("messageSend");
+var messageSetButton = document.getElementById("messageSet");
 var notificationSendButton = document.getElementById("notificationSend");
+var standingsSendButton = document.getElementById("standingsSend");
+var matchUpdateButton = document.getElementById("matchUpdateSend");
 var teamDataSendButton = document.getElementById("teamDataSend");
+var databaseUploadButton = document.getElementById("databaseUpload");
 
 var tournamentBets = document.getElementsByName("tournamentBet");
 var messages = document.getElementsByName("message");
@@ -30,7 +33,7 @@ function createAlert(message, success) {
     alertNode.appendChild(alert);    
 }
 
-function postData(address, content, button) {
+function generateGenericRequest(button) {
     const request = new XMLHttpRequest();
     button.disabled = true;
 
@@ -55,6 +58,19 @@ function postData(address, content, button) {
         createAlert(connectionError.innerText, false);
         button.disabled = false;
     }
+
+    return request;
+}
+
+function getData(address, button) {
+    const request = generateGenericRequest(button);
+
+    request.open('GET', address, true);
+    request.send();
+}
+
+function postData(address, content, button) {
+    const request = generateGenericRequest(button);
 
     request.open('POST', address, true);
     request.setRequestHeader('Content-Type', 'application/json');
@@ -86,7 +102,7 @@ if (tournamentSendButton != null) {
     }
 }
 
-messageSendButton.onclick = function() {
+messageSetButton.onclick = function() {
     var messageArray = [];
 
     for (var messageElement of messages) {        
@@ -96,24 +112,34 @@ messageSendButton.onclick = function() {
     postData("/admin/message", messageArray, this);
 }
 
-notificationSendButton.onclick = function() {
-    var notificationDict = {
-        "subject" : document.getElementById("messageSubject").value,
-        "text" : document.getElementById("messageText").value
+if (notificationSendButton != null) {
+    notificationSendButton.onclick = () => {
+        var notificationDict = {
+            "subject" : document.getElementById("messageSubject").value,
+            "text" : document.getElementById("messageText").value
+        }
+    
+        postData("/admin/send-notification", notificationDict, this);
     }
-
-    postData("/admin/send-notification", notificationDict, this);
 }
 
-teamDataSendButton.onclick = function() {
+if (matchUpdateButton != null) {
+    matchUpdateButton.onclick = () => {
+        getData("/admin/match-update", matchUpdateButton);
+    }
+}
+
+if (standingsSendButton != null) {
+    standingsSendButton.onclick = () => {
+        getData("/admin/standings-notification", standingsSendButton);
+    }
+}
+
+function uploadFiles(address, sendButton, fileData) {
+    sendButton.disabled = true;
+
     const request = new XMLHttpRequest();
-    request.timeout = 2000; 
-
-    teamDataSendButton.disabled = true;
-
-    const fileData = new FormData();
-    fileData.append("team", document.getElementById("teamFile").files[0]);
-    fileData.append("translation", document.getElementById("translationFile").files[0]);
+    request.timeout = 2000;
 
     request.upload.addEventListener("loadend", (event) => {
         
@@ -122,25 +148,40 @@ teamDataSendButton.onclick = function() {
     request.onerror = function() {
         var connectionError = document.getElementById("connectionError");
         createAlert(connectionError.innerText, false);
-        teamDataSendButton.disabled = false;
+        sendButton.disabled = false;
     }
 
     request.onload = function() {        
         if (request.status == 200) {
             createAlert(request.response, true);
-            teamDataSendButton.disabled = false;
+            sendButton.disabled = false;
         }
         else if (request.status == 400) {
             createAlert(request.response, false);
-            teamDataSendButton.disabled = false;
+            sendButton.disabled = false;
         }
         else if (request.status == 500) {            
             var internalError = document.getElementById("internalError");
             createAlert(internalError.innerText, false);
-            teamDataSendButton.disabled = false;
+            sendButton.disabled = false;
         }
     }
 
-    request.open("POST", "/admin/team-data", true);
+    request.open("POST", address, true);
     request.send(fileData);
+}
+
+teamDataSendButton.onclick = () => {
+    const fileData = new FormData();
+    fileData.append("team", document.getElementById("teamFile").files[0]);
+    fileData.append("translation", document.getElementById("translationFile").files[0]);
+
+    uploadFiles("/admin/team-data", teamDataSendButton, fileData);
+}
+
+databaseUploadButton.onclick = () => {
+    const fileData = new FormData();
+    fileData.append("database", document.getElementById("databaseFile").files[0]);
+    
+    uploadFiles("/admin/database", databaseUploadButton, fileData);
 }

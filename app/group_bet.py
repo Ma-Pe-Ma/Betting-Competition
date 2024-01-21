@@ -8,10 +8,10 @@ from flask import current_app
 from datetime import datetime
 
 from app.auth import sign_in_required
-from app.db import get_db
+from app.tools.db_handler import get_db
 from app.tools import group_calculator
 from app.tools import score_calculator
-from app.tools import time_determiner
+from app.tools import time_handler
 
 from flask_babel import gettext
 from sqlalchemy import text, bindparam
@@ -148,9 +148,9 @@ def after_evaluation():
 def group_order():
     deadline_times = current_app.config['DEADLINE_TIMES']
 
-    utc_now : datetime = time_determiner.get_now_time_object()
-    register_time : datetime = time_determiner.parse_datetime_string(deadline_times['register'])
-    group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(deadline_times['group_evaluation'])
+    utc_now : datetime = time_handler.get_now_time_object()
+    register_time : datetime = time_handler.parse_datetime_string(deadline_times['register'])
+    group_evaluation_time_object : datetime = time_handler.parse_datetime_string(deadline_times['group_evaluation'])
 
     if utc_now < register_time:
         return before_deadline()

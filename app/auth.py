@@ -19,8 +19,8 @@ from sqlalchemy import text
 from flask_babel import gettext
 from flask_babel import force_locale
 
-from app.db import get_db
-from app.tools import time_determiner
+from app.tools.db_handler import get_db
+from app.tools import time_handler
 from app.notification import notification_handler
 
 bp = Blueprint('auth', __name__, '''url_prefix="/auth"''')
@@ -69,8 +69,9 @@ def admin_required(view):
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register() -> str:
-    utc_now : datetime = time_determiner.get_now_time_object()
-    register_deadline : datetime = time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
+    utc_now : datetime = time_handler.get_now_time_object()
+    register_deadline : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
+    best_language = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
 
     if utc_now > register_deadline:
         return render_template('/auth/register-fail.html')
@@ -82,7 +83,7 @@ def register() -> str:
         user_data = request.form.to_dict(flat=True)
 
         if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
-            user_data['language'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0]
+            user_data['language'] = best_language
         
         user_data['language_number'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(user_data['language'])
 
@@ -150,11 +151,13 @@ def register() -> str:
 
         return redirect(url_for('group.group_order'))
 
+    best_language_number = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(best_language)
+
     user_data = {
         'reminder' : '0',
         'summary' : '1',
-        'language' : list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0],
-        'language_number': 0
+        'language' : best_language,
+        'language_number': best_language_number
     }
 
     # TODO: 
@@ -167,8 +170,8 @@ def register() -> str:
             'key' : current_app.config['INVITATION_KEYS']['admin'],
             'reminder' : '0',
             'summary' : '1',        
-            'language' : list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0],
-            'language_number': 0
+            'language' : best_language,
+            'language_number': best_language_number
         }
 
     with force_locale(user_data['language']):
@@ -206,7 +209,7 @@ def sign_in() -> str:
 
     return render_template('/auth/sign-in.html')
 
-@bp.route('/sign_out')
+@bp.route('/sign-out')
 def sign_out() -> str:
     session.clear()
     return redirect(url_for('auth.sign_in'))
@@ -218,7 +221,7 @@ def page_profile() -> str:
         user_data = request.form.to_dict(flat=True)
 
         if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
-            user_data['language'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0]
+            user_data['language'] = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
 
         if 'reminder' not in user_data or 'summary' not in user_data:
             user_data['reminder'] = 0

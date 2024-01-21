@@ -26,7 +26,11 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="card-body ms-3 mt-3 me-3">
-                        <div class="container">                        
+                        <div class="container">
+                            <div class="mb-3">
+                                <button class="btn btn-primary btn-sm" type="submit" id="matchUpdateSend">{% trans %}Update match data from fixture{% endtrans %}</button>
+                            </div>
+
                             <div class="row mb-3 text-center">
                                 <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">#</div>
                                 <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Time{% endtrans %}</div>
@@ -66,7 +70,7 @@
                             <textarea class="form-control" name="message" rows="1">{{message.message}}</textarea>
                         </div>                        
                             {% endfor %}
-                        <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSend">{% trans %}Set{% endtrans %}</button> 
+                        <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSet">{% trans %}Set{% endtrans %}</button> 
                         </div>                        
                     </div>
                 </div>
@@ -79,6 +83,10 @@
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
                     <div class="container card-body mt-3">
                         <div class="container">
+                            <div class="mb-3">
+                                <button class="btn btn-primary btn-sm" type="submit" id="standingsSend">{% trans %}Sending standings immediately{% endtrans %}</button>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="notificationSubject" class="form-label">{% trans %}Subject{% endtrans %}</label>
                                 <input class="form-control" id="notificationSubject">
@@ -192,6 +200,27 @@
                     </div>
                 </div>
             </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSeven">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseSeven">{% trans %}Database down/upload{% endtrans %}</button>
+                </h2>
+                <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row ms-2 mt-2">
+                                <label class="col-2" for="team">{% trans %}Database file{% endtrans %}</label>
+                                <input class="col-3" type=file name="database" id="databaseFile">
+                            </div>
+
+                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="databaseUpload">{% trans %}Upload{% endtrans %}</button>
+                            <form method="GET" action="/admin/database">
+                                <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="submit">{% trans %}Download{% endtrans %}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>     
 

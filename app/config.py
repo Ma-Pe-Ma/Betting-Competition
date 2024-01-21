@@ -6,10 +6,12 @@ class Default(object):
     # upload folder's name in the instance folder
     UPLOAD_FOLDER = 'upload'
     # allowed extensions to upload by the user
-    ALLOWED_EXTENSIONS = ['csv']
+    ALLOWED_EXTENSIONS = ['csv', 'sqlite']
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///flaskr.sqlite'
     MATCH_URL = 'https://path.fixture'
+
+    BABEL_TRANSLATION_DIRECTORIES = './resources/translations'
 
     CACHE_TYPE = 'SimpleCache'
     CACHE_DEFAULT_TIMEOUT = 300

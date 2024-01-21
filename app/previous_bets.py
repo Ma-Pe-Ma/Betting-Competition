@@ -4,12 +4,12 @@ from flask import render_template
 from flask import request
 from flask import current_app
 
-from app.db import get_db
+from app.tools.db_handler import get_db
 from app.auth import sign_in_required
 
 from app.tools import score_calculator
 from app.tools import group_calculator
-from app.tools import time_determiner
+from app.tools import time_handler
 
 from sqlalchemy import text
 import datetime
@@ -38,7 +38,7 @@ def prev_bets():
                             WHERE unixepoch(match.datetime) {r} unixepoch(:group_evaluation_time) AND unixepoch(match.datetime) < unixepoch(:now) 
                             ORDER BY date, datetime"""
 
-        match_list_query_parameters = {'now' : time_determiner.get_now_time_string(), 'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'], 'l' : g.user['language'], 'u' : username, 'timezone' : g.user['timezone'], 'bullseye' : current_app.config['BONUS_MULTIPLIERS']['bullseye'], 'difference' : current_app.config['BONUS_MULTIPLIERS']['difference']}
+        match_list_query_parameters = {'now' : time_handler.get_now_time_string(), 'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'], 'l' : g.user['language'], 'u' : username, 'timezone' : g.user['timezone'], 'bullseye' : current_app.config['BONUS_MULTIPLIERS']['bullseye'], 'difference' : current_app.config['BONUS_MULTIPLIERS']['difference']}
 
         def add_to_days(match_rows):
             for match_row in match_rows:
@@ -77,8 +77,8 @@ def prev_bets():
 
         # add the group stage bonus
         group_bonus = 0
-        group_evaluation_time_object : datetime = time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation'])
-        if time_determiner.get_now_time_object() > group_evaluation_time_object:
+        group_evaluation_time_object : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation'])
+        if time_handler.get_now_time_object() > group_evaluation_time_object:
             group_bonus : int = sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
             amount_at_end_of_match += group_bonus
 
@@ -104,7 +104,7 @@ def prev_bets():
             'success_rate' : success_rate
         }
 
-        group_evaluation_date = time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']).date().strftime('%Y-%m-%d')
+        group_evaluation_date = group_evaluation_time_object.date().strftime('%Y-%m-%d')
 
         return render_template('/previous-bet/previous-day-match.html', days=days, group_evaluation_date=group_evaluation_date, tournament_bet=tournament_bet_dict, extra_data=extra_data)
 

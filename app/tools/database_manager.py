@@ -6,7 +6,7 @@ import csv
 
 from sqlalchemy import text
 
-from app.db import get_db
+from app.tools.db_handler import get_db
 
 def initialize_teams(team_file_name, translation_file_name):
     try:
@@ -62,7 +62,7 @@ def initialize_matches():
 
     return True
 
-def download_data_csv():
+def update_match_data_from_fixture():
     try:
         response = urllib.request.urlopen(current_app.config['MATCH_URL'])
         data = response.read()

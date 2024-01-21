@@ -53,7 +53,7 @@
 
 {% endfor %}
 
-{%if tournament_bet.result is not none %}
+{%if tournament_bet.success is not none %}
 <div class="row d-flex align-items-center">
     <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">{% trans %}Tournament bet total prize{% endtrans %}: {{tournament_bet.prize|round(1)}}</p>
     <div class="col-1"></div>

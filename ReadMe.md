@@ -2,7 +2,7 @@
 
 ![status](https://badgen.net/badge/status/finished/green) ![license](https://badgen.net/github/license/Ma-Pe-Ma/BettingApp)
 
-![browser](https://badgen.net/badge/desktop%20browser/working/green) 
+![browser](https://badgen.net/badge/browser/working/green) 
 
 ## Description
 
@@ -227,19 +227,22 @@ To start scheduling (if app was rebooted midday)
 
 Currently only English version is available and it is planned to properly mark the translatable resource strings in the jinja templates. Then with flask-babel it will be possible to translate the pages easily.
 
+To setup babel translations these commands need to be launched:
+
+    pybabel extract -F babel.cfg -o messages.pot .
+    pybabel init -i messages.pot -d .\app\resources\translations -l `hu`
+    pybabel compile -d .\app\resources\translations
+
 ## TO-DO
 * translate marked strings with Babel
 * logging
 * demo
 * session handling with Flask-login, eg. remember me, do not sign-out function etc.
 * make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean 
-* redirect to group bet before start + redirect to team data upload at very first startup for admin
-* rethink scheduler plus reminders (RSS or browser notification)
-* solve caching for standings
-* download database option for admin
+* rethink and test notifier (RSS or browser notification) + scheduler
 * clean-up ReadMe
-* Test manually initiating: database update + sending reminder
 
 ### Backlog
 * generating custom profile picture for user
 * Add timezone selector for user
+* forcing redirect to group bet before start + redirect to team data upload at very first startup for admin

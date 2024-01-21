@@ -3,10 +3,10 @@ from flask import g
 from flask import flash
 from flask import render_template
 from flask import request
-from app.db import get_db
+from app.tools.db_handler import get_db
 from app.auth import sign_in_required
 
-from app.tools import time_determiner
+from app.tools import time_handler
 from app.tools import score_calculator
 
 from sqlalchemy import text
@@ -55,7 +55,7 @@ def homepage():
                         "WHERE unixepoch(match.datetime) > unixepoch(:now) "
                         "ORDER BY date ASC, time ASC")
     
-    result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string(), 'l' : g.user['language'], 'u' : g.user['username'], 'timezone' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string(), 'l' : g.user['language'], 'u' : g.user['username'], 'timezone' : g.user['timezone']})
 
     days = {}
     # TODO determine proper offset for day ID!

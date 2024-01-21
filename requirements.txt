@@ -2,6 +2,7 @@ flask
 Flask-APScheduler
 Flask-SQLAlchemy
 Flask-Babel
+Flask-Caching
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib

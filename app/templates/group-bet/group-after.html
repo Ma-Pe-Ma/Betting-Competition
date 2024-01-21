@@ -9,39 +9,7 @@
                     <h5 class="">{% trans %}Remaining credit after group + tournament bet{% endtrans %}: {{amount_after}}</h5>        
                     <h5 class="mb-5">{% trans %}Total group win amount{% endtrans %}: {{total_win}}</h5>
             
-                    <div class="row">
-                        <h4 class="col-7 col-md-6 d-flex align-items-center">{% trans %}Tournament-bet: {% endtrans %}</h4>
-                        <!--div class="col-1 spinner-border d-flex align-items-center" role="status" id="tournamentSpinner">
-                            <span class="visually-hidden">Loading...</span>
-                        </div-->
-                    </div>
-            
-                    <div class="row d-flex align-items-center">
-                        <label class="col-4 col-md-4 ms-3" for="teamSelector">{% trans %}Team{% endtrans %}: </label>
-                        <div class="col-5 col-md-4 d-flex align-items-center">{{tournament_bet.team}}</div>
-                    </div>
-            
-                    <div class="row mt-3 d-flex align-items-center">
-                        <label class="col-4 col-md-4 ms-3" for="resultSelector">{% trans %}Result{% endtrans %}: </label>
-                        <div class="col-5 col-md-4 d-flex align-items-center">
-                            {{tournament_bet_result.name_map[tournament_bet.result]}}
-                        </div>
-                    </div>
-            
-                    <div class="row mt-3 d-flex align-items-center">
-                        <p class="col-4 col-md-4 ms-3">{% trans %}Odd{% endtrans %}: </p>
-                        <p class="col-4 col-md-2 ms-2 badge bg-info">{{tournament_bet.multiplier}}</p>
-                    </div>
-            
-                    <div class="row d-flex align-items-center">
-                        <p class="col-4 col-md-4 ms-3" for="tournamentBetCredit">{% trans %}Bet{% endtrans %}: </p>
-                        <p class="col-4 col-md-2 ms-2 badge bg-info">{{tournament_bet.bet}}</p>
-                    </div>
-                    
-                    <div class="row d-flex align-items-center">
-                        <p class="col-4 col-md-4 ms-3">{% if tournament_bet.success is none %}{% trans %}Expected prize{% endtrans %}:{% else %}{% trans %}Prize{% endtrans %}:{% endif %}</p>            
-                        <p class="col-4 col-md-2 ms-2 badge bg-{% if tournament_bet.success == 1 %}success{% elif tournament_bet.success == 0 %}danger{% else %}warning{% endif %}">{% if tournament_bet.success is none %}{{tournament_bet.expected_prize}}{% else %}{{tournament_bet.prize}}{% endif %}</p>
-                    </div>
+                    {% include "group-bet/tournament-bet.html" %}
             </div>
 
             {% for group_id, group in groups.items() %}    

@@ -6,10 +6,15 @@ import click
 
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+db : SQLAlchemy = None
 
 def get_db() -> SQLAlchemy:
     return db
+
+def init_db(app):
+    global db 
+    db = SQLAlchemy(app)
+    add_db_commands(app)
 
 def add_db_commands(app):
     app.cli.add_command(init_db_command)

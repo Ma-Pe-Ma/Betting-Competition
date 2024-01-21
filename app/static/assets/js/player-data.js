@@ -6,6 +6,7 @@ var requestAddress = document.currentScript.getAttribute("data-data-path");
 
 listSelector.onchange = function() {
     if (playerDataMap.get(this.value) == null) {
+        resultNode.innerHTML = "";
         getPlayerData(this.value);
     }
     else {

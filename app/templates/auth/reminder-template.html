@@ -6,25 +6,25 @@
     %}
             <h5 class="mt-1">{{notification_text[config['DIRECT_MESSAGING']]}}</h5>
 
-            <div class="form-group">
+            <div class="form-group mt-2">
                 <label class="form-group" id="matchReminderDisplay">
                     {% trans %}Match reminder (1 hour before the starting of the first match){% endtrans %}
                 </label>
 
-                <div class="form-check">
+                <div class="form-check ms-3">
                     <input class="form-check-input" type="radio" name="reminder" id="matchRadios1" value="0" {% if user_data.reminder == 0 %} checked {%endif%}>
                     <label class="form-check-label" for="matchRadios1" id="reminder1Display">
                         {% trans %}On those days when there is a match without a bet{% endtrans %}
                     </label>
                 </div>
-                <div class="form-check">
+                <div class="form-check ms-3">
                     <input class="form-check-input" type="radio" name="reminder" id="matchRadios2" value="1" {% if user_data.reminder == 1 %} checked {%endif%}>
                     <label class="form-check-label" for="matchRadios2" id="reminder2Display">
                         {% trans %}Every matchday{% endtrans %}
                     </label>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check ms-3">
                     <input class="form-check-input" type="radio" name="reminder" id="matchRadios3" value="2" {% if user_data.reminder == 2 %} checked {%endif%}>
                     <label class="form-check-label" for="matchRadios3" id="reminder3Display">
                         {% trans %}I don't want to receive reminders{% endtrans %}
@@ -32,16 +32,16 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-2">
                 <label class="form-group" id="standingsDisplay">{% trans %}Standings notification email at the end of matchdays{% endtrans %}</label>
-                <div class="form-check">
+                <div class="form-check ms-3">
                     <input class="form-check-input" type="radio" name="summary" id="summaryRadios2" value="1" {% if user_data.summary == 1 %} checked {%endif%}>
                     <label class="form-check-label" for="summaryRadios2" id="standing1Display">
                         {% trans %}Yes{% endtrans %}
                     </label>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check ms-3">
                     <input class="form-check-input" type="radio" name="summary" id="summaryRadios1" value="0" {% if user_data.summary == 0 %} checked {%endif%}>
                     <label class="form-check-label" for="summaryRadios1" id="standing2Display">
                         {% trans %}No{% endtrans %}

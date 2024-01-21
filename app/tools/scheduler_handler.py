@@ -9,11 +9,11 @@ from sqlalchemy import text, bindparam
 from dateutil import tz
 from datetime import timedelta
 
-from app.db import get_db
+from app.tools.db_handler import get_db
 from app.notification import notification_handler
-from app.database_manager import download_data_csv
+from app.tools import database_manager
 from app import standings
-from app.tools import time_determiner
+from app.tools import time_handler
 
 scheduler = APScheduler()
 
@@ -29,8 +29,8 @@ def backup_sqlite_database():
         admin_address += admin.email + ', '
 
     #create string from current local date and add it to subject
-    utc_now = time_determiner.get_now_time_object()
-    current_localtime = utc_now.astimezone(tz.gettz('Europe/Budapest'))  
+    utc_now = time_handler.get_now_time_object()
+    current_localtime = utc_now.astimezone(tz.gettz('Europe/Budapest'))
     subject = 'Backup at: ' + current_localtime.strftime('%Y-%m-%d %H:%M')
     
     #create draft with the attached sqlite database file
@@ -91,37 +91,42 @@ def update_results():
     print('Running scheduled result updater...')
 
     with scheduler.app.app_context():
-        download_data_csv()
+        database_manager.update_match_data_from_fixture()
         #backup_sqlite_database()
 
 def daily_standings():
     print('Running scheduled daily standings creator...')
 
-    #TODO
-    with scheduler.app.app_context():
-        messages = []
-        email_map = {}
-        standings_map = {}
+    try:
+        #TODO
+        with scheduler.app.app_context():
+            messages = []
+            notification_map = {}
+            standings_map = {}
 
-        query_string = text("SELECT username, email, language, date(:now || tz_offset) AS date"
-                            "FROM bet_user "
-                            "WHERE summary = 1")
-        result = get_db().session.execute(query_string, {'now' : time_determiner.get_now_time_string()})
-        for user in result.fetchall():
-            if user.langugage not in email_map:
-                email_map[user.language] = notification_handler.notifier.get_notification_resource_by_tag('DailyStandings', user.language)
-            
-            if user.language not in standings_map:
-                standings_map[user.language] = standings.create_standings(language=user.language)
+            query_string = text("SELECT username, email, language, date(:now || tz_offset) AS date"
+                                "FROM bet_user "
+                                "WHERE summary = 1")
+            result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string()})
+            for user in result.fetchall():
+                if user.langugage not in notification_map:
+                    notification_map[user.language] = notification_handler.notifier.get_notification_resource_by_tag('standings')
+                
+                if user.language not in standings_map:
+                    standings_map[user.language] = standings.create_standings(language=user.language)
 
-            email_object = email_map[user.language]
+                notification_object = notification_map[user.language]
 
-            subject = render_template_string(email_object[0], date=user.date)
-            message_text = render_template_string(email_object[1], username=user.username, date=user.date, standings=standings_map[user.language])
+                subject = render_template_string(notification_object[0], date=user.date)
+                message_text = render_template_string(notification_object[1], username=user.username, date=user.date, standings=standings_map[user.language])
 
-            messages.append(notification_handler.notifier.create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
+                messages.append(notification_handler.notifier.create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
 
-        notification_handler.notifier.send_messages(messages=messages)
+            notification_handler.notifier.send_messages(messages=messages)
+    except:
+        return False
+    
+    return True
 
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():
@@ -130,7 +135,7 @@ def daily_checker():
 
         match_time_length = current_app.config['MATCH_TIME_LENGTH']
 
-        utc_now = time_determiner.get_now_time_object()
+        utc_now = time_handler.get_now_time_object()
         #backup_sqlite_database()
 
         query_string = text("SELECT * "
@@ -146,7 +151,7 @@ def daily_checker():
         match_ids_today = []
         for i, match in enumerate(matches):
             match_ids_today.append(match.id)
-            match_time_object = time_determiner.parse_datetime_string(match.datetime) 
+            match_time_object = time_handler.parse_datetime_string(match.datetime) 
 
             if i == 0:
                 one_hour_before_first_match = match_time_object - timedelta(hours = 1, minutes = 0)
@@ -178,16 +183,6 @@ def daily_checker():
             print('Scheduled standings reminder at: ' + (after_extra_time + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = 'Daily standings reminder', func=daily_standings, trigger='date', run_date=after_extra_time + timedelta(minutes=5))
 
-@click.command('checker-manual')
-@with_appcontext
-def manual_daily_checker():
-    daily_checker()
-
-@click.command('standings-manual')
-@with_appcontext
-def manual_daily_standings():
-    daily_standings()
-
 def init_scheduler(app):    
     # if you don't wanna use a config, you can set options here:
     scheduler.api_enabled = True
@@ -195,8 +190,5 @@ def init_scheduler(app):
 
     #schedule checker to run at every day at midnight
     scheduler.add_job(id = 'Daily Task', func = daily_checker, trigger = 'cron', hour = 0, minute = 0, second = 0)
-
-    app.cli.add_command(manual_daily_checker)
-    app.cli.add_command(manual_daily_standings)
 
     scheduler.start()

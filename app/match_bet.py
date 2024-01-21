@@ -4,9 +4,9 @@ from flask import request
 from flask import jsonify
 
 from app.auth import sign_in_required
-from app.db import get_db
+from app.tools.db_handler import get_db
 
-from app.tools import time_determiner
+from app.tools import time_handler
 
 from sqlalchemy import text
 from flask_babel import gettext
@@ -37,7 +37,7 @@ def match_bet():
                         "LEFT JOIN match_bet ON match_bet.username = bet_user.username AND match_bet.match_id = :match_id "
                         "WHERE bet_user.username = :u ")
 
-    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_determiner.get_now_time_string(), 'u' : g.user['username'], 'l' : g.user['language'], 'timezone' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string(), 'u' : g.user['username'], 'l' : g.user['language'], 'timezone' : g.user['timezone']})
     match_from_db = result.fetchone()._asdict()
 
     if match_from_db['started'] is None:

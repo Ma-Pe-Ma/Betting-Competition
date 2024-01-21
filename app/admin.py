@@ -4,14 +4,17 @@ from flask import render_template
 from flask import request
 from flask import jsonify
 from flask import current_app
+from flask import send_from_directory
 
 from werkzeug.utils import secure_filename
 
-from app import database_manager
-from app.db import get_db
+from app.tools import database_manager
+from app.tools.db_handler import get_db
 from app.auth import admin_required, sign_in_required
 from app.notification import notification_handler
-from app.tools import time_determiner
+from app.tools import time_handler
+from app.tools import database_manager
+from app.tools import scheduler_handler
 
 import os
 from flask_babel import gettext
@@ -28,7 +31,7 @@ def admin_page():
     messages = [message._asdict() for message in result.fetchall()]
 
     groups = {}    
-    if time_determiner.get_now_time_object() > time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']) :
+    if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']) :
         query_string = text("SELECT team.name, team.group_id, team.position, tr.translation AS local_name "
                             "FROM team "
                             "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
@@ -42,7 +45,7 @@ def admin_page():
             groups[team.group_id].append({'name' : team.name, 'local_name' : team.local_name, 'position' :  team.position})
 
     tournament_bets = []
-    if time_determiner.get_now_time_object() > time_determiner.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']):
+    if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']):
         query_string = text("SELECT tournament_bet.*, tr.translation as local_name "
                             "FROM tournament_bet "
                             "LEFT JOIN team_translation AS tr ON tr.name=tournament_bet.team AND tr.language = :language "
@@ -174,8 +177,8 @@ def allowed_file(filename):
 def upload_team_data():
     # check if the post request has the file part
     if 'team' not in request.files and 'translation' not in request.files:
-        return gettext('One of the files was not specified for the request!'), 400 
-    
+        return gettext('One of the files was not specified for the request!'), 400
+
     # If the user does not select a file, the browser submits an
     # empty file without a filename.
     team_file = request.files['team']        
@@ -205,3 +208,59 @@ def upload_team_data():
         return gettext('Error while initializing the matches!'), 400
 
     return gettext('Team data file uploading was successful!'), 200
+
+@bp.route('/admin/database', methods=('GET', 'POST',))
+@sign_in_required
+@admin_required
+def database_file():
+    database_uri = current_app.config['SQLALCHEMY_DATABASE_URI']
+    db_filename = database_uri.replace('sqlite:///', '')
+    db_filename_components = db_filename.split('.')
+
+    if request.method == 'GET':
+        from dateutil import tz # TODO
+        datetime_string = time_handler.get_now_time_object().astimezone(tz.gettz('Europe/Budapest')).strftime('%Y-%m-%d %H-%M')
+
+        download_name = '{original_name}_{datetime}.{extension}'.format(original_name=db_filename_components[0], datetime=datetime_string, extension=db_filename_components[1])
+
+        return send_from_directory(current_app.instance_path, db_filename, as_attachment=True, download_name=download_name)
+    
+    if request.method == 'POST':
+        if 'database' not in request.files:
+            return gettext('Database file was not specified!'), 400
+
+        new_file = request.files['database']
+
+        if not new_file or new_file.filename == '':
+            return gettext('Database file is null!'), 400
+
+        if allowed_file(new_file.filename):
+            try:
+                #filename = secure_filename(new_file.filename)                
+                file_path = os.path.join(current_app.instance_path, db_filename)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                new_file.save(file_path)
+
+                return gettext('Database file uploading was successful!'), 200
+            except:
+                return gettext('Error while saving new database file!'), 400
+            
+        return gettext('The specified format cannot be uploaded!'), 400
+
+@bp.route('/admin/match-update', methods=('GET',))
+@sign_in_required
+@admin_required
+def match_update():
+    if not database_manager.update_match_data_from_fixture():
+        return gettext('Match data updating failed!'), 400
+    
+    return gettext('Match data succsesfully updated!'), 200    
+
+@bp.route('/admin/standings-notification', methods=('GET',))
+@sign_in_required
+@admin_required
+def standings_notification():
+    if not scheduler_handler.daily_standings():
+        return gettext('Standings notification failed!'), 400
+    
+    return gettext('Standings successfully notified!'), 200

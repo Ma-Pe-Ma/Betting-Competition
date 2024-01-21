@@ -10,7 +10,7 @@
         
 {% include "auth/user-template.html" %}
 
-            <div class="col-12">
+            <div class="col-12 mt-2">
                 <label for="invitation" class="form-label">{% trans %}Invitation-key{% endtrans %}<span class="text-body-secondary"></span></label>
                 <input type="text" class="form-control" id="invitation" placeholder="" name="key" value="{{user_data.key}}">
                 <div class="invalid-feedback">
@@ -18,7 +18,7 @@
                 </div>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 mt-2">
                 <label for="password1" class="form-label">{% trans %}Password{% endtrans %}</label>
                 <input type="password" class="form-control" id="password1" placeholder="" value="{{user_data.password1}}" name="password1" required>
                 <div class="invalid-feedback">
@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 mt-2">
                 <label for="password2" class="form-label">{% trans %}Password again{% endtrans %}</label>
                 <input type="password" class="form-control" id="password2" placeholder="" value="{{user_data.password2}}" name="password2" required>
                 <div class="invalid-feedback">

@@ -3,7 +3,7 @@ from flask import Flask
 from datetime import datetime
 from dateutil import tz
 
-debug_now_string = '2022-12-10 18:30'
+debug_now_string = '2022-11-28 18:30'
 
 def get_now_time_object() -> datetime:
     return datetime.utcnow().replace(tzinfo=tz.gettz('UTC'))
@@ -26,7 +26,7 @@ def parse_datetime_string_with_seconds(datetime_string : str) -> datetime:
 def stringify_datetime_object(datetime_object : datetime) -> str:
     return datetime_object.strftime('%Y-%m-%d %H:M%')
 
-def init_time_calculator(app : Flask) -> None:
+def init_time_handler(app : Flask) -> None:
     global get_now_time_object
     global get_now_time_string
     global get_now_time_string_with_seconds
