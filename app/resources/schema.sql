@@ -11,14 +11,15 @@ DROP TABLE IF EXISTS team_translation;
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS match;
 DROP TABLE IF EXISTS bet_user;
+DROP TABLE IF EXISTS push_notification;
 
 -- Table containing user data
 CREATE TABLE bet_user (
   username TEXT UNIQUE NOT NULL PRIMARY KEY,
   password TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  reminder INTEGER NOT NULL,  -- 0: on days when there is a match on which betting did not happen, 1: every match day, 2: no reminder
-  summary INTEGER NOT NULL,
+  reminder INTEGER NOT NULL,  -- 0: no reminder, 1: on days when there is a match on which betting did not happen, 2: every match day
+  summary INTEGER NOT NULL,   -- 0: no summary, 1: summary at end of day
   timezone TEXT NOT NULL, 
   language TEXT NOT NULL,
   admin BOOLEAN
@@ -123,5 +124,13 @@ CREATE TABLE comment (
   username TEXT,
   datetime TEXT NOT NULL,
   content TEXT,
+  FOREIGN KEY(username) REFERENCES bet_user(username)
+);
+
+-- Table holding the push notification endpoint datas
+CREATE TABLE push_notification (
+  id SERIAL PRIMARY KEY,
+  username TEXT,
+  client_data TEXT,
   FOREIGN KEY(username) REFERENCES bet_user(username)
 );

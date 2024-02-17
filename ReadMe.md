@@ -240,6 +240,7 @@ To setup babel translations these commands need to be launched:
 * session handling with Flask-login, eg. remember me, do not sign-out function etc.
 * make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean 
 * rethink and test notifier (RSS or browser notification) + scheduler
+* rethink static/asset folder structure
 * clean-up ReadMe
 
 ### Backlog

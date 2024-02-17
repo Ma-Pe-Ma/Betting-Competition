@@ -21,7 +21,7 @@
             {% for standing in standings %}
             <tr>
                 <th scope="row">{{loop.index}}.</th>
-                <td>{{standing.name}}</td>
+                <td>{{standing.username}}</td>
                 <td>{{standing.point|round(1)}}</td>
                 <td>{{(standing.point - standing.previous_point)|round(1)}}</td>
                 <td>{{standing.position_diff}}</td>

@@ -72,7 +72,7 @@ function postGroupBet() {
         groupSendButton.disabled = true;
         
         if (request.status == 200) {
-            window.location.replace("/?group=1");
+            window.location.replace("/");
         }
         else if (request.status == 400) {
             createMatchAlert(request.response);

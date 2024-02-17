@@ -1,0 +1,5 @@
+{% if missing_bets|length > 0 %}
+    {% trans %}You've forgotten to bet on some of today's matches!{% endtrans %}
+{% else %}
+    {% trans %}Today is match-day again!{% endtrans %}
+{% endif %}

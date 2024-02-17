@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import g
 from flask import request
 from flask import jsonify
+from flask import flash
 
 from app.auth import sign_in_required
 from app.tools.db_handler import get_db
@@ -49,7 +50,7 @@ def match_bet():
     if request.method == 'GET':
         return jsonify(match_from_db)
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         parameters = request.get_json()
 
         try:
@@ -66,4 +67,11 @@ def match_bet():
         get_db().session.execute(query_string, {'m' : match_id, 'u' : g.user['username'], 'b' : bet_value, 'g1' : goal1, 'g2' : goal2})
         get_db().session.commit()
 
-        return jsonify(match_from_db)
+        if 'started' not in match_from_db or match_from_db['started'] == None:
+            flash(gettext(u'Match does not exist with the following id: {id}!'.format(id=match_from_db['id'])), 'danger')
+        elif match_from_db['started'] == 0:
+            flash(gettext(u'Betting on match {id} was successful!'.format(id=match_from_db['id'])), 'success')
+        elif match_from_db['started'] == 1:
+            flash(gettext(u'Match {id} has already started!'.format(id=match_from_db['id'])), 'danger')       
+
+        return {}

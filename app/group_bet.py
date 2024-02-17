@@ -2,8 +2,8 @@ from flask import Blueprint
 from flask import g
 from flask import render_template
 from flask import request
-from flask import jsonify
 from flask import current_app
+from flask import flash
 
 from datetime import datetime
 
@@ -107,7 +107,9 @@ def before_deadline():
 
         get_db().session.commit()
 
-        return jsonify({})
+        flash(gettext(u'Group bet successfully updated!'), 'success')
+
+        return {}
 
 def during_groupstage():
     username = request.args.get('name')

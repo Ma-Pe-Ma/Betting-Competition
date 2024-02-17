@@ -14,35 +14,14 @@ from flask_babel import gettext
 
 bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
-def process_arguments(args):
-    feedback_messages = []
-
-    if 'match' in args:
-        if 'started' not in args or args['started'] == None:
-            feedback_messages.append((gettext(u'Match does not exist with the following id: {id}!'.format(id=args['match'])), 'danger'))
-        elif args['started'] == "1":
-            feedback_messages.append((gettext(u'Match {id} has already started!'.format(id=args['match'])), 'danger'))
-        elif args['started'] == "0":
-            feedback_messages.append((gettext(u'Betting on match {id} was successful!'.format(id=args['match'])), 'success'))
-
-    if 'group' in args:
-        feedback_messages.append((gettext(u'Group bet successfully updated!'), 'success'))
-
-    return feedback_messages
-
 @bp.route('/', methods=('GET',))
 @sign_in_required
 def homepage():
-    # show messages for user!    
+    # show messages for user!
     query_string = text('SELECT * FROM messages')
-    result = get_db().session.execute(query_string)
-
-    for row in result.fetchall():
+    for row in get_db().session.execute(query_string).fetchall():
         if row.message is not None and row.message != '':
             flash(row.message, 'info')
-
-    for state_message in process_arguments(request.args.to_dict()):
-        flash(state_message[0], state_message[1])
 
     # list future matches with set bets
     days = []

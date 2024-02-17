@@ -5,6 +5,7 @@ import urllib.request
 import csv
 
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.tools.db_handler import get_db
 
@@ -20,7 +21,7 @@ def initialize_teams(team_file_name, translation_file_name):
                 get_db().session.execute(query_string, {'n' : row[0], 'g' : row[1], 'p' : position, 't1' : row[2], 't2' : row[3], 't4' : row[4], 't16' : row[5]})
 
             get_db().session.commit()
-        
+
         with current_app.open_resource(translation_file_name, 'rb') as translation_file:
             data_reader = csv.reader(translation_file.read().decode('utf-8').splitlines(), delimiter='|')
 
@@ -54,10 +55,11 @@ def initialize_matches():
             time_object = datetime.strptime(row[2], "%d/%m/%Y %H:%M")
             time_string = time_object.strftime("%Y-%m-%d %H:%M")
             query_string = text('INSERT INTO match (id, team1, team2, datetime, round, max_bet) VALUES (:id, :t1, :t2, :t, :r, :m)')
-            get_db().session.execute(query_string, {'id' : row[0], 't1' : row[4], 't2' : row[5], 't' : time_string, 'r' : row[1], 'm' : bet_values.default_max_bet_per_match})
+            get_db().session.execute(query_string, {'id' : row[0], 't1' : row[4], 't2' : row[5], 't' : time_string, 'r' : row[1], 'm' : bet_values['default_max_bet_per_match']})
 
         get_db().session.commit()
-    except:
+    except SQLAlchemyError as error:
+        print('SQL Alchemy error: ' + str(error))
         return False
 
     return True

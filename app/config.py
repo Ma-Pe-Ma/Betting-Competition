@@ -20,6 +20,12 @@ class Default(object):
     # 0 - not using, 1 - email, 2 - browser notification
     DIRECT_MESSAGING = 0
 
+    PUSH_KEYS = {
+        'public' : 'public key',
+        'private' : 'private key',
+        'email' : 'mailto:YourNameHere@example.org'
+    }
+
     SESSION_TIMEOUT = 15
 
     INVITATION_KEYS = {

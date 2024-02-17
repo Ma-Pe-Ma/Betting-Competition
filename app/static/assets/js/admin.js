@@ -4,11 +4,15 @@ const sortableGroups = document.getElementsByName("sortableGroup");
 var groupSendButton = document.getElementById("groupSend");
 var tournamentSendButton = document.getElementById("tournamentSend");
 var messageSetButton = document.getElementById("messageSet");
+var generateStandingsButton = document.getElementById("generateStandings");
 var notificationSendButton = document.getElementById("notificationSend");
 var standingsSendButton = document.getElementById("standingsSend");
 var matchUpdateButton = document.getElementById("matchUpdateSend");
 var teamDataSendButton = document.getElementById("teamDataSend");
 var databaseUploadButton = document.getElementById("databaseUpload");
+
+var standingsText = document.getElementById("standingsText");
+var emailText = document.getElementById("emailText")
 
 var tournamentBets = document.getElementsByName("tournamentBet");
 var messages = document.getElementsByName("message");
@@ -112,11 +116,25 @@ messageSetButton.onclick = function() {
     postData("/admin/message", messageArray, this);
 }
 
+generateStandingsButton.onclick = () => {
+    fetch('/admin/standings')
+    .then(response => response.text())
+    .then(data =>  {
+        standingsText.innerText = data;
+    })
+
+    fetch('/admin/emails')
+    .then(response => response.text())
+    .then(data => {
+        emailText.innerText = data;
+    })
+}
+
 if (notificationSendButton != null) {
     notificationSendButton.onclick = () => {
         var notificationDict = {
-            "subject" : document.getElementById("messageSubject").value,
-            "text" : document.getElementById("messageText").value
+            "subject" : document.getElementById("notificationSubject").value,
+            "text" : document.getElementById("notificationText").value
         }
     
         postData("/admin/send-notification", notificationDict, this);

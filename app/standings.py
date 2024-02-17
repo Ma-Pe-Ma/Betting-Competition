@@ -35,7 +35,7 @@ def create_standings(language = None):
 
     players = create_player_history()
 
-    current_player_standings = [{'name' : player['username'], 'point' : player['days'][-1]['point'], 'previous_point' : player['days'][-2]['point'], 'position_diff' : 0} for player in players]
+    current_player_standings = [{'username' : player['username'], 'point' : player['days'][-1]['point'], 'previous_point' : player['days'][-2]['point'], 'position_diff' : 0} for player in players]
 
     #order the current player standings by the points
     current_player_standings.sort(key=lambda player_standing : player_standing['point'], reverse=True)
@@ -48,7 +48,7 @@ def create_standings(language = None):
         position_diff = 0
 
         for previous_position, previous_player_standing in enumerate(previous_player_standings):
-            if previous_player_standing['name'] == current_player_standing['name']:
+            if previous_player_standing['username'] == current_player_standing['username']:
                 position_diff = - (current_position - previous_position)
                 break
 
@@ -56,13 +56,13 @@ def create_standings(language = None):
 
     previous_player_standings = None
 
-    return (players, current_player_standings)
+    return current_player_standings
 
 @bp.route('/standings', methods=('GET',))
 @sign_in_required
 def standings():
     standings = create_standings()
-    return render_template('/standings.html', players=standings[0], standings=standings[1])
+    return render_template('/standings.html', standings=standings)
 
 @bp.route('/standings.json', methods=('GET',))
 @sign_in_required

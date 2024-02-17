@@ -102,15 +102,21 @@ def register() -> str:
         elif user_data['key'] != current_app.config['INVITATION_KEYS']['user'] and user_data['key'] != current_app.config['INVITATION_KEYS']['admin']:
             error = (gettext('The invitation key is not valid.'), 'danger')
         else:
-            query_string = text('SELECT * FROM bet_user WHERE username = :username')
-            result = db.session.execute(query_string, {'username' : user_data['username'] })
-            if result.fetchone() is not None:
-                error = (gettext('The chosen nickname is already taken.'), 'danger')
+            try:
+                user_data['reminder'] = 0 if 'reminder' not in user_data else int(user_data['reminder'])
+                user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
+            except ValueError:
+                error = (gettext('Invalid reminder/summary value.'), 'danger')
             else:
-                query_string = text('SELECT * FROM bet_user WHERE email = :email')
-                result = db.session.execute(query_string, {'email' : user_data['email']})
+                query_string = text('SELECT * FROM bet_user WHERE username = :username')
+                result = db.session.execute(query_string, {'username' : user_data['username'] })
                 if result.fetchone() is not None:
-                    error = (gettext('The chosen email address is already taken.'), 'danger')
+                    error = (gettext('The chosen nickname is already taken.'), 'danger')
+                else:
+                    query_string = text('SELECT * FROM bet_user WHERE email = :email')
+                    result = db.session.execute(query_string, {'email' : user_data['email']})
+                    if result.fetchone() is not None:
+                        error = (gettext('The chosen email address is already taken.'), 'danger')
 
         if error is not None:
             flash(error[0], error[1])
@@ -139,7 +145,7 @@ def register() -> str:
         message_object = notification_handler.notifier.get_notification_resource_by_tag('welcome')
         message_subject = render_template_string(message_object[0])
         message_text = render_template_string(message_object[1], username=user_data['username'])
-        messages.append(notification_handler.notifier.create_message(sender='me', to=user_data['email'], subject=message_subject, message_text=message_text, subtype='html'))
+        messages.append(notification_handler.notifier.create_message(sender='me', user=user_data, subject=message_subject, message_text=message_text, subtype='html'))
 
         notification_handler.notifier.send_messages(messages)
 
@@ -154,8 +160,8 @@ def register() -> str:
     best_language_number = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(best_language)
 
     user_data = {
-        'reminder' : '0',
-        'summary' : '1',
+        'reminder' : 0,
+        'summary' : 0,
         'language' : best_language,
         'language_number': best_language_number
     }
@@ -168,8 +174,8 @@ def register() -> str:
             'password1' : 'aaaaaaaa',
             'password2' : 'aaaaaaaa',
             'key' : current_app.config['INVITATION_KEYS']['admin'],
-            'reminder' : '0',
-            'summary' : '1',        
+            'reminder' : 0,
+            'summary' : 0,        
             'language' : best_language,
             'language_number': best_language_number
         }
@@ -223,7 +229,10 @@ def page_profile() -> str:
         if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
             user_data['language'] = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
 
-        if 'reminder' not in user_data or 'summary' not in user_data:
+        try:
+            user_data['reminder'] = 0 if 'reminder' not in user_data else int(user_data['reminder'])
+            user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
+        except:
             user_data['reminder'] = 0
             user_data['summary'] = 0
 

@@ -50,7 +50,7 @@ def match_reminder_once_per_day(match_ids : list):
                             "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) as bet "
                             "FROM match "
                             "LEFT JOIN match_bet ON match_bet.match_id = match.id "
-                            "LEFT JOIN bet_user ON bet_user.reminder IN (0, 1) "
+                            "LEFT JOIN bet_user ON bet_user.reminder IN (1, 2) "
                             "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = bet_user.language "
                             "LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = bet_user.language "
                             "WHERE match.id IN :match_ids "
@@ -79,11 +79,13 @@ def match_reminder_once_per_day(match_ids : list):
         sendable_messages = []
 
         for user in user_map.values():
-            # TODO solve translating
-            message_object = notification_handler.notifier.get_notification_resource_by_tag('MatchReminder')
+            if user['reminder'] == 1 and len(user['missing']) == 0:
+                continue
+            
+            message_object = notification_handler.notifier.get_notification_resource_by_tag('match-reminder')
             message_subject = render_template_string(message_object[0], missing_bets=user['missing'], date=user['date'])
             message_text = render_template_string(message_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
-            sendable_messages.append(notification_handler.notifier.create_message(sender='me', to=user['email'], subject=message_subject, message_text=message_text, subtype='html'))
+            sendable_messages.append(notification_handler.notifier.create_message(sender='me', user=user, subject=message_subject, message_text=message_text, subtype='html'))
 
         notification_handler.notifier.send_messages(sendable_messages)
 
@@ -120,7 +122,7 @@ def daily_standings():
                 subject = render_template_string(notification_object[0], date=user.date)
                 message_text = render_template_string(notification_object[1], username=user.username, date=user.date, standings=standings_map[user.language])
 
-                messages.append(notification_handler.notifier.create_message(sender='me', to=user.email, subject=subject, message_text=message_text, subtype='html'))
+                messages.append(notification_handler.notifier.create_message(sender='me', user=user._asdict(), subject=subject, message_text=message_text, subtype='html'))
 
             notification_handler.notifier.send_messages(messages=messages)
     except:

@@ -14,7 +14,7 @@
                 <label for="invitation" class="form-label">{% trans %}Invitation-key{% endtrans %}<span class="text-body-secondary"></span></label>
                 <input type="text" class="form-control" id="invitation" placeholder="" name="key" value="{{user_data.key}}">
                 <div class="invalid-feedback">
-                    {% trans %}Please enter a valid invitation key.{% endtrans %}
+                    {% trans %}A valid invitation key is required.{% endtrans %}
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
                 <label for="password2" class="form-label">{% trans %}Password again{% endtrans %}</label>
                 <input type="password" class="form-control" id="password2" placeholder="" value="{{user_data.password2}}" name="password2" required>
                 <div class="invalid-feedback">
-                    {% trans %}A valid passworrd is required.{% endtrans %}
+                    {% trans %}A valid password is required.{% endtrans %}
                 </div>
             </div>
 

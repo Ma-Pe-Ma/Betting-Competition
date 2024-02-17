@@ -22,16 +22,17 @@ def create_app(test_config = None):
     # create custom default filter for none object
     app.jinja_env.filters['d_none'] = lambda value, default_text : value if value is not None else default_text
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        #TODO
-        pass
-
     # load configuration from file
     app.config.from_object('app.config.Default')
     app.config.from_file("config.json", load=json.load, silent=True)
+
+    # ensure the instance folder exists
+    try:
+        from pathlib import Path
+        Path(app.instance_path).mkdir(parents=True, exist_ok=True)
+        Path(os.path.join(app.instance_path, app.config['UPLOAD_FOLDER'])).mkdir(parents=True, exist_ok=True)
+    except OSError:
+        print('Error while creating app directories.')
 
     # setup various tools
     db_handler.init_db(app)
@@ -67,6 +68,10 @@ def create_app(test_config = None):
     app.register_blueprint(admin.bp)
     app.register_blueprint(match_bet.bp)
     app.register_blueprint(chat.bp)
+
+    if app.config['DIRECT_MESSAGING'] == 2:
+        from app.notification import push_methods
+        app.register_blueprint(push_methods.bp)
 
     # setting session timeout TODO: check flask-login capabilities
     @app.before_request

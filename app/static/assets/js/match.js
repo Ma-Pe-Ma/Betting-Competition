@@ -66,9 +66,8 @@ sendMatchButton.onclick = function() {
 
     request.onload = function() {
         if (request.status == 200) {
-            var r = JSON.parse(request.response);
             modalInstance.hide();
-            window.location.replace(admin ? "/admin" : `/?match=${r['id']}&started=${r['started']}`);
+            window.location.replace(admin ? "/admin" : "/");
         }
         else if (request.status == 400) {
             createMatchAlert(request.response);

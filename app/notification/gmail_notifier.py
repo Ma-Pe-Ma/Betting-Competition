@@ -13,6 +13,9 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
 
+from sqlalchemy import text
+from app.tools.db_handler import get_db
+
 import base64
 import mimetypes
 import os.path
@@ -71,9 +74,13 @@ class GmailNotifier(Notifier):
 
         return creds
 
-    def create_message(self, sender, to, subject, message_text, subtype = 'plain'):
+    def get_notification_resource_by_tag(self, tag):
+        with current_app.open_resource('./templates/notifications/{tag}.html'.format(tag=tag), 'r') as notification_message, current_app.open_resource('./templates/notifications/{tag}-subject.txt'.format(tag=tag), 'r') as notification_subject:
+            return (notification_subject.read(), notification_message.read())
+
+    def create_message(self, sender, user, subject, message_text, subtype = 'plain'):
         message = MIMEText(message_text, subtype)
-        message['to'] = to
+        message['to'] = user['email']
         message['from'] = sender
         message['subject'] = subject
         return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}

@@ -1,10 +1,12 @@
 from flask import Blueprint
 from flask import g
 from flask import render_template
+from flask import render_template_string
 from flask import request
 from flask import jsonify
 from flask import current_app
 from flask import send_from_directory
+from flask import flash
 
 from werkzeug.utils import secure_filename
 
@@ -15,6 +17,7 @@ from app.notification import notification_handler
 from app.tools import time_handler
 from app.tools import database_manager
 from app.tools import scheduler_handler
+from app.standings import create_standings
 
 import os
 from flask_babel import gettext
@@ -93,17 +96,44 @@ def send_notification():
 
         messages = []
 
-        query_string = text('SELECT email from bet_user')
+        query_string = text('SELECT email, username FROM bet_user')
         result = get_db().session.execute(query_string)
 
         for user in result.fetchall():
-            messages.append(notification_handler.notifier.create_message(sender='me', to=user.email, subject=message_subject, message_text=message_text))
+            messages.append(notification_handler.notifier.create_message(sender='me', user=user._asdict(), subject=message_subject, message_text=message_text))
 
         notification_handler.notifier.send_messages(messages=messages)
     except:
-        return gettext('Error sending notification to everyone!')
+        return gettext('Error sending notification to everyone!'), 400
 
     return gettext('Notifications successfully sent!'), 200
+
+@bp.route('/admin/standings', methods=('GET',))
+@sign_in_required
+@admin_required
+def standings():
+    with current_app.open_resource('./templates/notifications/standings.html', 'r') as standings_template, current_app.open_resource('./templates/notifications/standings-subject.txt', 'r') as subject:
+        standings = create_standings()
+        date = time_handler.get_now_time_object().strftime('%Y.%m.%d')
+
+        subject = render_template_string(subject.read(), date=date)
+        message_text = render_template_string(standings_template.read(), username=gettext('player'), date=date, standings=standings)
+
+    return message_text
+
+@bp.route('/admin/emails', methods=('GET',))
+@sign_in_required
+@admin_required
+def emails():
+    query_string = text('SELECT email FROM bet_user')
+    result = get_db().session.execute(query_string)
+
+    email_list = ''
+
+    for email in result.fetchall():
+        email_list += '{email};'.format(email=email.email)
+
+    return email_list
 
 @bp.route('/admin/match', methods=('GET', 'POST'))
 @sign_in_required
@@ -139,7 +169,9 @@ def odd_edit():
 
         get_db().session.commit()
 
-        return jsonify({'id' : updated_data['id'] }), 200
+        flash(gettext('Updating data for match {id} was successful!'.format(id=updated_data['id'])), 'success')
+
+        return {}
 
 @bp.route('/admin/group-evaluation', methods=('POST',))
 @sign_in_required
@@ -194,14 +226,16 @@ def upload_team_data():
     
     try:
         team_file_name = secure_filename(team_file.filename)
-        team_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], team_file_name))
+        team_file_path = os.path.join(current_app.instance_path, current_app.config['UPLOAD_FOLDER'], team_file_name)
+        team_file.save(team_file_path)
 
         translation_file_name = secure_filename(translation_file.filename)
-        translation_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], translation_file_name))
+        translation_file_path = os.path.join(current_app.instance_path, current_app.config['UPLOAD_FOLDER'], translation_file_name)
+        translation_file.save(translation_file_path)
     except:
-        return gettext('Failing to write team-data files to local storage!')
+        return gettext('Failing to write team-data files to local storage!'), 400
 
-    if not database_manager.initialize_teams(team_file_name=team_file_name, translation_file_name=translation_file_name):
+    if not database_manager.initialize_teams(team_file_name=team_file_path, translation_file_name=translation_file_path):
         return gettext('Error while initializing the teams!'), 400
 
     if not database_manager.initialize_matches():

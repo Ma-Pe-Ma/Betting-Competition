@@ -14,10 +14,20 @@
 
 {% block content %}
     <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="mt-3 alert alert-dismissible alert-{{category}}">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <strong id="header">{{title}}</strong>
+            <div id="message">{{message}}</div>
+        </div>
+        {% endfor %}
+        {% endwith %}
+
         {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'), 'danger')}}
         {{alert.alert(['alert-success', 'alert-dismissible'], gettext('Success!'), 'success')}}
         {{alert.alertStrings()}}
-        <div class="row" id="alertNode"></div>
+        <div id="alertNode"></div>
 
         <div class="accordion" id="myAccordion">
             <div class="accordion-item">
@@ -65,12 +75,12 @@
                     <div class="card-body">
                         <div class="container mt-3">
                             {% for message in messages %}
-                        <div class="mb-3">
-                            <label for="messsageArea{{message.id}}" class="form-label">{% trans %}Message{% endtrans %} {{message.id + 1}}</label>
-                            <textarea class="form-control" name="message" rows="1">{{message.message}}</textarea>
-                        </div>                        
+                            <div class="mb-3">
+                                <label for="messsageArea{{message.id}}" class="form-label">{% trans %}Message{% endtrans %} {{message.id + 1}}</label>
+                                <textarea class="form-control" name="message" rows="1">{{message.message}}</textarea>
+                            </div>                        
                             {% endfor %}
-                        <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSet">{% trans %}Set{% endtrans %}</button> 
+                            <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSet">{% trans %}Set{% endtrans %}</button> 
                         </div>                        
                     </div>
                 </div>
@@ -101,6 +111,26 @@
                 </div>
             </div>
 {% endif %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingStandings">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseStandings">{% trans %}Generate standings email{% endtrans %}</button>
+                </h2>
+                <div id="collapseStandings" class="accordion-collapse collapse" data-bs-parent="#myAccordion">                    
+                    <div class="card-body">
+                        <div class="container mt-3">
+                            <button class="btn btn-primary btn-sm mt-0 mb-2" type="button" id="generateStandings">{% trans %}Generate{% endtrans %}</button> 
+
+                            <div class="container mt-3">
+                                <label>{% trans %}Email adresses{% endtrans %}</label>
+                                <div class="list-group list-group-flush border-bottom scrollarea bg-secondary user-select-all" id="emailText"></div>
+                                <label class="mt-2">{% trans %}Standings{% endtrans %}</label>
+                                <div class="list-group list-group-flush border-bottom scrollarea bg-secondary user-select-all" id="standingsText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFour">
                     <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFour">{% trans %}Group result evaluation{% endtrans %}</button>                     
