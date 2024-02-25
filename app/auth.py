@@ -12,6 +12,7 @@ from flask import current_app
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 import functools
+import hashlib
 
 from datetime import datetime
 
@@ -78,6 +79,9 @@ def register() -> str:
 
     if g.user is not None:
         return redirect(url_for('home.homepage'))
+    
+    introduction_query = text('SELECT message FROM messages WHERE id = 0')
+    introduction = get_db().session.execute(introduction_query).fetchone().message
 
     if request.method == 'POST':
         user_data = request.form.to_dict(flat=True)
@@ -121,7 +125,7 @@ def register() -> str:
         if error is not None:
             flash(error[0], error[1])
             with force_locale(user_data['language']):
-                return render_template('/auth/register.html', user_data = user_data)
+                return render_template('/auth/register.html', user_data = user_data, introduction=introduction)
 
         user_data['password'] = generate_password_hash(user_data['password1'])
         user_data['admin'] = user_data['key'] == current_app.config['INVITATION_KEYS']['admin']
@@ -132,8 +136,10 @@ def register() -> str:
             user_data['reminder'] = 0
             user_data['summary'] = 0
 
-        query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone) " 
-                            "VALUES (:username, :password, :email, :reminder, :summary, :language, :admin, :timezone)")
+        user_data['email_hash'] = hashlib.md5(user_data['email'].lower().encode('utf-8')).hexdigest()
+
+        query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone, email_hash) " 
+                            "VALUES (:username, :password, :email, :reminder, :summary, :language, :admin, :timezone, :email_hash)")
         result = db.session.execute(query_string, user_data)
         db.session.commit()
 
@@ -181,7 +187,7 @@ def register() -> str:
         }
 
     with force_locale(user_data['language']):
-        return render_template('/auth/register.html', user_data = user_data)
+        return render_template('/auth/register.html', user_data=user_data, introduction=introduction)
 
 @bp.route('/sign-in', methods=('GET', 'POST'))
 def sign_in() -> str:
@@ -207,9 +213,9 @@ def sign_in() -> str:
         if error is not None:
             flash(error[0], error[1])
             return render_template('/auth/sign-in.html', username_form=username)
-        
+
         session.clear()
-        session['username'] = user.username          
+        session['username'] = user.username
 
         return redirect(url_for('home.homepage'))
 

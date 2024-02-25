@@ -18,15 +18,17 @@
     <div class="row d-flex justify-content-center ">
         <div class="row col-12 col-md-8">
             <div class = "col-4 d-flex justify-content-start">
-                <button type="button" class="btn btn-primary btn-sm" id="loadOldCommentsButton"><<</button>
+                <button type="button" class="btn btn-primary btn-sm" id="loadOldCommentsButton">{% trans %}Older{% endtrans %}</button>
+                <div class="spinner-border d-flex ms-1 d-none" id="oldSpinner"></div>
             </div>
             <div class = "col-4 d-flex justify-content-center">
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal" id="newCommentButton">{% trans %}New comment{% endtrans %}</button>
             </div>
             <div class = "col-4 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary btn-sm" id="loadNewCommentsButton">>></button>
+                <div class="spinner-border d-flex me-1 d-none" id="newSpinner"></div>
+                <button type="button" class="btn btn-primary btn-sm" id="loadNewCommentsButton">{% trans %}Newer{% endtrans %}</button>
             </div>
-        </div>        
+        </div>
     </div>
 
     <div class="d-flex justify-content-center mt-4">
@@ -40,17 +42,22 @@
             </div>
         </div>
     </div>
+
+    <div class = "d-flex justify-content-center mt-3 mb-3">
+      <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal" id="newCommentButton">{% trans %}New comment{% endtrans %}</button>
+    </div>
     
     <template id="commentTemplate">
         <div class="list-group-item list-group-item-action py-3 lh-sm" aria-current="true" id="commentRoot">
-            <div class="d-flex w-100 align-items-center justify-content-between">
-              <strong class="mb-1" id="commentHeader"></strong>
-              <small id="date"></small>
+            <div class="row">
+              <div class="col-3">
+                <strong class="mb-1 row" id="commentHeader"></strong>
+                <img src="" alt="" width="96" height="96" class="me-2 row" id="userImage">
+                <small class="row mt-1" id="date"></small>
+              </div>
+              <div class="col-9" id="content"></div>
             </div>
-            <div class="col-10 mb-1 small" id="content">
-                
-            </div>
-          </div>
+        </div>
     </template>
 
     <div class="modal fade" id="commentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
@@ -72,7 +79,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/assets/js/chat.js"></script>
+    <script src="/static/js/chat.js"></script>
 </div>
 
 {% endblock content %}

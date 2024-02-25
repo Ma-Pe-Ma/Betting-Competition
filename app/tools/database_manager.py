@@ -5,7 +5,6 @@ import urllib.request
 import csv
 
 from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.tools.db_handler import get_db
 
@@ -36,7 +35,8 @@ def initialize_teams(team_file_name, translation_file_name):
                     get_db().session.execute(query_string, {'n' : row[0], 'l' : fields[j], 't' : column})
 
             get_db().session.commit()
-    except:
+    except Exception as error:
+        current_app.logger.info('Error while initializing teams: ' + str(error))
         return False
 
     return True
@@ -58,8 +58,8 @@ def initialize_matches():
             get_db().session.execute(query_string, {'id' : row[0], 't1' : row[4], 't2' : row[5], 't' : time_string, 'r' : row[1], 'm' : bet_values['default_max_bet_per_match']})
 
         get_db().session.commit()
-    except SQLAlchemyError as error:
-        print('SQL Alchemy error: ' + str(error))
+    except Exception as error:
+        current_app.logger.info('Error while initializing matches: ' + str(error))
         return False
 
     return True
@@ -90,8 +90,8 @@ def update_match_data_from_fixture():
             get_db().session.execute(query_string, {'t1' : row[4], 't2' : row[5], 'g1' : goal1, 'g2' : goal2, 'id' : row[0]})
         
         get_db().session.commit()
-    except:
-        print("Error updating match database.")
+    except Exception as error:
+        current_app.logger.info('Error updating match database: ' + str(error))
         return False
 
     return True

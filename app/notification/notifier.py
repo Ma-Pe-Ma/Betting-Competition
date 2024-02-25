@@ -12,4 +12,4 @@ class Notifier:
         return (sender, user, subject, message_text, subtype)
 
     def send_messages(self, messages):
-        print('Notification sending turned off: ' + str(messages))
+        current_app.logger.info('Notification sending turned off: ' + str(messages))

@@ -17,38 +17,41 @@ var successAlertTemplate = document.getElementById("successalertTemplate");
 var failureAlertTemplate = document.getElementById("dangeralertTemplate");
 
 function createAlert(message, success) {
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
+    if (!success) {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
     const alert = success ? successAlertTemplate.content.cloneNode(true) : failureAlertTemplate.content.cloneNode(true);
     const alertMessage = alert.getElementById("message");
     if (message != null) {
         alertMessage.innerText = message;
     }
     
-    alertNode.appendChild(alert);    
+    alertNode.appendChild(alert);
 }
 
 function parseReceivedComments(responseObject) {
     var comments = responseObject["comments"]
     var newComment = responseObject["newerComments"];
 
-    if (comments.length < 10 && !newComment) {
+    if (comments.length < 8 && !newComment) {
         loadOldCommentsButton.disabled = true;
     }
+
+    var childrenCount = commentContainer.children.length;
 
     for (var comment of comments) {
         const commentElement = commentTemplate.content.cloneNode(true);
         commentElement.getElementById("commentRoot").setAttribute("value", comment["datetime"]);
+        commentElement.getElementById("userImage").setAttribute("src", comment['image_path'])
         commentElement.getElementById("commentHeader").innerText = comment["username"];
         commentElement.getElementById("date").innerText = comment["datetime"];
         commentElement.getElementById("content").innerHTML = marked.parse(comment["comment"]);
 
         if (newComment) {
-            commentContainer.insertBefore(commentElement, commentContainer.firstChild);            
-            window.scrollTo(0, 0);            
+            commentContainer.append(commentElement);
         }
         else {
-            commentContainer.append(commentElement);
-            window.scrollTo(0, document.body.scrollHeight);
+            commentContainer.insertBefore(commentElement, commentContainer.firstChild);
         }
     }
 }
@@ -57,8 +60,15 @@ function getComments(newerComments = true) {
     const request = new XMLHttpRequest();
 
     request.onload = function() {
+        document.getElementById("newSpinner").classList.add("d-none");
+        document.getElementById("oldSpinner").classList.add("d-none");
+
         if (request.status == 200){
             parseReceivedComments(JSON.parse(request.response));
+
+            if (newerComments) {
+                window.scrollTo(0, document.body.scrollHeight);
+            }
         }
 
         if (request.status == 400){
@@ -78,7 +88,7 @@ function getComments(newerComments = true) {
     
     var datetime = null;
     if (commentContainer.children.length > 0) {
-        commentID = newerComments ? 0 : commentContainer.children.length - 1;
+        commentID = newerComments ? commentContainer.children.length - 1 : 0;
         datetime = commentContainer.children[commentID].getAttribute("value")
     }
 
@@ -86,7 +96,14 @@ function getComments(newerComments = true) {
         "newerComments" : newerComments,
         "datetime" : datetime
     };
-    
+
+    if (newerComments) {
+        document.getElementById("newSpinner").classList.remove("d-none");
+    }
+    else {
+        document.getElementById("oldSpinner").classList.remove("d-none");
+    }
+
     request.open('POST', '/comment', true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.send(JSON.stringify(output));
@@ -129,7 +146,7 @@ function postNewComment(comment) {
         modalInstance.hide();
     }
 
-    var datetime = commentContainer.children.length > 0 ? commentContainer.children[commentContainer.children.length - 1].getAttribute("value") : null;
+    var datetime = commentContainer.children.length > 0 ? commentContainer.children[0].getAttribute("value") : null;
 
     var output = {
         "datetime" : datetime,
@@ -144,6 +161,7 @@ function postNewComment(comment) {
 
 commentModal.addEventListener('shown.bs.modal', (event) => {
     modalInstance = bootstrap.Modal.getInstance(commentModal);
+    commentInputArea.focus();
 });
 
 window.onload = function() {

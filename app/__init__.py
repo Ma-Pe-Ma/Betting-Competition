@@ -8,6 +8,7 @@ from flask import request
 
 from datetime import timedelta
 import json
+import logging
 
 from app.tools import db_handler
 from app.tools import scheduler_handler
@@ -24,7 +25,17 @@ def create_app(test_config = None):
 
     # load configuration from file
     app.config.from_object('app.config.Default')
-    app.config.from_file("config.json", load=json.load, silent=True)
+    app.config.from_file('configuration.json', load=json.load, silent=True)    
+
+    # configure logging
+    info_handler = logging.FileHandler(os.path.join(app.instance_path, 'logfile_info.log'))
+    info_handler.setLevel(logging.INFO)
+    info_handler.setFormatter(logging.Formatter('[%(levelname)s][%(asctime)s] %(message)s - (%(module)s/%(filename)s)'))
+
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(info_handler)
+
+    app.logger.info('Server startup.')
 
     # ensure the instance folder exists
     try:
@@ -32,7 +43,7 @@ def create_app(test_config = None):
         Path(app.instance_path).mkdir(parents=True, exist_ok=True)
         Path(os.path.join(app.instance_path, app.config['UPLOAD_FOLDER'])).mkdir(parents=True, exist_ok=True)
     except OSError:
-        print('Error while creating app directories.')
+        app.logger.info('Error while creating app directories.')
 
     # setup various tools
     db_handler.init_db(app)
@@ -77,7 +88,7 @@ def create_app(test_config = None):
     @app.before_request
     def before_request():
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=app.config['SESSION_TIMEOUT'])
+        app.permanent_session_lifetime = timedelta(days=app.config['SESSION_TIMEOUT'])
 
     @app.errorhandler(403)
     def page_403(e):

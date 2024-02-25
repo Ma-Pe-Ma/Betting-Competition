@@ -68,10 +68,10 @@ def match_bet():
         get_db().session.commit()
 
         if 'started' not in match_from_db or match_from_db['started'] == None:
-            flash(gettext(u'Match does not exist with the following id: {id}!'.format(id=match_from_db['id'])), 'danger')
+            flash(gettext(u'Match does not exist with the following id: %(id)s!', id=match_from_db['id']), 'danger')
         elif match_from_db['started'] == 0:
-            flash(gettext(u'Betting on match {id} was successful!'.format(id=match_from_db['id'])), 'success')
+            flash(gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id']), 'success')
         elif match_from_db['started'] == 1:
-            flash(gettext(u'Match {id} has already started!'.format(id=match_from_db['id'])), 'danger')       
+            flash(gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 'danger')       
 
         return {}

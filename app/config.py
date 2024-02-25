@@ -13,6 +13,8 @@ class Default(object):
 
     BABEL_TRANSLATION_DIRECTORIES = './resources/translations'
 
+    IDENT_URL = 'https://www.gravatar.com/avatar/{email_hash}?d=identicon&s=128'
+
     CACHE_TYPE = 'SimpleCache'
     CACHE_DEFAULT_TIMEOUT = 300
     SCHEDULER_TIMEZONE = 'utc'
@@ -26,7 +28,7 @@ class Default(object):
         'email' : 'mailto:YourNameHere@example.org'
     }
 
-    SESSION_TIMEOUT = 15
+    SESSION_TIMEOUT = 35
 
     INVITATION_KEYS = {
       'user' : 'registration',
@@ -57,3 +59,5 @@ class Default(object):
       "bullseye" : 4,
       "difference" : 1
     }
+
+    DEBUG_START_TIME = '2022-10-31 18:50'

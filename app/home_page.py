@@ -18,7 +18,7 @@ bp = Blueprint('home', __name__, '''url_prefix="/"''')
 @sign_in_required
 def homepage():
     # show messages for user!
-    query_string = text('SELECT * FROM messages')
+    query_string = text('SELECT * FROM messages WHERE id > 0')
     for row in get_db().session.execute(query_string).fetchall():
         if row.message is not None and row.message != '':
             flash(row.message, 'info')

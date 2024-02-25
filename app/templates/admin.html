@@ -76,7 +76,7 @@
                         <div class="container mt-3">
                             {% for message in messages %}
                             <div class="mb-3">
-                                <label for="messsageArea{{message.id}}" class="form-label">{% trans %}Message{% endtrans %} {{message.id + 1}}</label>
+                                <label for="messsageArea{{message.id}}" class="form-label">{{gettext('Registering message') if loop.index0 == 0 else gettext('Message %(message_id)s', message_id=message.id)}}</label>
                                 <textarea class="form-control" name="message" rows="1">{{message.message}}</textarea>
                             </div>                        
                             {% endfor %}
@@ -238,14 +238,23 @@
                     <div class="card-body">
                         <div class="container">
                             <div class="row ms-2 mt-2">
-                                <label class="col-2" for="team">{% trans %}Database file{% endtrans %}</label>
-                                <input class="col-3" type=file name="database" id="databaseFile">
+                                <div class="col-md-4">
+                                    <label for="fileInput">{% trans %}Database file{% endtrans %}: </label>
+                                    <input type="file" name="database" id="databaseFile">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary btn-sm" type="button" id="databaseUpload">{% trans %}Upload{% endtrans %}</button>
+                                </div>
+                                <form class="col-md-2" method="GET" action="/admin/database">
+                                    <button class="btn btn-primary btn-sm" type="submit">{% trans %}Download{% endtrans %}</button>
+                                </form>
                             </div>
-
-                            <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="databaseUpload">{% trans %}Upload{% endtrans %}</button>
-                            <form method="GET" action="/admin/database">
-                                <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="submit">{% trans %}Download{% endtrans %}</button>
-                            </form>
+                            <div class="row ms-2 mt-2">
+                                <form class="col-md-4" method="GET" action="/admin/log">
+                                    <label for="logButton">{% trans %}Log-file{% endtrans %}: </label>
+                                    <button class="btn btn-primary btn-sm" type="submit" id="logButton">{% trans %}Download{% endtrans %}</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -254,5 +263,5 @@
         </div>
     </div>     
 
-    <script src="/static/assets/js/admin.js"></script>
+    <script src="/static/js/admin.js"></script>
 {% endblock content %}

@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask import Blueprint
 from flask import g
 from flask import render_template
+from flask import current_app
 
 from sqlalchemy import text
 
@@ -19,14 +20,15 @@ def get_comments(utc_datetime_string : str, newer_comments : bool, timezone : st
     if newer_comments:
         r, o, s = ">", 'ASC', None
     else:
-        r, o, s = "<", 'DESC', 10
+        r, o, s = "<", 'DESC', 8
 
-    query_string = text("SELECT username, strftime('%Y-%m-%d %H:%M:%S', datetime(comment.datetime || :tz)) AS datetime, content AS comment "
+    query_string = text("SELECT comment.username, strftime('%Y-%m-%d %H:%M:%S', datetime(comment.datetime || :tz)) AS datetime, content AS comment, bet_user.email_hash AS email_hash, REPLACE(:s, '{email_hash}', bet_user.email_hash) AS image_path "
                         "FROM comment "
+                        "LEFT JOIN bet_user ON comment.username = bet_user.username "
                         "WHERE unixepoch(datetime) " + r + " unixepoch(:datetime) "
                         "ORDER BY unixepoch(datetime) " + o)
 
-    result = get_db().session.execute(query_string, {'datetime' : utc_datetime_string, 'tz' : timezone})
+    result = get_db().session.execute(query_string, {'datetime' : utc_datetime_string, 'tz' : timezone, 's' : current_app.config['IDENT_URL']})
     comments = result.fetchall()[0:s]
 
     return [comment._asdict() for comment in comments]

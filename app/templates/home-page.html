@@ -62,6 +62,6 @@
 
     {{match_modal.modal(false)}}
 
-    {% if config['DIRECT_MESSAGING'] == 2 %}<script src="/static/assets/js/push-notification.js" data-public-key="{{config['PUSH_KEYS']['public']}}"></script>{% endif %}
+    {% if config['DIRECT_MESSAGING'] == 2 %}<script src="/static/js/push-notification.js" data-public-key="{{config['PUSH_KEYS']['public']}}"></script>{% endif %}
   
 {% endblock content %}

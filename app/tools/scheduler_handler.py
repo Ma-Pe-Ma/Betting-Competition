@@ -43,7 +43,7 @@ def backup_sqlite_database():
     #create_draft(message_body=message)
 
 def match_reminder_once_per_day(match_ids : list):
-    print('Running scheduled match reminder...')
+    current_app.logger.info('Running scheduled match reminder...')
 
     with scheduler.app.app_context():
         query_string = text("SELECT date(match.datetime || bet_user.timezone) AS date, time(match.datetime || bet_user.timezone) AS time, tr1.translation AS team1, tr2.translation AS team2, "                            
@@ -90,14 +90,14 @@ def match_reminder_once_per_day(match_ids : list):
         notification_handler.notifier.send_messages(sendable_messages)
 
 def update_results():
-    print('Running scheduled result updater...')
+    current_app.logger.info('Running scheduled result updater...')
 
     with scheduler.app.app_context():
         database_manager.update_match_data_from_fixture()
         #backup_sqlite_database()
 
 def daily_standings():
-    print('Running scheduled daily standings creator...')
+    current_app.logger.info('Running scheduled daily standings creator...')
 
     try:
         #TODO
@@ -125,7 +125,8 @@ def daily_standings():
                 messages.append(notification_handler.notifier.create_message(sender='me', user=user._asdict(), subject=subject, message_text=message_text, subtype='html'))
 
             notification_handler.notifier.send_messages(messages=messages)
-    except:
+    except Exception as error:
+        current_app.logger.info('Error while sending daily standings: ' + str(error))
         return False
     
     return True
@@ -133,7 +134,7 @@ def daily_standings():
 # daily checker schedules match reminders, standing notifications and database updating if there is a match on that day
 def daily_checker():
     with scheduler.app.app_context():
-        print('Running daily scheduler at midnight...')
+        current_app.logger.info('Running daily scheduler at midnight...')
 
         match_time_length = current_app.config['MATCH_TIME_LENGTH']
 
@@ -163,13 +164,13 @@ def daily_checker():
             after_base_time = match_time_object + timedelta(hours=match_time_length['base_time'])
             match_after_base_task_id = str(match.id) + '. match after base'
             # schedule database update
-            print('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
+            current_app.logger.info('Scheduled database update after match (base time) : ' + after_base_time.strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = match_after_base_task_id, func=update_results, trigger='date', run_date=after_base_time)
 
             after_extra_time = match_time_object + timedelta(hours=match_time_length['extra_time'])
             match_after_extra_task_id = str(match.id) + '. match after extra'
             # schedule database update
-            print('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))
+            current_app.logger.info('Scheduled database update after match (extra time) : ' + after_extra_time.strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = match_after_extra_task_id, func=update_results, trigger='date', run_date=after_extra_time)
 
             if i == len(matches) - 1:
@@ -177,12 +178,12 @@ def daily_checker():
                 
         # send out first
         if one_hour_before_first_match is not None:
-            print('Scheduled match reminder at: ' + one_hour_before_first_match.strftime('%Y-%m-%d %H:%M'))
+            current_app.logger.info('Scheduled match reminder at: ' + one_hour_before_first_match.strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = 'Daily match reminder', func=match_reminder_once_per_day, trigger='date', run_date=one_hour_before_first_match, args=[match_ids_today])
 
         #schedule sending daily standings
         if time_after_last_match is not None:
-            print('Scheduled standings reminder at: ' + (after_extra_time + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M'))
+            current_app.logger.info('Scheduled standings reminder at: ' + (after_extra_time + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M'))
             scheduler.add_job(id = 'Daily standings reminder', func=daily_standings, trigger='date', run_date=after_extra_time + timedelta(minutes=5))
 
 def init_scheduler(app):    

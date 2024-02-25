@@ -25,8 +25,8 @@ class PushNotifier(Notifier):
             'title' : subject,
             'options' : {
                 'body' : message_text,
-                'icon' : '/static/assets/ball.svg',
-                'badge': '/static/assets/ball.svg'
+                'icon' : '/static/ball.svg',
+                'badge': '/static/ball.svg'
             }
         }
 

@@ -7,6 +7,7 @@ from flask import jsonify
 from flask import current_app
 from flask import send_from_directory
 from flask import flash
+from flask import Response
 
 from werkzeug.utils import secure_filename
 
@@ -103,7 +104,8 @@ def send_notification():
             messages.append(notification_handler.notifier.create_message(sender='me', user=user._asdict(), subject=message_subject, message_text=message_text))
 
         notification_handler.notifier.send_messages(messages=messages)
-    except:
+    except Exception as error:
+        current_app.logger.info('Error sending notification to everyone: ' + str(error))
         return gettext('Error sending notification to everyone!'), 400
 
     return gettext('Notifications successfully sent!'), 200
@@ -152,7 +154,8 @@ def odd_edit():
             result = get_db().session.execute(query_string, {'matchID' : matchID, 'l' : g.user['language']})
 
             return jsonify(result.fetchone()._asdict()), 200
-        except:
+        except Exception as error:
+            current_app.logger.info('Failed to fetch match data: ' + str(error))
             return gettext('Failed to fetch match data!'), 400
 
     elif request.method == 'POST':
@@ -169,7 +172,7 @@ def odd_edit():
 
         get_db().session.commit()
 
-        flash(gettext('Updating data for match {id} was successful!'.format(id=updated_data['id'])), 'success')
+        flash(gettext('Updating data for match %(id)s was successful!', id=updated_data['id']), 'success')
 
         return {}
 
@@ -232,7 +235,8 @@ def upload_team_data():
         translation_file_name = secure_filename(translation_file.filename)
         translation_file_path = os.path.join(current_app.instance_path, current_app.config['UPLOAD_FOLDER'], translation_file_name)
         translation_file.save(translation_file_path)
-    except:
+    except Exception as error:
+        current_app.logger.info('Failing to write team-data files to local storage: ' + str(error))
         return gettext('Failing to write team-data files to local storage!'), 400
 
     if not database_manager.initialize_teams(team_file_name=team_file_path, translation_file_name=translation_file_path):
@@ -276,7 +280,8 @@ def database_file():
                 new_file.save(file_path)
 
                 return gettext('Database file uploading was successful!'), 200
-            except:
+            except Exception as error:
+                current_app.logger.info('Error while saving new database file: ' + str(error))
                 return gettext('Error while saving new database file!'), 400
             
         return gettext('The specified format cannot be uploaded!'), 400
@@ -298,3 +303,10 @@ def standings_notification():
         return gettext('Standings notification failed!'), 400
     
     return gettext('Standings successfully notified!'), 200
+
+@bp.route('/admin/log')
+@sign_in_required
+@admin_required
+def log():
+    with current_app.open_resource(os.path.join(current_app.instance_path, 'logfile_info.log')) as log_file:
+        return Response(log_file.read(), mimetype='text/plain')

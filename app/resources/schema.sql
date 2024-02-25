@@ -20,7 +20,8 @@ CREATE TABLE bet_user (
   email TEXT UNIQUE NOT NULL,
   reminder INTEGER NOT NULL,  -- 0: no reminder, 1: on days when there is a match on which betting did not happen, 2: every match day
   summary INTEGER NOT NULL,   -- 0: no summary, 1: summary at end of day
-  timezone TEXT NOT NULL, 
+  timezone TEXT NOT NULL,
+  email_hash TEXT NOT NULL, 
   language TEXT NOT NULL,
   admin BOOLEAN
 );

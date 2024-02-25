@@ -235,15 +235,13 @@ To setup babel translations these commands need to be launched:
 
 ## TO-DO
 * translate marked strings with Babel
-* logging
 * demo
-* session handling with Flask-login, eg. remember me, do not sign-out function etc.
+* check scheduling
 * make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean 
-* rethink and test notifier (RSS or browser notification) + scheduler
-* rethink static/asset folder structure
 * clean-up ReadMe
 
 ### Backlog
-* generating custom profile picture for user
+* email notification, smtp?
+* session handling with Flask-login, eg. remember me, do not sign-out function etc.
 * Add timezone selector for user
 * forcing redirect to group bet before start + redirect to team data upload at very first startup for admin

@@ -12,15 +12,17 @@
   <main>
     <div class="container">
       <header class="py-3 mb-4 border-bottom">
-        <div class="d-flex flex-wrap justify-content-between">
-          <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-              <svg class="bi me-2" width="40" height="32"><image xlink:href="/static/assets/ball.svg" width="40" height="32"/></svg>
-              <span class="fs-4">{% trans %}Betting competition!{% endtrans %}</span>
+        <div class="d-flex flex-wrap justify-content-between mb-3">
+            <a href="/" class="d-flex align-items-center mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+              <svg class="bi me-2" width="40" height="32"><image xlink:href="/static/ball.svg" width="40" height="32"/></svg>
+              <span class="fs-4 d-none d-sm-inline">{% trans %}Betting competition!{% endtrans %}</span>
+              <span class="fs-6 d-sm-none">{% trans %}Betting competition!{% endtrans %}</span>
             </a>
       
             <div class="d-flex dropdown text-end align-items-center">
               <a class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#">
-                {{g.user['username']}}
+                <img src="{{config['IDENT_URL'].format(email_hash=g.user['email_hash'])}}" alt="" width="32" height="32" class="rounded-circle me-2">
+                <strong>{{g.user['username']}}</strong>
               </a>
               <ul class="dropdown-menu text-small">
                 <li><a class="dropdown-item" href="/profile">{% trans %}Profile{% endtrans %}</a></li>
