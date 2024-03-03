@@ -5,7 +5,7 @@
 {% block content %}
 <main class="container">
     <div class="form-signin w-100 m-auto d-flex justify-content-center">
-        <form class="col-8 col-md-6" method="POST">        
+        <form class="col-12 col-md-6" method="POST">        
             <h1 class="h3 mb-3 fw-normal">{% trans %}Sign in{% endtrans %}</h1>
 
 {% include "auth/alert-template.html" %}
@@ -18,9 +18,17 @@
                 <input type="password" class="form-control" id="passwordInput" placeholder="{% trans %}password{% endtrans %}" name="password">
                 <label for="passwordInput">{% trans %}Password{% endtrans %}</label>
             </div>
-        
-            <div class="mt-2">
-                <p>{% trans %}Don't have an acccount yet?{% endtrans %} <a href="/register">{% trans %}Register{% endtrans %}</a></p>
+
+            <div class="row ms-2 mt-3">
+                <div class="col form-check ">
+                    <input class="form-check-input" type="checkbox" id="staySignedIn" name="stay" checked>
+                    <label class="form-check-label" for="staySignedIn">
+                      {% trans %}Stay signed in{% endtrans %}
+                    </label>
+                </div>
+                <div class="col">
+                    <p>{% trans %}Don't have an account yet?{% endtrans %} <a href="/register">{% trans %}Sign up{% endtrans %}</a></p>
+                </div>
             </div>
             <button class="btn btn-primary w-100 py-2 col-6 form-group" type="submit">{% trans %}Sign in{% endtrans %}</button>
         </form>

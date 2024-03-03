@@ -1,8 +1,16 @@
 class Default(object):
+    def __init__(self, instance_path):
+        import os
+        Default.CACHE_DIR = os.path.join(instance_path, 'cache')
+
     # the supported lanugages on the site
     SUPPORTED_LANGUAGES = {'en' : ['English', 'Angol'], 'hu' : ['Hungarian', 'Magyar']}
     # secret key for session handling
     SECRET_KEY = 'dev'
+
+    # maximum lifetime of a session
+    PERMANENT_SESSION_LIFETIME = 3600 * 24 * 45
+
     # upload folder's name in the instance folder
     UPLOAD_FOLDER = 'upload'
     # allowed extensions to upload by the user

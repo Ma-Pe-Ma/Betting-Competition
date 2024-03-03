@@ -15,6 +15,7 @@ from app.tools import scheduler_handler
 from app.tools import time_handler
 from app.tools import cache_handler
 from app.notification import notification_handler
+from app.config import Default
 
 from flask_babel import Babel
 
@@ -24,8 +25,8 @@ def create_app(test_config = None):
     app.jinja_env.filters['d_none'] = lambda value, default_text : value if value is not None else default_text
 
     # load configuration from file
-    app.config.from_object('app.config.Default')
-    app.config.from_file('configuration.json', load=json.load, silent=True)    
+    app.config.from_object(Default(app.instance_path))
+    app.config.from_file('configuration.json', load=json.load, silent=True)
 
     # configure logging
     info_handler = logging.FileHandler(os.path.join(app.instance_path, 'logfile_info.log'))
@@ -50,7 +51,7 @@ def create_app(test_config = None):
     cache_handler.init_cache(app)
     time_handler.init_time_handler(app)
     scheduler_handler.init_scheduler(app)
-    notification_handler.init_notifier(app)    
+    notification_handler.init_notifier(app)
 
     def get_locale():
         # if a user is signed in, use the locale from the user settings
@@ -83,12 +84,6 @@ def create_app(test_config = None):
     if app.config['DIRECT_MESSAGING'] == 2:
         from app.notification import push_methods
         app.register_blueprint(push_methods.bp)
-
-    # setting session timeout TODO: check flask-login capabilities
-    @app.before_request
-    def before_request():
-        session.permanent = True
-        app.permanent_session_lifetime = timedelta(days=app.config['SESSION_TIMEOUT'])
 
     @app.errorhandler(403)
     def page_403(e):

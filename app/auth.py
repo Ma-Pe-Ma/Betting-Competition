@@ -14,7 +14,7 @@ from werkzeug.security import generate_password_hash
 import functools
 import hashlib
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy import text
 from flask_babel import gettext
@@ -28,6 +28,18 @@ bp = Blueprint('auth', __name__, '''url_prefix="/auth"''')
 
 @bp.before_app_request
 def load_signed_in_user() -> None:
+    session.permanent = True
+    
+    if 'last' in session:
+        now = datetime.utcnow().astimezone()
+
+        if now - session.get('last') >= timedelta(minutes=45):
+            session.clear()
+            return redirect(url_for('auth.sign_in'))
+        
+        session['last'] = now
+        session.modified = True
+
     username = session.get('username')
 
     if username is None:
@@ -145,6 +157,7 @@ def register() -> str:
 
         session.clear()
         session['username'] = user_data['username']
+        session.permanent = True
 
         # sending welcome notification
         messages = []
@@ -216,6 +229,10 @@ def sign_in() -> str:
 
         session.clear()
         session['username'] = user.username
+        session.permanent = True
+
+        if 'stay' not in request.form:
+            session['last'] = datetime.utcnow().astimezone()
 
         return redirect(url_for('home.homepage'))
 

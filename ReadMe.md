@@ -229,8 +229,10 @@ Currently only English version is available and it is planned to properly mark t
 
 To setup babel translations these commands need to be launched:
 
-    pybabel extract -F babel.cfg -o messages.pot .
-    pybabel init -i messages.pot -d .\app\resources\translations -l `hu`
+    pybabel extract -F babel.cfg -o .\app\resources\translations\messages.pot .
+    pybabel init -i .\app\resources\translations\messages.pot -d .\app\resources\translations -l `hu`
+
+    pybabel update -i .\app\resources\translations\messages.pot -d .\app\resources\translations
     pybabel compile -d .\app\resources\translations
 
 ## TO-DO
@@ -242,6 +244,6 @@ To setup babel translations these commands need to be launched:
 
 ### Backlog
 * email notification, smtp?
-* session handling with Flask-login, eg. remember me, do not sign-out function etc.
+* session handling with Flask-login
 * Add timezone selector for user
 * forcing redirect to group bet before start + redirect to team data upload at very first startup for admin
