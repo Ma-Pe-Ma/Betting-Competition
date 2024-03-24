@@ -1,11 +1,30 @@
-{% macro alert(alert_params, title, id_prefix = '', default_message = '') %}
-<template id="{{id_prefix}}alertTemplate">
+{% macro alert(alert_params, title, default_message = '') %}
     <div class="mt-3 alert{% for param in alert_params %} {{param}}{% endfor %}">
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         <strong id="header">{{title}}</strong>
         <div id="message">{{default_message}}</div>
     </div>
+{% endmacro %}
+
+{% macro alert_template(alert_params, title, default_message = '', id_prefix = '') %}
+<template id="{{id_prefix}}alertTemplate">
+    {{alert(alert_params, title, default_message)}}
 </template>
+{% endmacro %}
+
+{% macro flashed_alert() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% set title_map = {
+        'success' : gettext('Success!'),
+        'danger' : gettext('Failure!'),
+        'info' : gettext('Information'),
+    } %}
+
+    {% for category, message in messages %}
+        {{alert(['alert-dismissible', 'alert-' ~ category], title_map[category], message)}}
+    {% endfor %}
+    {% endwith %}
 {% endmacro %}
 
 {% macro alertStrings() %}

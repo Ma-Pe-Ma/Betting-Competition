@@ -100,7 +100,7 @@
                 <p class="col-2 col-md-1 badge bg-info align-items-center justify-content-center" id="remainingCredit"></p>
             </div>
     
-            {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'))}}
+            {{alert.alert_template(['alert-danger', 'alert-dismissible'], gettext('Failure!'))}}
             <div id="alertNode"></div>
             <div class="d-none" id="connectionError">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
             <div class="d-none" id="internalError">{% trans %}An internal server error occured!{% endtrans %}</div>

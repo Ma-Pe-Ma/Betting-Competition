@@ -133,7 +133,7 @@ def emails():
     email_list = ''
 
     for email in result.fetchall():
-        email_list += '{email};'.format(email=email.email)
+        email_list += '{email}; '.format(email=email.email)
 
     return email_list
 

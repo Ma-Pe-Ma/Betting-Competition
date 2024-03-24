@@ -23,7 +23,7 @@ def match_bet():
         match_id = None
 
     query_string = text("WITH match_state AS ("
-                        "SELECT match.id, match.odd1, match.oddX, match.odd2, match.round, match.max_bet, "
+                        "SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, match.round, match.max_bet, "
                         "tr1.translation AS team1, tr2.translation AS team2, "
                         "date(match.datetime || :timezone) AS date, strftime('%H:%M', time(match.datetime || :timezone)) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday, "
                         "(unixepoch(:now) > unixepoch(match.datetime)) as started "

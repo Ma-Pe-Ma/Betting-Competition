@@ -11,7 +11,7 @@ var groupSendButton = document.getElementById("sendButton");
 var alertNode = document.getElementById("alertNode");
 var alertTemplate = document.getElementById("alertTemplate");
 
-function createMatchAlert(message) {
+function createAlert(message) {
     const alert = alertTemplate.content.cloneNode(true);
     const alertMessage = alert.getElementById("message");
     alertMessage.innerText = message;
@@ -75,19 +75,19 @@ function postGroupBet() {
             window.location.replace("/");
         }
         else if (request.status == 400) {
-            createMatchAlert(request.response);
+            createAlert(request.response);
             groupSendButton.disabled = false;
         }
         else if (request.status == 500) {
             var internalError = document.getElementById("internalError");
-            createMatchAlert(internalError.innerText);
+            createAlert(internalError.innerText);
             groupSendButton.disabled = false;
         }
     }
 
     request.onerror = function() {
         var connectionError = document.getElementById("connectionError");
-        createMatchAlert(connectionError.innerText);
+        createAlert(connectionError.innerText);
         groupSendButton.disabled = false;
     }
 

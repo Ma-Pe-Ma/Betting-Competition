@@ -8,8 +8,8 @@
 {% block content %}
 
 <div class="container">
-    {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'), 'danger')}}
-    {{alert.alert(['alert-success', 'alert-dismissible'], gettext('Success!'), 'success', gettext('Comment posted successfully!'))}}
+    {{alert.alert_template(['alert-danger', 'alert-dismissible'], gettext('Failure!'), '', 'danger')}}
+    {{alert.alert_template(['alert-success', 'alert-dismissible'], gettext('Success!'), gettext('Comment posted successfully!'), 'success')}}
     {{alert.alertStrings()}}
     <div class="row d-flex justify-content-center ">
         <div class="row col-12 col-md-8" id="alertNode"></div>
@@ -68,7 +68,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modalBody">
-                <textarea class="form-control" rows="1" id="commentInputArea"></textarea>
+                <textarea class="form-control" rows="1" id="commentInputArea" style="height: 175px;"></textarea>
                 <div class="form-control mt-3" id="commentPreviewArea" rows="8" disabled></div>
             </div>
             <div class="modal-footer">

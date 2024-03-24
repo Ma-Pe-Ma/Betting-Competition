@@ -1,10 +1,7 @@
+{% import "/includes/alert.html" as alert %}
+
 <div id="alertNode"></div>
-<template id="alertTemplate">
-    <div class="mt-3 alert alert-danger alert-dismissible" id="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        <strong>{% trans %}Failure!{% endtrans %}</strong><div id="message">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
-    </div>
-</template>
+{{alert.alert_template(['alert-danger', 'alert-dismissible'], gettext('Failure!'), gettext('An error occured while communicating with the server!'))}}
 
 <div class="row">
     <h5 class="col-3 col-md1 d-flex align-items-center">{% trans %}Player: {% endtrans %}</h5>

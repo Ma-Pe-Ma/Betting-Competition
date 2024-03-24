@@ -74,7 +74,7 @@ def admin_required(view):
         if g.user is None:
             return redirect(url_for('auth.sign_in'))
         elif not g.user['admin']:
-            return render_template('/page-404.html'), 404
+            return render_template('/error-handling/page-404.html'), 404
 
         return view(**kwargs)
 

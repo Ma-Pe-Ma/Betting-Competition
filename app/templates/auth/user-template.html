@@ -1,5 +1,5 @@
-{% include "auth/alert-template.html" %}
-
+{% import "/includes/alert.html" as alert %}
+{{alert.flashed_alert()}}
             <div class="col-12">
                 <label for="lastName" class="form-label">{% trans %}Username{% endtrans %}</label>
                 <input type="text" class="form-control" id="lastName" name="username" placeholder="" value="{{user_data['username']}}" {{'disabled' if disabled else 'required'}}>

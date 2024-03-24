@@ -23,6 +23,7 @@ def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config=True)
     # create custom default filter for none object
     app.jinja_env.filters['d_none'] = lambda value, default_text : value if value is not None else default_text
+    app.jinja_env.filters['d_round'] = lambda value, default_text, precision = 2 : round(value, precision) if value is not None and value != '' else default_text
 
     # load configuration from file
     app.config.from_object(Default(app.instance_path))

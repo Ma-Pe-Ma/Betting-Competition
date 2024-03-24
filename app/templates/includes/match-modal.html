@@ -64,7 +64,7 @@
 
             <div id="matchAlertNode"></div>
 
-            {{alert.alert(['alert-danger', 'alert-dismissible'], gettext('Failure!'))}}
+            {{alert.alert_template(['alert-danger', 'alert-dismissible'], gettext('Failure!'))}}
             {{alert.alertStrings()}}
             <div class="d-none" id="invalidType">{% trans %}Invalid input for goal or credit!{% endtrans %}</div>
             <div class="d-none" id="invalidValue">{% trans %}Invalid value (negative) for goal or credit!{% endtrans %}</div>

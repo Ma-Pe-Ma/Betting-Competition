@@ -12,6 +12,10 @@ Earlier this game was carried out manually sending emails and editing files on a
 
 This application's backend was implemented with the [Flask](https://flask.palletsprojects.com/en/3.0.x/) framework while the frontend part was designed with [Bootstrap](https://getbootstrap.com/).
 
+## Demo
+
+A statically seved demo of the application can be checked out [here](https://mapema.hu/assets/betting-competition/index.html).
+
 ## Course/rules of the competition
 The logic of the game is quite simple. The players starts with a given amount of credits.
 
@@ -237,13 +241,12 @@ To setup babel translations these commands need to be launched:
 
 ## TO-DO
 * translate marked strings with Babel
-* demo
 * check scheduling
-* make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean 
+* make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean, containerization
 * clean-up ReadMe
 
 ### Backlog
-* email notification, smtp?
+* email notification, password restoration, smtp?
 * session handling with Flask-login
 * Add timezone selector for user
 * forcing redirect to group bet before start + redirect to team data upload at very first startup for admin

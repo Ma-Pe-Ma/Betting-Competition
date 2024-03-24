@@ -53,7 +53,7 @@ def prev_bets():
                     nonlocal number_of_match_bets
                     nonlocal number_of_successful_bets
 
-                    number_of_match_bets =+ 1
+                    number_of_match_bets = number_of_match_bets + 1
                     number_of_successful_bets += match_row.success
 
                 nonlocal amount_at_end_of_match
@@ -93,7 +93,7 @@ def prev_bets():
         tournament_bet_dict : dict = group_calculator.get_tournament_bet_dict_for_user(username=username)
         amount_at_end_of_match += tournament_bet_dict['prize']
 
-        success_rate = number_of_successful_bets / number_of_match_bets if number_of_match_bets > 0 else 0
+        success_rate = (number_of_successful_bets / number_of_match_bets if number_of_match_bets > 0 else 0) * 100
 
         extra_data = {
             'start_amount' : start_amount,

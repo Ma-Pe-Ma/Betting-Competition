@@ -3,7 +3,7 @@
 {% set ns = namespace(row=1) %}
 
 <h5 class="mt-5">{% trans %}Current credit{% endtrans %}: {{extra_data.current_balance|round(1)}}</h5>
-<h5 class="">{% trans %}Success rate{% endtrans %}: {{extra_data.success_rate|round(1)}}</h5>
+<h5 class="">{% trans %}Success rate{% endtrans %}: {{extra_data.success_rate|round(1)}}%</h5>
 
 <h5 class="mt-5">{% trans %}Starting credit amount{% endtrans %}: {{extra_data.start_amount}}</h5>
 <h5 class="">{% trans %}Total group + tournament bet amount{% endtrans %}: {{extra_data.group_and_tournament_bet_credit}}</h5>
@@ -34,7 +34,7 @@
 
 <div class="row mb-3 me-3 text-center">
     <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
-    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_none('?')}} / {{match.oddX|d_none('?')}} / {{match.odd2|d_none('?')}}</div>
+    <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_round('?')}} / {{match.oddX|d_round('?')}} / {{match.odd2|d_round('?')}}</div>
     <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.rgoal1|d_none('?')}} - {{match.rgoal2|d_none('?')}}</div>
     <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{match_color}}"</span>{{match.bgoal1|d_none("?")}} - {{match.bgoal2|d_none("?")}}</div>
     <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|d_none('0')}}</div>
