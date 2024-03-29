@@ -80,7 +80,7 @@
                         <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
                         <div value="{{group_id}}" id="sortableOrder">
                             {% for team in group.teams %}
-                            <div class="list-group-item" data-id ="{{team.name}}">{{team.local_name}}</div>
+                            <div class="list-group-item" data-id ="{{team.bname}}">{{team.blocal_name}}</div>
                             {% endfor %}
                         </div>
                     </div>

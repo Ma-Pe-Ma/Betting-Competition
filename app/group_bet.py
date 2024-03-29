@@ -27,7 +27,7 @@ def before_deadline():
         groups = group_calculator.get_group_bet_dict_for_user(username=username)
         tournament_bet = group_calculator.get_tournament_bet_dict_for_user(username=username)
 
-        return render_template('/group-bet/group-edit.html', bet_values=bet_values, tournament_bet = tournament_bet, groups = groups)
+        return render_template('/group-bet/group-edit.html', bet_values = bet_values, tournament_bet = tournament_bet, groups = groups)
 
     elif request.method == 'POST':
         bet_object = request.get_json()

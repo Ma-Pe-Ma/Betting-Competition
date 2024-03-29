@@ -27,7 +27,7 @@
                         <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
                         <div value="{{group_id}}" id="sortableOrder">
                             {% for team in group.teams %}
-                            <div class="list-group-item" data-id ="{{team.name}}">{{team.local_name}}</div>
+                            <div class="list-group-item" data-id ="{{team.bname}}">{{team.blocal_name|d('-', true)}}</div>
                             {% endfor %}
                         </div>
                     </div>
@@ -35,8 +35,7 @@
                     <div class="col-5 col-md-4 mt-2">
                         <div class="row">
                             <label class="col-4 col-md-3">{% trans %}Bet{% endtrans %}: </label>
-                            <!--input class="col-8 col-md-3 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max=""-->
-                            <p class="col-8 col-md-3 d-flex align-items-center" min=0 max=""-->{{group.bet}}</p>
+                            <p class="col-8 col-md-3 d-flex align-items-center" min=0 max="">{{group.bet}}</p>
                         </div>
                     </div>            
                 </div>

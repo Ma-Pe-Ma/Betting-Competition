@@ -11,7 +11,7 @@ from sqlalchemy import text
 
 # this method returns the sum of group bets and the tournament bet of a user
 def get_group_and_tournament_bet_amount(username : str) -> int:    
-    query_string = text("SELECT COALESCE(SUM(group_bet.bet) + tournament_bet.bet, 0) AS total_bet "
+    query_string = text("SELECT COALESCE(SUM(group_bet.bet), 0) + COALESCE(tournament_bet.bet, 0) AS total_bet "
                         "FROM bet_user "
                         "LEFT JOIN group_bet ON group_bet.username = bet_user.username "
                         "LEFT JOIN tournament_bet ON tournament_bet.username = bet_user.username "
@@ -25,27 +25,28 @@ def get_group_and_tournament_bet_amount(username : str) -> int:
 
 match_evaluation_query_string = text(
                             "WITH match_prize AS("
-	                        "SELECT match.id, m_outcome.match AS match_outcome, b_outcome.bet AS bet_outcome, COALESCE(m_outcome.match = b_outcome.bet, 0) AS success, "
-	                        "CASE m_outcome.match = b_outcome.bet WHEN 1 "
-                                "THEN CASE m_outcome.match WHEN 1 "
-                                    "THEN match.odd1 WHEN -1 THEN match.odd2 WHEN 0 THEN match.oddX ELSE 0 END "
-                                "ELSE 0 "
-                            "END AS multiplier, "
-	                        "CASE m_outcome.match = b_outcome.bet WHEN 1 "
-                                "THEN CASE WHEN match.goal1 = match_bet.goal1 AND match.goal2 = match_bet.goal2 "
-                                    "THEN :bullseye "
-                                    "ELSE CASE WHEN (match.goal1 - match.goal2) = (match_bet.goal1 - match_bet.goal2) "
-                                        "THEN :difference "
+                                "SELECT match.id, m_outcome.outcome AS match_outcome, b_outcome.outcome AS bet_outcome, COALESCE(m_outcome.outcome = b_outcome.outcome, 0) AS success, "
+                                    "CASE m_outcome.outcome = b_outcome.outcome WHEN 1 "
+                                        "THEN CASE m_outcome.outcome WHEN 1 "
+                                            "THEN match.odd1 WHEN -1 THEN match.odd2 WHEN 0 THEN match.oddX ELSE 0 END "
                                         "ELSE 0 "
-                                        "END "
-		                            "END "
-	                            "ELSE 0 "
-                            "END AS bonus, "
-                            "COALESCE(match_bet.bet, 0) AS bet "
-	                        "FROM match "
-	                        "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
-	                        "LEFT JOIN (SELECT SIGN(match.goal1 - match.goal2) AS match, match.id AS id FROM match) AS m_outcome ON m_outcome.id = match.id "
-	                        "LEFT JOIN (SELECT SIGN(match_bet.goal1 - match_bet.goal2) AS bet, match_bet.match_id AS match_id FROM match_bet WHERE match_bet.username = :u) AS b_outcome ON b_outcome.match_id = match.id) ")
+                                    "END AS multiplier, "
+                                    "CASE m_outcome.outcome = b_outcome.outcome WHEN 1 "
+                                        "THEN CASE WHEN match.goal1 = match_bet.goal1 AND match.goal2 = match_bet.goal2 "
+                                            "THEN :bullseye "
+                                            "ELSE CASE WHEN (match.goal1 - match.goal2) = (match_bet.goal1 - match_bet.goal2) "
+                                                "THEN :difference "
+                                                "ELSE 0 "
+                                                "END "
+                                            "END "
+                                        "ELSE 0 "
+                                    "END AS bonus, "
+                                    "COALESCE(match_bet.bet, 0) AS bet "
+                                "FROM match "
+                                "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
+                                "LEFT JOIN (SELECT SIGN(match.goal1 - match.goal2) AS outcome, match.id AS id FROM match) AS m_outcome ON m_outcome.id = match.id "
+                                "LEFT JOIN (SELECT SIGN(match_bet.goal1 - match_bet.goal2) AS outcome, match_bet.match_id AS match_id FROM match_bet WHERE match_bet.username = :u) AS b_outcome ON b_outcome.match_id = match.id "
+                            ")")
 
 def get_daily_points_by_current_time(username : str):
     utc_now = time_handler.get_now_time_object()
@@ -53,7 +54,7 @@ def get_daily_points_by_current_time(username : str):
 
     daily_point_query_string = match_evaluation_query_string.text + \
                         """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet)) AS point, date(match.datetime) AS date, 
-                        strftime('%Y', match.datetime) as year, strftime('%m', match.datetime) -1 as month, strftime('%d', match.datetime) as day 
+                            strftime('%Y', match.datetime) as year, strftime('%m', match.datetime) -1 as month, strftime('%d', match.datetime) as day 
                         FROM match 
                         LEFT JOIN match_prize ON match_prize.id = match.id 
                         WHERE unixepoch(datetime) < unixepoch(:now) AND unixepoch(datetime) {r} unixepoch(:group_evaluation_time)

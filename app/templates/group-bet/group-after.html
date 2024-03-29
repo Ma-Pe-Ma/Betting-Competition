@@ -43,14 +43,14 @@
                     <div class="list-group col-5 col-md-4 ms-3">
                         <div class="list-group-item bg-secondary">{% trans %}Result{% endtrans %}</div>
                         {% for team in group.teams %}
-                            <div class="list-group-item">{{team.rlocal_name}}</div>
+                            <div class="list-group-item">{{team.local_name}}</div>
                         {% endfor %}
                     </div>
         
                     <div class="list-group col-5 col-md-4 ms-3">
                         <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
                         {% for team in group.teams %}
-                            <div class="list-group-item bg-{% if team.local_name == team.rlocal_name %}success{% else %}danger{% endif %}">{{team.local_name}}</div>
+                            <div class="list-group-item bg-{% if team.blocal_name == team.local_name %}success{% else %}danger{% endif %}">{{team.blocal_name|d('-', true)}}</div>
                         {% endfor %}
                     </div>   
                 </div>
