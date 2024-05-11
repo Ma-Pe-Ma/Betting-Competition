@@ -22,19 +22,18 @@ def match_bet():
     except:
         match_id = None
 
-    query_string = text("WITH match_state AS ("
-                        "SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, match.round, match.max_bet, "
-                        "tr1.translation AS team1, tr2.translation AS team2, "
-                        "date(match.datetime || :timezone) AS date, strftime('%H:%M', time(match.datetime || :timezone)) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday, "
-                        "(unixepoch(:now) > unixepoch(match.datetime)) as started "
-                        "FROM match "
-                        "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = :l "
-                        "LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = :l "
-                        "WHERE match.id = :match_id )"
-
-                        "SELECT match_state.*, match_bet.bet, match_bet.goal1, match_bet.goal2 "
+    query_string = text("SELECT match_state.*, match_bet.bet, match_bet.goal1, match_bet.goal2 "
                         "FROM bet_user "
-                        "LEFT JOIN match_state ON match_state.id = :match_id "
+                        "LEFT JOIN ("
+                            "SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, match.round, match.max_bet, "
+                                "tr1.translation AS team1, tr2.translation AS team2, "
+                                "date(match.datetime || :timezone) AS date, strftime('%H:%M', time(match.datetime || :timezone)) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday, "
+                                "(unixepoch(:now) > unixepoch(match.datetime)) as started "
+                            "FROM match "
+                            "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = :l "
+                            "LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = :l "
+                            "WHERE match.id = :match_id"
+                        ") AS match_state ON match_state.id = :match_id "
                         "LEFT JOIN match_bet ON match_bet.username = bet_user.username AND match_bet.match_id = :match_id "
                         "WHERE bet_user.username = :u ")
 

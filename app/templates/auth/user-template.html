@@ -10,7 +10,7 @@
 
             <div class="col-12 mt-2">
                 <label for="email" class="form-label">Email <span class="text-body-secondary"></span></label>
-                <input type="email" class="form-control" id="email" placeholder="email@address.com" name="email" value="{{user_data['email']}}" {{'disabled' if disabled else 'required'}}>
+                <input type="email" class="form-control" id="email" placeholder="{% trans %}email@address.com{% endtrans %}" name="email" value="{{user_data['email']}}" {{'disabled' if disabled else 'required'}}>
                 <div class="invalid-feedback">
                     {% trans %}Please enter a valid email address.{% endtrans %}
                 </div>

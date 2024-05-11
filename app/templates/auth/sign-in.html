@@ -28,10 +28,18 @@
                       {% trans %}Stay signed in{% endtrans %}
                     </label>
                 </div>
+            </div>
+            <div class="col">
+            </div>
+            <div class="row ms-1 mt-3">
                 <div class="col">
                     <p>{% trans %}Don't have an account yet?{% endtrans %} <a href="/register">{% trans %}Sign up{% endtrans %}</a></p>
                 </div>
+                <div class="col">
+                    <p>{% trans %}Forgot your password?{% endtrans %} <a href="/forgotten-password">{% trans %}Request new{% endtrans %}</a></p>
+                </div>
             </div>
+
             <button class="btn btn-primary w-100 py-2 col-6 form-group" type="submit">{% trans %}Sign in{% endtrans %}</button>
         </form>
     </div>

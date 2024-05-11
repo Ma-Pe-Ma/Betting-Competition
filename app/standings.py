@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import g
 from flask import render_template
+from flask import current_app
 
 from app.tools.db_handler import get_db
 from app.auth import sign_in_required
@@ -17,14 +18,14 @@ cache_time = 5
 @cache.cached(timeout=cache_time, key_prefix='player_history')
 def create_player_history():
     #iterate through users
-    query_string = text('SELECT username FROM bet_user')
-    result = get_db().session.execute(query_string)
+    query_string = text("SELECT username, REPLACE(:s, '{email_hash}', email_hash) AS image_path FROM bet_user")
+    result = get_db().session.execute(query_string, {'s' : current_app.config['IDENT_URL']})
 
     players = []
     for player in result.fetchall():
         username = player.username
         days = score_calculator.get_daily_points_by_current_time(username)
-        players.append({'username' : username, 'days' : days})
+        players.append({'username' : username, 'image_path' : player.image_path, 'days' : days})
 
     return players
 
@@ -35,7 +36,7 @@ def create_standings(language = None):
 
     players = create_player_history()
 
-    current_player_standings = [{'username' : player['username'], 'point' : player['days'][-1]['point'], 'previous_point' : player['days'][-2]['point'], 'position_diff' : 0} for player in players]
+    current_player_standings = [{'username' : player['username'], 'image_path': player['image_path'], 'point' : player['days'][-1]['point'], 'previous_point' : player['days'][-2]['point'], 'position_diff' : 0} for player in players]
 
     #order the current player standings by the points
     current_player_standings.sort(key=lambda player_standing : player_standing['point'], reverse=True)

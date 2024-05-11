@@ -13,6 +13,8 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 import functools
 import hashlib
+import random
+import string
 
 from datetime import datetime, timedelta
 
@@ -21,6 +23,7 @@ from flask_babel import gettext
 from flask_babel import force_locale
 
 from app.tools.db_handler import get_db
+from app.tools.cache_handler import cache
 from app.tools import time_handler
 from app.notification import notification_handler
 
@@ -139,7 +142,7 @@ def register() -> str:
             with force_locale(user_data['language']):
                 return render_template('/auth/register.html', user_data = user_data, introduction=introduction)
 
-        user_data['password'] = generate_password_hash(user_data['password1'])
+        user_data['password1'] = generate_password_hash(user_data['password1'])
         user_data['admin'] = user_data['key'] == current_app.config['INVITATION_KEYS']['admin']
         # TODO CHECK AND ADD TIMEZONE!
         user_data['timezone'] = '-01:00'
@@ -151,7 +154,7 @@ def register() -> str:
         user_data['email_hash'] = hashlib.md5(user_data['email'].lower().encode('utf-8')).hexdigest()
 
         query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone, email_hash) " 
-                            "VALUES (:username, :password, :email, :reminder, :summary, :language, :admin, :timezone, :email_hash)")
+                            "VALUES (:username, :password1, :email, :reminder, :summary, :language, :admin, :timezone, :email_hash)")
         result = db.session.execute(query_string, user_data)
         db.session.commit()
 
@@ -273,3 +276,103 @@ def page_profile() -> str:
     user_data['language_number'] = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(user_data['language'])
 
     return render_template('/auth/profile.html', user_data = user_data, disabled = True)
+
+@bp.route('/forgotten-password', methods=('GET', 'POST'))
+def forgotten_password():
+    if g.user is not None:
+        return redirect(url_for('home.homepage'))
+
+    email = ''
+    requested = False
+
+    if request.method == 'POST':
+        user_data = request.form.to_dict(flat=True)
+        email = user_data['email'] if 'email' in user_data else ''        
+
+        if 'email' not in user_data:
+            flash(gettext('Email is not registered'), 'danger')
+        else:
+            db = get_db()
+            query_string = text('SELECT * FROM bet_user WHERE email = :email')
+            result = db.session.execute(query_string, user_data)
+
+            if result.fetchone() is None:
+                flash(gettext('Email is not registered'), 'danger')
+            else:
+                requested = True
+                reset_keys = cache.get('password_reset_keys')
+
+                if reset_keys is None:
+                    reset_keys = {}
+
+                reset_keys[user_data['email']] = {
+                    'date' : time_handler.stringify_datetime_object(time_handler.get_now_time_object() + timedelta(hours=24)),
+                    'key' : ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(20))
+                }
+
+                cache.set('password_reset_keys', reset_keys, 3600 * 24)
+
+                if current_app.config['DIRECT_MESSAGING'] == 1:
+                    pass # TODO: send reset key in email to user
+
+    return render_template('auth/forgotten-password.html', requested=requested, email=email)
+
+@bp.route('/reset-password', methods=('GET', 'POST'))
+def reset_password() -> str:
+    if g.user is not None:
+        return redirect(url_for('home.homepage'))
+    
+    best_language = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
+    
+    if request.method == 'GET':
+        with force_locale(best_language):
+            return render_template('auth/reset-password.html', user_data=request.args.to_dict(), error=None)
+
+    if request.method == 'POST':
+        user_data = request.form.to_dict(flat=True)
+
+        db = get_db()
+        error = None
+        user = None
+
+        if not user_data['email']:
+            error = (gettext('Email is not specified.'), 'danger')
+        elif not user_data['key']:
+            error = (gettext('Reset key is not specified.'), 'danger')
+        elif not user_data['password1'] or len(user_data['password1']) < 8:
+            error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
+        elif user_data['password1'] != user_data['password2']:
+            error = (gettext('The two passwords are not identical.'), 'danger')
+        else:
+            query_string = text('SELECT * FROM bet_user WHERE email = :email')
+            result = db.session.execute(query_string, user_data)
+            user = result.fetchone()
+            if user is None:
+                error = (gettext('The given nickname does not exist.'), 'danger')
+            else:
+                reset_keys = cache.get('password_reset_keys')
+
+                if not reset_keys or user.email not in reset_keys or time_handler.get_now_time_object() > time_handler.parse_datetime_string(reset_keys[user.email]['date']):
+                    error = (gettext('No password reset key has been requested.'), 'danger')
+                elif reset_keys[user.email]['key'] != user_data['key']:
+                    error = (gettext('The given reset key is invalid.'), 'danger')
+
+        if error is not None:
+            lan = user.language if user is not None else best_language
+            flash(error[0], error[1])
+            with force_locale(lan):
+                return render_template('auth/reset-password.html', user_data=user_data, error=error)
+        
+        del reset_keys[user.email]
+        cache.set('password_reset_keys', reset_keys, 3600 * 24)
+
+        password_change_query_string = text('UPDATE bet_user SET password=:password1 WHERE email=:email')
+        user_data['password1'] = generate_password_hash(user_data['password1'])
+        result = db.session.execute(password_change_query_string, user_data)
+        db.session.commit()
+
+        session.clear()
+        session['username'] = user.username
+        session.permanent = True
+
+        return redirect(url_for('home.homepage'))    

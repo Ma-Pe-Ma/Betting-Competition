@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 
 from app.tools import database_manager
 from app.tools.db_handler import get_db
+from app.tools.cache_handler import cache
 from app.auth import admin_required, sign_in_required
 from app.notification import notification_handler
 from app.tools import time_handler
@@ -67,7 +68,12 @@ def admin_page():
 
     matches = [match._asdict() for match in result.fetchall()]
 
-    return render_template('/admin.html', matches = matches, messages = messages, groups = groups, tournament_bets = tournament_bets)
+    reset_keys = cache.get('password_reset_keys')
+
+    if reset_keys is None:
+        reset_keys = {}
+
+    return render_template('/admin.html', matches = matches, messages = messages, groups = groups, tournament_bets = tournament_bets, reset_keys = reset_keys)
 
 @bp.route('/admin/message', methods=('POST',))
 @sign_in_required

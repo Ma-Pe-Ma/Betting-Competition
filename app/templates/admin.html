@@ -259,6 +259,38 @@
                     </div>
                 </div>
             </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="passwordKeys">
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapsePasswordKey">{% trans %}Password reset keys{% endtrans %}</button>
+                </h2>
+                <div id="collapsePasswordKey" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                    <div class="card-body">
+                        <div class="container ms-3 mt-3">                            
+                            {% if reset_keys|length > 0 %}
+                            <div class="row mb-3 text-center">
+                                <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">#</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Email{% endtrans %}</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Expiration time{% endtrans %}</div>
+                                <div class="col-6 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Key{% endtrans %}</div>
+                            </div>
+                            {% endif %}
+
+                            {% for email, value in reset_keys.items() %}
+                            <div class="row mb-3 text-center">            
+                                <div class="col-1 themed-grid-col1 d-flex align-items-center justify-content-center">{{loop.index}}</div>
+                                <div class="col-2 themed-grid-col1 d-flex align-items-center justify-content-center">{{email}}</div>
+                                <div class="col-2 themed-grid-col1 d-flex align-items-center justify-content-center">{{value['date']}}</div>
+                                <div class="col-6 themed-grid-col1 d-flex align-items-center justify-content-center">/reset-password?email={{email}}&key={{value['key']}} </div>
+                            </div>
+                            {% else %}
+                            <div class="row ms-2 mt-2 mb-2">
+                                {% trans %}No reset keys have been generated!{% endtrans %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>     
 

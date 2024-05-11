@@ -246,7 +246,7 @@ To setup babel translations these commands need to be launched:
 * clean-up ReadMe
 
 ### Backlog
-* email notification, password restoration, smtp?
+* email notification/smtp?
 * session handling with Flask-login
 * Add timezone selector for user
 * forcing redirect to group bet before start + redirect to team data upload at very first startup for admin

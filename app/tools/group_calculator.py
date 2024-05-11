@@ -25,8 +25,6 @@ def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
 
     result = get_db().session.execute(query_string, {'username' : username, 'l' : language}).fetchone()
 
-    print("T-RES: " + str(result._asdict()))
-
     return result._asdict()
 
 # get group object which contains both the results and both the user bets (used in every 3 contexts)
