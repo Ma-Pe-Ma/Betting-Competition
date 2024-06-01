@@ -4,8 +4,11 @@
 	"UPLOAD_FOLDER" : "upload",
 	"ALLOWED_EXTENSIONS" : ["csv", "sqlite"],
 
+	"PERMANENT_SESSION_LIFETIME" : 3888000,
+	"SESSION_LIFE_TIME" : 45,
+
 	"SQLALCHEMY_DATABASE_URI" : "sqlite:///flaskr.sqlite",
-	"MATCH_URL" : "https://path.fixture",	
+	"MATCH_URL" : "https://path.fixture",
 
 	"BABEL_TRANSLATION_DIRECTORIES" : "./resources/translations",
 
@@ -13,7 +16,6 @@
 
 	"CACHE_TYPE" : "SimpleCache",
 	"CACHE_DEFAULT_TIMEOUT" : 300,
-	"SCHEDULER_TIMEZONE" : "utc",
 
 	"DIRECT_MESSAGING" : 0,
 
@@ -22,8 +24,6 @@
 		"private" : "private key",
 		"email" : "mailto:YourNameHere@example.org"
 	},
-
-	"SESSION_TIMEOUT" : 35,
 
 	"INVITATION_KEYS" : {
 		"user" : "registration",

@@ -8,13 +8,14 @@ class Default(object):
     # secret key for session handling
     SECRET_KEY = 'dev'
 
-    # maximum lifetime of a session
-    PERMANENT_SESSION_LIFETIME = 3600 * 24 * 45
-
     # upload folder's name in the instance folder
     UPLOAD_FOLDER = 'upload'
     # allowed extensions to upload by the user
     ALLOWED_EXTENSIONS = ['csv', 'sqlite']
+
+    # maximum lifetime of a session
+    PERMANENT_SESSION_LIFETIME = 3600 * 24 * 45 # used by Flask
+    SESSION_LIFE_TIME = 45 # in minutes, custom solution
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///flaskr.sqlite'
     MATCH_URL = 'https://path.fixture'
@@ -25,7 +26,6 @@ class Default(object):
 
     CACHE_TYPE = 'SimpleCache'
     CACHE_DEFAULT_TIMEOUT = 300
-    SCHEDULER_TIMEZONE = 'utc'
 
     # 0 - not using, 1 - email, 2 - browser notification
     DIRECT_MESSAGING = 0
@@ -35,8 +35,6 @@ class Default(object):
         'private' : 'private key',
         'email' : 'mailto:YourNameHere@example.org'
     }
-
-    SESSION_TIMEOUT = 35
 
     INVITATION_KEYS = {
       'user' : 'registration',

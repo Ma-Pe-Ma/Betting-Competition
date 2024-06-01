@@ -104,7 +104,7 @@ function getComments(newerComments = true) {
         document.getElementById("oldSpinner").classList.remove("d-none");
     }
 
-    request.open('POST', '/comment', true);
+    request.open('POST', '/chat', true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.send(JSON.stringify(output));
 }
@@ -154,7 +154,7 @@ function postNewComment(comment) {
         "newerComments" : true    
     };
 
-    request.open('POST', '/comment', true);
+    request.open('POST', '/chat', true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.send(JSON.stringify(output));
 } 

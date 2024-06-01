@@ -8,6 +8,7 @@ from flask import session
 from flask import url_for
 from flask import render_template_string
 from flask import current_app
+from enum import Enum
 
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
@@ -16,7 +17,7 @@ import hashlib
 import random
 import string
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from sqlalchemy import text
 from flask_babel import gettext
@@ -34,9 +35,9 @@ def load_signed_in_user() -> None:
     session.permanent = True
     
     if 'last' in session:
-        now = datetime.utcnow().astimezone()
+        now = datetime.now(UTC)
 
-        if now - session.get('last') >= timedelta(minutes=45):
+        if now - session.get('last') >= timedelta(minutes=current_app.config['SESSION_LIFE_TIME']):
             session.clear()
             return redirect(url_for('auth.sign_in'))
         
@@ -61,27 +62,25 @@ def load_signed_in_user() -> None:
             user_row._asdict()
         )
 
-def sign_in_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.sign_in'))
+class Role(Enum):
+    USER = 0,
+    ADMIN = 1
 
-        return view(**kwargs)
+def sign_in_required(role : Role = Role.USER):
+    def decorator(view):
+        @functools.wraps(view)
+        def wrapped_view(**kwargs):
+            if g.user is None:
+                return redirect(url_for('auth.sign_in'))
+            
+            if role == Role.ADMIN and g.user['admin'] != 1:
+                return render_template('/error-handling/page-404.html'), 404
 
-    return wrapped_view
+            return view(**kwargs)
 
-def admin_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.sign_in'))
-        elif not g.user['admin']:
-            return render_template('/error-handling/page-404.html'), 404
-
-        return view(**kwargs)
-
-    return wrapped_view
+        return wrapped_view
+    
+    return decorator
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register() -> str:
@@ -235,7 +234,7 @@ def sign_in() -> str:
         session.permanent = True
 
         if 'stay' not in request.form:
-            session['last'] = datetime.utcnow().astimezone()
+            session['last'] = datetime.now(UTC)
 
         return redirect(url_for('home.homepage'))
 
@@ -247,7 +246,7 @@ def sign_out() -> str:
     return redirect(url_for('auth.sign_in'))
 
 @bp.route('/profile', methods=('GET', 'POST'))
-@sign_in_required
+@sign_in_required()
 def page_profile() -> str:
     if request.method == 'POST':
         user_data = request.form.to_dict(flat=True)

@@ -15,7 +15,7 @@ from flask_babel import gettext
 bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
 @bp.route('/', methods=('GET',))
-@sign_in_required
+@sign_in_required()
 def homepage():
     # show messages for user!
     query_string = text('SELECT * FROM messages WHERE id > 0')

@@ -17,7 +17,7 @@ import datetime
 bp = Blueprint('previous', __name__, '''url_prefix="/previous"''')
 
 @bp.route('/previous-bets', methods=('GET',))
-@sign_in_required
+@sign_in_required()
 def prev_bets():
     username : str = request.args.get('name')
 

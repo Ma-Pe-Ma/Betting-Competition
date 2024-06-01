@@ -68,9 +68,9 @@ def update_match_data_from_fixture():
     try:
         response = urllib.request.urlopen(current_app.config['MATCH_URL'])
         data = response.read()
-        text = data.decode("utf-8")
+        file_text = data.decode("utf-8")
 
-        data_reader = csv.reader(text.splitlines(), delimiter=',')
+        data_reader = csv.reader(file_text.splitlines(), delimiter=',')
         fields = next(data_reader)
 
         for row in data_reader:
@@ -86,10 +86,11 @@ def update_match_data_from_fixture():
                 goal1 = goals[0]
                 goal2 = goals[2]
 
-            query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:od')
+            query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:id AND goal1 == NULL AND goal2 == NULL')
             get_db().session.execute(query_string, {'t1' : row[4], 't2' : row[5], 'g1' : goal1, 'g2' : goal2, 'id' : row[0]})
         
         get_db().session.commit()
+        current_app.logger.info('Match db successfully updated from remote CSV!')
     except Exception as error:
         current_app.logger.info('Error updating match database: ' + str(error))
         return False

@@ -18,7 +18,7 @@ def service_worker():
     return send_file('./static/js/service_worker.js')
 
 @bp.route('/notification/subscribe', methods=('POST',))
-@sign_in_required
+@sign_in_required()
 def subscribe():
     try:
         query_string = text('INSERT INTO push_notification (username, client_data) VALUES (:u, :c)')

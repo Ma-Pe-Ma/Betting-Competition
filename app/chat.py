@@ -33,36 +33,33 @@ def get_comments(utc_datetime_string : str, newer_comments : bool, timezone : st
 
     return [comment._asdict() for comment in comments]
 
-# this method handles getting abd posting messages
-@bp.route('/comment', methods=('POST',))
-@sign_in_required
-def comments():
-    request_object : dict = request.get_json()
-
-    if 'comment' in request_object:
-        if len(request_object['comment']) < 4:
-            return gettext('Too short message!'), 400
-        try:
-            now_time_string = time_handler.get_now_time_string_with_seconds()
-            query_string = text('INSERT INTO comment (username, datetime, content) VALUES (:u, :d, :c)')
-            get_db().session.execute(query_string, {'u' : g.user['username'], 'd' : now_time_string, 'c' : request_object['comment']})
-            get_db().session.commit()
-        except Exception as err:
-            return gettext('Invalid data sent!'), 400
-
-    if request_object['datetime'] is None:
-        utc_date = time_handler.get_now_time_object()
-    else:
-        utc_date = time_handler.parse_datetime_string_with_seconds(request_object['datetime']) + timedelta(hours=int(g.user['timezone'][:3]), minutes=int(g.user['timezone'][4:]))
-
-    response_object = {
-        'newerComments' : request_object['newerComments'],
-        'comments' : get_comments(utc_date.strftime('%Y-%m-%d %H:%M:%S'), request_object['newerComments'], g.user['timezone'])
-    }
-
-    return jsonify(response_object), 200
-
-@bp.route('/chat', methods=('GET',))
-@sign_in_required
+@bp.route('/chat', methods=('GET', 'POST',))
+@sign_in_required()
 def chat_page():
+    if request.method == 'POST':
+        request_object : dict = request.get_json()
+
+        if 'comment' in request_object:
+            if len(request_object['comment']) < 4:
+                return gettext('Too short message!'), 400
+            try:
+                now_time_string = time_handler.get_now_time_string_with_seconds()
+                query_string = text('INSERT INTO comment (username, datetime, content) VALUES (:u, :d, :c)')
+                get_db().session.execute(query_string, {'u' : g.user['username'], 'd' : now_time_string, 'c' : request_object['comment']})
+                get_db().session.commit()
+            except Exception as err:
+                return gettext('Invalid data sent!'), 400
+
+        if request_object['datetime'] is None:
+            utc_date = time_handler.get_now_time_object()
+        else:
+            utc_date = time_handler.parse_datetime_string_with_seconds(request_object['datetime']) + timedelta(hours=int(g.user['timezone'][:3]), minutes=int(g.user['timezone'][4:]))
+
+        response_object = {
+            'newerComments' : request_object['newerComments'],
+            'comments' : get_comments(utc_date.strftime('%Y-%m-%d %H:%M:%S'), request_object['newerComments'], g.user['timezone'])
+        }
+
+        return jsonify(response_object), 200
+
     return render_template('/chat.html')

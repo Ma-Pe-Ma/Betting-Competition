@@ -12,20 +12,20 @@
                 </label>
 
                 <div class="form-check ms-3">
-                    <input class="form-check-input" type="radio" name="reminder" id="matchRadios1" value="0" {% if (user_data.reminder == 0) %} checked {% endif %}>
+                    <input class="form-check-input" type="radio" name="reminder" id="matchRadios1" value="1" {% if (user_data.reminder == 1) %} checked {% endif %}>
                     <label class="form-check-label" for="matchRadios1" id="reminder1Display">
                         {% trans %}On those days when there is a match without a bet{% endtrans %}
                     </label>
                 </div>
                 <div class="form-check ms-3">
-                    <input class="form-check-input" type="radio" name="reminder" id="matchRadios2" value="1" {% if (user_data.reminder == 1) %} checked {% endif %}>
+                    <input class="form-check-input" type="radio" name="reminder" id="matchRadios2" value="2" {% if (user_data.reminder == 2) %} checked {% endif %}>
                     <label class="form-check-label" for="matchRadios2" id="reminder2Display">
                         {% trans %}Every matchday{% endtrans %}
                     </label>
                 </div>
 
                 <div class="form-check ms-3">
-                    <input class="form-check-input" type="radio" name="reminder" id="matchRadios3" value="2" {% if (user_data.reminder == 2) %} checked {% endif %}>
+                    <input class="form-check-input" type="radio" name="reminder" id="matchRadios3" value="0" {% if (user_data.reminder == 0) %} checked {% endif %}>
                     <label class="form-check-label" for="matchRadios3" id="reminder3Display">
                         {% trans %}I don't want to receive reminders{% endtrans %}
                     </label>

@@ -60,13 +60,13 @@ def create_standings(language = None):
     return current_player_standings
 
 @bp.route('/standings', methods=('GET',))
-@sign_in_required
+@sign_in_required()
 def standings():
     standings = create_standings()
     return render_template('/standings.html', standings=standings)
 
 @bp.route('/standings.json', methods=('GET',))
-@sign_in_required
+@sign_in_required()
 def standings_json():
     import io, json
     from flask import send_file

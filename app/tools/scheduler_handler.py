@@ -1,7 +1,8 @@
-from flask_apscheduler import APScheduler
 from flask import render_template_string
 from flask import current_app
 from flask.cli import with_appcontext
+from flask_apscheduler import APScheduler
+from flask_babel import force_locale
 
 import click
 from sqlalchemy import text, bindparam
@@ -43,14 +44,14 @@ def backup_sqlite_database():
     #create_draft(message_body=message)
 
 def match_reminder_once_per_day(match_ids : list):
-    current_app.logger.info('Running scheduled match reminder...')
-
     with scheduler.app.app_context():
+        current_app.logger.info('Running scheduled match reminder...')
+
         query_string = text("SELECT date(match.datetime || bet_user.timezone) AS date, time(match.datetime || bet_user.timezone) AS time, tr1.translation AS team1, tr2.translation AS team2, "                            
-                            "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) as bet "
+                                "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) as bet "
                             "FROM match "
-                            "LEFT JOIN match_bet ON match_bet.match_id = match.id "
-                            "LEFT JOIN bet_user ON bet_user.reminder IN (1, 2) "
+                            "RIGHT JOIN bet_user ON bet_user.reminder IN (1, 2) "
+                            "LEFT JOIN match_bet ON match_bet.match_id = match.id AND bet_user.username = match_bet.username "
                             "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = bet_user.language "
                             "LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = bet_user.language "
                             "WHERE match.id IN :match_ids "
@@ -81,37 +82,38 @@ def match_reminder_once_per_day(match_ids : list):
         for user in user_map.values():
             if user['reminder'] == 1 and len(user['missing']) == 0:
                 continue
-            
+
             message_object = notification_handler.notifier.get_notification_resource_by_tag('match-reminder')
-            message_subject = render_template_string(message_object[0], missing_bets=user['missing'], date=user['date'])
-            message_text = render_template_string(message_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
-            sendable_messages.append(notification_handler.notifier.create_message(sender='me', user=user, subject=message_subject, message_text=message_text, subtype='html'))
+
+            with force_locale(user['language']):
+                message_subject = render_template_string(message_object[0], missing_bets=user['missing'], date=user['date'])
+                message_text = render_template_string(message_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
+                sendable_messages.append(notification_handler.notifier.create_message(sender='me', user=user, subject=message_subject, message_text=message_text, subtype='html'))
 
         notification_handler.notifier.send_messages(sendable_messages)
 
 def update_results():
-    current_app.logger.info('Running scheduled result updater...')
-
     with scheduler.app.app_context():
+        current_app.logger.info('Running scheduled result updater...')
         database_manager.update_match_data_from_fixture()
         #backup_sqlite_database()
 
 def daily_standings():
-    current_app.logger.info('Running scheduled daily standings creator...')
-
     try:
         #TODO
         with scheduler.app.app_context():
+            current_app.logger.info('Running scheduled daily standings creator...')
+
             messages = []
             notification_map = {}
             standings_map = {}
 
-            query_string = text("SELECT username, email, language, date(:now || tz_offset) AS date"
+            query_string = text("SELECT username, email, language, date(:now || timezone) AS date "
                                 "FROM bet_user "
                                 "WHERE summary = 1")
             result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string()})
             for user in result.fetchall():
-                if user.langugage not in notification_map:
+                if user.language not in notification_map:
                     notification_map[user.language] = notification_handler.notifier.get_notification_resource_by_tag('standings')
                 
                 if user.language not in standings_map:
@@ -143,7 +145,7 @@ def daily_checker():
 
         query_string = text("SELECT * "
                             "FROM match "
-                            "WHERE date(time) = date(:now_date) AND unixepoch(time) > unixepoch(:now_time) "
+                            "WHERE date(match.datetime) = date(:now_date) AND unixepoch(match.datetime) > unixepoch(:now_time) "
                             "ORDER BY unixepoch(match.datetime)")
         result = get_db().session.execute(query_string, {'now_date' : utc_now.strftime('%Y-%m-%d'), 'now_time' : utc_now.strftime('%Y-%m-%d %H:%M'), 'language' : 'hu', 'timezone' : '-01:00'})
             
@@ -154,7 +156,7 @@ def daily_checker():
         match_ids_today = []
         for i, match in enumerate(matches):
             match_ids_today.append(match.id)
-            match_time_object = time_handler.parse_datetime_string(match.datetime) 
+            match_time_object = time_handler.parse_datetime_string(match.datetime)
 
             if i == 0:
                 one_hour_before_first_match = match_time_object - timedelta(hours = 1, minutes = 0)
@@ -175,7 +177,7 @@ def daily_checker():
 
             if i == len(matches) - 1:
                 time_after_last_match = match_time_object + timedelta(hours=match_time_length['extra_time'], minutes=5)
-                
+
         # send out first
         if one_hour_before_first_match is not None:
             current_app.logger.info('Scheduled match reminder at: ' + one_hour_before_first_match.strftime('%Y-%m-%d %H:%M'))
