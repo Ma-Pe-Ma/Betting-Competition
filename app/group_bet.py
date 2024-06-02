@@ -164,7 +164,7 @@ def group_order():
 @bp.route('/tournament-bet.json', methods=('GET',))
 @sign_in_required()
 def tournament_bet_odds():
-    query_string = text("SELECT top1, top2, top4, top16, team.name, tr.translation as tr "
+    query_string = text("SELECT top1, top2, top4, top8, team.name, tr.translation as tr "
                         "FROM team "
                         "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
                         "ORDER BY team.name "
@@ -178,7 +178,7 @@ def tournament_bet_odds():
             0 : team.top1,
             1 : team.top2,
             2 : team.top4,
-            3 : team.top16,
+            3 : team.top8,
             "tr" : team.tr
         }
 

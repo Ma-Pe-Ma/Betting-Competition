@@ -16,7 +16,7 @@ def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
                         "FROM bet_user "
                         "LEFT JOIN ("
 	                        "SELECT tournament_bet.*, COALESCE(tournament_bet.bet, 0) AS bet, tr.translation AS local_name, "
-		                        "CASE tournament_bet.result WHEN 0 THEN team.top1 WHEN 1 THEN team.top2 WHEN 2 THEN team.top4 WHEN 3 THEN team.top16 ELSE 0 END AS multiplier "
+		                        "CASE tournament_bet.result WHEN 0 THEN team.top1 WHEN 1 THEN team.top2 WHEN 2 THEN team.top4 WHEN 3 THEN team.top8 ELSE 0 END AS multiplier "
 	                        "FROM tournament_bet "
 	                        "LEFT JOIN team ON team.name = tournament_bet.team "
 	                        "LEFT JOIN team_translation AS tr ON tr.name = tournament_bet.team AND tr.language = :l "

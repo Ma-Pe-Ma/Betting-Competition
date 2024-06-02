@@ -43,7 +43,7 @@ The player can choose a team and bet that the team
 * becomes champion
 * reaches the final
 * reaches the semi-finals
-* or advances to the knock-out stage
+* reaches the quarter-finals
 
 For every possible betting there has to be an odd specified by the admin (namely 4×number of teams). The maximum value of betting credit is higher for this  than for the group betting or higher than the default value of match betting.
 
@@ -195,7 +195,7 @@ The first registering admin is redirected to a page where two desciption csv fil
 
 One of them is a description about the teams, 
 
-    teamname|groupid|top1|top2|top4|top16
+    teamname|groupid|top1|top2|top4|top8
 
 The fields for this are the following:
 
@@ -240,8 +240,6 @@ To setup babel translations these commands need to be launched:
     pybabel compile -d .\app\resources\translations
 
 ## TO-DO
-* translate marked strings with Babel
-* check scheduling
 * make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean, containerization
 * clean-up ReadMe
 

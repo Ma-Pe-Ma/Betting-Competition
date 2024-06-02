@@ -30,6 +30,7 @@ class Default(object):
     # 0 - not using, 1 - email, 2 - browser notification
     DIRECT_MESSAGING = 0
 
+    # to generate the vapid keys for push notification with node js: web-push generate-vapid-keys [--json]
     PUSH_KEYS = {
         'public' : 'public key',
         'private' : 'private key',

@@ -144,7 +144,7 @@ def register() -> str:
         user_data['password1'] = generate_password_hash(user_data['password1'])
         user_data['admin'] = user_data['key'] == current_app.config['INVITATION_KEYS']['admin']
         # TODO CHECK AND ADD TIMEZONE!
-        user_data['timezone'] = '-01:00'
+        user_data['timezone'] = 'Europe/Budapest'
 
         if 'reminder' not in user_data or 'summary' not in user_data:
             user_data['reminder'] = 0

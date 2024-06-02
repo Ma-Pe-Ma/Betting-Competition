@@ -27,27 +27,28 @@ def prev_bets():
 
         match_list_query_string = score_calculator.match_evaluation_query_string.text + \
                             """SELECT match.id, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_bet.goal1 AS bgoal1, match_bet.goal2 AS bgoal2, match.odd1, match.odd2, match.oddX, match.round, 
-                            match_prize.bonus * match_prize.bet AS bonus, match_prize.multiplier * match_prize.bet AS prize, match_prize.bet AS bet, tr1.translation AS team1, tr2.translation AS team2, 
-                            (match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet) AS credit_diff, match_prize.success, 
-                            date(match.datetime || :timezone) AS date, strftime('%H:%M', match.datetime || :timezone) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday 
+                                match_prize.bonus * match_prize.bet AS bonus, match_prize.multiplier * match_prize.bet AS prize, match_prize.bet AS bet, tr1.translation AS team1, tr2.translation AS team2, 
+                                (match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet) AS credit_diff, match_prize.success, 
+                                (strftime('%w', match.datetime) + 6) % 7 AS weekday, match.datetime
                             FROM match 
                             LEFT JOIN match_prize ON match_prize.id = match.id 
                             LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u 
                             LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l 
                             LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l 
                             WHERE unixepoch(match.datetime) {r} unixepoch(:group_evaluation_time) AND unixepoch(match.datetime) < unixepoch(:now) 
-                            ORDER BY date, datetime"""
+                            ORDER BY datetime"""
 
-        match_list_query_parameters = {'now' : time_handler.get_now_time_string(), 'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'], 'l' : g.user['language'], 'u' : username, 'timezone' : g.user['timezone'], 'bullseye' : current_app.config['BONUS_MULTIPLIERS']['bullseye'], 'difference' : current_app.config['BONUS_MULTIPLIERS']['difference']}
+        match_list_query_parameters = {'now' : time_handler.get_now_time_string(), 'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'], 'l' : g.user['language'], 'u' : username, 'bullseye' : current_app.config['BONUS_MULTIPLIERS']['bullseye'], 'difference' : current_app.config['BONUS_MULTIPLIERS']['difference']}
 
         def add_to_days(match_rows):
             for match_row in match_rows:
-                if match_row.date not in days:
-                    days[match_row.date] = {'number' : len(days) + 1, 'date' : match_row.date, 'weekday' : match_row.weekday, 'matches' : []}
-
                 match_dict = match_row._asdict()
+                date, match_dict['time'] = time_handler.local_date_time_from_utc(match_dict['datetime'], g.user['timezone'])
+
+                if date not in days:
+                    days[date] = {'number' : len(days) + 1, 'date' : date, 'weekday' : match_dict['weekday'], 'matches' : []}
+
                 del match_dict['weekday']
-                del match_dict['date']
 
                 if match_row.bet > 0:
                     nonlocal number_of_match_bets
@@ -60,7 +61,7 @@ def prev_bets():
                 amount_at_end_of_match += match_dict['credit_diff']
                 match_dict['balance'] = amount_at_end_of_match
 
-                days[match_row.date]['matches'].append(match_dict)
+                days[date]['matches'].append(match_dict)
 
         start_amount = current_app.config['BET_VALUES']['starting_bet_amount']
         group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)

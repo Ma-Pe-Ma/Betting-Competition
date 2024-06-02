@@ -16,8 +16,8 @@ def initialize_teams(team_file_name, translation_file_name):
             fields = next(data_reader)
             for i, row in enumerate(data_reader):
                 position = i % 4 + 1
-                query_string = text('INSERT INTO team (name, group_id, position, top1, top2, top4, top16) VALUES (:n, :g, :p, :t1, :t2, :t4, :t16)')
-                get_db().session.execute(query_string, {'n' : row[0], 'g' : row[1], 'p' : position, 't1' : row[2], 't2' : row[3], 't4' : row[4], 't16' : row[5]})
+                query_string = text('INSERT INTO team (name, group_id, position, top1, top2, top4, top8) VALUES (:n, :g, :p, :t1, :t2, :t4, :t8)')
+                get_db().session.execute(query_string, {'n' : row[0], 'g' : row[1], 'p' : position, 't1' : row[2], 't2' : row[3], 't4' : row[4], 't8' : row[5]})
 
             get_db().session.commit()
 

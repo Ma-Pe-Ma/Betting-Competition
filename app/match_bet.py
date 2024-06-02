@@ -26,8 +26,7 @@ def match_bet():
                         "FROM bet_user "
                         "LEFT JOIN ("
                             "SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, match.round, match.max_bet, "
-                                "tr1.translation AS team1, tr2.translation AS team2, "
-                                "date(match.datetime || :timezone) AS date, strftime('%H:%M', time(match.datetime || :timezone)) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday, "
+                                "tr1.translation AS team1, tr2.translation AS team2, match.datetime, (strftime('%w', match.datetime) + 6) % 7 AS weekday, "
                                 "(unixepoch(:now) > unixepoch(match.datetime)) as started "
                             "FROM match "
                             "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = :l "
@@ -37,17 +36,18 @@ def match_bet():
                         "LEFT JOIN match_bet ON match_bet.username = bet_user.username AND match_bet.match_id = :match_id "
                         "WHERE bet_user.username = :u ")
 
-    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string(), 'u' : g.user['username'], 'l' : g.user['language'], 'timezone' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string(), 'u' : g.user['username'], 'l' : g.user['language']})
     match_from_db = result.fetchone()._asdict()
+    match_from_db['date'], match_from_db['time'] = time_handler.local_date_time_from_utc(match_from_db['datetime'], g.user['timezone'])
 
-    if match_from_db['started'] is None:
-        return gettext('Invalid match id.'), 400
+    if 'started' not in match_from_db or match_from_db['started'] == None:
+        return gettext(u'Match does not exist with the following id: %(id)s!', id=match_id), 400
 
     if match_from_db['started'] > 0:
-        return gettext('The specified match has already started!'), 400
+        return gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 400
 
     if request.method == 'GET':
-        return jsonify(match_from_db)
+        return jsonify(match_from_db), 200
 
     if request.method == 'POST':
         parameters = request.get_json()
@@ -66,11 +66,6 @@ def match_bet():
         get_db().session.execute(query_string, {'m' : match_id, 'u' : g.user['username'], 'b' : bet_value, 'g1' : goal1, 'g2' : goal2})
         get_db().session.commit()
 
-        if 'started' not in match_from_db or match_from_db['started'] == None:
-            flash(gettext(u'Match does not exist with the following id: %(id)s!', id=match_from_db['id']), 'danger')
-        elif match_from_db['started'] == 0:
-            flash(gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id']), 'success')
-        elif match_from_db['started'] == 1:
-            flash(gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 'danger')       
+        flash(gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id']), 'success')
 
-        return {}
+        return {}, 200

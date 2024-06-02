@@ -22,16 +22,23 @@ def get_comments(utc_datetime_string : str, newer_comments : bool, timezone : st
     else:
         r, o, s = "<", 'DESC', 8
 
-    query_string = text("SELECT comment.username, strftime('%Y-%m-%d %H:%M:%S', datetime(comment.datetime || :tz)) AS datetime, content AS comment, bet_user.email_hash AS email_hash, REPLACE(:s, '{email_hash}', bet_user.email_hash) AS image_path "
+    query_string = text("SELECT comment.username, strftime('%Y-%m-%d %H:%M:%S', datetime(comment.datetime)) AS datetime, content AS comment, bet_user.email_hash AS email_hash, REPLACE(:s, '{email_hash}', bet_user.email_hash) AS image_path "
                         "FROM comment "
                         "LEFT JOIN bet_user ON comment.username = bet_user.username "
                         "WHERE unixepoch(datetime) " + r + " unixepoch(:datetime) "
                         "ORDER BY unixepoch(datetime) " + o)
 
-    result = get_db().session.execute(query_string, {'datetime' : utc_datetime_string, 'tz' : timezone, 's' : current_app.config['IDENT_URL']})
+    result = get_db().session.execute(query_string, {'datetime' : utc_datetime_string, 's' : current_app.config['IDENT_URL']})
     comments = result.fetchall()[0:s]
 
-    return [comment._asdict() for comment in comments]
+    r = []
+    for comment in comments:
+        c = comment._asdict()
+        date, time = time_handler.local_date_time_from_utc(c['datetime'], timezone=timezone, format='%Y-%m-%d %H:%M:%S', time_format='%H:%M:%S')
+        c['datetime'] = '{date} {time}'.format(date=date, time=time)
+        r.append(c)
+
+    return r
 
 @bp.route('/chat', methods=('GET', 'POST',))
 @sign_in_required()
@@ -53,7 +60,8 @@ def chat_page():
         if request_object['datetime'] is None:
             utc_date = time_handler.get_now_time_object()
         else:
-            utc_date = time_handler.parse_datetime_string_with_seconds(request_object['datetime']) + timedelta(hours=int(g.user['timezone'][:3]), minutes=int(g.user['timezone'][4:]))
+            date, time = time_handler.utc_date_time_from_local(request_object['datetime'], timezone=g.user['timezone'], format='%Y-%m-%d %H:%M:%S', time_format='%H:%M:%S')
+            utc_date = time_handler.parse_datetime_string_with_seconds('{date} {time}'.format(date=date, time=time))
 
         response_object = {
             'newerComments' : request_object['newerComments'],

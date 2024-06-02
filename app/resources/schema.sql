@@ -49,7 +49,7 @@ CREATE TABLE team (
   top1 FLOAT,
   top2 FLOAT,
   top4 FLOAT,
-  top16 FLOAT
+  top8 FLOAT
 );
 
 -- Table containing team name translations
