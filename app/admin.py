@@ -145,7 +145,7 @@ def odd_edit():
         try:
             matchID = int(request.args.get('matchID'))
 
-            query_string = text("SELECT match.id, match.odd1, match.oddX, match.odd2, match.datetime, match.round, match.max_bet, match.goal1, match.goal2, "
+            query_string = text("SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, match.datetime, match.round, match.max_bet, match.goal1, match.goal2, "
                                 "t1.translation AS team1, t2.translation AS team2 "
                                 "FROM match "
                                 "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "

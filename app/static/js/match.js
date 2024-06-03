@@ -136,9 +136,9 @@ myModal.addEventListener('shown.bs.modal', (event) => {
                 matchDate.innerText = `${response['datetime']}`;
                 creditInput.value = response['max_bet'];
 
-                odd1.value = response['odd1'];
-                oddX.value = response['oddX'];
-                odd2.value = response['odd2'];
+                odd1.value = response['odd1'].toFixed(2);
+                oddX.value = response['oddX'].toFixed(2);
+                odd2.value = response['odd2'].toFixed(2);
             }
             else {
                 matchDate.innerText = `${response['date']} ${response['time']} `;
@@ -148,9 +148,9 @@ myModal.addEventListener('shown.bs.modal', (event) => {
 
                 maxBetCredit.innerText = `/ ${response['max_bet']}`;
 
-                odd1.innerText = `1: ${response['odd1']}`;
-                oddX.innerText = `X: ${response['oddX']}`;
-                odd2.innerText = `2: ${response['odd2']}`;
+                odd1.innerText = `1: ${response['odd1'].toFixed(2)}`;
+                oddX.innerText = `X: ${response['oddX'].toFixed(2)}`;
+                odd2.innerText = `2: ${response['odd2'].toFixed(2)}`;
             }
 
         }

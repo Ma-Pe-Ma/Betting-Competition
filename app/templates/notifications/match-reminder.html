@@ -1,7 +1,7 @@
 <h3>{% trans %}Dear {{username}},{% endtrans %}</h3>
 <p>{% trans %}Today is match day again!{% endtrans %}</p>
 {% if missing_bets|length > 0 %}
-<p>{% trans %}Don't forget to bet on the following match(es):{% endtrans %}</p>
+<p>{% trans %}Don't forget to bet on the following match(es){% endtrans %}:</p>
 <div>
     {% for missing in missing_bets %}
     <div>{{missing.datetime}} {{missing.team1}}&nbsp;-&nbsp;{{missing.team2}}</div>
@@ -10,7 +10,7 @@
 {% endif %}
 
 {% if non_missing_bets|length > 0 %}
-<p>{% trans %}You have bet on the following matches:{% endtrans %}</p>
+<p>{% trans %}You have bet on the following matches{% endtrans %}:</p>
 <div>
     {% for non_missing in non_missing_bets %}
     <div>{{non_missing.datetime}}&nbsp;:&nbsp;{{non_missing.team1}}&nbsp;-&nbsp;{{non_missing.team2}}&nbsp;&nbsp;&nbsp;&nbsp;{{non_missing.goal1}}&nbsp;-&nbsp;{{non_missing.goal2}}</div>

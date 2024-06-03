@@ -1,0 +1,1079 @@
+# Hungarian translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-06-03 22:11+0200\n"
+"PO-Revision-Date: 2024-06-02 16:13+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: hu\n"
+"Language-Team: hu <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: app/admin.py:86
+msgid "Messages updated successfully!"
+msgstr "Üzenetek sikeresen frissítve"
+
+#: app/admin.py:96 app/chat.py:51
+msgid "Too short message!"
+msgstr "Túl rövid üzenet"
+
+#: app/admin.py:99
+msgid "Too short subject!"
+msgstr "Túl rövid tárgy!"
+
+#: app/admin.py:112
+msgid "Error sending notification to everyone!"
+msgstr "Hiba az értesítések küldése közben!"
+
+#: app/admin.py:114
+msgid "Notifications successfully sent!"
+msgstr "Értesítések sikeresen elküldve!"
+
+#: app/admin.py:124
+msgid "player"
+msgstr "játékos"
+
+#: app/admin.py:159
+msgid "Failed to fetch match data!"
+msgstr "Hiba a meccs-adatok letöltése közben!"
+
+#: app/admin.py:165
+msgid "Invalid goal value specified!"
+msgstr "Hibás gól érték!"
+
+#: app/admin.py:175
+#, python-format
+msgid "Updating data for match %(id)s was successful!"
+msgstr "%(id)s. meccs adatai sikeresen frissítve!"
+
+#: app/admin.py:189
+msgid "Group results set successfully!"
+msgstr "Csoportkör-eredmények sikereresen megadva!"
+
+#: app/admin.py:201
+msgid "Tournament bet results set successfully!"
+msgstr "Torna-tipp eredmények sikeresen megadva!"
+
+#: app/admin.py:212
+msgid "One of the files was not specified for the request!"
+msgstr "Az egyik fájl nem lett megadva a kéréshez!"
+
+#: app/admin.py:218
+msgid "No team file was specified!"
+msgstr "A csapatleíró fájl nem lett megadva!"
+
+#: app/admin.py:222
+msgid "No translation file was specified!"
+msgstr "A csapatnév-fordítás tartalmazó fájl nem lett megadva!"
+
+#: app/admin.py:225
+msgid "The uploaded file's extension is not correct!"
+msgstr "Feltöltendő fájl kiterjesztése nem megfelelő!"
+
+#: app/admin.py:237
+msgid "Failing to write team-data files to local storage!"
+msgstr "Hiba a csapat leíró fájlok mentése közben!"
+
+#: app/admin.py:240
+msgid "Error while initializing the teams!"
+msgstr "Hiba a csapatok inicializálása közben!"
+
+#: app/admin.py:243
+msgid "Error while initializing the matches!"
+msgstr "Hiba a meccsek inicializálása közben!"
+
+#: app/admin.py:245
+msgid "Team data file uploading was successful!"
+msgstr "Csapatleíró fájlok feltöltése sikeres volt!"
+
+#: app/admin.py:264
+msgid "Database file was not specified!"
+msgstr "Az adatbázis fájl nem lett megadva!"
+
+#: app/admin.py:269
+msgid "Database file is null!"
+msgstr "Az adatbázis fájl nem létezik!"
+
+#: app/admin.py:278
+msgid "Database file uploading was successful!"
+msgstr "Az adatbázis fájl feltöltése sikeres volt!"
+
+#: app/admin.py:281
+msgid "Error while saving new database file!"
+msgstr "Hiba az új adatbázisfájl lementése közben!"
+
+#: app/admin.py:283
+msgid "The specified format cannot be uploaded!"
+msgstr "A megadott formátum nem tölthető fel!"
+
+#: app/admin.py:289
+msgid "Match data updating failed!"
+msgstr "Hiba a meccs adatok frissítése közben!"
+
+#: app/admin.py:291
+msgid "Match data succsesfully updated!"
+msgstr "A meccs adatok sikeresen frissítve!"
+
+#: app/admin.py:297
+msgid "Standings notification failed!"
+msgstr "Hiba az állás-értésítés közben!"
+
+#: app/admin.py:299
+msgid "Standings successfully notified!"
+msgstr "Az állás sikeresen értesítve!"
+
+#: app/auth.py:111
+msgid "Chosen nickname is too short (min. 3 characters)."
+msgstr "A választott becenév túl rövid (min. 3 karakter)."
+
+#: app/auth.py:113
+msgid "Chosen nickname is too long (max. 20 characters)."
+msgstr "A választott becenév túl hosszú (max. 20 karakter)."
+
+#: app/auth.py:115
+msgid "E-mail address is required."
+msgstr "E-mail cím megadása kötelező."
+
+#: app/auth.py:117 app/auth.py:342
+msgid "The given password is too short (min. 8 characters)."
+msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
+
+#: app/auth.py:119 app/auth.py:344
+msgid "The two passwords are not identical."
+msgstr "A két jelszó nem egyezik."
+
+#: app/auth.py:121
+msgid "The invitation key is not valid."
+msgstr "A meghívó-kód nem megfelelő."
+
+#: app/auth.py:127
+msgid "Invalid reminder/summary value."
+msgstr "Hibás emlékeztető/összesítő érték."
+
+#: app/auth.py:132
+msgid "The chosen nickname is already taken."
+msgstr "A megadott becenév már foglalt."
+
+#: app/auth.py:137
+msgid "The chosen email address is already taken."
+msgstr "A megadott email cím már regisztrálva van."
+
+#: app/auth.py:224
+msgid "Invalid username!"
+msgstr "A megadott felhasználónév nem létezik."
+
+#: app/auth.py:226
+msgid "Invalid password!"
+msgstr "A megadott jelszó nem megfelelő."
+
+#: app/auth.py:270
+msgid "Settings were successfully modified"
+msgstr "A beállítások sikeresen módosítva!"
+
+#: app/auth.py:292 app/auth.py:299
+msgid "Email is not registered"
+msgstr "Az email-cím nincs regisztrálva."
+
+#: app/auth.py:338
+msgid "Email is not specified."
+msgstr "Az email-cím nem lett megadva."
+
+#: app/auth.py:340
+msgid "Reset key is not specified."
+msgstr "A visszaállító-kulcs nem lett megadva."
+
+#: app/auth.py:350
+msgid "The given nickname does not exist."
+msgstr "A megadott felhasználónév nem létezik."
+
+#: app/auth.py:355
+msgid "No password reset key has been requested."
+msgstr "Nem lett igényelve visszaállító-kulcs."
+
+#: app/auth.py:357
+msgid "The given reset key is invalid."
+msgstr "A megadott visszaállító-kulcs nem megfelelő."
+
+#: app/chat.py:58
+msgid "Invalid data sent!"
+msgstr "Érvényelen üzenet!"
+
+#: app/group_bet.py:43
+msgid "Invalid team for tournament bet."
+msgstr "Nem megfelelő csapat a torna-tipphez."
+
+#: app/group_bet.py:49
+msgid "Invalid result for tournament bet."
+msgstr "Nem megfelelő végeredmény a torna-tipphez."
+
+#: app/group_bet.py:57
+msgid "Invalid bet amount at tournament bet."
+msgstr "Nem megfelelő érték a tornatipphez."
+
+#: app/group_bet.py:74
+msgid "Invalid bet amount at group bet."
+msgstr "Nem megfelelő érték a csoportkör-fogadáshoz."
+
+#: app/group_bet.py:84
+msgid "Invalid group or team name at the group bet."
+msgstr "Érvénytelen csoport- vagy csapat-név a csoportkör-fogadásnál."
+
+#: app/group_bet.py:110
+msgid "Group bet successfully updated!"
+msgstr "Csoportkör-tippek sikeresen frissítve!"
+
+#: app/match_bet.py:44
+#, python-format
+msgid "Match does not exist with the following id: %(id)s!"
+msgstr "Nem létezik meccs a következő azonosítóval: %(id)s!"
+
+#: app/match_bet.py:47
+#, python-format
+msgid "Match %(id)s has already started!"
+msgstr "Meccs %(id)s már elkezdődött!"
+
+#: app/match_bet.py:60 app/templates/includes/match-modal.html:69
+msgid "Invalid input for goal or credit!"
+msgstr "Érvénytelen gól vagy kredit érték!"
+
+#: app/match_bet.py:63 app/templates/includes/match-modal.html:70
+msgid "Invalid value (negative) for goal or credit!"
+msgstr "Nem megfelelő (negatív) érték gólnak/kreditnek!"
+
+#: app/match_bet.py:69
+#, python-format
+msgid "Betting on match %(id)s was successful!"
+msgstr "Sikeres fogadás a következő azonosítóra: %(id)s!"
+
+#: app/templates/admin.html:7 app/templates/layouts/base.html:44
+msgid "Admin"
+msgstr "Admin"
+
+#: app/templates/admin.html:27 app/templates/chat.html:11
+#: app/templates/group-bet/group-edit.html:103
+#: app/templates/includes/alert.html:20
+#: app/templates/includes/match-modal.html:67
+#: app/templates/includes/player-selector.html:4
+msgid "Failure!"
+msgstr "Hiba!"
+
+#: app/templates/admin.html:28 app/templates/chat.html:12
+#: app/templates/includes/alert.html:19
+msgid "Success!"
+msgstr "Siker!"
+
+#: app/templates/admin.html:35
+msgid "Match-data modifying"
+msgstr "Meccs-adat módosítás"
+
+#: app/templates/admin.html:41
+msgid "Update match data from fixture"
+msgstr "Meccs-adat frissítése"
+
+#: app/templates/admin.html:46 app/templates/home-page.html:27
+msgid "Time"
+msgstr "Időpont"
+
+#: app/templates/admin.html:47 app/templates/home-page.html:28
+#: app/templates/includes/match-modal.html:19
+#: app/templates/previous-bet/previous-day-match.html:16
+msgid "Teams"
+msgstr "Csapatok"
+
+#: app/templates/admin.html:49 app/templates/admin.html:159
+#: app/templates/group-bet/group-after.html:44
+#: app/templates/group-bet/group-edit.html:36
+#: app/templates/group-bet/tournament-bet.html:11
+#: app/templates/includes/match-modal.html:26
+#: app/templates/previous-bet/previous-day-match.html:18
+msgid "Result"
+msgstr "Eredmény"
+
+#: app/templates/admin.html:50
+msgid "Max credit"
+msgstr "Fogadható kredit"
+
+#: app/templates/admin.html:72
+msgid "Home page messages"
+msgstr "Főoldali üzenetek"
+
+#: app/templates/admin.html:79
+msgid "Registering message"
+msgstr "Regisztrációs üzenet"
+
+#: app/templates/admin.html:79
+#, python-format
+msgid "Message %(message_id)s"
+msgstr "Üzenet %(message_id)s"
+
+#: app/templates/admin.html:83
+msgid "Set"
+msgstr "Beállít"
+
+#: app/templates/admin.html:91
+msgid "Sending message to users"
+msgstr "Üzenet küldése a felhasználóknak"
+
+#: app/templates/admin.html:97
+msgid "Sending standings immediately"
+msgstr "Állás küldése azonnal"
+
+#: app/templates/admin.html:101
+msgid "Subject"
+msgstr "Tárgy"
+
+#: app/templates/admin.html:105
+msgid "Message"
+msgstr "Üzenet"
+
+#: app/templates/admin.html:108 app/templates/admin.html:171
+#: app/templates/admin.html:202 app/templates/chat.html:76
+#: app/templates/group-bet/group-edit.html:108
+#: app/templates/includes/match-modal.html:74
+msgid "Send"
+msgstr "Beküld"
+
+#: app/templates/admin.html:116
+msgid "Generate standings email"
+msgstr "Állást tartalmazó email generálása"
+
+#: app/templates/admin.html:121
+msgid "Generate"
+msgstr "Generálás"
+
+#: app/templates/admin.html:124
+msgid "Email adresses"
+msgstr "Email-címek"
+
+#: app/templates/admin.html:126 app/templates/layouts/base.html:41
+#: app/templates/notifications/standings-subject.txt:1
+#: app/templates/standings.html:3
+msgid "Standings"
+msgstr "Állás"
+
+#: app/templates/admin.html:136
+msgid "Group result evaluation"
+msgstr "Csoportkör-tippek kiértékelése"
+
+#: app/templates/admin.html:145 app/templates/group-bet/group-edit.html:67
+msgid "Set the order of the groups by dragging!"
+msgstr "ÁLlítsd be csapatok a sorrendjét vonszolással!"
+
+#: app/templates/admin.html:149 app/templates/group-bet/group-after.html:17
+#: app/templates/group-bet/group-during.html:17
+#: app/templates/group-bet/group-edit.html:70
+msgid "Group"
+msgstr "Csoport"
+
+#: app/templates/admin.html:175
+msgid "Group evaluation will take place later."
+msgstr "A csoportkör-tippek kiértékelése később esedékes."
+
+#: app/templates/admin.html:185
+msgid "Tournament result evaluation"
+msgstr "Torna-tippek kiértékelése"
+
+#: app/templates/admin.html:196
+msgid "Undetermined"
+msgstr "Nem meghatározott."
+
+#: app/templates/admin.html:197
+msgid "Successful"
+msgstr "Sikeres."
+
+#: app/templates/admin.html:198
+msgid "Failed"
+msgstr "Sikertelen."
+
+#: app/templates/admin.html:205
+msgid "Tournament bet evaluation will take place later."
+msgstr "A torna-tippek kiértékelése később esedékes."
+
+#: app/templates/admin.html:213
+msgid "Team-data initialization"
+msgstr "Csapat-adat inicializálása"
+
+#: app/templates/admin.html:219
+msgid "Team description"
+msgstr "Csapat-leíró fájl"
+
+#: app/templates/admin.html:224
+msgid "Team translation"
+msgstr "Csapatnév-fordító fájl"
+
+#: app/templates/admin.html:228 app/templates/admin.html:246
+msgid "Upload"
+msgstr "Feltöltés"
+
+#: app/templates/admin.html:235
+msgid "Database down/upload"
+msgstr "Adatbázis le-/feltöltés"
+
+#: app/templates/admin.html:242
+msgid "Database file"
+msgstr "Adatbázis fájl"
+
+#: app/templates/admin.html:249 app/templates/admin.html:255
+msgid "Download"
+msgstr "Letöltés"
+
+#: app/templates/admin.html:254
+msgid "Log-file"
+msgstr "Napló-fájl"
+
+#: app/templates/admin.html:264
+msgid "Password reset keys"
+msgstr "Jelszó visszaállító-kulcsok"
+
+#: app/templates/admin.html:272 app/templates/auth/reset-password.html:16
+msgid "Email"
+msgstr "Email"
+
+#: app/templates/admin.html:273
+msgid "Expiration time"
+msgstr "Érvényességi idő"
+
+#: app/templates/admin.html:274
+msgid "Key"
+msgstr "Kulcs"
+
+#: app/templates/admin.html:287
+msgid "No reset keys have been generated!"
+msgstr "Nincs érvényes visszaállító-kulcs!"
+
+#: app/templates/chat.html:4 app/templates/layouts/base.html:43
+msgid "Chat"
+msgstr ""
+
+#: app/templates/chat.html:12
+msgid "Comment posted successfully!"
+msgstr "Hozzászólás sikeresen rögzítve!"
+
+#: app/templates/chat.html:21
+msgid "Older"
+msgstr "Régebbiek"
+
+#: app/templates/chat.html:25 app/templates/chat.html:47
+#: app/templates/chat.html:67
+msgid "New comment"
+msgstr "Új hozzászólás"
+
+#: app/templates/chat.html:29
+msgid "Newer"
+msgstr "Újabbak"
+
+#: app/templates/chat.html:75
+msgid "Preview"
+msgstr "Előnézet"
+
+#: app/templates/home-page.html:6
+msgid "Home page"
+msgstr "Fogadás"
+
+#: app/templates/home-page.html:20
+#: app/templates/previous-bet/previous-day-match.html:5
+msgid "Current credit"
+msgstr "Jelenlegi kredit"
+
+#: app/templates/group-bet/group-after.html:51
+#: app/templates/group-bet/group-during.html:27
+#: app/templates/group-bet/group-edit.html:80 app/templates/home-page.html:30
+#: app/templates/includes/match-modal.html:26
+#: app/templates/previous-bet/previous-day-match.html:19
+msgid "Tip"
+msgstr "Tipp"
+
+#: app/templates/group-bet/group-after.html:25
+#: app/templates/group-bet/group-during.html:37
+#: app/templates/group-bet/group-edit.html:56
+#: app/templates/group-bet/group-edit.html:90
+#: app/templates/group-bet/tournament-bet.html:23
+#: app/templates/home-page.html:31
+#: app/templates/previous-bet/previous-day-match.html:20
+msgid "Bet"
+msgstr "Tét"
+
+#: app/templates/home-page.html:36
+#: app/templates/previous-bet/previous-day-match.html:27
+msgid "day"
+msgstr "nap"
+
+#: app/templates/home-page.html:52
+msgid "The competition has ended! Please check out the results!"
+msgstr "A bajnokság véget ért! Nézd meg a végeredményt!"
+
+#: app/templates/notifications/standings.html:6 app/templates/standings.html:13
+msgid "Position"
+msgstr "Helyezés"
+
+#: app/templates/standings.html:14
+msgid "Icon"
+msgstr "Ikon"
+
+#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
+#: app/templates/notifications/standings.html:7 app/templates/standings.html:15
+msgid "Username"
+msgstr "Felhasználónév"
+
+#: app/templates/notifications/standings.html:8 app/templates/standings.html:16
+msgid "Score"
+msgstr "Pontszám"
+
+#: app/templates/notifications/standings.html:9 app/templates/standings.html:17
+msgid "Score change"
+msgstr "Pontszám-változás"
+
+#: app/templates/notifications/standings.html:10
+#: app/templates/standings.html:18
+msgid "Position change"
+msgstr "Helyezés-változás"
+
+#: app/templates/standings.html:35
+msgid "History of standings"
+msgstr "Bajnokság története"
+
+#: app/templates/standings.html:35
+msgid "credit"
+msgstr "kredit"
+
+#: app/templates/auth/forgotten-password.html:5
+#: app/templates/auth/forgotten-password.html:11
+msgid "Forgotten password"
+msgstr "Elfelejtett jelszó"
+
+#: app/templates/auth/forgotten-password.html:17
+msgid "Please specify your email address for password recovery!"
+msgstr "Add meg az email-címet a jelszóvisszaállításhoz!"
+
+#: app/templates/auth/forgotten-password.html:22
+#: app/templates/auth/user-template.html:13
+msgid "email@address.com"
+msgstr "email@cim.hu"
+
+#: app/templates/auth/forgotten-password.html:24
+#: app/templates/auth/user-template.html:15
+msgid "Please enter a valid email address."
+msgstr "Adj meg egy érvényes email címet."
+
+#: app/templates/auth/forgotten-password.html:28
+#: app/templates/auth/reset-password.html:5
+#: app/templates/auth/reset-password.html:11
+#: app/templates/auth/reset-password.html:47
+msgid "Reset password"
+msgstr "Jelszó visszallítása"
+
+#: app/templates/auth/forgotten-password.html:32
+msgid "New password requested! Check your email for further action!"
+msgstr "Új jelszó igényelve! Ellenőrízd az emailjeid a további teendőkért!"
+
+#: app/templates/auth/forgotten-password.html:36
+msgid ""
+"New password requested! Please contact one of the admins for further "
+"action!"
+msgstr "Új jelszó igényelve! Kérlek vedd fel a kontaktot valamelyik adminnal!"
+
+#: app/templates/auth/profile.html:3 app/templates/auth/profile.html:9
+#: app/templates/layouts/base.html:28
+msgid "Profile"
+msgstr "Profil"
+
+#: app/templates/auth/profile.html:15
+msgid "Save"
+msgstr "Mentés"
+
+#: app/templates/auth/register-fail.html:4
+msgid "Register failure!"
+msgstr "Meghiúsult regisztráció!"
+
+#: app/templates/auth/register-fail.html:9
+msgid "Registering is not available anymore as the tournament has begun!"
+msgstr "A regisztráció nem már elérhető, mert a torna elkezdődött!"
+
+#: app/templates/auth/register.html:3 app/templates/auth/register.html:9
+#: app/templates/auth/register.html:43
+msgid "Register"
+msgstr "Regisztráció"
+
+#: app/templates/auth/register.html:18
+msgid "Invitation-key"
+msgstr "Meghívó-kulcs"
+
+#: app/templates/auth/register.html:21
+msgid "A valid invitation key is required."
+msgstr "Egy érvényes meghívó-kulcs megadása kötelező."
+
+#: app/templates/auth/register.html:26 app/templates/auth/sign-in.html:21
+msgid "Password"
+msgstr "Jelszó"
+
+#: app/templates/auth/register.html:29 app/templates/auth/register.html:37
+#: app/templates/auth/reset-password.html:35
+#: app/templates/auth/reset-password.html:43
+msgid "A valid password is required."
+msgstr "Egy érvényes jelszó megadás kötelező."
+
+#: app/templates/auth/register.html:34
+msgid "Password again"
+msgstr "Jelszó újra"
+
+#: app/templates/auth/reminder-template.html:3
+msgid "E-mail notifications"
+msgstr "E-mail értesítés"
+
+#: app/templates/auth/reminder-template.html:4
+msgid "Browser notifications"
+msgstr "Böngészős értesítés"
+
+#: app/templates/auth/reminder-template.html:11
+msgid "Match reminder (1 hour before the starting of the first match)"
+msgstr "Meccs-emlékeztető (1 órával az első meccs kezdése előtt)"
+
+#: app/templates/auth/reminder-template.html:17
+msgid "On those days when there is a match without a bet"
+msgstr "Azokon a napokon, amelyiken nem történt fogadás"
+
+#: app/templates/auth/reminder-template.html:23
+msgid "Every matchday"
+msgstr "Mindegyik nap"
+
+#: app/templates/auth/reminder-template.html:30
+msgid "I don't want to receive reminders"
+msgstr "Nem szeretnék emlékeztetőt kérni."
+
+#: app/templates/auth/reminder-template.html:36
+msgid "Standings notification at the end of matchdays"
+msgstr "Állásközlő értesítés a nap végén"
+
+#: app/templates/auth/reminder-template.html:40
+msgid "Yes"
+msgstr "Igen"
+
+#: app/templates/auth/reminder-template.html:47
+msgid "No"
+msgstr "Nem"
+
+#: app/templates/auth/reset-password.html:19
+#: app/templates/auth/reset-password.html:27
+#: app/templates/auth/user-template.html:7
+msgid "A valid username is required."
+msgstr "Egy érvényes felhasználónév megadás kötelező."
+
+#: app/templates/auth/reset-password.html:24
+msgid "Reset-key"
+msgstr "visszaállító-kulcs"
+
+#: app/templates/auth/reset-password.html:32
+msgid "New password"
+msgstr "Új jelszó"
+
+#: app/templates/auth/reset-password.html:40
+msgid "New password again"
+msgstr "Új jelszó újra"
+
+#: app/templates/auth/sign-in.html:5 app/templates/auth/sign-in.html:11
+#: app/templates/auth/sign-in.html:43
+#: app/templates/error-handling/page-403.html:12
+msgid "Sign in"
+msgstr "Bejelentkezés"
+
+#: app/templates/auth/sign-in.html:16
+msgid "username"
+msgstr "felhasználónév"
+
+#: app/templates/auth/sign-in.html:20
+msgid "password"
+msgstr "jelszó"
+
+#: app/templates/auth/sign-in.html:28
+msgid "Stay signed in"
+msgstr "Bejelentkezve maradok"
+
+#: app/templates/auth/sign-in.html:36
+msgid "Don't have an account yet?"
+msgstr "Nincs még fiókod?"
+
+#: app/templates/auth/sign-in.html:36
+msgid "Sign up"
+msgstr "Regisztráció"
+
+#: app/templates/auth/sign-in.html:39
+msgid "Forgot your password?"
+msgstr "Elfelejtetted a jelszavad?"
+
+#: app/templates/auth/sign-in.html:39
+msgid "Request new"
+msgstr "Új igénylése"
+
+#: app/templates/auth/user-template.html:20
+msgid "Language"
+msgstr "Nyelv"
+
+#: app/templates/error-handling/page-403.html:3
+msgid "Page 403"
+msgstr "403-as oldal"
+
+#: app/templates/error-handling/page-403.html:10
+msgid "Access denied"
+msgstr "Hozzáférés megtagadva"
+
+#: app/templates/error-handling/page-403.html:11
+msgid "You don't have the proper privileges to see this page."
+msgstr "Nincs megfelelő jogosultságod megtekinteni az oldalt."
+
+#: app/templates/error-handling/page-404.html:3
+msgid "Page 404"
+msgstr "404-es oldal"
+
+#: app/templates/error-handling/page-404.html:10
+msgid "The page cannot be found!"
+msgstr "Az oldal nem található."
+
+#: app/templates/error-handling/page-404.html:11
+msgid "You are probably at the wrong place."
+msgstr "Valószínűleg rossz helyen vagy."
+
+#: app/templates/error-handling/page-404.html:12
+#: app/templates/error-handling/page-500.html:12
+msgid "Homepage"
+msgstr "Kezdőoldal"
+
+#: app/templates/error-handling/page-500.html:3
+msgid "Page 500"
+msgstr "500-as oldal"
+
+#: app/templates/error-handling/page-500.html:10
+msgid "Internal Server Error"
+msgstr "Belső kiszolgálóhiba"
+
+#: app/templates/error-handling/page-500.html:11
+msgid "Something went wrong on our side, please contact us!"
+msgstr "Valami hiba történt a részünkről, kérlek vedd fel a kapcsolatot!"
+
+#: app/templates/group-bet/group-after.html:7
+#: app/templates/group-bet/group-during.html:8
+#: app/templates/group-bet/group-edit.html:18
+#: app/templates/previous-bet/previous-day-match.html:8
+msgid "Starting credit amount"
+msgstr "Kezdő kredit érték"
+
+#: app/templates/group-bet/group-after.html:8
+#: app/templates/previous-bet/previous-day-match.html:9
+msgid "Total group + tournament bet amount"
+msgstr "Csoportkör- és torna-tipp fogadási kredit"
+
+#: app/templates/group-bet/group-after.html:9
+msgid "Remaining credit after group + tournament bet"
+msgstr "Fennmaradó kredit csoportkör- és torna-tipp után"
+
+#: app/templates/group-bet/group-after.html:10
+msgid "Total group win amount"
+msgstr "Teljes csoportkör-tipp nyeremény"
+
+#: app/templates/group-bet/group-after.html:20
+msgid "Hits"
+msgstr "Találatok"
+
+#: app/templates/group-bet/group-after.html:28
+#: app/templates/group-bet/tournament-bet.html:28
+#: app/templates/previous-bet/previous-day-match.html:21
+msgid "Prize"
+msgstr "Nyeremény"
+
+#: app/templates/group-bet/group-after.html:31
+msgid "Difference"
+msgstr "Különbség"
+
+#: app/templates/group-bet/group-choose.html:3
+#: app/templates/group-bet/group-edit.html:6 app/templates/layouts/base.html:42
+msgid "Group bet"
+msgstr "Csoportkör-fogadás"
+
+#: app/templates/group-bet/group-during.html:9
+msgid "Remaining after bet"
+msgstr "Fennmaradó kredit"
+
+#: app/templates/group-bet/group-edit.html:23
+#: app/templates/group-bet/tournament-bet.html:2
+msgid "Tournament-bet"
+msgstr "Torna-tipp"
+
+#: app/templates/group-bet/group-edit.html:28
+#: app/templates/group-bet/group-edit.html:124
+#: app/templates/group-bet/tournament-bet.html:6
+msgid "Team"
+msgstr "Csapat"
+
+#: app/templates/group-bet/group-edit.html:48
+#: app/templates/group-bet/tournament-bet.html:18
+#: app/templates/includes/match-modal.html:40
+msgid "Odd"
+msgstr "Szorzó"
+
+#: app/templates/group-bet/group-edit.html:61
+#: app/templates/group-bet/tournament-bet.html:28
+msgid "Expected prize"
+msgstr "Várható nyeremény"
+
+#: app/templates/group-bet/group-edit.html:99
+msgid "Remaining credit"
+msgstr "Fennmaradó kredit"
+
+#: app/templates/group-bet/group-edit.html:105
+#: app/templates/includes/alert.html:31
+#: app/templates/includes/player-selector.html:4
+msgid "An error occured while communicating with the server!"
+msgstr "Hiba történt a szerver való kommunikáció során!"
+
+#: app/templates/group-bet/group-edit.html:106
+#: app/templates/includes/alert.html:32
+msgid "An internal server error occured!"
+msgstr "Egy belső kiszolgálóhiba történt!"
+
+#: app/templates/group-bet/group-edit.html:117
+msgid "Tournament bet odds"
+msgstr "Torna-tipp szorzók"
+
+#: app/templates/group-bet/tournament-bet.html:7
+msgid "No team was chosen!"
+msgstr "Nem lett csapat kiválasztva!"
+
+#: app/templates/group-bet/tournament-bet.html:13
+msgid "No result was selected!"
+msgstr "Nem lett eredmény megadva!"
+
+#: app/templates/includes/alert.html:21
+msgid "Information"
+msgstr "Információ"
+
+#: app/templates/includes/day-name-map.html:2
+msgid "Monday"
+msgstr "Hétfő"
+
+#: app/templates/includes/day-name-map.html:3
+msgid "Tuesday"
+msgstr "Kedd"
+
+#: app/templates/includes/day-name-map.html:4
+msgid "Wednesday"
+msgstr "Szerda"
+
+#: app/templates/includes/day-name-map.html:5
+msgid "Thursday"
+msgstr "Csütörtök"
+
+#: app/templates/includes/day-name-map.html:6
+msgid "Friday"
+msgstr "Péntek"
+
+#: app/templates/includes/day-name-map.html:7
+msgid "Saturday"
+msgstr "Szombat"
+
+#: app/templates/includes/day-name-map.html:8
+msgid "Sunday"
+msgstr "Vasárnap"
+
+#: app/templates/includes/match-modal.html:8
+msgid "Match"
+msgstr "Meccs"
+
+#: app/templates/includes/match-modal.html:8
+#: app/templates/includes/player-selector.html:16
+msgid "Loading..."
+msgstr "Betöltés.."
+
+#: app/templates/includes/match-modal.html:14
+msgid "Date"
+msgstr "Dátum"
+
+#: app/templates/includes/match-modal.html:49
+msgid "Odds"
+msgstr "Szorzók"
+
+#: app/templates/includes/match-modal.html:57
+msgid "Bet credit"
+msgstr "Tét"
+
+#: app/templates/includes/match-modal.html:57
+msgid "Max bet credit"
+msgstr "Max tét"
+
+#: app/templates/includes/match-modal.html:71
+msgid "Specify both or neither goals!"
+msgstr "Add meg mindkettő gólértéket."
+
+#: app/templates/includes/player-selector.html:7
+msgid "Player"
+msgstr "Játékos"
+
+#: app/templates/includes/theme-switcher.html:25
+msgid "Toggle theme"
+msgstr "Téma váltása"
+
+#: app/templates/includes/theme-switcher.html:31
+msgid "Light"
+msgstr "Világos"
+
+#: app/templates/includes/theme-switcher.html:38
+msgid "Dark"
+msgstr "Sötét"
+
+#: app/templates/includes/theme-switcher.html:45
+msgid "Auto"
+msgstr "Auto"
+
+#: app/templates/includes/tournament-bet-result.html:1
+msgid "Champion"
+msgstr "Bajnok"
+
+#: app/templates/includes/tournament-bet-result.html:1
+msgid "Finalist"
+msgstr "Döntős"
+
+#: app/templates/includes/tournament-bet-result.html:1
+msgid "Semi-finals"
+msgstr "Elődöntős"
+
+#: app/templates/includes/tournament-bet-result.html:1
+msgid "Quarter-finals"
+msgstr "Nyolcaddöntős"
+
+#: app/templates/layouts/base-unsigned.html:5 app/templates/layouts/base.html:4
+msgid "Betting Competition"
+msgstr "Tippbajnokság"
+
+#: app/templates/layouts/base-unsigned.html:17
+#: app/templates/layouts/base.html:18 app/templates/layouts/base.html:19
+msgid "Betting competition!"
+msgstr "Tippbajnokság!"
+
+#: app/templates/layouts/base.html:30
+msgid "Sign out"
+msgstr "Kijelentkezés"
+
+#: app/templates/layouts/base.html:39
+msgid "Betting"
+msgstr "Fogadás"
+
+#: app/templates/layouts/base.html:40
+msgid "Results"
+msgstr "Eredmények"
+
+#: app/templates/notifications/match-reminder-push.html:2
+msgid "You've forgotten to bet on some of today's matches!"
+msgstr "Elfelejtettél tippelni valamelyik mai meccsre!"
+
+#: app/templates/notifications/match-reminder-push.html:4
+#: app/templates/notifications/match-reminder.html:2
+msgid "Today is match day again!"
+msgstr "Ma ismét meccsnap van!"
+
+#: app/templates/notifications/match-reminder-subject.txt:1
+msgid "Missing bet"
+msgstr "Hiányzó fogadás"
+
+#: app/templates/notifications/match-reminder-subject.txt:1
+msgid "Match reminder"
+msgstr "Meccs emlékeztető."
+
+#: app/templates/notifications/match-reminder.html:1
+#: app/templates/notifications/standings.html:1
+#: app/templates/notifications/welcome.html:1
+#, python-format
+msgid "Dear %(username)s,"
+msgstr "Kedves %(username)s!"
+
+#: app/templates/notifications/match-reminder.html:4
+msgid "Don't forget to bet on the following match(es)"
+msgstr "Ne felejts el fogadni a következő meccsekre"
+
+#: app/templates/notifications/match-reminder.html:13
+msgid "You have bet on the following matches"
+msgstr "A következő meccsekre már fogadtál"
+
+#: app/templates/notifications/match-reminder.html:20
+#: app/templates/notifications/standings.html:24
+#: app/templates/notifications/welcome.html:8
+msgid "Best regards: The Tipmaster"
+msgstr "Üdvözlettel: A tippmester"
+
+#: app/templates/notifications/standings-push.html:1
+msgid "The match-day has ended, check out the current standings!"
+msgstr "A meccsnapnak vége, nézd meg a jelenlegi állást!"
+
+#: app/templates/notifications/standings.html:3
+#, python-format
+msgid ""
+"At the end of %(date)s. the standings of the competition are the "
+"followings"
+msgstr "%(date)s nap végén az állás a következő"
+
+#: app/templates/notifications/welcome-push.html:1
+msgid "You have successfully subscribed for notifications!"
+msgstr "Sikeresen feliratkoztál az értesítésekre!"
+
+#: app/templates/notifications/welcome-subject.txt:1
+msgid "Betting competition - Successful registration!"
+msgstr "Tippbajnokság - Sikeres regisztráció!"
+
+#: app/templates/notifications/welcome.html:3
+msgid "You have successfully registered for the betting competition!"
+msgstr "Sikeresen regisztráltál a tippbajnokságra!"
+
+#: app/templates/notifications/welcome.html:5
+msgid ""
+"If you have any questions or you have found a bug then you can send them "
+"to this address or write to the chat plugin on the home page."
+msgstr ""
+"Ha bármilyen kérdésed van, vagy valmilyen hibába ütköztél, akkor az erre "
+"címre küldd el, vagy írd meg a chat-felületen."
+
+#: app/templates/notifications/welcome.html:6
+msgid ""
+"If you can't place your bet due to some server errors then send the bets "
+"to this address in time and specify the error phenomenon."
+msgstr ""
+"Ha valamilyen oknál fogva nem tudsz fogadni, akkor erre a címre küldd el,"
+" és írd le a probléma okát is."
+
+#: app/templates/previous-bet/previous-bets.html:3
+msgid "Previous bets"
+msgstr "Korábbi fogadások"
+
+#: app/templates/previous-bet/previous-day-match.html:6
+msgid "Success rate"
+msgstr "Sikerességi arány"
+
+#: app/templates/previous-bet/previous-day-match.html:10
+msgid "Remaining after group + tournament bet"
+msgstr "Fennmaradó kredit csoportkör- és tornatipp után"
+
+#: app/templates/previous-bet/previous-day-match.html:22
+msgid "Balance"
+msgstr "Egyenleg"
+
+#: app/templates/previous-bet/previous-day-match.html:48
+msgid "Group bet total prize"
+msgstr "Teljes csoportkör-tipp nyeremény"
+
+#: app/templates/previous-bet/previous-day-match.html:50
+msgid "Balance after group bonus"
+msgstr "Egyenleg a csoporköt-tipp nyeremény után"
+
+#: app/templates/previous-bet/previous-day-match.html:58
+msgid "Tournament bet total prize"
+msgstr "Torna-tipp teljes nyeremény"
+
+#: app/templates/previous-bet/previous-day-match.html:60
+msgid "Final balance"
+msgstr "Végső egyenleg"
+

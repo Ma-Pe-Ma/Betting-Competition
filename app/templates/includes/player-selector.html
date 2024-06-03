@@ -4,7 +4,7 @@
 {{alert.alert_template(['alert-danger', 'alert-dismissible'], gettext('Failure!'), gettext('An error occured while communicating with the server!'))}}
 
 <div class="row">
-    <h5 class="col-3 col-md1 d-flex align-items-center">{% trans %}Player: {% endtrans %}</h5>
+    <h5 class="col-3 col-md1 d-flex align-items-center">{% trans %}Player{% endtrans %}:</h5>
     <div class="col-5 col-md-2 d-flex align-items-center">
         <select class="form-select" aria-label="Player selector" id="playerSelector">
             {% for player in players %}

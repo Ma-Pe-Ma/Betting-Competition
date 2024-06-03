@@ -143,10 +143,10 @@ window.onload = function() {
             var newTableRow = teamOddTemplate.content.cloneNode(true);
             
             newTableRow.getElementById("team").innerText = value["tr"];
-            newTableRow.getElementById("t1").innerText = value[0];
-            newTableRow.getElementById("t2").innerText = value[1];
-            newTableRow.getElementById("t4").innerText = value[2];
-            newTableRow.getElementById("t16").innerText = value[3];
+            newTableRow.getElementById("t1").innerText = value[0].toFixed(2);
+            newTableRow.getElementById("t2").innerText = value[1].toFixed(2);
+            newTableRow.getElementById("t4").innerText = value[2].toFixed(2);
+            newTableRow.getElementById("t8").innerText = value[3].toFixed(2);
 
             tableBodyElement.appendChild(newTableRow);
         }

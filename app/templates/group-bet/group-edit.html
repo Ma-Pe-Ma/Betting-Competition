@@ -20,7 +20,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <h5 class="">{% trans %}Tournament-bet: {% endtrans %}</h5>
+                    <h5 class="">{% trans %}Tournament-bet{% endtrans %}:</h5>
                 </div>
             </div>
             
@@ -96,7 +96,7 @@
             {% endfor %}
 
             <div class="row mt-5">
-                <p class="col-5 col-md-3">{% trans %}Remaining credit: {% endtrans %}</p>
+                <p class="col-5 col-md-3">{% trans %}Remaining credit{% endtrans %}:</p>
                 <p class="col-2 col-md-1 badge bg-info align-items-center justify-content-center" id="remainingCredit"></p>
             </div>
     
@@ -105,7 +105,7 @@
             <div class="d-none" id="connectionError">{% trans %}An error occured while communicating with the server!{% endtrans %}</div>
             <div class="d-none" id="internalError">{% trans %}An internal server error occured!{% endtrans %}</div>
     
-            <button class="btn btn-primary btn-sm mt-3 mb-5" type="button" id="sendButton">Send</button> 
+            <button class="btn btn-primary btn-sm mt-3 mb-5" type="button" id="sendButton">{% trans %}Send{% endtrans %}</button> 
         </div>        
     </div>
 </div>
@@ -134,7 +134,7 @@
                             <td id="t1"></td>
                             <td id="t2"></td>
                             <td id="t4"></td>
-                            <td id="t16"></td>
+                            <td id="t8"></td>
                         </tr>
                     </template>
                 </tbody>
