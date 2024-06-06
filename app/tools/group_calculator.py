@@ -2,7 +2,6 @@ from flask import g
 from flask import current_app
 
 from sqlalchemy import text
-from typing import Dict, List
 
 from app.tools.db_handler import get_db
 
@@ -33,7 +32,7 @@ def get_group_bet_dict_for_user(username : str, language = None):
     
     query_string = text("SELECT ts2.*, COALESCE(ts2.multiplier * ts2.bet, 0) AS prize, (ts2.multiplier - 1) * ts2.bet AS credit_diff "
                         "FROM ("
-                            "SELECT ts1.*, CASE ts1.hit_number WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 4 THEN 4 ELSE 0 END AS multiplier "
+                            "SELECT ts1.*, CASE ts1.hit_number WHEN 1 THEN :h1 WHEN 2 THEN :h2 WHEN 4 THEN :h4 ELSE 0 END AS multiplier "
                             "FROM (SELECT team.*, (team.name = tb.team) AS hit, tr1.translation AS local_name, COALESCE(group_bet.bet, 0) AS bet, "
                                 "COALESCE(tb.team, team.name) AS bname, COALESCE(tr2.translation, tr1.translation) AS blocal_name, "
                                 "SUM(team.name = tb.team) OVER (PARTITION BY team.group_id) AS hit_number "
@@ -51,9 +50,9 @@ def get_group_bet_dict_for_user(username : str, language = None):
                             ") AS ts1 "
                         ") AS ts2")
 
-    group_bet_hit_map = current_app.config['GROUP_BET_HIT_MAP']
+    hit_map = current_app.config['GROUP_BET_HIT_MAP']
 
-    result = get_db().session.execute(query_string, {'username' : username, 'language' : language, 'h1' : group_bet_hit_map[1], 'h2' : group_bet_hit_map[2], 'h4' : group_bet_hit_map[4]})
+    result = get_db().session.execute(query_string, {'username' : username, 'language' : language, 'h1' : hit_map[1], 'h2' : hit_map[2], 'h4' : hit_map[4]})
     team_rows = result.fetchall()
 
     groups = {}

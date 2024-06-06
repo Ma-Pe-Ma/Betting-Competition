@@ -107,24 +107,25 @@ def register() -> str:
 
         db = get_db()
         error = None
-        if not user_data['username'] or len(str(user_data['username'])) < 3:
-            error = (gettext('Chosen nickname is too short (min. 3 characters).'), 'danger')
-        elif len(str(user_data['username'])) > 20:
-            error = (gettext('Chosen nickname is too long (max. 20 characters).'), 'danger')
-        elif not user_data['email']:
-            error = (gettext('E-mail address is required.'), 'danger')
-        elif not user_data['password1'] or len(user_data['password1']) < 8:
-            error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
-        elif user_data['password1'] != user_data['password2']:
-            error = (gettext('The two passwords are not identical.'), 'danger')
-        elif user_data['key'] != current_app.config['INVITATION_KEYS']['user'] and user_data['key'] != current_app.config['INVITATION_KEYS']['admin']:
-            error = (gettext('The invitation key is not valid.'), 'danger')
+
+        try:
+            user_data['reminder'] = 1 if 'reminder' not in user_data else int(user_data['reminder'])
+            user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
+        except ValueError:
+            error = (gettext('Invalid reminder/summary value.'), 'danger')
         else:
-            try:
-                user_data['reminder'] = 0 if 'reminder' not in user_data else int(user_data['reminder'])
-                user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
-            except ValueError:
-                error = (gettext('Invalid reminder/summary value.'), 'danger')
+            if not user_data['username'] or len(str(user_data['username'])) < 3:
+                error = (gettext('Chosen nickname is too short (min. 3 characters).'), 'danger')
+            elif len(str(user_data['username'])) > 20:
+                error = (gettext('Chosen nickname is too long (max. 20 characters).'), 'danger')
+            elif not user_data['email']:
+                error = (gettext('E-mail address is required.'), 'danger')
+            elif not user_data['password1'] or len(user_data['password1']) < 8:
+                error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
+            elif user_data['password1'] != user_data['password2']:
+                error = (gettext('The two passwords are not identical.'), 'danger')
+            elif user_data['key'] != current_app.config['INVITATION_KEYS']['user'] and user_data['key'] != current_app.config['INVITATION_KEYS']['admin']:
+                error = (gettext('The invitation key is not valid.'), 'danger')
             else:
                 query_string = text('SELECT * FROM bet_user WHERE username = :username')
                 result = db.session.execute(query_string, {'username' : user_data['username'] })
@@ -147,7 +148,7 @@ def register() -> str:
         user_data['timezone'] = 'Europe/Budapest'
 
         if 'reminder' not in user_data or 'summary' not in user_data:
-            user_data['reminder'] = 0
+            user_data['reminder'] = 1
             user_data['summary'] = 0
 
         user_data['email_hash'] = hashlib.md5(user_data['email'].lower().encode('utf-8')).hexdigest()
@@ -181,7 +182,7 @@ def register() -> str:
     best_language_number = list(current_app.config['SUPPORTED_LANGUAGES'].keys()).index(best_language)
 
     user_data = {
-        'reminder' : 0,
+        'reminder' : 1,
         'summary' : 0,
         'language' : best_language,
         'language_number': best_language_number
@@ -195,7 +196,7 @@ def register() -> str:
             'password1' : 'aaaaaaaa',
             'password2' : 'aaaaaaaa',
             'key' : current_app.config['INVITATION_KEYS']['admin'],
-            'reminder' : 0,
+            'reminder' : 1,
             'summary' : 0,        
             'language' : best_language,
             'language_number': best_language_number
@@ -255,10 +256,10 @@ def page_profile() -> str:
             user_data['language'] = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
 
         try:
-            user_data['reminder'] = 0 if 'reminder' not in user_data else int(user_data['reminder'])
+            user_data['reminder'] = 1 if 'reminder' not in user_data else int(user_data['reminder'])
             user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
         except:
-            user_data['reminder'] = 0
+            user_data['reminder'] = 1
             user_data['summary'] = 0
 
         query_string = text('UPDATE bet_user SET reminder=:r, summary=:s, language=:l WHERE username=:u')

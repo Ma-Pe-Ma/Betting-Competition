@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-06 17:56+0200\n"
+"POT-Creation-Date: 2024-06-06 21:48+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -131,75 +131,75 @@ msgstr "Hiba az állás-értésítés közben!"
 msgid "Standings successfully notified!"
 msgstr "Az állás sikeresen értesítve!"
 
-#: app/auth.py:111
-msgid "Chosen nickname is too short (min. 3 characters)."
-msgstr "A választott becenév túl rövid (min. 3 karakter)."
-
-#: app/auth.py:113
-msgid "Chosen nickname is too long (max. 20 characters)."
-msgstr "A választott becenév túl hosszú (max. 20 karakter)."
-
 #: app/auth.py:115
-msgid "E-mail address is required."
-msgstr "E-mail cím megadása kötelező."
-
-#: app/auth.py:117 app/auth.py:342
-msgid "The given password is too short (min. 8 characters)."
-msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
-
-#: app/auth.py:119 app/auth.py:344
-msgid "The two passwords are not identical."
-msgstr "A két jelszó nem egyezik."
-
-#: app/auth.py:121
-msgid "The invitation key is not valid."
-msgstr "A meghívó-kód nem megfelelő."
-
-#: app/auth.py:127
 msgid "Invalid reminder/summary value."
 msgstr "Hibás emlékeztető/összesítő érték."
 
-#: app/auth.py:132
+#: app/auth.py:118
+msgid "Chosen nickname is too short (min. 3 characters)."
+msgstr "A választott becenév túl rövid (min. 3 karakter)."
+
+#: app/auth.py:120
+msgid "Chosen nickname is too long (max. 20 characters)."
+msgstr "A választott becenév túl hosszú (max. 20 karakter)."
+
+#: app/auth.py:122
+msgid "E-mail address is required."
+msgstr "E-mail cím megadása kötelező."
+
+#: app/auth.py:124 app/auth.py:343
+msgid "The given password is too short (min. 8 characters)."
+msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
+
+#: app/auth.py:126 app/auth.py:345
+msgid "The two passwords are not identical."
+msgstr "A két jelszó nem egyezik."
+
+#: app/auth.py:128
+msgid "The invitation key is not valid."
+msgstr "A meghívó-kód nem megfelelő."
+
+#: app/auth.py:133
 msgid "The chosen nickname is already taken."
 msgstr "A megadott becenév már foglalt."
 
-#: app/auth.py:137
+#: app/auth.py:138
 msgid "The chosen email address is already taken."
 msgstr "A megadott email cím már regisztrálva van."
 
-#: app/auth.py:224
+#: app/auth.py:225
 msgid "Invalid username!"
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:226
+#: app/auth.py:227
 msgid "Invalid password!"
 msgstr "A megadott jelszó nem megfelelő."
 
-#: app/auth.py:270
+#: app/auth.py:271
 msgid "Settings were successfully modified"
 msgstr "A beállítások sikeresen módosítva!"
 
-#: app/auth.py:292 app/auth.py:299
+#: app/auth.py:293 app/auth.py:300
 msgid "Email is not registered"
 msgstr "Az email-cím nincs regisztrálva."
 
-#: app/auth.py:338
+#: app/auth.py:339
 msgid "Email is not specified."
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:340
+#: app/auth.py:341
 msgid "Reset key is not specified."
 msgstr "A visszaállító-kulcs nem lett megadva."
 
-#: app/auth.py:350
+#: app/auth.py:351
 msgid "The given nickname does not exist."
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:355
+#: app/auth.py:356
 msgid "No password reset key has been requested."
 msgstr "Nem lett igényelve visszaállító-kulcs."
 
-#: app/auth.py:357
+#: app/auth.py:358
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
@@ -366,7 +366,7 @@ msgstr "Csoportkör-tippek kiértékelése"
 
 #: app/templates/admin.html:136 app/templates/group-bet/group-edit.html:67
 msgid "Set the order of the groups by dragging!"
-msgstr "ÁLlítsd be csapatok a sorrendjét vonszolással!"
+msgstr "Állítsd be a csapatok sorrendjét vonszolással!"
 
 #: app/templates/admin.html:140 app/templates/group-bet/group-after.html:17
 #: app/templates/group-bet/group-during.html:17
