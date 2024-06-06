@@ -36,12 +36,12 @@
             <div class="col-8 themed-grid-col">{{day.number}}. {% trans %}day{% endtrans %} - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
             <div class="col-4 themed-grid-col"></div>
         </div>
-            {% for match in day.matches %}            
-            {% set ns.row = (ns.row) % 2 + 1 %}
+            {% for match in day.matches %}
+                {% set ns.row = (ns.row) % 2 + 1 %}
         <div class="row mb-3 ms-1 me-1 text-center">            
-            <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}">{{match.id}}</button></div>
+            <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-{{'primary' if match.active > 0 else 'warning'}} btn-sm" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}" {{'disabled' if match.active == 0}}>{{match.id}}</button></div>
             <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.time}}</div>
-            <div class="col-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
+            <div class="col-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1|d_none(gettext('unknown'))}} - {{match.team2|d_none(gettext('unknown'))}}</div>
             <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_round('?')}} / {{match.oddX|d_round('?')}} / {{match.odd2|d_round('?')}}</div>
             <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'danger'}}">{{match.goal1|d_none('?')}}-{{match.goal2|d_none('?')}}</span></div>
             <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.bet|d_none('0')}} / {{match.max_bet}}</div>

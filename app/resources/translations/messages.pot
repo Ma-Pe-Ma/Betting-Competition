@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-03 22:11+0200\n"
+"POT-Creation-Date: 2024-06-06 17:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -253,11 +253,11 @@ msgstr ""
 msgid "Betting on match %(id)s was successful!"
 msgstr ""
 
-#: app/templates/admin.html:7 app/templates/layouts/base.html:44
+#: app/templates/admin.html:6 app/templates/layouts/base.html:44
 msgid "Admin"
 msgstr ""
 
-#: app/templates/admin.html:27 app/templates/chat.html:11
+#: app/templates/admin.html:18 app/templates/chat.html:11
 #: app/templates/group-bet/group-edit.html:103
 #: app/templates/includes/alert.html:20
 #: app/templates/includes/match-modal.html:67
@@ -265,30 +265,30 @@ msgstr ""
 msgid "Failure!"
 msgstr ""
 
-#: app/templates/admin.html:28 app/templates/chat.html:12
+#: app/templates/admin.html:19 app/templates/chat.html:12
 #: app/templates/includes/alert.html:19
 msgid "Success!"
 msgstr ""
 
-#: app/templates/admin.html:35
+#: app/templates/admin.html:26
 msgid "Match-data modifying"
 msgstr ""
 
-#: app/templates/admin.html:41
+#: app/templates/admin.html:32
 msgid "Update match data from fixture"
 msgstr ""
 
-#: app/templates/admin.html:46 app/templates/home-page.html:27
+#: app/templates/admin.html:37 app/templates/home-page.html:27
 msgid "Time"
 msgstr ""
 
-#: app/templates/admin.html:47 app/templates/home-page.html:28
+#: app/templates/admin.html:38 app/templates/home-page.html:28
 #: app/templates/includes/match-modal.html:19
 #: app/templates/previous-bet/previous-day-match.html:16
 msgid "Teams"
 msgstr ""
 
-#: app/templates/admin.html:49 app/templates/admin.html:159
+#: app/templates/admin.html:40 app/templates/admin.html:150
 #: app/templates/group-bet/group-after.html:44
 #: app/templates/group-bet/group-edit.html:36
 #: app/templates/group-bet/tournament-bet.html:11
@@ -297,155 +297,155 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
-#: app/templates/admin.html:50
+#: app/templates/admin.html:41
 msgid "Max credit"
 msgstr ""
 
-#: app/templates/admin.html:72
+#: app/templates/admin.html:63
 msgid "Home page messages"
 msgstr ""
 
-#: app/templates/admin.html:79
+#: app/templates/admin.html:70
 msgid "Registering message"
 msgstr ""
 
-#: app/templates/admin.html:79
+#: app/templates/admin.html:70
 #, python-format
 msgid "Message %(message_id)s"
 msgstr ""
 
-#: app/templates/admin.html:83
+#: app/templates/admin.html:74
 msgid "Set"
 msgstr ""
 
-#: app/templates/admin.html:91
+#: app/templates/admin.html:82
 msgid "Sending message to users"
 msgstr ""
 
-#: app/templates/admin.html:97
+#: app/templates/admin.html:88
 msgid "Sending standings immediately"
 msgstr ""
 
-#: app/templates/admin.html:101
+#: app/templates/admin.html:92
 msgid "Subject"
 msgstr ""
 
-#: app/templates/admin.html:105
+#: app/templates/admin.html:96
 msgid "Message"
 msgstr ""
 
-#: app/templates/admin.html:108 app/templates/admin.html:171
-#: app/templates/admin.html:202 app/templates/chat.html:76
+#: app/templates/admin.html:99 app/templates/admin.html:162
+#: app/templates/admin.html:193 app/templates/chat.html:76
 #: app/templates/group-bet/group-edit.html:108
 #: app/templates/includes/match-modal.html:74
 msgid "Send"
 msgstr ""
 
-#: app/templates/admin.html:116
+#: app/templates/admin.html:107
 msgid "Generate standings email"
 msgstr ""
 
-#: app/templates/admin.html:121
+#: app/templates/admin.html:112
 msgid "Generate"
 msgstr ""
 
-#: app/templates/admin.html:124
+#: app/templates/admin.html:115
 msgid "Email adresses"
 msgstr ""
 
-#: app/templates/admin.html:126 app/templates/layouts/base.html:41
+#: app/templates/admin.html:117 app/templates/layouts/base.html:41
 #: app/templates/notifications/standings-subject.txt:1
 #: app/templates/standings.html:3
 msgid "Standings"
 msgstr ""
 
-#: app/templates/admin.html:136
+#: app/templates/admin.html:127
 msgid "Group result evaluation"
 msgstr ""
 
-#: app/templates/admin.html:145 app/templates/group-bet/group-edit.html:67
+#: app/templates/admin.html:136 app/templates/group-bet/group-edit.html:67
 msgid "Set the order of the groups by dragging!"
 msgstr ""
 
-#: app/templates/admin.html:149 app/templates/group-bet/group-after.html:17
+#: app/templates/admin.html:140 app/templates/group-bet/group-after.html:17
 #: app/templates/group-bet/group-during.html:17
 #: app/templates/group-bet/group-edit.html:70
 msgid "Group"
 msgstr ""
 
-#: app/templates/admin.html:175
+#: app/templates/admin.html:166
 msgid "Group evaluation will take place later."
 msgstr ""
 
-#: app/templates/admin.html:185
+#: app/templates/admin.html:176
 msgid "Tournament result evaluation"
 msgstr ""
 
-#: app/templates/admin.html:196
+#: app/templates/admin.html:187
 msgid "Undetermined"
 msgstr ""
 
-#: app/templates/admin.html:197
+#: app/templates/admin.html:188
 msgid "Successful"
 msgstr ""
 
-#: app/templates/admin.html:198
+#: app/templates/admin.html:189
 msgid "Failed"
 msgstr ""
 
-#: app/templates/admin.html:205
+#: app/templates/admin.html:196
 msgid "Tournament bet evaluation will take place later."
 msgstr ""
 
-#: app/templates/admin.html:213
+#: app/templates/admin.html:204
 msgid "Team-data initialization"
 msgstr ""
 
-#: app/templates/admin.html:219
+#: app/templates/admin.html:210
 msgid "Team description"
 msgstr ""
 
-#: app/templates/admin.html:224
+#: app/templates/admin.html:215
 msgid "Team translation"
 msgstr ""
 
-#: app/templates/admin.html:228 app/templates/admin.html:246
+#: app/templates/admin.html:219 app/templates/admin.html:237
 msgid "Upload"
 msgstr ""
 
-#: app/templates/admin.html:235
+#: app/templates/admin.html:226
 msgid "Database down/upload"
 msgstr ""
 
-#: app/templates/admin.html:242
+#: app/templates/admin.html:233
 msgid "Database file"
 msgstr ""
 
-#: app/templates/admin.html:249 app/templates/admin.html:255
+#: app/templates/admin.html:240 app/templates/admin.html:246
 msgid "Download"
 msgstr ""
 
-#: app/templates/admin.html:254
+#: app/templates/admin.html:245
 msgid "Log-file"
 msgstr ""
 
-#: app/templates/admin.html:264
+#: app/templates/admin.html:255
 msgid "Password reset keys"
 msgstr ""
 
-#: app/templates/admin.html:272 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:263 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr ""
 
-#: app/templates/admin.html:273
+#: app/templates/admin.html:264
 msgid "Expiration time"
 msgstr ""
 
-#: app/templates/admin.html:274
+#: app/templates/admin.html:265
 msgid "Key"
 msgstr ""
 
-#: app/templates/admin.html:287
+#: app/templates/admin.html:278
 msgid "No reset keys have been generated!"
 msgstr ""
 
@@ -504,6 +504,10 @@ msgstr ""
 #: app/templates/home-page.html:36
 #: app/templates/previous-bet/previous-day-match.html:27
 msgid "day"
+msgstr ""
+
+#: app/templates/home-page.html:44
+msgid "unknown"
 msgstr ""
 
 #: app/templates/home-page.html:52

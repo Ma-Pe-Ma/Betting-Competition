@@ -26,7 +26,8 @@ def homepage():
     # list future matches with set bets
     days = []
     query_string = text("SELECT match.id, match.datetime AS datetime, match.round, match.odd1, match.oddX, match.odd2, match.max_bet, tr1.translation AS team1, tr2.translation AS team2, match_bet.goal1, match_bet.goal2, match_bet.bet, "
-                            "date(match.datetime) AS date, strftime('%H:%M', match.datetime) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday "
+                            "date(match.datetime) AS date, strftime('%H:%M', match.datetime) AS time, (strftime('%w', match.datetime) + 6) % 7 AS weekday, "
+                            "(CASE WHEN (tr1.translation IS NULL OR tr2.translation IS NULL) THEN 0 ELSE 1 END) AS active "
                         "FROM match "
                         "LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l "
                         "LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l "
