@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-06 21:48+0200\n"
+"POT-Creation-Date: 2024-06-07 21:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -483,9 +483,13 @@ msgstr ""
 msgid "Current credit"
 msgstr ""
 
+#: app/templates/home-page.html:29
+msgid "Round"
+msgstr ""
+
 #: app/templates/group-bet/group-after.html:51
 #: app/templates/group-bet/group-during.html:27
-#: app/templates/group-bet/group-edit.html:80 app/templates/home-page.html:30
+#: app/templates/group-bet/group-edit.html:80 app/templates/home-page.html:31
 #: app/templates/includes/match-modal.html:26
 #: app/templates/previous-bet/previous-day-match.html:19
 msgid "Tip"
@@ -496,21 +500,21 @@ msgstr ""
 #: app/templates/group-bet/group-edit.html:56
 #: app/templates/group-bet/group-edit.html:90
 #: app/templates/group-bet/tournament-bet.html:23
-#: app/templates/home-page.html:31
+#: app/templates/home-page.html:32
 #: app/templates/previous-bet/previous-day-match.html:20
 msgid "Bet"
 msgstr ""
 
-#: app/templates/home-page.html:36
+#: app/templates/home-page.html:37
 #: app/templates/previous-bet/previous-day-match.html:27
 msgid "day"
 msgstr ""
 
-#: app/templates/home-page.html:44
+#: app/templates/home-page.html:45
 msgid "unknown"
 msgstr ""
 
-#: app/templates/home-page.html:52
+#: app/templates/home-page.html:54
 msgid "The competition has ended! Please check out the results!"
 msgstr ""
 
@@ -522,9 +526,9 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
-#: app/templates/notifications/standings.html:7 app/templates/standings.html:15
-msgid "Username"
+#: app/templates/includes/player-selector.html:7
+#: app/templates/standings.html:15
+msgid "Player"
 msgstr ""
 
 #: app/templates/notifications/standings.html:8 app/templates/standings.html:16
@@ -690,6 +694,11 @@ msgstr ""
 
 #: app/templates/auth/sign-in.html:16
 msgid "username"
+msgstr ""
+
+#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
+#: app/templates/notifications/standings.html:7
+msgid "Username"
 msgstr ""
 
 #: app/templates/auth/sign-in.html:20
@@ -912,10 +921,6 @@ msgstr ""
 
 #: app/templates/includes/match-modal.html:71
 msgid "Specify both or neither goals!"
-msgstr ""
-
-#: app/templates/includes/player-selector.html:7
-msgid "Player"
 msgstr ""
 
 #: app/templates/includes/theme-switcher.html:25

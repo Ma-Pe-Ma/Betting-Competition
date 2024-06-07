@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-06 21:48+0200\n"
+"POT-Creation-Date: 2024-06-07 21:24+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -484,9 +484,13 @@ msgstr "Fogadás"
 msgid "Current credit"
 msgstr "Jelenlegi kredit"
 
+#: app/templates/home-page.html:29
+msgid "Round"
+msgstr "Forduló"
+
 #: app/templates/group-bet/group-after.html:51
 #: app/templates/group-bet/group-during.html:27
-#: app/templates/group-bet/group-edit.html:80 app/templates/home-page.html:30
+#: app/templates/group-bet/group-edit.html:80 app/templates/home-page.html:31
 #: app/templates/includes/match-modal.html:26
 #: app/templates/previous-bet/previous-day-match.html:19
 msgid "Tip"
@@ -497,21 +501,21 @@ msgstr "Tipp"
 #: app/templates/group-bet/group-edit.html:56
 #: app/templates/group-bet/group-edit.html:90
 #: app/templates/group-bet/tournament-bet.html:23
-#: app/templates/home-page.html:31
+#: app/templates/home-page.html:32
 #: app/templates/previous-bet/previous-day-match.html:20
 msgid "Bet"
 msgstr "Tét"
 
-#: app/templates/home-page.html:36
+#: app/templates/home-page.html:37
 #: app/templates/previous-bet/previous-day-match.html:27
 msgid "day"
 msgstr "nap"
 
-#: app/templates/home-page.html:44
+#: app/templates/home-page.html:45
 msgid "unknown"
 msgstr "nem ismert"
 
-#: app/templates/home-page.html:52
+#: app/templates/home-page.html:54
 msgid "The competition has ended! Please check out the results!"
 msgstr "A bajnokság véget ért! Nézd meg a végeredményt!"
 
@@ -523,10 +527,10 @@ msgstr "Helyezés"
 msgid "Icon"
 msgstr "Ikon"
 
-#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
-#: app/templates/notifications/standings.html:7 app/templates/standings.html:15
-msgid "Username"
-msgstr "Felhasználónév"
+#: app/templates/includes/player-selector.html:7
+#: app/templates/standings.html:15
+msgid "Player"
+msgstr "Játékos"
 
 #: app/templates/notifications/standings.html:8 app/templates/standings.html:16
 msgid "Score"
@@ -692,6 +696,11 @@ msgstr "Bejelentkezés"
 #: app/templates/auth/sign-in.html:16
 msgid "username"
 msgstr "felhasználónév"
+
+#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
+#: app/templates/notifications/standings.html:7
+msgid "Username"
+msgstr "Felhasználónév"
 
 #: app/templates/auth/sign-in.html:20
 msgid "password"
@@ -914,10 +923,6 @@ msgstr "Max tét"
 #: app/templates/includes/match-modal.html:71
 msgid "Specify both or neither goals!"
 msgstr "Add meg mindkettő gólértéket."
-
-#: app/templates/includes/player-selector.html:7
-msgid "Player"
-msgstr "Játékos"
 
 #: app/templates/includes/theme-switcher.html:25
 msgid "Toggle theme"

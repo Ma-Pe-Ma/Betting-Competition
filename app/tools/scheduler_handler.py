@@ -1,20 +1,19 @@
 from flask import render_template_string
 from flask import current_app
-from flask.cli import with_appcontext
 from flask_apscheduler import APScheduler
 from flask_babel import force_locale
-
-import click
 from sqlalchemy import text, bindparam
-
-from dateutil import tz
-from datetime import timedelta
 
 from app.tools.db_handler import get_db
 from app.notification import notification_handler
 from app.tools import database_manager
 from app import standings
 from app.tools import time_handler
+
+from dateutil import tz
+from datetime import timedelta
+import shutil
+import os
 
 scheduler = APScheduler()
 
@@ -42,6 +41,11 @@ def backup_sqlite_database():
         file=current_app.config['DATABASE'])
     
     #create_draft(message_body=message)
+
+def backup_sqlite_locally(timestamp : str):
+    db_path = os.path.join(current_app.instance_path, 'flaskr.sqlite')
+    backup_path = os.path.join(current_app.instance_path, 'flaskr_{date}.sqlite'.format(date=timestamp))
+    shutil.copyfile(db_path, backup_path)
 
 def match_reminder_once_per_day(match_ids : list):
     with scheduler.app.app_context():
@@ -141,7 +145,7 @@ def daily_checker():
         match_time_length = current_app.config['MATCH_TIME_LENGTH']
 
         utc_now = time_handler.get_now_time_object()
-        #backup_sqlite_database()
+        backup_sqlite_locally(utc_now.strftime('%Y-%m-%d'))
 
         query_string = text("SELECT * "
                             "FROM match "

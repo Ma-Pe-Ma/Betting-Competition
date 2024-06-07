@@ -10,23 +10,23 @@
     <table class="table">
         <thead>
           <tr>
-            <th scope="col">{% trans %}Position{% endtrans %}</th>
-            <th scope="col">{% trans %}Icon{% endtrans %}</th>
-            <th scope="col">{% trans %}Username{% endtrans %}</th>
-            <th scope="col">{% trans %}Score{% endtrans %}</th>
-            <th scope="col">{% trans %}Score change{% endtrans %}</th>
-            <th scope="col">{% trans %}Position change{% endtrans %}</th>
+            <th scope="col" class="d-md-table-cell w-0 text-center">{% trans %}Position{% endtrans %}</th>
+            <th scope="col" class="d-md-table-cell text-center">{% trans %}Icon{% endtrans %}</th>
+            <th scope="col" class="d-md-table-cell text-center">{% trans %}Player{% endtrans %}</th>
+            <th scope="col" class="d-md-table-cell text-center">{% trans %}Score{% endtrans %}</th>
+            <th scope="col" class="d-none d-md-table-cell text-center">{% trans %}Score change{% endtrans %}</th>
+            <th scope="col" class="d-none d-md-table-cell text-center">{% trans %}Position change{% endtrans %}</th>
           </tr>
         </thead>
         <tbody>
             {% for standing in standings %}
             <tr>
-                <th scope="row">{{loop.index}}.</th>
-                <td><img src="{{standing.image_path}}" alt="" style="width:48px; height:auto;"></td>
-                <td>{{standing.username}}</td>
-                <td>{{standing.point|round(1)}}</td>
-                <td>{{(standing.point - standing.previous_point)|round(1)}}</td>
-                <td>{{standing.position_diff}}</td>
+                <th scope="row" class="d-md-table-cell w-0 text-center">{{loop.index}}.</th>
+                <td class="d-md-table-cell text-center"><img src="{{standing.image_path}}" alt="" style="width:48px; height:auto;"></td>
+                <td class="d-md-table-cell text-center">{{standing.username}}</td>
+                <td class="d-md-table-cell text-center">{{standing.point|round(1)}}</td>
+                <td class="d-none d-md-table-cell text-center">{{(standing.point - standing.previous_point)|round(1)}}</td>
+                <td class="d-none d-md-table-cell text-center">{{standing.position_diff}}</td>
             </tr>
             {% endfor %}
         </tbody>

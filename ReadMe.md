@@ -233,11 +233,11 @@ Currently only English version is available and it is planned to properly mark t
 
 To setup babel translations these commands need to be launched:
 
-    pybabel extract -F babel.cfg -o .\app\resources\translations\messages.pot .
-    pybabel init -i .\app\resources\translations\messages.pot -d .\app\resources\translations -l `hu`
+    pybabel extract -F babel.cfg -o ./app/resources/translations/messages.pot .
+    pybabel init -i ./app/resources/translations/messages.pot -d ./app/resources/translations -l `hu`
 
-    pybabel update -i .\app\resources\translations\messages.pot -d .\app\resources\translations
-    pybabel compile -d .\app\resources\translations
+    pybabel update -i ./app/resources/translations/messages.pot -d ./app/resources/translations
+    pybabel compile -d ./app/resources/translations
 
 ## TO-DO
 * make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean, containerization
