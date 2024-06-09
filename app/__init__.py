@@ -59,7 +59,8 @@ def create_app(test_config = None):
         user = getattr(g, 'user', None)
         if user is not None:
             return user['language']
-        return request.accept_languages.best_match(app.config['SUPPORTED_LANGUAGES'].keys())
+        best_language = request.accept_languages.best_match(app.config['SUPPORTED_LANGUAGES'].keys())
+        return best_language if best_language is not None else list(app.config['SUPPORTED_LANGUAGES'].keys())[0]
 
     babel = Babel(app, locale_selector=get_locale)
 

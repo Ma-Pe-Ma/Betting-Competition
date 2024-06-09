@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-07 21:24+0200\n"
+"POT-Creation-Date: 2024-06-09 11:19+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -131,75 +131,75 @@ msgstr "Hiba az állás-értésítés közben!"
 msgid "Standings successfully notified!"
 msgstr "Az állás sikeresen értesítve!"
 
-#: app/auth.py:115
+#: app/auth.py:116
 msgid "Invalid reminder/summary value."
 msgstr "Hibás emlékeztető/összesítő érték."
 
-#: app/auth.py:118
+#: app/auth.py:119
 msgid "Chosen nickname is too short (min. 3 characters)."
 msgstr "A választott becenév túl rövid (min. 3 karakter)."
 
-#: app/auth.py:120
+#: app/auth.py:121
 msgid "Chosen nickname is too long (max. 20 characters)."
 msgstr "A választott becenév túl hosszú (max. 20 karakter)."
 
-#: app/auth.py:122
+#: app/auth.py:123
 msgid "E-mail address is required."
 msgstr "E-mail cím megadása kötelező."
 
-#: app/auth.py:124 app/auth.py:343
+#: app/auth.py:125 app/auth.py:344
 msgid "The given password is too short (min. 8 characters)."
 msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
 
-#: app/auth.py:126 app/auth.py:345
+#: app/auth.py:127 app/auth.py:346
 msgid "The two passwords are not identical."
 msgstr "A két jelszó nem egyezik."
 
-#: app/auth.py:128
+#: app/auth.py:129
 msgid "The invitation key is not valid."
 msgstr "A meghívó-kód nem megfelelő."
 
-#: app/auth.py:133
+#: app/auth.py:134
 msgid "The chosen nickname is already taken."
 msgstr "A megadott becenév már foglalt."
 
-#: app/auth.py:138
+#: app/auth.py:139
 msgid "The chosen email address is already taken."
 msgstr "A megadott email cím már regisztrálva van."
 
-#: app/auth.py:225
+#: app/auth.py:226
 msgid "Invalid username!"
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:227
+#: app/auth.py:228
 msgid "Invalid password!"
 msgstr "A megadott jelszó nem megfelelő."
 
-#: app/auth.py:271
+#: app/auth.py:272
 msgid "Settings were successfully modified"
 msgstr "A beállítások sikeresen módosítva!"
 
-#: app/auth.py:293 app/auth.py:300
+#: app/auth.py:294 app/auth.py:301
 msgid "Email is not registered"
 msgstr "Az email-cím nincs regisztrálva."
 
-#: app/auth.py:339
+#: app/auth.py:340
 msgid "Email is not specified."
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:341
+#: app/auth.py:342
 msgid "Reset key is not specified."
 msgstr "A visszaállító-kulcs nem lett megadva."
 
-#: app/auth.py:351
+#: app/auth.py:352
 msgid "The given nickname does not exist."
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:356
+#: app/auth.py:357
 msgid "No password reset key has been requested."
 msgstr "Nem lett igényelve visszaállító-kulcs."
 
-#: app/auth.py:358
+#: app/auth.py:359
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
@@ -289,7 +289,7 @@ msgstr "Időpont"
 msgid "Teams"
 msgstr "Csapatok"
 
-#: app/templates/admin.html:40 app/templates/admin.html:150
+#: app/templates/admin.html:40 app/templates/admin.html:151
 #: app/templates/group-bet/group-after.html:44
 #: app/templates/group-bet/group-edit.html:36
 #: app/templates/group-bet/tournament-bet.html:11
@@ -302,151 +302,159 @@ msgstr "Eredmény"
 msgid "Max credit"
 msgstr "Fogadható kredit"
 
-#: app/templates/admin.html:63
+#: app/templates/admin.html:42
+msgid "Cr"
+msgstr "Kr"
+
+#: app/templates/admin.html:51 app/templates/home-page.html:45
+msgid "unknown"
+msgstr "nem ismert"
+
+#: app/templates/admin.html:64
 msgid "Home page messages"
 msgstr "Főoldali üzenetek"
 
-#: app/templates/admin.html:70
+#: app/templates/admin.html:71
 msgid "Registering message"
 msgstr "Regisztrációs üzenet"
 
-#: app/templates/admin.html:70
+#: app/templates/admin.html:71
 #, python-format
 msgid "Message %(message_id)s"
 msgstr "Üzenet %(message_id)s"
 
-#: app/templates/admin.html:74
+#: app/templates/admin.html:75
 msgid "Set"
 msgstr "Beállít"
 
-#: app/templates/admin.html:82
+#: app/templates/admin.html:83
 msgid "Sending message to users"
 msgstr "Üzenet küldése a felhasználóknak"
 
-#: app/templates/admin.html:88
+#: app/templates/admin.html:89
 msgid "Sending standings immediately"
 msgstr "Állás küldése azonnal"
 
-#: app/templates/admin.html:92
+#: app/templates/admin.html:93
 msgid "Subject"
 msgstr "Tárgy"
 
-#: app/templates/admin.html:96
+#: app/templates/admin.html:97
 msgid "Message"
 msgstr "Üzenet"
 
-#: app/templates/admin.html:99 app/templates/admin.html:162
-#: app/templates/admin.html:193 app/templates/chat.html:76
+#: app/templates/admin.html:100 app/templates/admin.html:163
+#: app/templates/admin.html:194 app/templates/chat.html:76
 #: app/templates/group-bet/group-edit.html:108
 #: app/templates/includes/match-modal.html:74
 msgid "Send"
 msgstr "Beküld"
 
-#: app/templates/admin.html:107
+#: app/templates/admin.html:108
 msgid "Generate standings email"
 msgstr "Állást tartalmazó email generálása"
 
-#: app/templates/admin.html:112
+#: app/templates/admin.html:113
 msgid "Generate"
 msgstr "Generálás"
 
-#: app/templates/admin.html:115
+#: app/templates/admin.html:116
 msgid "Email adresses"
 msgstr "Email-címek"
 
-#: app/templates/admin.html:117 app/templates/layouts/base.html:41
+#: app/templates/admin.html:118 app/templates/layouts/base.html:41
 #: app/templates/notifications/standings-subject.txt:1
 #: app/templates/standings.html:3
 msgid "Standings"
 msgstr "Állás"
 
-#: app/templates/admin.html:127
+#: app/templates/admin.html:128
 msgid "Group result evaluation"
 msgstr "Csoportkör-tippek kiértékelése"
 
-#: app/templates/admin.html:136 app/templates/group-bet/group-edit.html:67
+#: app/templates/admin.html:137 app/templates/group-bet/group-edit.html:67
 msgid "Set the order of the groups by dragging!"
 msgstr "Állítsd be a csapatok sorrendjét vonszolással!"
 
-#: app/templates/admin.html:140 app/templates/group-bet/group-after.html:17
+#: app/templates/admin.html:141 app/templates/group-bet/group-after.html:17
 #: app/templates/group-bet/group-during.html:17
 #: app/templates/group-bet/group-edit.html:70
 msgid "Group"
 msgstr "Csoport"
 
-#: app/templates/admin.html:166
+#: app/templates/admin.html:167
 msgid "Group evaluation will take place later."
 msgstr "A csoportkör-tippek kiértékelése később esedékes."
 
-#: app/templates/admin.html:176
+#: app/templates/admin.html:177
 msgid "Tournament result evaluation"
 msgstr "Torna-tippek kiértékelése"
 
-#: app/templates/admin.html:187
+#: app/templates/admin.html:188
 msgid "Undetermined"
 msgstr "Nem meghatározott."
 
-#: app/templates/admin.html:188
+#: app/templates/admin.html:189
 msgid "Successful"
 msgstr "Sikeres."
 
-#: app/templates/admin.html:189
+#: app/templates/admin.html:190
 msgid "Failed"
 msgstr "Sikertelen."
 
-#: app/templates/admin.html:196
+#: app/templates/admin.html:197
 msgid "Tournament bet evaluation will take place later."
 msgstr "A torna-tippek kiértékelése később esedékes."
 
-#: app/templates/admin.html:204
+#: app/templates/admin.html:205
 msgid "Team-data initialization"
 msgstr "Csapat-adat inicializálása"
 
-#: app/templates/admin.html:210
+#: app/templates/admin.html:211
 msgid "Team description"
 msgstr "Csapat-leíró fájl"
 
-#: app/templates/admin.html:215
+#: app/templates/admin.html:216
 msgid "Team translation"
 msgstr "Csapatnév-fordító fájl"
 
-#: app/templates/admin.html:219 app/templates/admin.html:237
+#: app/templates/admin.html:220 app/templates/admin.html:238
 msgid "Upload"
 msgstr "Feltöltés"
 
-#: app/templates/admin.html:226
+#: app/templates/admin.html:227
 msgid "Database down/upload"
 msgstr "Adatbázis le-/feltöltés"
 
-#: app/templates/admin.html:233
+#: app/templates/admin.html:234
 msgid "Database file"
 msgstr "Adatbázis fájl"
 
-#: app/templates/admin.html:240 app/templates/admin.html:246
+#: app/templates/admin.html:241 app/templates/admin.html:247
 msgid "Download"
 msgstr "Letöltés"
 
-#: app/templates/admin.html:245
+#: app/templates/admin.html:246
 msgid "Log-file"
 msgstr "Napló-fájl"
 
-#: app/templates/admin.html:255
+#: app/templates/admin.html:256
 msgid "Password reset keys"
 msgstr "Jelszó visszaállító-kulcsok"
 
-#: app/templates/admin.html:263 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:264 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr "Email"
 
-#: app/templates/admin.html:264
+#: app/templates/admin.html:265
 msgid "Expiration time"
 msgstr "Érvényességi idő"
 
-#: app/templates/admin.html:265
+#: app/templates/admin.html:266
 msgid "Key"
 msgstr "Kulcs"
 
-#: app/templates/admin.html:278
+#: app/templates/admin.html:279
 msgid "No reset keys have been generated!"
 msgstr "Nincs érvényes visszaállító-kulcs!"
 
@@ -510,10 +518,6 @@ msgstr "Tét"
 #: app/templates/previous-bet/previous-day-match.html:27
 msgid "day"
 msgstr "nap"
-
-#: app/templates/home-page.html:45
-msgid "unknown"
-msgstr "nem ismert"
 
 #: app/templates/home-page.html:54
 msgid "The competition has ended! Please check out the results!"

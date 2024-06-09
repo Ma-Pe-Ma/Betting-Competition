@@ -33,23 +33,24 @@
                             </div>
 
                             <div class="row mb-3 text-center">
-                                <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">#</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Time{% endtrans %}</div>
-                                <div class="col-3 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Teams{% endtrans %}</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Result{% endtrans %}</div>
-                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Max credit{% endtrans %}</div>
+                                <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center"><div class="ms-3">#</div></div>
+                                <div class="col-3 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Time{% endtrans %}</div>
+                                <div class="col-5 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Teams{% endtrans %}</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block">1 / X / 2</div>
+                                <div class="col-1 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Result{% endtrans %}</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block">{% trans %}Max credit{% endtrans %}</div>
+                                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none">{% trans %}Cr{% endtrans %}</div>
                             </div>
                             {% set ns = namespace(row=1) %}
 
                             {% for match in matches %}            
                             {% set ns.row = (ns.row) % 2 + 1 %}
                             <div class="row mb-3 text-center">            
-                                <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}">{{match.id}}</button></div>
-                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.datetime}}</div>
-                                <div class="col-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
-                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.odd1|d_round('?')}} / {{match.oddX|d_round('?')}} / {{match.odd2|d_round('?')}}</div>
-                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'info'}}">{{match.goal1|d_none('?')}}-{{match.goal2|d_none('?')}}</span></div>
+                                <div class="col-1 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><button type="button" class="btn btn-primary btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}">{{match.id}}</button></div>
+                                <div class="col-3 col-sm-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.datetime}}</div>
+                                <div class="col-5 col-sm-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1|d_none(gettext('unknown'))}} - {{match.team2|d_none(gettext('unknown'))}}</div>
+                                <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center d-none d-sm-block">{{match.odd1|d_round('?')}} / {{match.oddX|d_round('?')}} / {{match.odd2|d_round('?')}}</div>
+                                <div class="col-1 col-sm-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center"><span class="badge bg-{{'success' if match.goal1 is not none else 'info'}}">{{match.goal1|d_none('?')}}-{{match.goal2|d_none('?')}}</span></div>
                                 <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.max_bet}}</div>
                             </div>
                         {% endfor %}

@@ -1,13 +1,13 @@
-from app.notification.notifier import Notifier
-
 from flask import g
 from flask import current_app
 
 from sqlalchemy import text
-from app.tools.db_handler import get_db
 from pywebpush import webpush, WebPushException
 
 import json
+
+from app.notification.notifier import Notifier
+from app.tools.db_handler import get_db
 
 class PushNotifier(Notifier):
     def __init__(self):

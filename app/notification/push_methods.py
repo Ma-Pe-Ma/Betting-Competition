@@ -7,7 +7,7 @@ from flask import current_app
 
 from app.auth import sign_in_required
 from app.tools.db_handler import get_db
-from app.notification.notification_handler import notifier
+from app.notification.notification_handler import get_notifier
 
 from sqlalchemy import text
 
@@ -28,6 +28,7 @@ def subscribe():
 
         user = {'username' : g.user['username']}
 
+        notifier = get_notifier()
         welcome = notifier.get_notification_resource_by_tag('welcome')
 
         messages = [notifier.create_message(sender='me', user=user, subject=render_template_string(welcome[0]), message_text=render_template_string(welcome[1]))]

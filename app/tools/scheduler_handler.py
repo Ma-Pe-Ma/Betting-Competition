@@ -5,10 +5,10 @@ from flask_babel import force_locale
 from sqlalchemy import text, bindparam
 
 from app.tools.db_handler import get_db
-from app.notification import notification_handler
 from app.tools import database_manager
-from app import standings
 from app.tools import time_handler
+from app.notification import notification_handler
+from app import standings
 
 from dateutil import tz
 from datetime import timedelta
@@ -34,7 +34,7 @@ def backup_sqlite_database():
     subject = 'Backup at: ' + current_localtime.strftime('%Y-%m-%d %H:%M')
     
     #create draft with the attached sqlite database file
-    message = notification_handler.notifier.create_message_with_attachment(sender='me',
+    message = notification_handler.get_notifier().create_message_with_attachment(sender='me',
         to=admin_address,
         subject=subject,
         message_text='Backing up result database at: ' + current_localtime.strftime('%Y-%m-%d %H:%M'),
@@ -87,14 +87,14 @@ def match_reminder_once_per_day(match_ids : list):
             if user['reminder'] == 1 and len(user['missing']) == 0:
                 continue
 
-            message_object = notification_handler.notifier.get_notification_resource_by_tag('match-reminder')
+            message_object = notification_handler.get_notifier().get_notification_resource_by_tag('match-reminder')
 
             with force_locale(user['language']):
                 message_subject = render_template_string(message_object[0], missing_bets=user['missing'], date=user['date'])
                 message_text = render_template_string(message_object[1], non_missing_bets=user['nonmissing'], missing_bets=user['missing'], username=user['username'])
-                sendable_messages.append(notification_handler.notifier.create_message(sender='me', user=user, subject=message_subject, message_text=message_text, subtype='html'))
+                sendable_messages.append(notification_handler.get_notifier().create_message(sender='me', user=user, subject=message_subject, message_text=message_text, subtype='html'))
 
-        notification_handler.notifier.send_messages(sendable_messages)
+        notification_handler.get_notifier().send_messages(sendable_messages)
 
 def update_results():
     with scheduler.app.app_context():
@@ -118,7 +118,7 @@ def daily_standings():
             result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string()})
             for user in result.fetchall():
                 if user.language not in notification_map:
-                    notification_map[user.language] = notification_handler.notifier.get_notification_resource_by_tag('standings')
+                    notification_map[user.language] = notification_handler.get_notifier().get_notification_resource_by_tag('standings')
                 
                 if user.language not in standings_map:
                     standings_map[user.language] = standings.create_standings(language=user.language)
@@ -128,9 +128,9 @@ def daily_standings():
                 subject = render_template_string(notification_object[0], date=user.date)
                 message_text = render_template_string(notification_object[1], username=user.username, date=user.date, standings=standings_map[user.language])
 
-                messages.append(notification_handler.notifier.create_message(sender='me', user=user._asdict(), subject=subject, message_text=message_text, subtype='html'))
+                messages.append(notification_handler.get_notifier().create_message(sender='me', user=user._asdict(), subject=subject, message_text=message_text, subtype='html'))
 
-            notification_handler.notifier.send_messages(messages=messages)
+            notification_handler.get_notifier().send_messages(messages=messages)
     except Exception as error:
         current_app.logger.info('Error while sending daily standings: ' + str(error))
         return False

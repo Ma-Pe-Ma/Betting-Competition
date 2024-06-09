@@ -104,9 +104,9 @@ def send_notification():
         result = get_db().session.execute(query_string)
 
         for user in result.fetchall():
-            messages.append(notification_handler.notifier.create_message(sender='me', user=user._asdict(), subject=message_subject, message_text=message_text))
+            messages.append(notification_handler.get_notifier().create_message(sender='me', user=user._asdict(), subject=message_subject, message_text=message_text))
 
-        notification_handler.notifier.send_messages(messages=messages)
+        notification_handler.get_notifier().send_messages(messages=messages)
     except Exception as error:
         current_app.logger.info('Error sending notification to everyone: ' + str(error))
         return gettext('Error sending notification to everyone!'), 400

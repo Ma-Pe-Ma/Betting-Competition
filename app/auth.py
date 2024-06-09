@@ -87,6 +87,7 @@ def register() -> str:
     utc_now : datetime = time_handler.get_now_time_object()
     register_deadline : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
     best_language = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
+    best_language = best_language if best_language is not None else list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0]
 
     if utc_now > register_deadline:
         return render_template('/auth/register-fail.html')
@@ -164,12 +165,12 @@ def register() -> str:
 
         # sending welcome notification
         messages = []
-        message_object = notification_handler.notifier.get_notification_resource_by_tag('welcome')
+        message_object = notification_handler.get_notifier().get_notification_resource_by_tag('welcome')
         message_subject = render_template_string(message_object[0])
         message_text = render_template_string(message_object[1], username=user_data['username'])
-        messages.append(notification_handler.notifier.create_message(sender='me', user=user_data, subject=message_subject, message_text=message_text, subtype='html'))
+        messages.append(notification_handler.get_notifier().create_message(sender='me', user=user_data, subject=message_subject, message_text=message_text, subtype='html'))
 
-        notification_handler.notifier.send_messages(messages)
+        notification_handler.get_notifier().send_messages(messages)
 
         # if first time sign in upload team data
         result = db.session.execute(text('SELECT * FROM bet_user'))
