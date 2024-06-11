@@ -10,8 +10,7 @@
 <h5 class="mb-5">{% trans %}Remaining after group + tournament bet{% endtrans %}: {{extra_data.start_amount - extra_data.group_and_tournament_bet_credit}}</h5>
 
 {% for date, day in days.items() %}
-
-{% if loop.index == 1 %}
+    {% if loop.index == 1 %}
 <div class="row mb-3 mt-3 me-3 text-center">
     <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Teams{% endtrans %}</div>
     <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">1 / X / 2</div>
@@ -21,7 +20,7 @@
     <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Prize{% endtrans %}</div>
     <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Balance{% endtrans %}</div>
 </div>
-{% endif %}
+    {% endif %}
 
 <div class="row mb-3 text-left">
     <div class="col-8 themed-grid-col">{{day.number}}. {% trans %}day{% endtrans %} - {{date}} - {{day_names.day_name_map[day.weekday]}}</div>
@@ -43,14 +42,18 @@
 </div>
     {% endfor %}
 
-{%if day.date == group_evaluation_date %}
+    {%if day.date == group_evaluation_date %}
 <div class="row d-flex align-items-center">
     <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">{% trans %}Group bet total prize{% endtrans %}: {{extra_data.group_bonus|round(1)}}</p>
     <div class="col-1"></div>
     <p class="col-3 justify-content-center badge bg-warning">{% trans %}Balance after group bonus{% endtrans %}: {{extra_data.balance_after_group|round(1)}}</p>
 </div>
-{% endif %}
+    {% endif %}
 
+{% else %}
+<div class="container justify-content-center">
+    <h1>{% trans %}The tournament has not begun!{% endtrans %}</h1>
+</div>
 {% endfor %}
 
 {%if tournament_bet.success is not none %}

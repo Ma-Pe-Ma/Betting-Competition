@@ -86,8 +86,7 @@ def sign_in_required(role : Role = Role.USER):
 def register() -> str:
     utc_now : datetime = time_handler.get_now_time_object()
     register_deadline : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
-    best_language = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
-    best_language = best_language if best_language is not None else list(current_app.config['SUPPORTED_LANGUAGES'].keys())[0]
+    best_language = (lambda keys : request.accept_languages.best_match(keys) or list(keys)[0])(current_app.config['SUPPORTED_LANGUAGES'].keys())
 
     if utc_now > register_deadline:
         return render_template('/auth/register-fail.html')
@@ -155,7 +154,7 @@ def register() -> str:
         user_data['email_hash'] = hashlib.md5(user_data['email'].lower().encode('utf-8')).hexdigest()
 
         query_string = text("INSERT INTO bet_user (username, password, email, reminder, summary, language, admin, timezone, email_hash) " 
-                            "VALUES (:username, :password1, :email, :reminder, :summary, :language, :admin, :timezone, :email_hash)")
+                            "VALUES (TRIM(:username), :password1, TRIM(:email), TRIM(:reminder), TRIM(:summary), TRIM(:language), :admin, TRIM(:timezone), :email_hash)")
         result = db.session.execute(query_string, user_data)
         db.session.commit()
 
@@ -286,13 +285,16 @@ def forgotten_password():
     email = ''
     requested = False
 
+    best_language = (lambda keys : request.accept_languages.best_match(keys) or list(keys)[0])(current_app.config['SUPPORTED_LANGUAGES'].keys())
+
     if request.method == 'POST':
         user_data = request.form.to_dict(flat=True)
-        email = user_data['email'] if 'email' in user_data else ''        
 
         if 'email' not in user_data:
             flash(gettext('Email is not registered'), 'danger')
         else:
+            email = user_data['email']
+
             db = get_db()
             query_string = text('SELECT * FROM bet_user WHERE email = :email')
             result = db.session.execute(query_string, user_data)
@@ -316,14 +318,15 @@ def forgotten_password():
                 if current_app.config['DIRECT_MESSAGING'] == 1:
                     pass # TODO: send reset key in email to user
 
-    return render_template('auth/forgotten-password.html', requested=requested, email=email)
+    with force_locale(best_language):
+        return render_template('auth/forgotten-password.html', requested=requested, email=email)
 
 @bp.route('/reset-password', methods=('GET', 'POST'))
 def reset_password() -> str:
     if g.user is not None:
         return redirect(url_for('home.homepage'))
     
-    best_language = request.accept_languages.best_match(current_app.config['SUPPORTED_LANGUAGES'].keys())
+    best_language = (lambda keys : request.accept_languages.best_match(keys) or list(keys)[0])(current_app.config['SUPPORTED_LANGUAGES'].keys())
     
     if request.method == 'GET':
         with force_locale(best_language):

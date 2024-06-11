@@ -55,6 +55,7 @@
             <div class="row mt-2 d-flex justify-content-start align-items-center">
                 <label class="col-5 col-md-3 ms-3" for="tournamentBetCredit">{% trans %}Bet{% endtrans %}: </label>
                 <input class="col-2 col-md-2 ms-3" type="number" value={{tournament_bet.bet}} id="tournamentBetCredit" min=0 max={{bet_values.max_tournament_bet_value}}>
+                <div class="col-2">/&nbsp;{{bet_values.max_tournament_bet_value}}</div>
             </div>
     
             <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
@@ -88,7 +89,8 @@
                     <div class="col-5 col-md-4 mt-2">
                         <div class="row">
                             <label class="col-4 col-md-3" for="sortableCredit">{% trans %}Bet{% endtrans %}: </label>
-                            <input class="col-8 col-md-3 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max={{bet_values.max_group_bet_value}}>
+                            <input class="col-6 col-md-3 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max={{bet_values.max_group_bet_value}}>
+                            <div class="col-2 form-control-sm d-flex align-items-center">/&nbsp;{{bet_values.max_group_bet_value}}</div>
                         </div>
                     </div>
                 </div>
@@ -96,7 +98,7 @@
             {% endfor %}
 
             <div class="row mt-5">
-                <p class="col-5 col-md-3">{% trans %}Remaining credit{% endtrans %}:</p>
+                <p class="col-6 col-md-3">{% trans %}Remaining credit{% endtrans %}:</p>
                 <p class="col-2 col-md-1 badge bg-info align-items-center justify-content-center" id="remainingCredit"></p>
             </div>
     

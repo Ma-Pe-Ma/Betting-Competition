@@ -8,6 +8,7 @@ from flask import current_app
 from flask import send_from_directory
 from flask import flash
 from flask import Response
+from markupsafe import escape
 
 from werkzeug.utils import secure_filename
 
@@ -172,7 +173,7 @@ def odd_edit():
 
         get_db().session.commit()
 
-        flash(gettext('Updating data for match %(id)s was successful!', id=updated_data['id']), 'success')
+        flash(escape(gettext('Updating data for match %(id)s was successful!', id=updated_data['id'])), 'success')
 
         return {}
 

@@ -146,7 +146,7 @@ function postNewComment(comment) {
         modalInstance.hide();
     }
 
-    var datetime = commentContainer.children.length > 0 ? commentContainer.children[0].getAttribute("value") : null;
+    var datetime = commentContainer.children.length > 0 ? commentContainer.children[commentContainer.children.length - 1].getAttribute("value") : null;
 
     var output = {
         "datetime" : datetime,
