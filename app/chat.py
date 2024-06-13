@@ -40,7 +40,7 @@ def get_comments(utc_datetime_string : str, newer_comments : bool, timezone : st
 
     return r
 
-@bp.route('/chat', methods=('GET', 'POST',))
+@bp.route('/chat', methods=['GET', 'POST'])
 @sign_in_required()
 def chat_page():
     if request.method == 'POST':

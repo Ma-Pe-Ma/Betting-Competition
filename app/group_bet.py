@@ -145,7 +145,7 @@ def after_evaluation():
 
     return render_template('/group-bet/group-choose.html', players=players)
 
-@bp.route('/group-bet', methods=('GET', 'POST'))
+@bp.route('/group-bet', methods=['GET', 'POST'])
 @sign_in_required()
 def group_order():
     deadline_times = current_app.config['DEADLINE_TIMES']
@@ -161,7 +161,7 @@ def group_order():
     else:
         return after_evaluation()
 
-@bp.route('/tournament-bet.json', methods=('GET',))
+@bp.route('/tournament-bet.json', methods=['GET'])
 @sign_in_required()
 def tournament_bet_odds():
     query_string = text("SELECT top1, top2, top4, top8, team.name, tr.translation as tr "

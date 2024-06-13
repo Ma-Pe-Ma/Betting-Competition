@@ -14,7 +14,7 @@ from flask_babel import gettext
 
 bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
-@bp.route('/', methods=('GET',))
+@bp.route('/', methods=['GET'])
 @sign_in_required()
 def homepage():
     # show messages for user!

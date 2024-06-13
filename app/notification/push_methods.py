@@ -17,7 +17,7 @@ bp = Blueprint('notification', __name__, '''url_prefix="/notification"''')
 def service_worker():
     return send_file('./static/js/service_worker.js')
 
-@bp.route('/notification/subscribe', methods=('POST',))
+@bp.route('/notification/subscribe', methods=['POST'])
 @sign_in_required()
 def subscribe():
     try:

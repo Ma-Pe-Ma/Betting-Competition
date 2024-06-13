@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-11 17:51+0200\n"
+"POT-Creation-Date: 2024-06-13 18:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,188 +17,201 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: app/admin.py:87
+#: app/admin.py:89
 msgid "Messages updated successfully!"
 msgstr ""
 
-#: app/admin.py:97 app/chat.py:51
+#: app/admin.py:99 app/chat.py:51
 msgid "Too short message!"
 msgstr ""
 
-#: app/admin.py:100
+#: app/admin.py:102
 msgid "Too short subject!"
 msgstr ""
 
-#: app/admin.py:113
+#: app/admin.py:115
 msgid "Error sending notification to everyone!"
 msgstr ""
 
-#: app/admin.py:115
+#: app/admin.py:117
 msgid "Notifications successfully sent!"
 msgstr ""
 
-#: app/admin.py:125
+#: app/admin.py:127
 msgid "player"
 msgstr ""
 
-#: app/admin.py:160
+#: app/admin.py:162
 msgid "Failed to fetch match data!"
 msgstr ""
 
-#: app/admin.py:166
+#: app/admin.py:168
 msgid "Invalid goal value specified!"
 msgstr ""
 
-#: app/admin.py:176
+#: app/admin.py:178
 #, python-format
 msgid "Updating data for match %(id)s was successful!"
 msgstr ""
 
-#: app/admin.py:190
+#: app/admin.py:192
 msgid "Group results set successfully!"
 msgstr ""
 
-#: app/admin.py:202
+#: app/admin.py:204
 msgid "Tournament bet results set successfully!"
 msgstr ""
 
-#: app/admin.py:213
+#: app/admin.py:215
 msgid "One of the files was not specified for the request!"
 msgstr ""
 
-#: app/admin.py:219
+#: app/admin.py:221
 msgid "No team file was specified!"
 msgstr ""
 
-#: app/admin.py:223
+#: app/admin.py:225
 msgid "No translation file was specified!"
 msgstr ""
 
-#: app/admin.py:226
+#: app/admin.py:228
 msgid "The uploaded file's extension is not correct!"
 msgstr ""
 
-#: app/admin.py:238
+#: app/admin.py:240
 msgid "Failing to write team-data files to local storage!"
 msgstr ""
 
-#: app/admin.py:241
+#: app/admin.py:243
 msgid "Error while initializing the teams!"
 msgstr ""
 
-#: app/admin.py:244
+#: app/admin.py:246
 msgid "Error while initializing the matches!"
 msgstr ""
 
-#: app/admin.py:246
+#: app/admin.py:248
 msgid "Team data file uploading was successful!"
 msgstr ""
 
-#: app/admin.py:265
+#: app/admin.py:267
 msgid "Database file was not specified!"
 msgstr ""
 
-#: app/admin.py:270
+#: app/admin.py:272
 msgid "Database file is null!"
 msgstr ""
 
-#: app/admin.py:279
+#: app/admin.py:281
 msgid "Database file uploading was successful!"
 msgstr ""
 
-#: app/admin.py:282
+#: app/admin.py:284
 msgid "Error while saving new database file!"
 msgstr ""
 
-#: app/admin.py:284
+#: app/admin.py:286
 msgid "The specified format cannot be uploaded!"
 msgstr ""
 
-#: app/admin.py:290
+#: app/admin.py:293
+msgid "ON"
+msgstr ""
+
+#: app/admin.py:293
+msgid "OFF"
+msgstr ""
+
+#: app/admin.py:294
+#, python-format
+msgid "Maintenance successfully turned %(id)s!"
+msgstr ""
+
+#: app/admin.py:302
 msgid "Match data updating failed!"
 msgstr ""
 
-#: app/admin.py:292
+#: app/admin.py:304
 msgid "Match data succsesfully updated!"
 msgstr ""
 
-#: app/admin.py:298
+#: app/admin.py:310
 msgid "Standings notification failed!"
 msgstr ""
 
-#: app/admin.py:300
+#: app/admin.py:312
 msgid "Standings successfully notified!"
 msgstr ""
 
-#: app/auth.py:115
+#: app/auth.py:118
 msgid "Invalid reminder/summary value."
 msgstr ""
 
-#: app/auth.py:118
+#: app/auth.py:121
 msgid "Chosen nickname is too short (min. 3 characters)."
 msgstr ""
 
-#: app/auth.py:120
+#: app/auth.py:123
 msgid "Chosen nickname is too long (max. 20 characters)."
 msgstr ""
 
-#: app/auth.py:122
+#: app/auth.py:125
 msgid "E-mail address is required."
 msgstr ""
 
-#: app/auth.py:124 app/auth.py:347
+#: app/auth.py:127 app/auth.py:350
 msgid "The given password is too short (min. 8 characters)."
 msgstr ""
 
-#: app/auth.py:126 app/auth.py:349
+#: app/auth.py:129 app/auth.py:352
 msgid "The two passwords are not identical."
 msgstr ""
 
-#: app/auth.py:128
+#: app/auth.py:131
 msgid "The invitation key is not valid."
 msgstr ""
 
-#: app/auth.py:133
+#: app/auth.py:136
 msgid "The chosen nickname is already taken."
 msgstr ""
 
-#: app/auth.py:138
+#: app/auth.py:141
 msgid "The chosen email address is already taken."
 msgstr ""
 
-#: app/auth.py:225
+#: app/auth.py:228
 msgid "Invalid username!"
 msgstr ""
 
-#: app/auth.py:227
+#: app/auth.py:230
 msgid "Invalid password!"
 msgstr ""
 
-#: app/auth.py:271
+#: app/auth.py:274
 msgid "Settings were successfully modified"
 msgstr ""
 
-#: app/auth.py:294 app/auth.py:303
+#: app/auth.py:297 app/auth.py:306
 msgid "Email is not registered"
 msgstr ""
 
-#: app/auth.py:343
+#: app/auth.py:346
 msgid "Email is not specified."
 msgstr ""
 
-#: app/auth.py:345
+#: app/auth.py:348
 msgid "Reset key is not specified."
 msgstr ""
 
-#: app/auth.py:355
+#: app/auth.py:358
 msgid "The given nickname does not exist."
 msgstr ""
 
-#: app/auth.py:360
+#: app/auth.py:363
 msgid "No password reset key has been requested."
 msgstr ""
 
-#: app/auth.py:362
+#: app/auth.py:365
 msgid "The given reset key is invalid."
 msgstr ""
 
@@ -437,23 +450,31 @@ msgstr ""
 msgid "Log-file"
 msgstr ""
 
-#: app/templates/admin.html:256
+#: app/templates/admin.html:252
+msgid "Maintenance"
+msgstr ""
+
+#: app/templates/admin.html:253
+msgid "Toggle"
+msgstr ""
+
+#: app/templates/admin.html:262
 msgid "Password reset keys"
 msgstr ""
 
-#: app/templates/admin.html:264 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:270 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr ""
 
-#: app/templates/admin.html:265
+#: app/templates/admin.html:271
 msgid "Expiration time"
 msgstr ""
 
-#: app/templates/admin.html:266
+#: app/templates/admin.html:272
 msgid "Key"
 msgstr ""
 
-#: app/templates/admin.html:279
+#: app/templates/admin.html:285
 msgid "No reset keys have been generated!"
 msgstr ""
 
@@ -772,6 +793,22 @@ msgstr ""
 
 #: app/templates/error-handling/page-500.html:11
 msgid "Something went wrong on our side, please contact us!"
+msgstr ""
+
+#: app/templates/error-handling/page-503.html:3
+msgid "Page 503"
+msgstr ""
+
+#: app/templates/error-handling/page-503.html:10
+msgid "Service unavailable"
+msgstr ""
+
+#: app/templates/error-handling/page-503.html:11
+msgid "The server is down for maintenance. Please come back a few moments later!"
+msgstr ""
+
+#: app/templates/error-handling/page-503.html:12
+msgid "Admin-page"
 msgstr ""
 
 #: app/templates/group-bet/group-after.html:7

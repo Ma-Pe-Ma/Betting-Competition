@@ -72,9 +72,12 @@ def sign_in_required(role : Role = Role.USER):
         def wrapped_view(**kwargs):
             if g.user is None:
                 return redirect(url_for('auth.sign_in'))
-            
-            if role == Role.ADMIN and g.user['admin'] != 1:
-                return render_template('/error-handling/page-404.html'), 404
+
+            if role == Role.ADMIN:
+                if g.user['admin'] != 1:
+                    return render_template('/error-handling/page-404.html'), 404
+            elif cache.get('maintenance'):
+                return render_template('/error-handling/page-503.html'), 503
 
             return view(**kwargs)
 
@@ -82,7 +85,7 @@ def sign_in_required(role : Role = Role.USER):
     
     return decorator
 
-@bp.route('/register', methods=('GET', 'POST'))
+@bp.route('/register', methods=['GET', 'POST'])
 def register() -> str:
     utc_now : datetime = time_handler.get_now_time_object()
     register_deadline : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
@@ -205,7 +208,7 @@ def register() -> str:
     with force_locale(user_data['language']):
         return render_template('/auth/register.html', user_data=user_data, introduction=introduction)
 
-@bp.route('/sign-in', methods=('GET', 'POST'))
+@bp.route('/sign-in', methods=['GET', 'POST'])
 def sign_in() -> str:
     # Redirect to homepage if user is already signed in
     if g.user is not None:
@@ -246,7 +249,7 @@ def sign_out() -> str:
     session.clear()
     return redirect(url_for('auth.sign_in'))
 
-@bp.route('/profile', methods=('GET', 'POST'))
+@bp.route('/profile', methods=['GET', 'POST'])
 @sign_in_required()
 def page_profile() -> str:
     if request.method == 'POST':
@@ -277,7 +280,7 @@ def page_profile() -> str:
 
     return render_template('/auth/profile.html', user_data = user_data, disabled = True)
 
-@bp.route('/forgotten-password', methods=('GET', 'POST'))
+@bp.route('/forgotten-password', methods=['GET', 'POST'])
 def forgotten_password():
     if g.user is not None:
         return redirect(url_for('home.homepage'))
@@ -321,7 +324,7 @@ def forgotten_password():
     with force_locale(best_language):
         return render_template('auth/forgotten-password.html', requested=requested, email=email)
 
-@bp.route('/reset-password', methods=('GET', 'POST'))
+@bp.route('/reset-password', methods=['GET', 'POST'])
 def reset_password() -> str:
     if g.user is not None:
         return redirect(url_for('home.homepage'))

@@ -8,6 +8,8 @@ from flask import current_app
 from flask import send_from_directory
 from flask import flash
 from flask import Response
+from flask import redirect
+from flask import url_for
 from markupsafe import escape
 
 from werkzeug.utils import secure_filename
@@ -28,7 +30,7 @@ from sqlalchemy import text
 
 bp = Blueprint('admin', __name__, '''url_prefix="/admin"''')
 
-@bp.route('/admin', methods=('GET',))
+@bp.route('/admin', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def admin_page():
     query_string = text('SELECT * from messages')
@@ -75,7 +77,7 @@ def admin_page():
 
     return render_template('/admin.html', matches = matches, messages = messages, groups = groups, tournament_bets = tournament_bets, reset_keys = reset_keys)
 
-@bp.route('/admin/message', methods=('POST',))
+@bp.route('/admin/message', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
 def message():
     for message_id, message in enumerate(request.get_json()):
@@ -86,7 +88,7 @@ def message():
 
     return gettext('Messages updated successfully!'), 200    
 
-@bp.route('/admin/send-notification', methods=('POST',))
+@bp.route('/admin/send-notification', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
 def send_notification():
     try:
@@ -114,7 +116,7 @@ def send_notification():
 
     return gettext('Notifications successfully sent!'), 200
 
-@bp.route('/admin/standings', methods=('GET',))
+@bp.route('/admin/standings', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def standings():
     with current_app.open_resource('./templates/notifications/standings.html', 'r') as standings_template, current_app.open_resource('./templates/notifications/standings-subject.txt', 'r') as subject:
@@ -126,7 +128,7 @@ def standings():
 
     return message_text
 
-@bp.route('/admin/emails', methods=('GET',))
+@bp.route('/admin/emails', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def emails():
     query_string = text('SELECT email FROM bet_user')
@@ -139,7 +141,7 @@ def emails():
 
     return email_list
 
-@bp.route('/admin/match', methods=('GET', 'POST'))
+@bp.route('/admin/match', methods=['GET', 'POST'])
 @sign_in_required(role=Role.ADMIN)
 def odd_edit():
     if request.method == 'GET':
@@ -177,7 +179,7 @@ def odd_edit():
 
         return {}
 
-@bp.route('/admin/group-evaluation', methods=('POST',))
+@bp.route('/admin/group-evaluation', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
 def group_evaluation():    
     for key in request.json:
@@ -189,7 +191,7 @@ def group_evaluation():
 
     return gettext('Group results set successfully!'), 200
 
-@bp.route('/admin/tournament-bet', methods=('POST',))
+@bp.route('/admin/tournament-bet', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
 def tournament_bet():
     for username, success in request.get_json().items():
@@ -205,7 +207,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
-@bp.route('/admin/team-data', methods=('POST',))
+@bp.route('/admin/team-data', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
 def upload_team_data():
     # check if the post request has the file part
@@ -245,7 +247,7 @@ def upload_team_data():
 
     return gettext('Team data file uploading was successful!'), 200
 
-@bp.route('/admin/database', methods=('GET', 'POST',))
+@bp.route('/admin/database', methods=['GET', 'POST'])
 @sign_in_required(role=Role.ADMIN)
 def database_file():
     database_uri = current_app.config['SQLALCHEMY_DATABASE_URI']
@@ -283,7 +285,17 @@ def database_file():
             
         return gettext('The specified format cannot be uploaded!'), 400
 
-@bp.route('/admin/match-update', methods=('GET',))
+@bp.route('/admin/maintenance', methods=['GET'])
+@sign_in_required(role=Role.ADMIN)
+def maintain_toggle():
+    cache.set('maintenance', not cache.get('maintenance'), timeout=120)
+
+    state_string = gettext('ON') if cache.get('maintenance') else gettext('OFF')
+    flash(gettext('Maintenance successfully turned %(id)s!', id=state_string), 'success')
+
+    return redirect(url_for('admin.admin_page'))
+
+@bp.route('/admin/match-update', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def match_update():
     if not database_manager.update_match_data_from_fixture():
@@ -291,7 +303,7 @@ def match_update():
     
     return gettext('Match data succsesfully updated!'), 200    
 
-@bp.route('/admin/standings-notification', methods=('GET',))
+@bp.route('/admin/standings-notification', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def standings_notification():
     if not scheduler_handler.daily_standings():

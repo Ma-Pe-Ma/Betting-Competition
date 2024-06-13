@@ -62,7 +62,7 @@ def match_reminder_once_per_day(match_ids : list):
                             "ORDER BY bet_user.username, date, time "
                             )
         query_string = query_string.bindparams(bindparam('match_ids', expanding=True))
-        result = get_db().session.execute(query_string, {'match_ids' : match_ids} )
+        result = get_db().session.execute(query_string, {'match_ids' : match_ids})
 
         user_map = {}
 

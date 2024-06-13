@@ -15,7 +15,7 @@ from flask_babel import gettext
 
 bp = Blueprint('match', __name__, '''url_prefix="/match"''')
 
-@bp.route('/match', methods=('GET', 'POST'))
+@bp.route('/match', methods=['GET', 'POST'])
 @sign_in_required()
 def match_bet():
     try:

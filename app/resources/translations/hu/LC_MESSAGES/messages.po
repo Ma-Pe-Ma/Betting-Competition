@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-11 17:51+0200\n"
+"POT-Creation-Date: 2024-06-13 18:12+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -18,188 +18,201 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: app/admin.py:87
+#: app/admin.py:89
 msgid "Messages updated successfully!"
 msgstr "Üzenetek sikeresen frissítve"
 
-#: app/admin.py:97 app/chat.py:51
+#: app/admin.py:99 app/chat.py:51
 msgid "Too short message!"
 msgstr "Túl rövid üzenet"
 
-#: app/admin.py:100
+#: app/admin.py:102
 msgid "Too short subject!"
 msgstr "Túl rövid tárgy!"
 
-#: app/admin.py:113
+#: app/admin.py:115
 msgid "Error sending notification to everyone!"
 msgstr "Hiba az értesítések küldése közben!"
 
-#: app/admin.py:115
+#: app/admin.py:117
 msgid "Notifications successfully sent!"
 msgstr "Értesítések sikeresen elküldve!"
 
-#: app/admin.py:125
+#: app/admin.py:127
 msgid "player"
 msgstr "játékos"
 
-#: app/admin.py:160
+#: app/admin.py:162
 msgid "Failed to fetch match data!"
 msgstr "Hiba a meccs-adatok letöltése közben!"
 
-#: app/admin.py:166
+#: app/admin.py:168
 msgid "Invalid goal value specified!"
 msgstr "Hibás gól érték!"
 
-#: app/admin.py:176
+#: app/admin.py:178
 #, python-format
 msgid "Updating data for match %(id)s was successful!"
 msgstr "%(id)s. meccs adatai sikeresen frissítve!"
 
-#: app/admin.py:190
+#: app/admin.py:192
 msgid "Group results set successfully!"
 msgstr "Csoportkör-eredmények sikereresen megadva!"
 
-#: app/admin.py:202
+#: app/admin.py:204
 msgid "Tournament bet results set successfully!"
 msgstr "Torna-tipp eredmények sikeresen megadva!"
 
-#: app/admin.py:213
+#: app/admin.py:215
 msgid "One of the files was not specified for the request!"
 msgstr "Az egyik fájl nem lett megadva a kéréshez!"
 
-#: app/admin.py:219
+#: app/admin.py:221
 msgid "No team file was specified!"
 msgstr "A csapatleíró fájl nem lett megadva!"
 
-#: app/admin.py:223
+#: app/admin.py:225
 msgid "No translation file was specified!"
 msgstr "A csapatnév-fordítás tartalmazó fájl nem lett megadva!"
 
-#: app/admin.py:226
+#: app/admin.py:228
 msgid "The uploaded file's extension is not correct!"
 msgstr "Feltöltendő fájl kiterjesztése nem megfelelő!"
 
-#: app/admin.py:238
+#: app/admin.py:240
 msgid "Failing to write team-data files to local storage!"
 msgstr "Hiba a csapat leíró fájlok mentése közben!"
 
-#: app/admin.py:241
+#: app/admin.py:243
 msgid "Error while initializing the teams!"
 msgstr "Hiba a csapatok inicializálása közben!"
 
-#: app/admin.py:244
+#: app/admin.py:246
 msgid "Error while initializing the matches!"
 msgstr "Hiba a meccsek inicializálása közben!"
 
-#: app/admin.py:246
+#: app/admin.py:248
 msgid "Team data file uploading was successful!"
 msgstr "Csapatleíró fájlok feltöltése sikeres volt!"
 
-#: app/admin.py:265
+#: app/admin.py:267
 msgid "Database file was not specified!"
 msgstr "Az adatbázis fájl nem lett megadva!"
 
-#: app/admin.py:270
+#: app/admin.py:272
 msgid "Database file is null!"
 msgstr "Az adatbázis fájl nem létezik!"
 
-#: app/admin.py:279
+#: app/admin.py:281
 msgid "Database file uploading was successful!"
 msgstr "Az adatbázis fájl feltöltése sikeres volt!"
 
-#: app/admin.py:282
+#: app/admin.py:284
 msgid "Error while saving new database file!"
 msgstr "Hiba az új adatbázisfájl lementése közben!"
 
-#: app/admin.py:284
+#: app/admin.py:286
 msgid "The specified format cannot be uploaded!"
 msgstr "A megadott formátum nem tölthető fel!"
 
-#: app/admin.py:290
+#: app/admin.py:293
+msgid "ON"
+msgstr "BEKAPCSOLVA"
+
+#: app/admin.py:293
+msgid "OFF"
+msgstr "KIKAPCSOLVA"
+
+#: app/admin.py:294
+#, python-format
+msgid "Maintenance successfully turned %(id)s!"
+msgstr "Karbantartó-üzemmód sikeresen %(id)s!"
+
+#: app/admin.py:302
 msgid "Match data updating failed!"
 msgstr "Hiba a meccs adatok frissítése közben!"
 
-#: app/admin.py:292
+#: app/admin.py:304
 msgid "Match data succsesfully updated!"
 msgstr "A meccs adatok sikeresen frissítve!"
 
-#: app/admin.py:298
+#: app/admin.py:310
 msgid "Standings notification failed!"
 msgstr "Hiba az állás-értésítés közben!"
 
-#: app/admin.py:300
+#: app/admin.py:312
 msgid "Standings successfully notified!"
 msgstr "Az állás sikeresen értesítve!"
 
-#: app/auth.py:115
+#: app/auth.py:118
 msgid "Invalid reminder/summary value."
 msgstr "Hibás emlékeztető/összesítő érték."
 
-#: app/auth.py:118
+#: app/auth.py:121
 msgid "Chosen nickname is too short (min. 3 characters)."
 msgstr "A választott becenév túl rövid (min. 3 karakter)."
 
-#: app/auth.py:120
+#: app/auth.py:123
 msgid "Chosen nickname is too long (max. 20 characters)."
 msgstr "A választott becenév túl hosszú (max. 20 karakter)."
 
-#: app/auth.py:122
+#: app/auth.py:125
 msgid "E-mail address is required."
 msgstr "E-mail cím megadása kötelező."
 
-#: app/auth.py:124 app/auth.py:347
+#: app/auth.py:127 app/auth.py:350
 msgid "The given password is too short (min. 8 characters)."
 msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
 
-#: app/auth.py:126 app/auth.py:349
+#: app/auth.py:129 app/auth.py:352
 msgid "The two passwords are not identical."
 msgstr "A két jelszó nem egyezik."
 
-#: app/auth.py:128
+#: app/auth.py:131
 msgid "The invitation key is not valid."
 msgstr "A meghívókód nem megfelelő."
 
-#: app/auth.py:133
+#: app/auth.py:136
 msgid "The chosen nickname is already taken."
 msgstr "A megadott becenév már foglalt."
 
-#: app/auth.py:138
+#: app/auth.py:141
 msgid "The chosen email address is already taken."
 msgstr "A megadott email cím már regisztrálva van."
 
-#: app/auth.py:225
+#: app/auth.py:228
 msgid "Invalid username!"
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:227
+#: app/auth.py:230
 msgid "Invalid password!"
 msgstr "A megadott jelszó nem megfelelő."
 
-#: app/auth.py:271
+#: app/auth.py:274
 msgid "Settings were successfully modified"
 msgstr "A beállítások sikeresen módosítva!"
 
-#: app/auth.py:294 app/auth.py:303
+#: app/auth.py:297 app/auth.py:306
 msgid "Email is not registered"
 msgstr "Az email-cím nincs regisztrálva."
 
-#: app/auth.py:343
+#: app/auth.py:346
 msgid "Email is not specified."
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:345
+#: app/auth.py:348
 msgid "Reset key is not specified."
 msgstr "A visszaállító-kulcs nem lett megadva."
 
-#: app/auth.py:355
+#: app/auth.py:358
 msgid "The given nickname does not exist."
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:360
+#: app/auth.py:363
 msgid "No password reset key has been requested."
 msgstr "Nem lett igényelve visszaállító-kulcs."
 
-#: app/auth.py:362
+#: app/auth.py:365
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
@@ -438,23 +451,31 @@ msgstr "Letöltés"
 msgid "Log-file"
 msgstr "Napló-fájl"
 
-#: app/templates/admin.html:256
+#: app/templates/admin.html:252
+msgid "Maintenance"
+msgstr "Karbantartás"
+
+#: app/templates/admin.html:253
+msgid "Toggle"
+msgstr "Kapcsoló"
+
+#: app/templates/admin.html:262
 msgid "Password reset keys"
 msgstr "Jelszó visszaállító-kulcsok"
 
-#: app/templates/admin.html:264 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:270 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr "Email"
 
-#: app/templates/admin.html:265
+#: app/templates/admin.html:271
 msgid "Expiration time"
 msgstr "Érvényességi idő"
 
-#: app/templates/admin.html:266
+#: app/templates/admin.html:272
 msgid "Key"
 msgstr "Kulcs"
 
-#: app/templates/admin.html:279
+#: app/templates/admin.html:285
 msgid "No reset keys have been generated!"
 msgstr "Nincs érvényes visszaállító-kulcs!"
 
@@ -775,6 +796,24 @@ msgstr "Belső kiszolgálóhiba"
 msgid "Something went wrong on our side, please contact us!"
 msgstr "Valami hiba történt a részünkről, kérlek vedd fel a kapcsolatot!"
 
+#: app/templates/error-handling/page-503.html:3
+msgid "Page 503"
+msgstr "503-as oldal"
+
+#: app/templates/error-handling/page-503.html:10
+msgid "Service unavailable"
+msgstr "Szolgáltatás nem elérhető"
+
+#: app/templates/error-handling/page-503.html:11
+msgid "The server is down for maintenance. Please come back a few moments later!"
+msgstr ""
+"A szerver nem elérhető karbantartás miatt. Látogass vissza pár percen "
+"belül!"
+
+#: app/templates/error-handling/page-503.html:12
+msgid "Admin-page"
+msgstr "Admin-oldal"
+
 #: app/templates/group-bet/group-after.html:7
 #: app/templates/group-bet/group-during.html:8
 #: app/templates/group-bet/group-edit.html:18
@@ -958,7 +997,7 @@ msgstr "Elődöntős"
 
 #: app/templates/includes/tournament-bet-result.html:1
 msgid "Quarter-finals"
-msgstr "Nyolcaddöntős"
+msgstr "Negyeddöntős"
 
 #: app/templates/layouts/base-unsigned.html:5 app/templates/layouts/base.html:4
 msgid "Betting Competition"
