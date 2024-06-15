@@ -1,6 +1,6 @@
 {% extends "/layouts/base.html" %}
 
-{% import '/includes/tournament-bet-result.html' as tournament_bet_result %}
+{% import "/group-bet/tournament-bet.html" as tournament_bet_template %}
 {% import "/includes/alert.html" as alert %}
 
 {% block title%}{% trans %}Group bet{% endtrans %}{% endblock %}
@@ -14,13 +14,13 @@
     <div class="row d-flex justify-content-center">
         <div class="col-12 col-md-6">
             <div class="row">
-                <div class="col">
-                    <h5 class="">{% trans %}Starting credit amount{% endtrans %}: {{bet_values.starting_bet_amount}}</h5>
+                <div class="col mb-2">
+                    <h4 class="">{% trans %}Starting credit amount{% endtrans %}: {{bet_values.starting_bet_amount}}</h4>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <h5 class="">{% trans %}Tournament-bet{% endtrans %}:</h5>
+                    <h4 class="">{% trans %}Tournament-bet{% endtrans %}:</h4>
                 </div>
             </div>
             
@@ -36,7 +36,7 @@
                 <label class="col-5 col-md-3 ms-3" for="resultSelector">{% trans %}Result{% endtrans %}: </label>
                 <div class="col-5 col-md-4 d-flex align-items-center">
                     <select class="form-select" aria-label="Result selector" id="resultSelector">
-                        {% for result in tournament_bet_result.name_map %}
+                        {% for result in tournament_bet_template.name_map %}
                         <option value="{{loop.index0}}" {% if tournament_bet.result == loop.index0 %}selected="selected"{% endif %}>{{result}}</option>
                         {% endfor %}
                     </select>
@@ -65,40 +65,51 @@
                 </div>  
             </div>
 
-            <h4 class="row mt-5 mb-2 d-flex justify-content-left">{% trans %}Set the order of the groups by dragging!{% endtrans %}</h4>
-            {% for group_id, group in groups.items() %}    
-            <div class="row d-flex justify-content-center">
-                <h4 class="row col-12 justify-content-left">{% trans %}Group{% endtrans %} - {{group_id}}</h4>
-                <div class="row mb-3 d-flex justify-content-start" id="{{group_id}}" name="sortableGroup" value="{{group_id}}">
-                    <div class="list-group col-1 ms-3">
-                        <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
-                    {% for team in group.teams %}
-                        <div class="list-group-item d-flex justify-content-center">{{loop.index}}.</div>
-                    {% endfor %}
-                    </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <h4 class="">{% trans %}Group bet{% endtrans %}:</h4>
+                </div>
+            </div>
 
-                    <div class="list-group col-8 col-md-6 ms-3">
-                        <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
-                        <div value="{{group_id}}" id="sortableOrder">
-                            {% for team in group.teams %}
-                            <div class="list-group-item" data-id ="{{team.bname}}">{{team.blocal_name}}</div>
-                            {% endfor %}
+            {{tournament_bet_template.group_multipliers()}}
+
+            <h5 class="row ms-3 mb-2 d-flex justify-content-left">{% trans %}Set the order of the groups by dragging!{% endtrans %}</h5>
+
+            <div class="ms-3">
+                {% for group_id, group in groups.items() %}    
+                <div class="row d-flex justify-content-center">
+                    <h5 class="row col-12 justify-content-left">{% trans %}Group{% endtrans %} - {{group_id}}</h5>
+                    <div class="row mb-3 d-flex justify-content-start" id="{{group_id}}" name="sortableGroup" value="{{group_id}}">
+                        <div class="list-group col-1 ms-3">
+                            <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+                        {% for team in group.teams %}
+                            <div class="list-group-item d-flex justify-content-center">{{loop.index}}.</div>
+                        {% endfor %}
                         </div>
-                    </div>
 
-                    <div class="col-5 col-md-4 mt-2">
-                        <div class="row">
-                            <label class="col-4 col-md-3" for="sortableCredit">{% trans %}Bet{% endtrans %}: </label>
-                            <input class="col-6 col-md-3 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max={{bet_values.max_group_bet_value}}>
-                            <div class="col-2 form-control-sm d-flex align-items-center">/&nbsp;{{bet_values.max_group_bet_value}}</div>
+                        <div class="list-group col-8 col-md-6 ms-3">
+                            <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
+                            <div value="{{group_id}}" id="sortableOrder">
+                                {% for team in group.teams %}
+                                <div class="list-group-item" data-id ="{{team.bname}}">{{team.blocal_name}}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-5 col-md-4 mt-2">
+                            <div class="row">
+                                <label class="col-4 col-md-3" for="sortableCredit">{% trans %}Bet{% endtrans %}: </label>
+                                <input class="col-6 col-md-4 form-control-sm d-flex align-items-center" type="number" value="{{group.bet}}" id="sortableCredit" min=0 max={{bet_values.max_group_bet_value}}>
+                                <div class="col-2 form-control-sm d-flex align-items-center">/&nbsp;{{bet_values.max_group_bet_value}}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             {% endfor %}
+            </div>
 
             <div class="row mt-5">
-                <p class="col-6 col-md-3">{% trans %}Remaining credit{% endtrans %}:</p>
+                <p class="col-6 col-md-4">{% trans %}Remaining credit{% endtrans %}:</p>
                 <p class="col-2 col-md-1 badge bg-info align-items-center justify-content-center" id="remainingCredit"></p>
             </div>
     
@@ -124,7 +135,7 @@
                 <thead>
                   <tr>
                     <th scope="col">{% trans %}Team{% endtrans %}</th>
-                    {% for result_name in tournament_bet_result.name_map %}
+                    {% for result_name in tournament_bet_template.name_map %}
                     <th scope="col">{{result_name}}</th>
                     {% endfor %}
                   </tr>

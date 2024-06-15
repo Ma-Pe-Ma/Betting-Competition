@@ -295,6 +295,14 @@ def maintain_toggle():
 
     return redirect(url_for('admin.admin_page'))
 
+@bp.route('/admin/manual-daily-checker', methods=['GET'])
+@sign_in_required(role=Role.ADMIN)
+def manual_daily_checker():
+    scheduler_handler.daily_checker()
+    flash(gettext('Daily checker manually initiated!'), 'success')
+
+    return redirect(url_for('admin.admin_page'))
+
 @bp.route('/admin/match-update', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def match_update():

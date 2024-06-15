@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-13 18:12+0200\n"
+"POT-Creation-Date: 2024-06-15 13:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,18 +128,22 @@ msgid "Maintenance successfully turned %(id)s!"
 msgstr ""
 
 #: app/admin.py:302
-msgid "Match data updating failed!"
-msgstr ""
-
-#: app/admin.py:304
-msgid "Match data succsesfully updated!"
+msgid "Daily checker manually initiated!"
 msgstr ""
 
 #: app/admin.py:310
-msgid "Standings notification failed!"
+msgid "Match data updating failed!"
 msgstr ""
 
 #: app/admin.py:312
+msgid "Match data succsesfully updated!"
+msgstr ""
+
+#: app/admin.py:318
+msgid "Standings notification failed!"
+msgstr ""
+
+#: app/admin.py:320
 msgid "Standings successfully notified!"
 msgstr ""
 
@@ -271,7 +275,7 @@ msgid "Admin"
 msgstr ""
 
 #: app/templates/admin.html:18 app/templates/chat.html:11
-#: app/templates/group-bet/group-edit.html:105
+#: app/templates/group-bet/group-edit.html:116
 #: app/templates/includes/alert.html:20
 #: app/templates/includes/match-modal.html:67
 #: app/templates/includes/player-selector.html:4
@@ -297,16 +301,16 @@ msgstr ""
 
 #: app/templates/admin.html:38 app/templates/home-page.html:28
 #: app/templates/includes/match-modal.html:19
-#: app/templates/previous-bet/previous-day-match.html:15
+#: app/templates/previous-bet/previous-day-match.html:16
 msgid "Teams"
 msgstr ""
 
 #: app/templates/admin.html:40 app/templates/admin.html:151
-#: app/templates/group-bet/group-after.html:44
+#: app/templates/group-bet/group-after.html:51
 #: app/templates/group-bet/group-edit.html:36
-#: app/templates/group-bet/tournament-bet.html:11
+#: app/templates/group-bet/tournament-bet.html:14
 #: app/templates/includes/match-modal.html:26
-#: app/templates/previous-bet/previous-day-match.html:17
+#: app/templates/previous-bet/previous-day-match.html:18
 msgid "Result"
 msgstr ""
 
@@ -315,7 +319,8 @@ msgid "Max credit"
 msgstr ""
 
 #: app/templates/admin.html:42
-msgid "Cr"
+#: app/templates/previous-bet/previous-day-match.html:21
+msgid "Cr."
 msgstr ""
 
 #: app/templates/admin.html:51 app/templates/home-page.html:45
@@ -355,9 +360,9 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-#: app/templates/admin.html:100 app/templates/admin.html:163
-#: app/templates/admin.html:194 app/templates/chat.html:76
-#: app/templates/group-bet/group-edit.html:110
+#: app/templates/admin.html:100 app/templates/admin.html:161
+#: app/templates/admin.html:192 app/templates/chat.html:76
+#: app/templates/group-bet/group-edit.html:121
 #: app/templates/includes/match-modal.html:74
 msgid "Send"
 msgstr ""
@@ -384,97 +389,105 @@ msgstr ""
 msgid "Group result evaluation"
 msgstr ""
 
-#: app/templates/admin.html:137 app/templates/group-bet/group-edit.html:68
+#: app/templates/admin.html:137 app/templates/group-bet/group-edit.html:76
 msgid "Set the order of the groups by dragging!"
 msgstr ""
 
-#: app/templates/admin.html:141 app/templates/group-bet/group-after.html:17
-#: app/templates/group-bet/group-during.html:17
-#: app/templates/group-bet/group-edit.html:71
+#: app/templates/admin.html:141 app/templates/group-bet/group-after.html:24
+#: app/templates/group-bet/group-during.html:22
+#: app/templates/group-bet/group-edit.html:81
 msgid "Group"
 msgstr ""
 
-#: app/templates/admin.html:167
+#: app/templates/admin.html:165
 msgid "Group evaluation will take place later."
 msgstr ""
 
-#: app/templates/admin.html:177
+#: app/templates/admin.html:175
 msgid "Tournament result evaluation"
 msgstr ""
 
-#: app/templates/admin.html:188
+#: app/templates/admin.html:186
 msgid "Undetermined"
 msgstr ""
 
-#: app/templates/admin.html:189
+#: app/templates/admin.html:187
 msgid "Successful"
 msgstr ""
 
-#: app/templates/admin.html:190
+#: app/templates/admin.html:188
 msgid "Failed"
 msgstr ""
 
-#: app/templates/admin.html:197
+#: app/templates/admin.html:195
 msgid "Tournament bet evaluation will take place later."
 msgstr ""
 
-#: app/templates/admin.html:205
+#: app/templates/admin.html:203
 msgid "Team-data initialization"
 msgstr ""
 
-#: app/templates/admin.html:211
+#: app/templates/admin.html:209
 msgid "Team description"
 msgstr ""
 
-#: app/templates/admin.html:216
+#: app/templates/admin.html:214
 msgid "Team translation"
 msgstr ""
 
-#: app/templates/admin.html:220 app/templates/admin.html:238
+#: app/templates/admin.html:218 app/templates/admin.html:236
 msgid "Upload"
 msgstr ""
 
-#: app/templates/admin.html:227
-msgid "Database down/upload"
-msgstr ""
-
-#: app/templates/admin.html:234
-msgid "Database file"
-msgstr ""
-
-#: app/templates/admin.html:241 app/templates/admin.html:247
-msgid "Download"
-msgstr ""
-
-#: app/templates/admin.html:246
-msgid "Log-file"
-msgstr ""
-
-#: app/templates/admin.html:252
+#: app/templates/admin.html:225
 msgid "Maintenance"
 msgstr ""
 
-#: app/templates/admin.html:253
+#: app/templates/admin.html:232
+msgid "Database file"
+msgstr ""
+
+#: app/templates/admin.html:239 app/templates/admin.html:245
+msgid "Download"
+msgstr ""
+
+#: app/templates/admin.html:244
+msgid "Log-file"
+msgstr ""
+
+#: app/templates/admin.html:250
+msgid "Maintenance-mode"
+msgstr ""
+
+#: app/templates/admin.html:251
 msgid "Toggle"
 msgstr ""
 
-#: app/templates/admin.html:262
+#: app/templates/admin.html:256
+msgid "Daily checker"
+msgstr ""
+
+#: app/templates/admin.html:257
+msgid "Initiate"
+msgstr ""
+
+#: app/templates/admin.html:266
 msgid "Password reset keys"
 msgstr ""
 
-#: app/templates/admin.html:270 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:274 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr ""
 
-#: app/templates/admin.html:271
+#: app/templates/admin.html:275
 msgid "Expiration time"
 msgstr ""
 
-#: app/templates/admin.html:272
+#: app/templates/admin.html:276
 msgid "Key"
 msgstr ""
 
-#: app/templates/admin.html:285
+#: app/templates/admin.html:289
 msgid "No reset keys have been generated!"
 msgstr ""
 
@@ -516,26 +529,26 @@ msgstr ""
 msgid "Round"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:51
-#: app/templates/group-bet/group-during.html:27
-#: app/templates/group-bet/group-edit.html:81 app/templates/home-page.html:31
+#: app/templates/group-bet/group-after.html:58
+#: app/templates/group-bet/group-during.html:32
+#: app/templates/group-bet/group-edit.html:91 app/templates/home-page.html:31
 #: app/templates/includes/match-modal.html:26
 #: app/templates/previous-bet/previous-day-match.html:18
 msgid "Tip"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:25
-#: app/templates/group-bet/group-during.html:37
+#: app/templates/group-bet/group-after.html:32
+#: app/templates/group-bet/group-during.html:42
 #: app/templates/group-bet/group-edit.html:56
-#: app/templates/group-bet/group-edit.html:91
-#: app/templates/group-bet/tournament-bet.html:23
+#: app/templates/group-bet/group-edit.html:101
+#: app/templates/group-bet/tournament-bet.html:26
 #: app/templates/home-page.html:32
 #: app/templates/previous-bet/previous-day-match.html:19
 msgid "Bet"
 msgstr ""
 
 #: app/templates/home-page.html:37
-#: app/templates/previous-bet/previous-day-match.html:26
+#: app/templates/previous-bet/previous-day-match.html:27
 msgid "day"
 msgstr ""
 
@@ -587,12 +600,12 @@ msgid "Please specify your email address for password recovery!"
 msgstr ""
 
 #: app/templates/auth/forgotten-password.html:22
-#: app/templates/auth/user-template.html:13
+#: app/templates/auth/user-template.html:15
 msgid "email@address.com"
 msgstr ""
 
 #: app/templates/auth/forgotten-password.html:24
-#: app/templates/auth/user-template.html:15
+#: app/templates/auth/user-template.html:17
 msgid "Please enter a valid email address."
 msgstr ""
 
@@ -695,7 +708,7 @@ msgstr ""
 
 #: app/templates/auth/reset-password.html:19
 #: app/templates/auth/reset-password.html:27
-#: app/templates/auth/user-template.html:7
+#: app/templates/auth/user-template.html:9
 msgid "A valid username is required."
 msgstr ""
 
@@ -721,7 +734,7 @@ msgstr ""
 msgid "username"
 msgstr ""
 
-#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
+#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:6
 #: app/templates/notifications/standings.html:7
 msgid "Username"
 msgstr ""
@@ -750,7 +763,7 @@ msgstr ""
 msgid "Request new"
 msgstr ""
 
-#: app/templates/auth/user-template.html:20
+#: app/templates/auth/user-template.html:22
 msgid "Language"
 msgstr ""
 
@@ -811,97 +824,128 @@ msgstr ""
 msgid "Admin-page"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:7
-#: app/templates/group-bet/group-during.html:8
+#: app/templates/group-bet/group-after.html:6
+#: app/templates/group-bet/group-during.html:6
 #: app/templates/group-bet/group-edit.html:18
 #: app/templates/previous-bet/previous-day-match.html:8
 msgid "Starting credit amount"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:8
+#: app/templates/group-bet/group-after.html:7
 #: app/templates/previous-bet/previous-day-match.html:9
 msgid "Total group + tournament bet amount"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:9
+#: app/templates/group-bet/group-after.html:8
 msgid "Remaining credit after group + tournament bet"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:10
+#: app/templates/group-bet/group-after.html:9
 msgid "Total group win amount"
 msgstr ""
 
-#: app/templates/group-bet/group-after.html:20
-msgid "Hits"
-msgstr ""
-
-#: app/templates/group-bet/group-after.html:28
-#: app/templates/group-bet/tournament-bet.html:28
-#: app/templates/previous-bet/previous-day-match.html:20
-msgid "Prize"
-msgstr ""
-
-#: app/templates/group-bet/group-after.html:31
-msgid "Difference"
-msgstr ""
-
+#: app/templates/group-bet/group-after.html:15
 #: app/templates/group-bet/group-choose.html:3
-#: app/templates/group-bet/group-edit.html:6 app/templates/layouts/base.html:42
+#: app/templates/group-bet/group-during.html:13
+#: app/templates/group-bet/group-edit.html:6
+#: app/templates/group-bet/group-edit.html:70
+#: app/templates/layouts/base.html:42
 msgid "Group bet"
 msgstr ""
 
-#: app/templates/group-bet/group-during.html:9
+#: app/templates/group-bet/group-after.html:27
+msgid "Hits"
+msgstr ""
+
+#: app/templates/group-bet/group-after.html:35
+#: app/templates/group-bet/tournament-bet.html:31
+#: app/templates/previous-bet/previous-day-match.html:19
+msgid "Prize"
+msgstr ""
+
+#: app/templates/group-bet/group-after.html:38
+msgid "Difference"
+msgstr ""
+
+#: app/templates/group-bet/group-during.html:7
 msgid "Remaining after bet"
 msgstr ""
 
 #: app/templates/group-bet/group-edit.html:23
-#: app/templates/group-bet/tournament-bet.html:2
+#: app/templates/group-bet/tournament-bet.html:5
 msgid "Tournament-bet"
 msgstr ""
 
 #: app/templates/group-bet/group-edit.html:28
-#: app/templates/group-bet/group-edit.html:126
-#: app/templates/group-bet/tournament-bet.html:6
+#: app/templates/group-bet/group-edit.html:137
+#: app/templates/group-bet/tournament-bet.html:9
 msgid "Team"
 msgstr ""
 
 #: app/templates/group-bet/group-edit.html:48
-#: app/templates/group-bet/tournament-bet.html:18
+#: app/templates/group-bet/tournament-bet.html:21
 #: app/templates/includes/match-modal.html:40
 msgid "Odd"
 msgstr ""
 
 #: app/templates/group-bet/group-edit.html:62
-#: app/templates/group-bet/tournament-bet.html:28
+#: app/templates/group-bet/tournament-bet.html:31
 msgid "Expected prize"
 msgstr ""
 
-#: app/templates/group-bet/group-edit.html:101
+#: app/templates/group-bet/group-edit.html:112
 msgid "Remaining credit"
 msgstr ""
 
-#: app/templates/group-bet/group-edit.html:107
+#: app/templates/group-bet/group-edit.html:118
 #: app/templates/includes/alert.html:31
 #: app/templates/includes/player-selector.html:4
 msgid "An error occured while communicating with the server!"
 msgstr ""
 
-#: app/templates/group-bet/group-edit.html:108
+#: app/templates/group-bet/group-edit.html:119
 #: app/templates/includes/alert.html:32
 msgid "An internal server error occured!"
 msgstr ""
 
-#: app/templates/group-bet/group-edit.html:119
+#: app/templates/group-bet/group-edit.html:130
 msgid "Tournament bet odds"
 msgstr ""
 
-#: app/templates/group-bet/tournament-bet.html:7
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Champion"
+msgstr ""
+
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Finalist"
+msgstr ""
+
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Semi-finals"
+msgstr ""
+
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Quarter-finals"
+msgstr ""
+
+#: app/templates/group-bet/tournament-bet.html:10
 msgid "No team was chosen!"
 msgstr ""
 
-#: app/templates/group-bet/tournament-bet.html:13
+#: app/templates/group-bet/tournament-bet.html:16
 msgid "No result was selected!"
 msgstr ""
+
+#: app/templates/group-bet/tournament-bet.html:38
+msgid "The winning multipliers for the group bet are the following"
+msgstr ""
+
+#: app/templates/group-bet/tournament-bet.html:42
+#, python-format
+msgid "%(hit)s hit"
+msgid_plural "%(hit)s hits"
+msgstr[0] ""
+msgstr[1] ""
 
 #: app/templates/includes/alert.html:21
 msgid "Information"
@@ -978,22 +1022,6 @@ msgstr ""
 
 #: app/templates/includes/theme-switcher.html:45
 msgid "Auto"
-msgstr ""
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Champion"
-msgstr ""
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Finalist"
-msgstr ""
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Semi-finals"
-msgstr ""
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Quarter-finals"
 msgstr ""
 
 #: app/templates/layouts/base-unsigned.html:5 app/templates/layouts/base.html:4
@@ -1102,27 +1130,27 @@ msgstr ""
 msgid "Remaining after group + tournament bet"
 msgstr ""
 
-#: app/templates/previous-bet/previous-day-match.html:21
+#: app/templates/previous-bet/previous-day-match.html:20
 msgid "Balance"
 msgstr ""
 
-#: app/templates/previous-bet/previous-day-match.html:47
+#: app/templates/previous-bet/previous-day-match.html:60
 msgid "Group bet total prize"
 msgstr ""
 
-#: app/templates/previous-bet/previous-day-match.html:49
+#: app/templates/previous-bet/previous-day-match.html:62
 msgid "Balance after group bonus"
 msgstr ""
 
-#: app/templates/previous-bet/previous-day-match.html:55
+#: app/templates/previous-bet/previous-day-match.html:68
 msgid "The tournament has not begun!"
 msgstr ""
 
-#: app/templates/previous-bet/previous-day-match.html:61
+#: app/templates/previous-bet/previous-day-match.html:74
 msgid "Tournament bet total prize"
 msgstr ""
 
-#: app/templates/previous-bet/previous-day-match.html:63
+#: app/templates/previous-bet/previous-day-match.html:76
 msgid "Final balance"
 msgstr ""
 

@@ -244,6 +244,8 @@ To setup babel translations these commands need to be launched:
 * clean-up ReadMe
 
 ### Backlog
+* trim whitespaces with jinja
+* cleanup css files
 * email notification/smtp?
 * session handling with Flask-login
 * Add timezone selector for user

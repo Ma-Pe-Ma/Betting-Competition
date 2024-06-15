@@ -86,7 +86,7 @@ def update_match_data_from_fixture():
                 goal1 = goals[0]
                 goal2 = goals[2]
 
-            query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:id AND goal1 == NULL AND goal2 == NULL')
+            query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:id AND goal1 IS NULL AND goal2 IS NULL')
             get_db().session.execute(query_string, {'t1' : row[4], 't2' : row[5], 'g1' : goal1, 'g2' : goal2, 'id' : row[0]})
         
         get_db().session.commit()

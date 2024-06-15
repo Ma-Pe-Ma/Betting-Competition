@@ -1,3 +1,6 @@
+{% set name_map = [gettext('Champion'), gettext('Finalist'), gettext('Semi-finals'), gettext('Quarter-finals')] %}
+
+{% macro tournament_bet(tournament_bet) %}
 <div class="row">
     <h4 class="col-7 col-md-6 d-flex align-items-center">{% trans %}Tournament-bet{% endtrans %}:</h4>
 </div>
@@ -10,7 +13,7 @@
 <div class="row mt-3 d-flex align-items-center">
     <label class="col-4 col-md-4 ms-3" for="resultSelector">{% trans %}Result{% endtrans %}: </label>
     <div class="col-5 col-md-4 d-flex align-items-center">
-        {{tournament_bet_result.name_map[tournament_bet.result]|d(gettext('No result was selected!'))}}
+        {{name_map[tournament_bet.result]|d(gettext('No result was selected!'))}}
     </div>
 </div>
 
@@ -21,10 +24,25 @@
 
 <div class="row d-flex align-items-center">
     <p class="col-4 col-md-4 ms-3" for="tournamentBetCredit">{% trans %}Bet{% endtrans %}: </p>
-    <p class="col-4 col-md-2 ms-2 badge bg-info">{{tournament_bet.bet|d('0', true)}}</p>
+    <p class="col-4 col-md-2 ms-2 badge bg-info">{{tournament_bet.bet|d_round('x')}}</p>
 </div>
 
 <div class="row d-flex align-items-center">
     <p class="col-4 col-md-4 ms-3">{% if tournament_bet.success is none %}{% trans %}Expected prize{% endtrans %}:{% else %}{% trans %}Prize{% endtrans %}:{% endif %}</p>            
-    <p class="col-4 col-md-2 ms-2 badge bg-{% if tournament_bet.success == 1 %}success{% elif tournament_bet.success == 0 %}danger{% else %}warning{% endif %}">{% if tournament_bet.success is none %}{{tournament_bet.expected_prize|d('0', true)}}{% else %}{{tournament_bet.prize|d('0', true)}}{% endif %}</p>
+    <p class="col-4 col-md-2 ms-2 badge bg-{% if tournament_bet.success == 1 %}success{% elif tournament_bet.success == 0 %}danger{% else %}warning{% endif %}">{% if tournament_bet.success is none %}{{tournament_bet.expected_prize|d_round('0')}}{% else %}{{tournament_bet.prize|d_round('0')}}{% endif %}</p>
 </div>
+{% endmacro %}
+
+{% macro group_multipliers() %}
+<div class="container mb-3">
+    <div>{% trans %}The winning multipliers for the group bet are the following{% endtrans %}:</div>
+    <div class="mt-2 ms-2">
+    {% for hit in [0,1,2,4] %}
+        <div class="row d-flex align-items-center">
+            <label class="col-4 col-md-2 ms-3">{% trans %}{{hit}} hit{% pluralize %}{{hit}} hits{% endtrans %}:</label>
+            <div class="col-5 col-md-4 d-flex align-items-center">{{config['GROUP_BET_HIT_MAP'][hit]}}×</div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endmacro %}

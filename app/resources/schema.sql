@@ -103,6 +103,7 @@ CREATE TABLE match_bet (
   goal2 INTEGER,
   bet INTEGER,
   FOREIGN KEY(username) REFERENCES bet_user(username),
+  FOREIGN KEY(match_id) REFERENCES match(id),
   UNIQUE(username, match_id)
 );
 

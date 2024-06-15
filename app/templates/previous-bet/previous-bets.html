@@ -5,13 +5,13 @@
 {% set active_nav_index = 1 %}
 
 {% block header %}
-{% include "/includes/list-style.html" %}
+<link rel="stylesheet" href="/static/css/list-style.css">
 {% endblock header %}
 
 {% block content %}
 
 <div class="container">
-    {% include '/includes/player-selector.html' %}
+    {% include "/includes/player-selector.html" %}
 </div>
 
 <script src="/static/js/player-data.js" data-data-path="previous-bets"></script>

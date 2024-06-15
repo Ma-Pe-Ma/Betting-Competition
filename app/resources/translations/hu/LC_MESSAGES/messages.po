@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-13 18:12+0200\n"
+"POT-Creation-Date: 2024-06-15 13:50+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -129,18 +129,22 @@ msgid "Maintenance successfully turned %(id)s!"
 msgstr "Karbantartó-üzemmód sikeresen %(id)s!"
 
 #: app/admin.py:302
+msgid "Daily checker manually initiated!"
+msgstr "Napi ütemező manuálisan indítva!"
+
+#: app/admin.py:310
 msgid "Match data updating failed!"
 msgstr "Hiba a meccs adatok frissítése közben!"
 
-#: app/admin.py:304
+#: app/admin.py:312
 msgid "Match data succsesfully updated!"
 msgstr "A meccs adatok sikeresen frissítve!"
 
-#: app/admin.py:310
+#: app/admin.py:318
 msgid "Standings notification failed!"
 msgstr "Hiba az állás-értésítés közben!"
 
-#: app/admin.py:312
+#: app/admin.py:320
 msgid "Standings successfully notified!"
 msgstr "Az állás sikeresen értesítve!"
 
@@ -272,7 +276,7 @@ msgid "Admin"
 msgstr "Admin"
 
 #: app/templates/admin.html:18 app/templates/chat.html:11
-#: app/templates/group-bet/group-edit.html:105
+#: app/templates/group-bet/group-edit.html:116
 #: app/templates/includes/alert.html:20
 #: app/templates/includes/match-modal.html:67
 #: app/templates/includes/player-selector.html:4
@@ -298,16 +302,16 @@ msgstr "Időpont"
 
 #: app/templates/admin.html:38 app/templates/home-page.html:28
 #: app/templates/includes/match-modal.html:19
-#: app/templates/previous-bet/previous-day-match.html:15
+#: app/templates/previous-bet/previous-day-match.html:16
 msgid "Teams"
 msgstr "Csapatok"
 
 #: app/templates/admin.html:40 app/templates/admin.html:151
-#: app/templates/group-bet/group-after.html:44
+#: app/templates/group-bet/group-after.html:51
 #: app/templates/group-bet/group-edit.html:36
-#: app/templates/group-bet/tournament-bet.html:11
+#: app/templates/group-bet/tournament-bet.html:14
 #: app/templates/includes/match-modal.html:26
-#: app/templates/previous-bet/previous-day-match.html:17
+#: app/templates/previous-bet/previous-day-match.html:18
 msgid "Result"
 msgstr "Eredmény"
 
@@ -316,8 +320,9 @@ msgid "Max credit"
 msgstr "Fogadható kredit"
 
 #: app/templates/admin.html:42
-msgid "Cr"
-msgstr "Kr"
+#: app/templates/previous-bet/previous-day-match.html:21
+msgid "Cr."
+msgstr "Kr."
 
 #: app/templates/admin.html:51 app/templates/home-page.html:45
 msgid "unknown"
@@ -356,9 +361,9 @@ msgstr "Tárgy"
 msgid "Message"
 msgstr "Üzenet"
 
-#: app/templates/admin.html:100 app/templates/admin.html:163
-#: app/templates/admin.html:194 app/templates/chat.html:76
-#: app/templates/group-bet/group-edit.html:110
+#: app/templates/admin.html:100 app/templates/admin.html:161
+#: app/templates/admin.html:192 app/templates/chat.html:76
+#: app/templates/group-bet/group-edit.html:121
 #: app/templates/includes/match-modal.html:74
 msgid "Send"
 msgstr "Beküld"
@@ -385,97 +390,105 @@ msgstr "Állás"
 msgid "Group result evaluation"
 msgstr "Csoportkör-tippek kiértékelése"
 
-#: app/templates/admin.html:137 app/templates/group-bet/group-edit.html:68
+#: app/templates/admin.html:137 app/templates/group-bet/group-edit.html:76
 msgid "Set the order of the groups by dragging!"
 msgstr "Állítsd be a csapatok sorrendjét vonszolással!"
 
-#: app/templates/admin.html:141 app/templates/group-bet/group-after.html:17
-#: app/templates/group-bet/group-during.html:17
-#: app/templates/group-bet/group-edit.html:71
+#: app/templates/admin.html:141 app/templates/group-bet/group-after.html:24
+#: app/templates/group-bet/group-during.html:22
+#: app/templates/group-bet/group-edit.html:81
 msgid "Group"
 msgstr "Csoport"
 
-#: app/templates/admin.html:167
+#: app/templates/admin.html:165
 msgid "Group evaluation will take place later."
 msgstr "A csoportkör-tippek kiértékelése később esedékes."
 
-#: app/templates/admin.html:177
+#: app/templates/admin.html:175
 msgid "Tournament result evaluation"
 msgstr "Torna-tippek kiértékelése"
 
-#: app/templates/admin.html:188
+#: app/templates/admin.html:186
 msgid "Undetermined"
 msgstr "Nem meghatározott."
 
-#: app/templates/admin.html:189
+#: app/templates/admin.html:187
 msgid "Successful"
 msgstr "Sikeres."
 
-#: app/templates/admin.html:190
+#: app/templates/admin.html:188
 msgid "Failed"
 msgstr "Sikertelen."
 
-#: app/templates/admin.html:197
+#: app/templates/admin.html:195
 msgid "Tournament bet evaluation will take place later."
 msgstr "A torna-tippek kiértékelése később esedékes."
 
-#: app/templates/admin.html:205
+#: app/templates/admin.html:203
 msgid "Team-data initialization"
 msgstr "Csapat-adat inicializálása"
 
-#: app/templates/admin.html:211
+#: app/templates/admin.html:209
 msgid "Team description"
 msgstr "Csapat-leíró fájl"
 
-#: app/templates/admin.html:216
+#: app/templates/admin.html:214
 msgid "Team translation"
 msgstr "Csapatnév-fordító fájl"
 
-#: app/templates/admin.html:220 app/templates/admin.html:238
+#: app/templates/admin.html:218 app/templates/admin.html:236
 msgid "Upload"
 msgstr "Feltöltés"
 
-#: app/templates/admin.html:227
-msgid "Database down/upload"
-msgstr "Adatbázis le-/feltöltés"
-
-#: app/templates/admin.html:234
-msgid "Database file"
-msgstr "Adatbázis fájl"
-
-#: app/templates/admin.html:241 app/templates/admin.html:247
-msgid "Download"
-msgstr "Letöltés"
-
-#: app/templates/admin.html:246
-msgid "Log-file"
-msgstr "Napló-fájl"
-
-#: app/templates/admin.html:252
+#: app/templates/admin.html:225
 msgid "Maintenance"
 msgstr "Karbantartás"
 
-#: app/templates/admin.html:253
+#: app/templates/admin.html:232
+msgid "Database file"
+msgstr "Adatbázis fájl"
+
+#: app/templates/admin.html:239 app/templates/admin.html:245
+msgid "Download"
+msgstr "Letöltés"
+
+#: app/templates/admin.html:244
+msgid "Log-file"
+msgstr "Napló-fájl"
+
+#: app/templates/admin.html:250
+msgid "Maintenance-mode"
+msgstr "Karbantartó-mód"
+
+#: app/templates/admin.html:251
 msgid "Toggle"
 msgstr "Kapcsoló"
 
-#: app/templates/admin.html:262
+#: app/templates/admin.html:256
+msgid "Daily checker"
+msgstr "Napi ütemező"
+
+#: app/templates/admin.html:257
+msgid "Initiate"
+msgstr "Futtat"
+
+#: app/templates/admin.html:266
 msgid "Password reset keys"
 msgstr "Jelszó visszaállító-kulcsok"
 
-#: app/templates/admin.html:270 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:274 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr "Email"
 
-#: app/templates/admin.html:271
+#: app/templates/admin.html:275
 msgid "Expiration time"
 msgstr "Érvényességi idő"
 
-#: app/templates/admin.html:272
+#: app/templates/admin.html:276
 msgid "Key"
 msgstr "Kulcs"
 
-#: app/templates/admin.html:285
+#: app/templates/admin.html:289
 msgid "No reset keys have been generated!"
 msgstr "Nincs érvényes visszaállító-kulcs!"
 
@@ -517,26 +530,26 @@ msgstr "Jelenlegi kredit"
 msgid "Round"
 msgstr "Forduló"
 
-#: app/templates/group-bet/group-after.html:51
-#: app/templates/group-bet/group-during.html:27
-#: app/templates/group-bet/group-edit.html:81 app/templates/home-page.html:31
+#: app/templates/group-bet/group-after.html:58
+#: app/templates/group-bet/group-during.html:32
+#: app/templates/group-bet/group-edit.html:91 app/templates/home-page.html:31
 #: app/templates/includes/match-modal.html:26
 #: app/templates/previous-bet/previous-day-match.html:18
 msgid "Tip"
 msgstr "Tipp"
 
-#: app/templates/group-bet/group-after.html:25
-#: app/templates/group-bet/group-during.html:37
+#: app/templates/group-bet/group-after.html:32
+#: app/templates/group-bet/group-during.html:42
 #: app/templates/group-bet/group-edit.html:56
-#: app/templates/group-bet/group-edit.html:91
-#: app/templates/group-bet/tournament-bet.html:23
+#: app/templates/group-bet/group-edit.html:101
+#: app/templates/group-bet/tournament-bet.html:26
 #: app/templates/home-page.html:32
 #: app/templates/previous-bet/previous-day-match.html:19
 msgid "Bet"
 msgstr "Tét"
 
 #: app/templates/home-page.html:37
-#: app/templates/previous-bet/previous-day-match.html:26
+#: app/templates/previous-bet/previous-day-match.html:27
 msgid "day"
 msgstr "nap"
 
@@ -588,12 +601,12 @@ msgid "Please specify your email address for password recovery!"
 msgstr "Add meg az email-címed a jelszó-visszaállításhoz!"
 
 #: app/templates/auth/forgotten-password.html:22
-#: app/templates/auth/user-template.html:13
+#: app/templates/auth/user-template.html:15
 msgid "email@address.com"
 msgstr "email@cim.hu"
 
 #: app/templates/auth/forgotten-password.html:24
-#: app/templates/auth/user-template.html:15
+#: app/templates/auth/user-template.html:17
 msgid "Please enter a valid email address."
 msgstr "Adj meg egy érvényes email címet."
 
@@ -696,7 +709,7 @@ msgstr "Nem"
 
 #: app/templates/auth/reset-password.html:19
 #: app/templates/auth/reset-password.html:27
-#: app/templates/auth/user-template.html:7
+#: app/templates/auth/user-template.html:9
 msgid "A valid username is required."
 msgstr "Egy érvényes felhasználónév megadás kötelező."
 
@@ -722,7 +735,7 @@ msgstr "Bejelentkezés"
 msgid "username"
 msgstr "felhasználónév"
 
-#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:4
+#: app/templates/auth/sign-in.html:17 app/templates/auth/user-template.html:6
 #: app/templates/notifications/standings.html:7
 msgid "Username"
 msgstr "Felhasználónév"
@@ -751,7 +764,7 @@ msgstr "Elfelejtetted a jelszavad?"
 msgid "Request new"
 msgstr "Új igénylése"
 
-#: app/templates/auth/user-template.html:20
+#: app/templates/auth/user-template.html:22
 msgid "Language"
 msgstr "Nyelv"
 
@@ -814,97 +827,127 @@ msgstr ""
 msgid "Admin-page"
 msgstr "Admin-oldal"
 
-#: app/templates/group-bet/group-after.html:7
-#: app/templates/group-bet/group-during.html:8
+#: app/templates/group-bet/group-after.html:6
+#: app/templates/group-bet/group-during.html:6
 #: app/templates/group-bet/group-edit.html:18
 #: app/templates/previous-bet/previous-day-match.html:8
 msgid "Starting credit amount"
 msgstr "Kezdő kredit érték"
 
-#: app/templates/group-bet/group-after.html:8
+#: app/templates/group-bet/group-after.html:7
 #: app/templates/previous-bet/previous-day-match.html:9
 msgid "Total group + tournament bet amount"
 msgstr "Csoportkör- és torna-tipp fogadási kredit"
 
-#: app/templates/group-bet/group-after.html:9
+#: app/templates/group-bet/group-after.html:8
 msgid "Remaining credit after group + tournament bet"
 msgstr "Fennmaradó kredit csoportkör- és torna-tipp után"
 
-#: app/templates/group-bet/group-after.html:10
+#: app/templates/group-bet/group-after.html:9
 msgid "Total group win amount"
 msgstr "Teljes csoportkör-tipp nyeremény"
 
-#: app/templates/group-bet/group-after.html:20
-msgid "Hits"
-msgstr "Találatok"
-
-#: app/templates/group-bet/group-after.html:28
-#: app/templates/group-bet/tournament-bet.html:28
-#: app/templates/previous-bet/previous-day-match.html:20
-msgid "Prize"
-msgstr "Nyeremény"
-
-#: app/templates/group-bet/group-after.html:31
-msgid "Difference"
-msgstr "Különbség"
-
+#: app/templates/group-bet/group-after.html:15
 #: app/templates/group-bet/group-choose.html:3
-#: app/templates/group-bet/group-edit.html:6 app/templates/layouts/base.html:42
+#: app/templates/group-bet/group-during.html:13
+#: app/templates/group-bet/group-edit.html:6
+#: app/templates/group-bet/group-edit.html:70
+#: app/templates/layouts/base.html:42
 msgid "Group bet"
 msgstr "Csoportkörfogadás"
 
-#: app/templates/group-bet/group-during.html:9
+#: app/templates/group-bet/group-after.html:27
+msgid "Hits"
+msgstr "Találatok"
+
+#: app/templates/group-bet/group-after.html:35
+#: app/templates/group-bet/tournament-bet.html:31
+#: app/templates/previous-bet/previous-day-match.html:19
+msgid "Prize"
+msgstr "Nyeremény"
+
+#: app/templates/group-bet/group-after.html:38
+msgid "Difference"
+msgstr "Különbség"
+
+#: app/templates/group-bet/group-during.html:7
 msgid "Remaining after bet"
 msgstr "Fennmaradó kredit"
 
 #: app/templates/group-bet/group-edit.html:23
-#: app/templates/group-bet/tournament-bet.html:2
+#: app/templates/group-bet/tournament-bet.html:5
 msgid "Tournament-bet"
 msgstr "Torna-tipp"
 
 #: app/templates/group-bet/group-edit.html:28
-#: app/templates/group-bet/group-edit.html:126
-#: app/templates/group-bet/tournament-bet.html:6
+#: app/templates/group-bet/group-edit.html:137
+#: app/templates/group-bet/tournament-bet.html:9
 msgid "Team"
 msgstr "Csapat"
 
 #: app/templates/group-bet/group-edit.html:48
-#: app/templates/group-bet/tournament-bet.html:18
+#: app/templates/group-bet/tournament-bet.html:21
 #: app/templates/includes/match-modal.html:40
 msgid "Odd"
 msgstr "Szorzó"
 
 #: app/templates/group-bet/group-edit.html:62
-#: app/templates/group-bet/tournament-bet.html:28
+#: app/templates/group-bet/tournament-bet.html:31
 msgid "Expected prize"
 msgstr "Várható nyeremény"
 
-#: app/templates/group-bet/group-edit.html:101
+#: app/templates/group-bet/group-edit.html:112
 msgid "Remaining credit"
 msgstr "Fennmaradó kredit"
 
-#: app/templates/group-bet/group-edit.html:107
+#: app/templates/group-bet/group-edit.html:118
 #: app/templates/includes/alert.html:31
 #: app/templates/includes/player-selector.html:4
 msgid "An error occured while communicating with the server!"
 msgstr "Hiba történt a szerver való kommunikáció során!"
 
-#: app/templates/group-bet/group-edit.html:108
+#: app/templates/group-bet/group-edit.html:119
 #: app/templates/includes/alert.html:32
 msgid "An internal server error occured!"
 msgstr "Egy belső kiszolgálóhiba történt!"
 
-#: app/templates/group-bet/group-edit.html:119
+#: app/templates/group-bet/group-edit.html:130
 msgid "Tournament bet odds"
 msgstr "Torna-tipp szorzók"
 
-#: app/templates/group-bet/tournament-bet.html:7
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Champion"
+msgstr "Bajnok"
+
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Finalist"
+msgstr "Döntős"
+
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Semi-finals"
+msgstr "Elődöntős"
+
+#: app/templates/group-bet/tournament-bet.html:1
+msgid "Quarter-finals"
+msgstr "Negyeddöntős"
+
+#: app/templates/group-bet/tournament-bet.html:10
 msgid "No team was chosen!"
 msgstr "Nem lett csapat kiválasztva!"
 
-#: app/templates/group-bet/tournament-bet.html:13
+#: app/templates/group-bet/tournament-bet.html:16
 msgid "No result was selected!"
 msgstr "Nem lett eredmény megadva!"
+
+#: app/templates/group-bet/tournament-bet.html:38
+msgid "The winning multipliers for the group bet are the following"
+msgstr "A nyereményszorzók a csoportkörfogadáshoz a következők"
+
+#: app/templates/group-bet/tournament-bet.html:42
+#, python-format
+msgid "%(hit)s hit"
+msgid_plural "%(hit)s hits"
+msgstr[0] "%(hit)s találat"
 
 #: app/templates/includes/alert.html:21
 msgid "Information"
@@ -982,22 +1025,6 @@ msgstr "Sötét"
 #: app/templates/includes/theme-switcher.html:45
 msgid "Auto"
 msgstr "Auto"
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Champion"
-msgstr "Bajnok"
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Finalist"
-msgstr "Döntős"
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Semi-finals"
-msgstr "Elődöntős"
-
-#: app/templates/includes/tournament-bet-result.html:1
-msgid "Quarter-finals"
-msgstr "Negyeddöntős"
 
 #: app/templates/layouts/base-unsigned.html:5 app/templates/layouts/base.html:4
 msgid "Betting Competition"
@@ -1109,27 +1136,27 @@ msgstr "Sikerességi arány"
 msgid "Remaining after group + tournament bet"
 msgstr "Fennmaradó kredit csoportkör- és tornatipp után"
 
-#: app/templates/previous-bet/previous-day-match.html:21
+#: app/templates/previous-bet/previous-day-match.html:20
 msgid "Balance"
 msgstr "Egyenleg"
 
-#: app/templates/previous-bet/previous-day-match.html:47
+#: app/templates/previous-bet/previous-day-match.html:60
 msgid "Group bet total prize"
 msgstr "Teljes csoportkör-tipp nyeremény"
 
-#: app/templates/previous-bet/previous-day-match.html:49
+#: app/templates/previous-bet/previous-day-match.html:62
 msgid "Balance after group bonus"
 msgstr "Egyenleg a csoporköt-tipp nyeremény után"
 
-#: app/templates/previous-bet/previous-day-match.html:55
+#: app/templates/previous-bet/previous-day-match.html:68
 msgid "The tournament has not begun!"
 msgstr "A bajnokság még nem kezdődött el!"
 
-#: app/templates/previous-bet/previous-day-match.html:61
+#: app/templates/previous-bet/previous-day-match.html:74
 msgid "Tournament bet total prize"
 msgstr "Torna-tipp teljes nyeremény"
 
-#: app/templates/previous-bet/previous-day-match.html:63
+#: app/templates/previous-bet/previous-day-match.html:76
 msgid "Final balance"
 msgstr "Végső egyenleg"
 

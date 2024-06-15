@@ -163,9 +163,7 @@ def daily_checker():
             match_time_object = time_handler.parse_datetime_string(match.datetime)
 
             if i == 0:
-                one_hour_before_first_match = match_time_object - timedelta(hours = 1, minutes = 0)
-                if utc_now > one_hour_before_first_match:
-                    one_hour_before_first_match = None                    
+                one_hour_before_first_match = (lambda time : None if utc_now > time else time)(match_time_object - timedelta(hours = 1, minutes = 0))
 
             after_base_time = match_time_object + timedelta(hours=match_time_length['base_time'])
             match_after_base_task_id = str(match.id) + '. match after base'
@@ -180,7 +178,7 @@ def daily_checker():
             scheduler.add_job(id = match_after_extra_task_id, func=update_results, trigger='date', run_date=after_extra_time)
 
             if i == len(matches) - 1:
-                time_after_last_match = match_time_object + timedelta(hours=match_time_length['extra_time'], minutes=5)
+                time_after_last_match = (lambda time : None if utc_now > time else time)(match_time_object + timedelta(hours=match_time_length['extra_time'], minutes=5))
 
         # send out first
         if one_hour_before_first_match is not None:

@@ -1,61 +1,69 @@
-{% import '/includes/tournament-bet-result.html' as tournament_bet_result %}
+{% import "group-bet/tournament-bet.html" as tournament_bet_template %}
+
 <div class="container">
     <div class="row d-flex justify-content-center">
         <div class="col-12 col-md-6">
-            <div class="container">
-                <div class="row mb-3">
-                    <h5 class="mt-5">{% trans %}Starting credit amount{% endtrans %}: {{starting_bet_amount}}</h5>
-                    <h5 class="">{% trans %}Total group + tournament bet amount{% endtrans %}: {{total_bet}}</h5>
-                    <h5 class="">{% trans %}Remaining credit after group + tournament bet{% endtrans %}: {{amount_after}}</h5>        
-                    <h5 class="mb-5">{% trans %}Total group win amount{% endtrans %}: {{total_win}}</h5>
+            <h5 class="mt-5">{% trans %}Starting credit amount{% endtrans %}: {{starting_bet_amount}}</h5>
+            <h5 class="">{% trans %}Total group + tournament bet amount{% endtrans %}: {{total_bet}}</h5>
+            <h5 class="">{% trans %}Remaining credit after group + tournament bet{% endtrans %}: {{amount_after}}</h5>        
+            <h5 class="mb-4">{% trans %}Total group win amount{% endtrans %}: {{total_win}}</h5>
+    
+            {{tournament_bet_template.tournament_bet(tournament_bet)}}
+
+            <div class="row mt-3">
+                <div class="col">
+                    <h4 class="">{% trans %}Group bet{% endtrans %}:</h4>
+                </div>
+            </div>
+
+            {{tournament_bet_template.group_multipliers()}}
+
+            <div class="ms-3">
+                {% for group_id, group in groups.items() %}    
+                <div class="row d-flex justify-content-center">
+                    <h5 class="row col-12 justify-content-left">{% trans %}Group{% endtrans %} - {{group_id}}</h5>
+
+                    <div class="row ms-2">
+                        <div class="col-5 col-md-4">{% trans %}Hits{% endtrans %}: {{group.hit_number|d_none('x')}} ({{group.multiplier}}×)</div>
+                    </div>
+                    
+                    <div class="row ms-2 mb-1">
+                        <div class="col-3 col-md-2">
+                            {% trans %}Bet{% endtrans %}: {{group.bet}} 
+                        </div>
+                        <div class="col-3 col-md-3">
+                            {% trans %}Prize{% endtrans %}: {{group.prize}}
+                        </div>           
+                        <div class="col-5 col-md-3">
+                            {% trans %}Difference{% endtrans %}: {{group.prize - group.bet}}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 d-flex justify-content-start" id="{{group_id}}" name="sortableGroup" value="{{group_id}}">
+                        <div class="list-group col-1 ms-3 d-none d-sm-block">
+                            <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+                        {% for team in group.teams %}
+                            <div class="list-group-item d-flex justify-content-center">{{loop.index}}.</div>
+                        {% endfor %}
+                        </div>
+
+                        <div class="list-group col-5 col-md-4 ms-3">
+                            <div class="list-group-item bg-secondary">{% trans %}Result{% endtrans %}</div>
+                            {% for team in group.teams %}
+                                <div class="list-group-item">{{team.local_name}}</div>
+                            {% endfor %}
+                        </div>
             
-                    {% include "group-bet/tournament-bet.html" %}
+                        <div class="list-group col-5 col-md-4 ms-3">
+                            <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
+                            {% for team in group.teams %}
+                                <div class="list-group-item bg-{% if team.blocal_name == team.local_name %}success{% else %}danger{% endif %}">{{team.blocal_name|d('-', true)}}</div>
+                            {% endfor %}
+                        </div>   
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-
-            {% for group_id, group in groups.items() %}    
-            <div class="row d-flex justify-content-center">
-                <h4 class="row col-12 justify-content-left">{% trans %}Group{% endtrans %} - {{group_id}}</h4>
-
-                <div class="row ms-2">
-                    <div class="col-5 col-md-4">{% trans %}Hits{% endtrans %}: {{group.hit_number}}  ({{group.multiplier}}×)</div>
-                </div>
-                
-                <div class="row ms-2 mb-1">
-                    <div class="col-3 col-md-3">
-                        {% trans %}Bet{% endtrans %}: {{group.bet}} 
-                    </div>
-                    <div class="col-3 col-md-3">
-                        {% trans %}Prize{% endtrans %}: {{group.prize}}
-                    </div>           
-                    <div class="col-5 col-md-3">
-                        {% trans %}Difference{% endtrans %}: {{group.prize - group.bet}}
-                    </div>
-                </div>
-
-                <div class="row mb-3 d-flex justify-content-start" id="{{group_id}}" name="sortableGroup" value="{{group_id}}">
-                    <div class="list-group col-1 ms-3 d-none d-sm-block">
-                        <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
-                    {% for team in group.teams %}
-                        <div class="list-group-item d-flex justify-content-center">{{loop.index}}.</div>
-                    {% endfor %}
-                    </div>
-
-                    <div class="list-group col-5 col-md-4 ms-3">
-                        <div class="list-group-item bg-secondary">{% trans %}Result{% endtrans %}</div>
-                        {% for team in group.teams %}
-                            <div class="list-group-item">{{team.local_name}}</div>
-                        {% endfor %}
-                    </div>
-        
-                    <div class="list-group col-5 col-md-4 ms-3">
-                        <div class="list-group-item bg-secondary">{% trans %}Tip{% endtrans %}</div>
-                        {% for team in group.teams %}
-                            <div class="list-group-item bg-{% if team.blocal_name == team.local_name %}success{% else %}danger{% endif %}">{{team.blocal_name|d('-', true)}}</div>
-                        {% endfor %}
-                    </div>   
-                </div>
-            </div>
-            {% endfor %}
         </div>        
     </div>
 </div>
