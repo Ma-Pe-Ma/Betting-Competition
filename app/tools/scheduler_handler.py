@@ -51,15 +51,15 @@ def match_reminder_once_per_day(match_ids : list):
     with scheduler.app.app_context():
         current_app.logger.info('Running scheduled match reminder...')
 
-        query_string = text("SELECT date(match.datetime || bet_user.timezone) AS date, time(match.datetime || bet_user.timezone) AS time, tr1.translation AS team1, tr2.translation AS team2, "                            
-                                "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) as bet "
+        query_string = text("SELECT match.datetime, tr1.translation AS team1, tr2.translation AS team2, "                            
+                                "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, bet_user.timezone, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) AS bet "
                             "FROM match "
                             "RIGHT JOIN bet_user ON bet_user.reminder IN (1, 2) "
                             "LEFT JOIN match_bet ON match_bet.match_id = match.id AND bet_user.username = match_bet.username "
                             "LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = bet_user.language "
                             "LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = bet_user.language "
                             "WHERE match.id IN :match_ids "
-                            "ORDER BY bet_user.username, date, time "
+                            "ORDER BY bet_user.username, match.datetime "
                             )
         query_string = query_string.bindparams(bindparam('match_ids', expanding=True))
         result = get_db().session.execute(query_string, {'match_ids' : match_ids})
@@ -68,13 +68,14 @@ def match_reminder_once_per_day(match_ids : list):
 
         for user in result.fetchall():
             if user.username not in user_map:
-                user_map[user.username] = {'username' : user.username, 'email' : user.email, 'reminder' : user.reminder, 'language' : user.language, 'date' : user.date, 'missing' : [], 'nonmissing' : []}
+                date, time = time_handler.local_date_time_from_utc(user.datetime, timezone=user.timezone, format='%Y-%m-%d %H:%M', time_format='%H:%M')
+                user_map[user.username] = {'username' : user.username, 'email' : user.email, 'reminder' : user.reminder, 'language' : user.language, 'date' : date, 'missing' : [], 'nonmissing' : []}
 
             user_dict = user._asdict()
             del user_dict['username']
             del user_dict['email']
             del user_dict['language']
-            del user_dict['date']
+            del user_dict['datetime']
 
             if user.bet == 0 or user.goal1 is None or user.goal2 is None:
                 user_map[user.username]['missing'].append(user_dict)
@@ -112,7 +113,7 @@ def daily_standings():
             notification_map = {}
             standings_map = {}
 
-            query_string = text("SELECT username, email, language, date(:now || timezone) AS date "
+            query_string = text("SELECT username, email, language, date(:now) AS date "
                                 "FROM bet_user "
                                 "WHERE summary = 1")
             result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string()})

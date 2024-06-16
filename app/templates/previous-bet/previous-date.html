@@ -1,0 +1,45 @@
+{% set ns = namespace(row=1) %}
+
+{% for key, date in dates.items() %}
+    {% if loop.length > 1 %}<h4>{{key}}</h4>{% endif %}
+
+    {% for match_id, match in date.items() %}
+    <div class="mb-3">
+        <h5>{{gettext('Match-%(id)s', id=match_id)}}</h5>
+        <div class="ms-2">
+            <h6>{% trans %}Teams{% endtrans %}: {{match.tr1}} - {{match.tr2}}</h6>
+            <h6>{% trans %}Result{% endtrans %}: {{match.rgoal1|d_none('?')}} - {{match.rgoal2|d_none('?')}}</h6>
+            <h6>{% trans %}Odds{% endtrans %}: {{match.odd1}} / {{match.oddX}} / {{match.odd2}}</h6>            
+            <h6>{% trans %}Round{% endtrans %}: {{match.round}}</h6>
+            <h6>{% trans %}Success rate{% endtrans %}: {{(match.success / match['players']|length * 100 + 0.5)|int}}%</h6>
+        </div>
+        
+        <div>
+            {% for player in match['players'] %}
+                {% if loop.index == 1 %}
+                <div class="container">
+                    <div class="row mb-3 mt-3 text-center themed-grid-col0">
+                        <div class="col-3 d-flex align-items-center justify-content-center">{% trans %}Player{% endtrans %}</div>
+                        <div class="col-3 col-sm-2 d-flex align-items-center justify-content-center">{% trans %}Tip{% endtrans %}</div>
+                        <div class="col-1 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{% trans %}Bet{% endtrans %}</div>
+                        <div class="col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center d-none d-sm-block">{% trans %}Prize{% endtrans %}</div>
+                        <div class="col-3 pt-3 pb-3 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none">{% trans %}Pr.{% endtrans %}</div>
+                        <div class="col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center d-none d-sm-block">{% trans %}Difference{% endtrans %}</div>
+                        <div class="col-1 pt-3 pb-3 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none">{% trans %}Diff.{% endtrans %}</div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="container">
+                    <div class="row mb-3 mt-3 text-center {{'bg-success' if player.success else ('bg-danger' if player.success is not none else 'bg-warning')}}">
+                        <div class="col-3 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player['username']}}</div>
+                        <div class="col-3 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player['bgoal1']|d_round('x')}} - {{player['bgoal2']|d_round('x')}}</div>
+                        <div class="col-1 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">&#8209;{{player['bet']|d_round('x')}}</div>
+                        <div class="col-3 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player['prize']|d_round('x')}} + {{player['bonus']|d_round('x')}}</div>
+                        <div class="col-1 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player['credit_diff']|d_round('0')}}</div>
+                    </div>
+                </div>                
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+{% endfor %}

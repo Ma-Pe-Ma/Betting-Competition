@@ -1,0 +1,15 @@
+<div class="row">
+    <h5 class="col-3 col-md-3 mb-3 pt-3 d-flex align-items-center">{% trans %}Date{% endtrans %}:</h5>
+    <div class="col-7 col-md-2 d-flex align-items-center">
+        <select class="form-select" aria-label="Date selector" id="dateSelector">
+            <option value="">{% trans %}Every match{% endtrans %}</option>
+            {% for date in dates %}
+            <option value="{{date.date}}" {% if loop.first %}selected="selected"{% endif %}>{{date.date}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-1 spinner-border d-flex align-items-center" role="status" id="dateSpinner">
+        <span class="visually-hidden">{% trans %}Loading...{% endtrans %}</span>
+    </div>
+</div>
+<div id="matchResultNode"></div>

@@ -26,6 +26,7 @@ def get_group_and_tournament_bet_amount(username : str) -> int:
 match_evaluation_query_string = text(
                             "WITH match_prize AS("
                                 "SELECT match.id, m_outcome.outcome AS match_outcome, b_outcome.outcome AS bet_outcome, COALESCE(m_outcome.outcome = b_outcome.outcome, 0) AS success, "
+                                "b_outcome.goal1, b_outcome.goal2, b_outcome.username AS username, "
                                     "CASE m_outcome.outcome = b_outcome.outcome "
                                         "WHEN 1 THEN CASE m_outcome.outcome "
                                             "WHEN 1 THEN match.odd1 "
@@ -47,7 +48,7 @@ match_evaluation_query_string = text(
                                     "COALESCE(b_outcome.bet, 0) AS bet "
                                 "FROM match "
                                 "LEFT JOIN (SELECT match.id AS id, SIGN(match.goal1 - match.goal2) AS outcome FROM match) AS m_outcome ON m_outcome.id = match.id "
-                                "LEFT JOIN (SELECT match_bet.*, SIGN(match_bet.goal1 - match_bet.goal2) AS outcome, match_bet.match_id AS match_id FROM match_bet WHERE match_bet.username = :u) AS b_outcome ON b_outcome.match_id = match.id "
+                                "LEFT JOIN (SELECT match_bet.*, SIGN(match_bet.goal1 - match_bet.goal2) AS outcome, match_bet.match_id AS match_id FROM match_bet) AS b_outcome ON b_outcome.match_id = match.id "
                             ")")
 
 def get_daily_points_by_current_time(username : str):
@@ -55,15 +56,17 @@ def get_daily_points_by_current_time(username : str):
     deadline_times = current_app.config['DEADLINE_TIMES']
 
     daily_point_query_string = match_evaluation_query_string.text + \
-                        """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet)) AS point, date(match.datetime) AS date, 
-                            strftime('%Y', match.datetime) as year, strftime('%m', match.datetime) -1 as month, strftime('%d', match.datetime) as day 
+                        """SELECT SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet, 0)) AS point, date(match.datetime) AS date, 
+                            strftime('%Y', match.datetime) AS year, strftime('%m', match.datetime) -1 AS month, strftime('%d', match.datetime) AS day, bet_user.username
                         FROM match 
-                        LEFT JOIN match_prize ON match_prize.id = match.id 
-                        WHERE unixepoch(datetime) < unixepoch(:now) AND unixepoch(datetime) {r} unixepoch(:group_evaluation_time)
-                        GROUP BY date 
+                        RIGHT JOIN bet_user
+                        LEFT JOIN match_prize ON match_prize.id = match.id AND match_prize.username = bet_user.username
+                        WHERE unixepoch(datetime) < unixepoch(:now) AND unixepoch(datetime) {r} unixepoch(:group_evaluation_time) AND bet_user.username = :u
+                        GROUP BY date
                         ORDER BY date """
 
-    daily_point_parameters = {'now' : utc_now.strftime('%Y-%m-%d %H:%M'), 'group_evaluation_time' : deadline_times['group_evaluation'], 'u' : username, 'bullseye' : current_app.config['BONUS_MULTIPLIERS']['bullseye'], 'difference' : current_app.config['BONUS_MULTIPLIERS']['difference']}
+    hitmap = current_app.config['BONUS_MULTIPLIERS']
+    daily_point_parameters = {'now' : utc_now.strftime('%Y-%m-%d %H:%M'), 'group_evaluation_time' : deadline_times['group_evaluation'], 'u' : username, 'bullseye' : hitmap['bullseye'], 'difference' : hitmap['difference']}
 
     #create unique time objects
     group_deadline_time_object : datetime = time_handler.parse_datetime_string(deadline_times['register'])

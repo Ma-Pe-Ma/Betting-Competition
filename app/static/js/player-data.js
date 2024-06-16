@@ -1,7 +1,6 @@
 var listSelector = document.getElementById("playerSelector");
 var resultNode = document.getElementById("resultNode")
 var playerSpinner = document.getElementById("playerSpinner");
-var alertTemplate = document.getElementById("alertTemplate");
 var requestAddress = document.currentScript.getAttribute("data-data-path");
 
 listSelector.onchange = function() {
@@ -14,9 +13,9 @@ listSelector.onchange = function() {
     }
 }
 
-window.onload = function() {
+document.addEventListener("DOMContentLoaded", function() {
     getPlayerData(listSelector.value);
-}
+});
 
 var playerDataMap = new Map();
 
@@ -34,7 +33,7 @@ function getPlayerData(nameID) {
     }
 
     request.ontimeout = function() {
-        const alert = alertTemplate.content.cloneNode(true);
+        const alert = document.getElementById("alertTemplate").content.cloneNode(true);
         const rootElement = document.getElementById("alertNode");
         rootElement.insertBefore(alert, rootElement.children[0]);
     }

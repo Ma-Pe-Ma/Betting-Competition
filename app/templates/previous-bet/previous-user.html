@@ -32,15 +32,15 @@
 
     {% set match_color = 'info' if (match.rgoal1 is none) else ('success' if match.success == 1 else 'danger') %}
 
-<div class="container">
+<div class="container mb-3">
     <div class="row text-center">
         <div class="col-4 col-sm-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">{{match.team1}} - {{match.team2}}</div>
         <div class="col-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center d-none d-sm-block">{{match.odd1|d_round('?')}} / {{match.oddX|d_round('?')}} / {{match.odd2|d_round('?')}}</div>
         <div class="col-3 col-sm-2 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">
             <div class="row col-12 d-flex align-items-center justify-content-center">
-                <div class="badge bg-info col-8 col-sm-3">{{match.rgoal1|d_none('?')}} - {{match.rgoal2|d_none('?')}}</div>
+                <div class="badge bg-info col-9 col-sm-3">{{match.rgoal1|d_none('?')}} - {{match.rgoal2|d_none('?')}}</div>
                 <div class="col-7 col-sm-1">/</div>
-                <div class="badge bg-{{match_color}} col-8 col-sm-3">{{match.bgoal1|d_none("x")}} - {{match.bgoal2|d_none("x")}}</div>
+                <div class="badge bg-{{match_color}} col-9 col-sm-3">{{match.bgoal1|d_none("x")}} - {{match.bgoal2|d_none("x")}}</div>
             </div>
         </div>
         <div class="col-3 col-sm-3 themed-grid-col{{ns.row}} d-flex align-items-center justify-content-center">

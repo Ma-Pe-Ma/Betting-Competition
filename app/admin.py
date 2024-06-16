@@ -75,7 +75,7 @@ def admin_page():
     if reset_keys is None:
         reset_keys = {}
 
-    return render_template('/admin.html', matches = matches, messages = messages, groups = groups, tournament_bets = tournament_bets, reset_keys = reset_keys)
+    return render_template('/admin.html', matches = matches, messages = messages, groups = groups, tournament_bets = tournament_bets, reset_keys = reset_keys, scheduled_jobs=scheduler_handler.scheduler.get_jobs())
 
 @bp.route('/admin/message', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)

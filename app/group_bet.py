@@ -121,7 +121,7 @@ def during_groupstage():
 
         return render_template('/group-bet/group-during.html', groups=groups, tournament_bet=tournament_bet, amount_after=amount_after, starting_bet_amount=current_app.config['BET_VALUES']['starting_bet_amount'])
     
-    query_string = text('SELECT username FROM bet_user ORDER BY username ASC')
+    query_string = text('SELECT username FROM bet_user ORDER BY UPPER(username) ASC')
     result = get_db().session.execute(query_string)
     players = result.fetchall()
 
@@ -139,7 +139,7 @@ def after_evaluation():
 
         return render_template('/group-bet/group-after.html', groups=groups, tournament_bet=tournament_bet_dict, amount_after=amount_after, starting_bet_amount=current_app.config['BET_VALUES']['starting_bet_amount'], total_win=total_win_amount, total_bet=total_bet)
     
-    query_string = text('SELECT username FROM bet_user')
+    query_string = text('SELECT username FROM bet_user ORDER BY UPPER(username)')
     result = get_db().session.execute(query_string)
     players = result.fetchall()
 
@@ -164,7 +164,7 @@ def group_order():
 @bp.route('/tournament-bet.json', methods=['GET'])
 @sign_in_required()
 def tournament_bet_odds():
-    query_string = text("SELECT top1, top2, top4, top8, team.name, tr.translation as tr "
+    query_string = text("SELECT top1, top2, top4, top8, team.name, tr.translation AS tr "
                         "FROM team "
                         "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
                         "ORDER BY team.name "

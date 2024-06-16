@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-15 13:50+0200\n"
+"POT-Creation-Date: 2024-06-16 14:28+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -276,10 +276,11 @@ msgid "Admin"
 msgstr "Admin"
 
 #: app/templates/admin.html:18 app/templates/chat.html:11
+#: app/templates/group-bet/group-choose.html:11
 #: app/templates/group-bet/group-edit.html:116
 #: app/templates/includes/alert.html:20
 #: app/templates/includes/match-modal.html:67
-#: app/templates/includes/player-selector.html:4
+#: app/templates/previous-bet/previous-bets.html:17
 msgid "Failure!"
 msgstr "Hiba!"
 
@@ -302,7 +303,8 @@ msgstr "Időpont"
 
 #: app/templates/admin.html:38 app/templates/home-page.html:28
 #: app/templates/includes/match-modal.html:19
-#: app/templates/previous-bet/previous-day-match.html:16
+#: app/templates/previous-bet/previous-date.html:10
+#: app/templates/previous-bet/previous-user.html:16
 msgid "Teams"
 msgstr "Csapatok"
 
@@ -311,7 +313,8 @@ msgstr "Csapatok"
 #: app/templates/group-bet/group-edit.html:36
 #: app/templates/group-bet/tournament-bet.html:14
 #: app/templates/includes/match-modal.html:26
-#: app/templates/previous-bet/previous-day-match.html:18
+#: app/templates/previous-bet/previous-date.html:11
+#: app/templates/previous-bet/previous-user.html:18
 msgid "Result"
 msgstr "Eredmény"
 
@@ -319,8 +322,7 @@ msgstr "Eredmény"
 msgid "Max credit"
 msgstr "Fogadható kredit"
 
-#: app/templates/admin.html:42
-#: app/templates/previous-bet/previous-day-match.html:21
+#: app/templates/admin.html:42 app/templates/previous-bet/previous-user.html:21
 msgid "Cr."
 msgstr "Kr."
 
@@ -472,23 +474,27 @@ msgstr "Napi ütemező"
 msgid "Initiate"
 msgstr "Futtat"
 
-#: app/templates/admin.html:266
+#: app/templates/admin.html:261
+msgid "Scheduled tasks"
+msgstr "Ütemezett feladatok"
+
+#: app/templates/admin.html:274
 msgid "Password reset keys"
 msgstr "Jelszó visszaállító-kulcsok"
 
-#: app/templates/admin.html:274 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:282 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr "Email"
 
-#: app/templates/admin.html:275
+#: app/templates/admin.html:283
 msgid "Expiration time"
 msgstr "Érvényességi idő"
 
-#: app/templates/admin.html:276
+#: app/templates/admin.html:284
 msgid "Key"
 msgstr "Kulcs"
 
-#: app/templates/admin.html:289
+#: app/templates/admin.html:297
 msgid "No reset keys have been generated!"
 msgstr "Nincs érvényes visszaállító-kulcs!"
 
@@ -522,11 +528,12 @@ msgid "Home page"
 msgstr "Fogadás"
 
 #: app/templates/home-page.html:20
-#: app/templates/previous-bet/previous-day-match.html:5
+#: app/templates/previous-bet/previous-user.html:5
 msgid "Current credit"
 msgstr "Jelenlegi kredit"
 
 #: app/templates/home-page.html:29
+#: app/templates/previous-bet/previous-date.html:13
 msgid "Round"
 msgstr "Forduló"
 
@@ -534,7 +541,8 @@ msgstr "Forduló"
 #: app/templates/group-bet/group-during.html:32
 #: app/templates/group-bet/group-edit.html:91 app/templates/home-page.html:31
 #: app/templates/includes/match-modal.html:26
-#: app/templates/previous-bet/previous-day-match.html:18
+#: app/templates/previous-bet/previous-date.html:23
+#: app/templates/previous-bet/previous-user.html:18
 msgid "Tip"
 msgstr "Tipp"
 
@@ -544,12 +552,13 @@ msgstr "Tipp"
 #: app/templates/group-bet/group-edit.html:101
 #: app/templates/group-bet/tournament-bet.html:26
 #: app/templates/home-page.html:32
-#: app/templates/previous-bet/previous-day-match.html:19
+#: app/templates/previous-bet/previous-date.html:24
+#: app/templates/previous-bet/previous-user.html:19
 msgid "Bet"
 msgstr "Tét"
 
 #: app/templates/home-page.html:37
-#: app/templates/previous-bet/previous-day-match.html:27
+#: app/templates/previous-bet/previous-user.html:27
 msgid "day"
 msgstr "nap"
 
@@ -565,7 +574,8 @@ msgstr "Helyezés"
 msgid "Icon"
 msgstr "Ikon"
 
-#: app/templates/includes/player-selector.html:7
+#: app/templates/includes/player-selector.html:2
+#: app/templates/previous-bet/previous-date.html:22
 #: app/templates/standings.html:15
 msgid "Player"
 msgstr "Játékos"
@@ -715,7 +725,7 @@ msgstr "Egy érvényes felhasználónév megadás kötelező."
 
 #: app/templates/auth/reset-password.html:24
 msgid "Reset-key"
-msgstr "visszaállító-kulcs"
+msgstr "Visszaállító-kulcs"
 
 #: app/templates/auth/reset-password.html:32
 msgid "New password"
@@ -830,12 +840,12 @@ msgstr "Admin-oldal"
 #: app/templates/group-bet/group-after.html:6
 #: app/templates/group-bet/group-during.html:6
 #: app/templates/group-bet/group-edit.html:18
-#: app/templates/previous-bet/previous-day-match.html:8
+#: app/templates/previous-bet/previous-user.html:8
 msgid "Starting credit amount"
 msgstr "Kezdő kredit érték"
 
 #: app/templates/group-bet/group-after.html:7
-#: app/templates/previous-bet/previous-day-match.html:9
+#: app/templates/previous-bet/previous-user.html:9
 msgid "Total group + tournament bet amount"
 msgstr "Csoportkör- és torna-tipp fogadási kredit"
 
@@ -848,7 +858,7 @@ msgid "Total group win amount"
 msgstr "Teljes csoportkör-tipp nyeremény"
 
 #: app/templates/group-bet/group-after.html:15
-#: app/templates/group-bet/group-choose.html:3
+#: app/templates/group-bet/group-choose.html:4
 #: app/templates/group-bet/group-during.html:13
 #: app/templates/group-bet/group-edit.html:6
 #: app/templates/group-bet/group-edit.html:70
@@ -862,13 +872,22 @@ msgstr "Találatok"
 
 #: app/templates/group-bet/group-after.html:35
 #: app/templates/group-bet/tournament-bet.html:31
-#: app/templates/previous-bet/previous-day-match.html:19
+#: app/templates/previous-bet/previous-date.html:25
+#: app/templates/previous-bet/previous-user.html:19
 msgid "Prize"
 msgstr "Nyeremény"
 
 #: app/templates/group-bet/group-after.html:38
+#: app/templates/previous-bet/previous-date.html:27
 msgid "Difference"
 msgstr "Különbség"
+
+#: app/templates/group-bet/group-choose.html:11
+#: app/templates/group-bet/group-edit.html:118
+#: app/templates/includes/alert.html:31
+#: app/templates/previous-bet/previous-bets.html:17
+msgid "An error occured while communicating with the server!"
+msgstr "Hiba történt a szerver való kommunikáció során!"
 
 #: app/templates/group-bet/group-during.html:7
 msgid "Remaining after bet"
@@ -899,12 +918,6 @@ msgstr "Várható nyeremény"
 #: app/templates/group-bet/group-edit.html:112
 msgid "Remaining credit"
 msgstr "Fennmaradó kredit"
-
-#: app/templates/group-bet/group-edit.html:118
-#: app/templates/includes/alert.html:31
-#: app/templates/includes/player-selector.html:4
-msgid "An error occured while communicating with the server!"
-msgstr "Hiba történt a szerver való kommunikáció során!"
 
 #: app/templates/group-bet/group-edit.html:119
 #: app/templates/includes/alert.html:32
@@ -986,15 +999,18 @@ msgid "Match"
 msgstr "Meccs"
 
 #: app/templates/includes/match-modal.html:8
-#: app/templates/includes/player-selector.html:16
+#: app/templates/includes/player-selector.html:11
+#: app/templates/previous-bet/match-selector.html:12
 msgid "Loading..."
 msgstr "Betöltés.."
 
 #: app/templates/includes/match-modal.html:14
+#: app/templates/previous-bet/match-selector.html:2
 msgid "Date"
 msgstr "Dátum"
 
 #: app/templates/includes/match-modal.html:49
+#: app/templates/previous-bet/previous-date.html:12
 msgid "Odds"
 msgstr "Szorzók"
 
@@ -1124,39 +1140,65 @@ msgstr ""
 "Ha valamilyen oknál fogva nem tudsz fogadni, akkor erre a címre küldd el,"
 " és írd le a probléma okát is."
 
+#: app/templates/previous-bet/match-selector.html:5
+msgid "Every match"
+msgstr "Összes meccs"
+
 #: app/templates/previous-bet/previous-bets.html:3
 msgid "Previous bets"
 msgstr "Korábbi fogadások"
 
-#: app/templates/previous-bet/previous-day-match.html:6
+#: app/templates/previous-bet/previous-bets.html:21
+msgid "By player"
+msgstr "Játékosonként"
+
+#: app/templates/previous-bet/previous-bets.html:24
+msgid "By match"
+msgstr "Meccsenként"
+
+#: app/templates/previous-bet/previous-date.html:8
+#, python-format
+msgid "Match-%(id)s"
+msgstr "Meccs-%(id)s"
+
+#: app/templates/previous-bet/previous-date.html:14
+#: app/templates/previous-bet/previous-user.html:6
 msgid "Success rate"
 msgstr "Sikerességi arány"
 
-#: app/templates/previous-bet/previous-day-match.html:10
+#: app/templates/previous-bet/previous-date.html:26
+msgid "Pr."
+msgstr "Ny."
+
+#: app/templates/previous-bet/previous-date.html:28
+msgid "Diff."
+msgstr "Kül."
+
+#: app/templates/previous-bet/previous-user.html:10
 msgid "Remaining after group + tournament bet"
 msgstr "Fennmaradó kredit csoportkör- és tornatipp után"
 
-#: app/templates/previous-bet/previous-day-match.html:20
+#: app/templates/previous-bet/previous-user.html:20
 msgid "Balance"
 msgstr "Egyenleg"
 
-#: app/templates/previous-bet/previous-day-match.html:60
+#: app/templates/previous-bet/previous-user.html:60
 msgid "Group bet total prize"
 msgstr "Teljes csoportkör-tipp nyeremény"
 
-#: app/templates/previous-bet/previous-day-match.html:62
+#: app/templates/previous-bet/previous-user.html:62
 msgid "Balance after group bonus"
 msgstr "Egyenleg a csoporköt-tipp nyeremény után"
 
-#: app/templates/previous-bet/previous-day-match.html:68
+#: app/templates/previous-bet/previous-user.html:68
 msgid "The tournament has not begun!"
 msgstr "A bajnokság még nem kezdődött el!"
 
-#: app/templates/previous-bet/previous-day-match.html:74
+#: app/templates/previous-bet/previous-user.html:74
 msgid "Tournament bet total prize"
 msgstr "Torna-tipp teljes nyeremény"
 
-#: app/templates/previous-bet/previous-day-match.html:76
+#: app/templates/previous-bet/previous-user.html:76
 msgid "Final balance"
 msgstr "Végső egyenleg"
 

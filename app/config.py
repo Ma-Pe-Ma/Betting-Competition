@@ -27,6 +27,9 @@ class Default(object):
     CACHE_TYPE = 'SimpleCache'
     CACHE_DEFAULT_TIMEOUT = 300
 
+    # USED BY APSCHEDULER
+    SCHEDULER_TIMEZONE = 'UTC'
+
     # 0 - not using, 1 - email, 2 - browser notification
     DIRECT_MESSAGING = 0
 
