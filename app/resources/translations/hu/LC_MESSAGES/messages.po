@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-16 14:28+0200\n"
+"POT-Creation-Date: 2024-06-17 20:42+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Messages updated successfully!"
 msgstr "Üzenetek sikeresen frissítve"
 
-#: app/admin.py:99 app/chat.py:51
+#: app/admin.py:99 app/chat.py:52
 msgid "Too short message!"
 msgstr "Túl rövid üzenet"
 
@@ -220,7 +220,7 @@ msgstr "Nem lett igényelve visszaállító-kulcs."
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
-#: app/chat.py:58
+#: app/chat.py:59
 msgid "Invalid data sent!"
 msgstr "Érvényelen üzenet!"
 
@@ -271,7 +271,7 @@ msgstr "Nem megfelelő (negatív) érték gólnak/kreditnek!"
 msgid "Betting on match %(id)s was successful!"
 msgstr "Sikeres fogadás a következő azonosítóra: %(id)s!"
 
-#: app/templates/admin.html:6 app/templates/layouts/base.html:44
+#: app/templates/admin.html:6 app/templates/layouts/base.html:45
 msgid "Admin"
 msgstr "Admin"
 
@@ -280,7 +280,7 @@ msgstr "Admin"
 #: app/templates/group-bet/group-edit.html:116
 #: app/templates/includes/alert.html:20
 #: app/templates/includes/match-modal.html:67
-#: app/templates/previous-bet/previous-bets.html:17
+#: app/templates/previous-bet/previous-bets.html:16
 msgid "Failure!"
 msgstr "Hiba!"
 
@@ -382,7 +382,7 @@ msgstr "Generálás"
 msgid "Email adresses"
 msgstr "Email-címek"
 
-#: app/templates/admin.html:118 app/templates/layouts/base.html:41
+#: app/templates/admin.html:118 app/templates/layouts/base.html:42
 #: app/templates/notifications/standings-subject.txt:1
 #: app/templates/standings.html:3
 msgid "Standings"
@@ -498,7 +498,7 @@ msgstr "Kulcs"
 msgid "No reset keys have been generated!"
 msgstr "Nincs érvényes visszaállító-kulcs!"
 
-#: app/templates/chat.html:4 app/templates/layouts/base.html:43
+#: app/templates/chat.html:4 app/templates/layouts/base.html:44
 msgid "Chat"
 msgstr ""
 
@@ -862,7 +862,7 @@ msgstr "Teljes csoportkör-tipp nyeremény"
 #: app/templates/group-bet/group-during.html:13
 #: app/templates/group-bet/group-edit.html:6
 #: app/templates/group-bet/group-edit.html:70
-#: app/templates/layouts/base.html:42
+#: app/templates/layouts/base.html:43
 msgid "Group bet"
 msgstr "Csoportkörfogadás"
 
@@ -885,7 +885,7 @@ msgstr "Különbség"
 #: app/templates/group-bet/group-choose.html:11
 #: app/templates/group-bet/group-edit.html:118
 #: app/templates/includes/alert.html:31
-#: app/templates/previous-bet/previous-bets.html:17
+#: app/templates/previous-bet/previous-bets.html:16
 msgid "An error occured while communicating with the server!"
 msgstr "Hiba történt a szerver való kommunikáció során!"
 
@@ -1055,11 +1055,11 @@ msgstr "Tippbajnokság!"
 msgid "Sign out"
 msgstr "Kijelentkezés"
 
-#: app/templates/layouts/base.html:39
+#: app/templates/layouts/base.html:40
 msgid "Betting"
 msgstr "Fogadás"
 
-#: app/templates/layouts/base.html:40
+#: app/templates/layouts/base.html:41
 msgid "Results"
 msgstr "Eredmények"
 
@@ -1144,15 +1144,15 @@ msgstr ""
 msgid "Every match"
 msgstr "Összes meccs"
 
-#: app/templates/previous-bet/previous-bets.html:3
+#: app/templates/previous-bet/previous-bets.html:4
 msgid "Previous bets"
 msgstr "Korábbi fogadások"
 
-#: app/templates/previous-bet/previous-bets.html:21
+#: app/templates/previous-bet/previous-bets.html:20
 msgid "By player"
 msgstr "Játékosonként"
 
-#: app/templates/previous-bet/previous-bets.html:24
+#: app/templates/previous-bet/previous-bets.html:23
 msgid "By match"
 msgstr "Meccsenként"
 

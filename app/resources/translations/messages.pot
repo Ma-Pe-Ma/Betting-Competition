@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-16 14:28+0200\n"
+"POT-Creation-Date: 2024-06-17 20:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Messages updated successfully!"
 msgstr ""
 
-#: app/admin.py:99 app/chat.py:51
+#: app/admin.py:99 app/chat.py:52
 msgid "Too short message!"
 msgstr ""
 
@@ -219,7 +219,7 @@ msgstr ""
 msgid "The given reset key is invalid."
 msgstr ""
 
-#: app/chat.py:58
+#: app/chat.py:59
 msgid "Invalid data sent!"
 msgstr ""
 
@@ -270,7 +270,7 @@ msgstr ""
 msgid "Betting on match %(id)s was successful!"
 msgstr ""
 
-#: app/templates/admin.html:6 app/templates/layouts/base.html:44
+#: app/templates/admin.html:6 app/templates/layouts/base.html:45
 msgid "Admin"
 msgstr ""
 
@@ -279,7 +279,7 @@ msgstr ""
 #: app/templates/group-bet/group-edit.html:116
 #: app/templates/includes/alert.html:20
 #: app/templates/includes/match-modal.html:67
-#: app/templates/previous-bet/previous-bets.html:17
+#: app/templates/previous-bet/previous-bets.html:16
 msgid "Failure!"
 msgstr ""
 
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Email adresses"
 msgstr ""
 
-#: app/templates/admin.html:118 app/templates/layouts/base.html:41
+#: app/templates/admin.html:118 app/templates/layouts/base.html:42
 #: app/templates/notifications/standings-subject.txt:1
 #: app/templates/standings.html:3
 msgid "Standings"
@@ -497,7 +497,7 @@ msgstr ""
 msgid "No reset keys have been generated!"
 msgstr ""
 
-#: app/templates/chat.html:4 app/templates/layouts/base.html:43
+#: app/templates/chat.html:4 app/templates/layouts/base.html:44
 msgid "Chat"
 msgstr ""
 
@@ -859,7 +859,7 @@ msgstr ""
 #: app/templates/group-bet/group-during.html:13
 #: app/templates/group-bet/group-edit.html:6
 #: app/templates/group-bet/group-edit.html:70
-#: app/templates/layouts/base.html:42
+#: app/templates/layouts/base.html:43
 msgid "Group bet"
 msgstr ""
 
@@ -882,7 +882,7 @@ msgstr ""
 #: app/templates/group-bet/group-choose.html:11
 #: app/templates/group-bet/group-edit.html:118
 #: app/templates/includes/alert.html:31
-#: app/templates/previous-bet/previous-bets.html:17
+#: app/templates/previous-bet/previous-bets.html:16
 msgid "An error occured while communicating with the server!"
 msgstr ""
 
@@ -1053,11 +1053,11 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: app/templates/layouts/base.html:39
+#: app/templates/layouts/base.html:40
 msgid "Betting"
 msgstr ""
 
-#: app/templates/layouts/base.html:40
+#: app/templates/layouts/base.html:41
 msgid "Results"
 msgstr ""
 
@@ -1138,15 +1138,15 @@ msgstr ""
 msgid "Every match"
 msgstr ""
 
-#: app/templates/previous-bet/previous-bets.html:3
+#: app/templates/previous-bet/previous-bets.html:4
 msgid "Previous bets"
 msgstr ""
 
-#: app/templates/previous-bet/previous-bets.html:21
+#: app/templates/previous-bet/previous-bets.html:20
 msgid "By player"
 msgstr ""
 
-#: app/templates/previous-bet/previous-bets.html:24
+#: app/templates/previous-bet/previous-bets.html:23
 msgid "By match"
 msgstr ""
 

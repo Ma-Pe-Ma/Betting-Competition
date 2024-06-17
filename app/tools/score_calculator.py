@@ -25,7 +25,7 @@ def get_group_and_tournament_bet_amount(username : str) -> int:
 
 match_evaluation_query_string = text(
                             "WITH match_prize AS("
-                                "SELECT match.id, m_outcome.outcome AS match_outcome, b_outcome.outcome AS bet_outcome, COALESCE(m_outcome.outcome = b_outcome.outcome, 0) AS success, "
+                                "SELECT match.id, m_outcome.outcome AS match_outcome, b_outcome.outcome AS bet_outcome, (m_outcome.outcome = b_outcome.outcome) AS success, "
                                 "b_outcome.goal1, b_outcome.goal2, b_outcome.username AS username, "
                                     "CASE m_outcome.outcome = b_outcome.outcome "
                                         "WHEN 1 THEN CASE m_outcome.outcome "

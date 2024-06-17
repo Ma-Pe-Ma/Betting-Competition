@@ -9,6 +9,7 @@ from sqlalchemy import text
 from app.auth import sign_in_required
 from app.tools import time_handler
 from app.tools.db_handler import get_db
+from app.tools.cache_handler import cache
 
 from datetime import timedelta
 from flask_babel import gettext
@@ -68,6 +69,24 @@ def chat_page():
             'comments' : get_comments(utc_date.strftime('%Y-%m-%d %H:%M:%S'), request_object['newerComments'], g.user['timezone'])
         }
 
+        if 'comment' in request_object:
+            name_query = text('SELECT username FROM bet_user')
+            names = get_db().session.execute(name_query)
+
+            comment_nr = cache.get('comment_nr')
+            for name in names:
+                if name.username not in comment_nr:
+                    comment_nr[name.username] = 0
+                else:
+                    comment_nr[name.username] += 1
+            
+            comment_nr[g.user['username']] = 0
+            cache.set('comment_nr', comment_nr, timeout=0)
+
         return jsonify(response_object), 200
+    
+    comment_nr = cache.get('comment_nr')
+    comment_nr[g.user['username']] = 0
+    cache.set('comment_nr', comment_nr, timeout=0)
 
     return render_template('/chat.html')

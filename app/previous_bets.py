@@ -43,7 +43,7 @@ def prev_bets_by_user():
     match_list_query_string = score_calculator.match_evaluation_query_string.text + \
                         """SELECT match.id, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_prize.goal1 AS bgoal1, match_prize.goal2 AS bgoal2, match.odd1, match.odd2, match.oddX, match.round, 
                             COALESCE(match_prize.bonus * match_prize.bet, 0) AS bonus, COALESCE(match_prize.multiplier * match_prize.bet, 0) AS prize, COALESCE(match_prize.bet, 0) AS bet, tr1.translation AS team1, tr2.translation AS team2, 
-                            COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, 0) AS credit_diff, match_prize.success, 
+                            COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, 0) AS credit_diff, COALESCE(match_prize.success, 0) AS success, 
                             (strftime('%w', match.datetime) + 6) % 7 AS weekday, match.datetime
                         FROM match 
                         LEFT JOIN match_prize ON match_prize.id = match.id AND match_prize.username = :u 

@@ -87,6 +87,12 @@ def create_app(test_config = None):
         from app.notification import push_methods
         app.register_blueprint(push_methods.bp)
 
+    if cache_handler.cache.get('comment_nr') is None:
+        cache_handler.cache.set('comment_nr', {}, timeout=0)
+    @app.context_processor
+    def inject_unseen_comment_nr():
+        return dict(comment_nr=cache_handler.cache.get('comment_nr'))
+
     @app.errorhandler(403)
     def page_403(e):
         return render_template('/error-handling/page-403.html'), 403
