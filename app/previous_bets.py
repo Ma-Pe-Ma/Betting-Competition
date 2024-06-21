@@ -44,8 +44,8 @@ def prev_bets_by_user():
                         """SELECT match.id, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match_prize.goal1 AS bgoal1, match_prize.goal2 AS bgoal2, match.odd1, match.odd2, match.oddX, match.round, 
                             COALESCE(match_prize.bonus * match_prize.bet, 0) AS bonus, COALESCE(match_prize.multiplier * match_prize.bet, 0) AS prize, COALESCE(match_prize.bet, 0) AS bet, tr1.translation AS team1, tr2.translation AS team2, 
                             COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, 0) AS credit_diff, COALESCE(match_prize.success, 0) AS success, 
-                            (strftime('%w', match.datetime) + 6) % 7 AS weekday, match.datetime
-                        FROM match 
+                            (strftime('%w', match.local_datetime) + 6) % 7 AS weekday, date(match.local_datetime) AS date, strftime('%H:%M', match.local_datetime) AS time
+                        FROM (SELECT match.*, time_converter(match.datetime, 'utc', :tz) AS local_datetime FROM match) AS match 
                         LEFT JOIN match_prize ON match_prize.id = match.id AND match_prize.username = :u 
                         LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l 
                         LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l 
@@ -53,15 +53,14 @@ def prev_bets_by_user():
                         ORDER BY datetime"""
 
     hit_map = current_app.config['BONUS_MULTIPLIERS']
-    match_list_query_parameters = {'now' : time_handler.get_now_time_string(), 'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'], 'l' : g.user['language'], 'u' : username, 'bullseye' : hit_map['bullseye'], 'difference' : hit_map['difference']}
+    match_list_query_parameters = {'now' : time_handler.get_now_time_string(), 'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'], 'l' : g.user['language'], 'tz' : g.user['timezone'], 'u' : username, 'bullseye' : hit_map['bullseye'], 'difference' : hit_map['difference']}
 
     def add_to_days(match_rows):
         for match_row in match_rows:
             match_dict = match_row._asdict()
-            date, match_dict['time'] = time_handler.local_date_time_from_utc(match_dict['datetime'], g.user['timezone'])
 
-            if date not in days:
-                days[date] = {'number' : len(days) + 1, 'date' : date, 'weekday' : match_dict['weekday'], 'matches' : []}
+            if match_dict['date'] not in days:
+                days[match_dict['date']] = {'number' : len(days) + 1, 'date' : match_dict['date'], 'weekday' : match_dict['weekday'], 'matches' : []}
 
             del match_dict['weekday']
 
@@ -76,7 +75,7 @@ def prev_bets_by_user():
             amount_at_end_of_match += match_dict['credit_diff']
             match_dict['balance'] = amount_at_end_of_match
 
-            days[date]['matches'].append(match_dict)
+            days[match_dict['date']]['matches'].append(match_dict)
 
     start_amount = current_app.config['BET_VALUES']['starting_bet_amount']
     group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)
@@ -93,7 +92,7 @@ def prev_bets_by_user():
 
     # add the group stage bonus
     group_bonus = 0
-    group_evaluation_time_object : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation'])
+    group_evaluation_time_object : datetime.datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation'])
     if time_handler.get_now_time_object() > group_evaluation_time_object:
         group_bonus : int = sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
         amount_at_end_of_match += group_bonus

@@ -1,11 +1,10 @@
 from flask import current_app
-from flask import g
-from flask import Flask
 from flask.cli import with_appcontext
 import click
 import os
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
 
 db : SQLAlchemy = None
 
@@ -15,7 +14,22 @@ def get_db() -> SQLAlchemy:
 def init_db(app):
     global db 
     db = SQLAlchemy(app)
-    app.cli.add_command(init_db_command)    
+    app.cli.add_command(init_db_command)
+
+    with app.app_context():
+        import pytz
+        import dateutil.parser
+
+        def time_converter(datetime, tz, target_tz, format='%Y-%m-%d %H:%M'):
+            if datetime is None or datetime == '':
+                return None
+            return pytz.timezone(tz).localize(dateutil.parser.parse(datetime)).astimezone(pytz.timezone(target_tz)).strftime(format)
+
+        def register_custom_functions(conn, _):
+            conn.create_function('time_converter', 4, time_converter)
+            conn.create_function('time_converter', 3, time_converter)
+
+        event.listen(db.engine, 'connect', register_custom_functions)        
 
 @click.command('init-db')
 @with_appcontext

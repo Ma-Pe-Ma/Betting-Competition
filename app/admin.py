@@ -61,12 +61,12 @@ def admin_page():
 
         tournament_bets = [tournament_bet._asdict() for tournament_bet in result.fetchall()]
 
-    query_string = text("SELECT match.id, match.datetime, match.goal1, match.goal2, match.odd1, match.oddX, match.odd2, match.max_bet, t1.translation AS team1, t2.translation as team2 "
+    query_string = text("SELECT match.id, time_converter(match.datetime, 'utc', :tz) AS local_datetime, match.goal1, match.goal2, match.odd1, match.oddX, match.odd2, match.max_bet, t1.translation AS team1, t2.translation as team2 "
                         "FROM match "
                         "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "
                         "LEFT JOIN team_translation AS t2 ON t2.name = match.team2 AND t2.language = :l "
                         "ORDER BY match.datetime")
-    result = get_db().session.execute(query_string, {'l' : g.user['language']})
+    result = get_db().session.execute(query_string, {'l' : g.user['language'], 'tz' : g.user['timezone']})
 
     matches = [match._asdict() for match in result.fetchall()]
 
@@ -148,13 +148,13 @@ def odd_edit():
         try:
             matchID = int(request.args.get('matchID'))
 
-            query_string = text("SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, match.datetime, match.round, match.max_bet, match.goal1, match.goal2, "
+            query_string = text("SELECT match.id, ROUND(match.odd1, 2) AS odd1, ROUND(match.oddX, 2) AS oddX, ROUND(match.odd2, 2) AS odd2, time_converter(match.datetime, 'utc', :tz) AS datetime, match.round, match.max_bet, match.goal1, match.goal2, "
                                 "t1.translation AS team1, t2.translation AS team2 "
                                 "FROM match "
                                 "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "
                                 "LEFT JOIN team_translation AS t2 ON t2.name = match.team2 AND t2.language = :l "
                                 "WHERE match.id=:matchID")
-            result = get_db().session.execute(query_string, {'matchID' : matchID, 'l' : g.user['language']})
+            result = get_db().session.execute(query_string, {'matchID' : matchID, 'l' : g.user['language'], 'tz' : g.user['timezone']})
 
             return jsonify(result.fetchone()._asdict()), 200
         except Exception as error:

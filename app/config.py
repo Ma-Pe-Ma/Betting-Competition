@@ -24,7 +24,7 @@ class Default(object):
 
     IDENT_URL = 'https://www.gravatar.com/avatar/{email_hash}?d=identicon&s=128'
 
-    CACHE_TYPE = 'SimpleCache'
+    CACHE_TYPE = 'FileSystemCache'
     CACHE_DEFAULT_TIMEOUT = 300
 
     # USED BY APSCHEDULER

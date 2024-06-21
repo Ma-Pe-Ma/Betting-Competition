@@ -69,7 +69,7 @@ class Role(Enum):
 def sign_in_required(role : Role = Role.USER):
     def decorator(view):
         @functools.wraps(view)
-        def wrapped_view(**kwargs):
+        def wrapped_view(*args, **kwargs):
             if g.user is None:
                 return redirect(url_for('auth.sign_in'))
 
@@ -79,7 +79,7 @@ def sign_in_required(role : Role = Role.USER):
             elif cache.get('maintenance'):
                 return render_template('/error-handling/page-503.html'), 503
 
-            return view(**kwargs)
+            return view(*args, **kwargs)
 
         return wrapped_view
     

@@ -18,7 +18,7 @@ cache_time = 5
 @cache.cached(timeout=cache_time, key_prefix='player_history')
 def create_player_history():
     #iterate through users
-    query_string = text("SELECT username, REPLACE(:s, '{email_hash}', email_hash) AS image_path FROM bet_user")
+    query_string = text("SELECT username, REPLACE(:s, '{email_hash}', email_hash) AS image_path FROM bet_user ORDER BY UPPER(bet_user.username)")
     result = get_db().session.execute(query_string, {'s' : current_app.config['IDENT_URL']})
 
     players = []

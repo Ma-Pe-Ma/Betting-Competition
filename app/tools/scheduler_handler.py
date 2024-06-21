@@ -19,7 +19,7 @@ scheduler = APScheduler()
 
 # obsoleted
 def backup_sqlite_database():
-    #find admin adresses
+    # find admin adresses
     admin_address = ''
 
     query_string = text('SELECT email FROM bet_user WHERE bet_user.admin = TRUE')
@@ -28,19 +28,19 @@ def backup_sqlite_database():
     for admin in result.fetchall():
         admin_address += admin.email + ', '
 
-    #create string from current local date and add it to subject
+    # create string from current local date and add it to subject
     utc_now = time_handler.get_now_time_object()
     current_localtime = utc_now.astimezone(tz.gettz('Europe/Budapest'))
     subject = 'Backup at: ' + current_localtime.strftime('%Y-%m-%d %H:%M')
     
-    #create draft with the attached sqlite database file
+    # create draft with the attached sqlite database file
     message = notification_handler.get_notifier().create_message_with_attachment(sender='me',
         to=admin_address,
         subject=subject,
         message_text='Backing up result database at: ' + current_localtime.strftime('%Y-%m-%d %H:%M'),
         file=current_app.config['DATABASE'])
     
-    #create_draft(message_body=message)
+    # create_draft(message_body=message)
 
 def backup_sqlite_locally(timestamp : str):
     db_path = os.path.join(current_app.instance_path, 'flaskr.sqlite')
@@ -51,7 +51,7 @@ def match_reminder_once_per_day(match_ids : list):
     with scheduler.app.app_context():
         current_app.logger.info('Running scheduled match reminder...')
 
-        query_string = text("SELECT match.datetime, tr1.translation AS team1, tr2.translation AS team2, "                            
+        query_string = text("SELECT date(time_converter(match.datetime, 'utc', bet_user.timezone)) AS date, tr1.translation AS team1, tr2.translation AS team2, "
                                 "bet_user.username, bet_user.language, bet_user.reminder, bet_user.email, bet_user.timezone, match_bet.goal1, match_bet.goal2, COALESCE(match_bet.bet, 0) AS bet "
                             "FROM match "
                             "RIGHT JOIN bet_user ON bet_user.reminder IN (1, 2) "
@@ -68,14 +68,12 @@ def match_reminder_once_per_day(match_ids : list):
 
         for user in result.fetchall():
             if user.username not in user_map:
-                date, time = time_handler.local_date_time_from_utc(user.datetime, timezone=user.timezone, format='%Y-%m-%d %H:%M', time_format='%H:%M')
-                user_map[user.username] = {'username' : user.username, 'email' : user.email, 'reminder' : user.reminder, 'language' : user.language, 'date' : date, 'missing' : [], 'nonmissing' : []}
+                user_map[user.username] = {'username' : user.username, 'email' : user.email, 'reminder' : user.reminder, 'language' : user.language, 'date' : user.date, 'missing' : [], 'nonmissing' : []}
 
             user_dict = user._asdict()
             del user_dict['username']
             del user_dict['email']
             del user_dict['language']
-            del user_dict['datetime']
 
             if user.bet == 0 or user.goal1 is None or user.goal2 is None:
                 user_map[user.username]['missing'].append(user_dict)

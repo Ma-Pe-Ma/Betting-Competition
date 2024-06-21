@@ -4,6 +4,7 @@ from flask import g
 from flask import render_template
 from flask import current_app
 
+from flask_babel import gettext
 from sqlalchemy import text
 
 from app.auth import sign_in_required
@@ -11,35 +12,22 @@ from app.tools import time_handler
 from app.tools.db_handler import get_db
 from app.tools.cache_handler import cache
 
-from datetime import timedelta
-from flask_babel import gettext
-
 bp = Blueprint('chat', __name__, '''url_prefix="/chat"''')
 
 # get the newer/older comments relateive to the given date
 def get_comments(utc_datetime_string : str, newer_comments : bool, timezone : str) -> list:
-    if newer_comments:
-        r, o, s = ">", 'ASC', None
-    else:
-        r, o, s = "<", 'DESC', 8
+    r, o, s = ('>', 'ASC', '') if newer_comments else ('<', 'DESC', 'LIMIT 8')
 
-    query_string = text("SELECT comment.username, strftime('%Y-%m-%d %H:%M:%S', datetime(comment.datetime)) AS datetime, content AS comment, bet_user.email_hash AS email_hash, REPLACE(:s, '{email_hash}', bet_user.email_hash) AS image_path "
+    query_string = text("SELECT comment.username, time_converter(comment.datetime, 'utc', :tz, '%Y-%m-%d %H:%M:%S') AS datetime, content AS comment, "
+                        "bet_user.email_hash AS email_hash, REPLACE(:s, '{email_hash}', bet_user.email_hash) AS image_path "
                         "FROM comment "
                         "LEFT JOIN bet_user ON comment.username = bet_user.username "
                         "WHERE unixepoch(datetime) " + r + " unixepoch(:datetime) "
-                        "ORDER BY unixepoch(datetime) " + o)
+                        "ORDER BY unixepoch(datetime) " + o + " " + s)
 
-    result = get_db().session.execute(query_string, {'datetime' : utc_datetime_string, 's' : current_app.config['IDENT_URL']})
-    comments = result.fetchall()[0:s]
+    result = get_db().session.execute(query_string, {'datetime' : utc_datetime_string, 's' : current_app.config['IDENT_URL'], 'tz' : timezone})
 
-    r = []
-    for comment in comments:
-        c = comment._asdict()
-        date, time = time_handler.local_date_time_from_utc(c['datetime'], timezone=timezone, format='%Y-%m-%d %H:%M:%S', time_format='%H:%M:%S')
-        c['datetime'] = '{date} {time}'.format(date=date, time=time)
-        r.append(c)
-
-    return r
+    return [comment._asdict() for comment in result.fetchall()]
 
 @bp.route('/chat', methods=['GET', 'POST'])
 @sign_in_required()
@@ -61,7 +49,7 @@ def chat_page():
         if request_object['datetime'] is None:
             utc_date = time_handler.get_now_time_object()
         else:
-            date, time = time_handler.utc_date_time_from_local(request_object['datetime'], timezone=g.user['timezone'], format='%Y-%m-%d %H:%M:%S', time_format='%H:%M:%S')
+            date, time = time_handler.utc_date_time_from_local(request_object['datetime'], timezone=g.user['timezone'], in_format='%Y-%m-%d %H:%M:%S', out_time_format='%H:%M:%S')
             utc_date = time_handler.parse_datetime_string_with_seconds('{date} {time}'.format(date=date, time=time))
 
         response_object = {

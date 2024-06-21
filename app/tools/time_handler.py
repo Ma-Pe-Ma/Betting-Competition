@@ -22,25 +22,25 @@ def parse_datetime_string_with_seconds(datetime_string : str, tzinfo=tz.gettz('U
 def stringify_datetime_object(datetime_object : datetime) -> str:
     return datetime_object.strftime('%Y-%m-%d %H:%M')
 
-def local_date_time_from_utc(utc_datetime_string, timezone, format='%Y-%m-%d %H:%M', time_format='%H:%M'):
+def local_date_time_from_utc(utc_datetime_string, timezone, in_format='%Y-%m-%d %H:%M', out_time_format='%H:%M'):
     if utc_datetime_string == '' or utc_datetime_string is None:
         return '', ''
 
-    utc_datetime = datetime.strptime(utc_datetime_string, format)
+    utc_datetime = datetime.strptime(utc_datetime_string, in_format)
     utc_datetime = pytz.utc.localize(utc_datetime)
     local_datetime = utc_datetime.astimezone(pytz.timezone(timezone))
 
-    return local_datetime.strftime('%Y-%m-%d'), local_datetime.strftime(time_format)
+    return local_datetime.strftime('%Y-%m-%d'), local_datetime.strftime(out_time_format)
 
-def utc_date_time_from_local(local_datetime_string, timezone, format='%Y-%m-%d %H:%M', time_format='%H:%M'):
+def utc_date_time_from_local(local_datetime_string, timezone, in_format='%Y-%m-%d %H:%M', out_time_format='%H:%M'):
     if local_datetime_string == '' or local_datetime_string is None:
         return '', ''
 
-    local_datetime = datetime.strptime(local_datetime_string, format)
+    local_datetime = datetime.strptime(local_datetime_string, in_format)
     local_datetime = pytz.timezone(timezone).localize(local_datetime)
     utc_time = local_datetime.astimezone(pytz.utc)
 
-    return utc_time.strftime('%Y-%m-%d'), utc_time.strftime(time_format),
+    return utc_time.strftime('%Y-%m-%d'), utc_time.strftime(out_time_format)
 
 def init_time_handler(app : Flask) -> None:
     if app.debug:
