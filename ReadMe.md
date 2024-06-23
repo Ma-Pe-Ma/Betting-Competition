@@ -244,6 +244,7 @@ To setup babel translations these commands need to be launched:
 * clean-up ReadMe
 
 ### Backlog
+* check foreign key relations in DB
 * trim whitespaces with jinja
 * cleanup css files
 * email notification/smtp?

@@ -43,6 +43,6 @@ function getMatchDataByDate(date) {
         dateSpinner.classList.add("d-none")
     }
 
-    request.open(`GET`, `./previous-bets/match?date=${date}`);
+    request.open(`GET`, `./results/match?date=${date}`);
     request.send();
 }

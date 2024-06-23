@@ -56,10 +56,10 @@
     {% endfor %}
 
     {%if day.date == group_evaluation_date %}
-<div class="row d-flex align-items-center">
-    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">{% trans %}Group bet total prize{% endtrans %}: {{extra_data.group_bonus|round(1)}}</p>
+<div class="container row d-flex align-items-center">
+    <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">{% trans %}Group bet total prize{% endtrans %}: {{extra_data.group_bonus|round(1)}}</p>
     <div class="col-1"></div>
-    <p class="col-3 justify-content-center badge bg-warning">{% trans %}Balance after group bonus{% endtrans %}: {{extra_data.balance_after_group|round(1)}}</p>
+    <p class="col-3 justify-content-center badge bg-info">{% trans %}Balance after group bonus{% endtrans %}: {{extra_data.balance_after_group|round(1)}}</p>
 </div>
     {% endif %}
 
@@ -70,10 +70,10 @@
 {% endfor %}
 
 {%if tournament_bet.success is not none %}
-<div class="row d-flex align-items-center">
-    <p class="col-3 d-flex align-items-center justify-content-center badge bg-warning">{% trans %}Tournament bet total prize{% endtrans %}: {{tournament_bet.prize|round(1)}}</p>
+<div class="container row d-flex align-items-center">
+    <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">{% trans %}Tournament bet total prize{% endtrans %}: {{tournament_bet.prize|round(1)}}</p>
     <div class="col-1"></div>
-    <p class="col-3 justify-content-center badge bg-warning">{% trans %}Final balance{% endtrans %}: {{extra_data.current_balance|round(1)}}</p>
+    <p class="col-3 justify-content-center badge bg-info">{% trans %}Final balance{% endtrans %}: {{extra_data.current_balance|round(1)}}</p>
 </div>
 {% endif %}
 

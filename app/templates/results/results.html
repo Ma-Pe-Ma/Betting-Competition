@@ -1,7 +1,7 @@
 {% extends "/layouts/base.html" %}
 {% import "/includes/alert.html" as alert %}
 
-{% block title%}{% trans %}Previous bets{% endtrans %}{% endblock %}
+{% block title%}{% trans %}Results{% endtrans %}{% endblock %}
 
 {% set active_nav_index = 1 %}
 
@@ -39,7 +39,7 @@
             <div class="row justify-content-center align-items-center">
                 <div class="col-12 pt-2 pb-2">
                     <div class="row d-flex align-items-center justify-content-between">
-                        {% include "/previous-bet/match-selector.html" %}
+                        {% include "/results/match-selector.html" %}
                     </div>
                 </div>
             </div>
@@ -47,6 +47,6 @@
     </div>    
 </div>
 
-<script src="/static/js/player-data.js" data-data-path="previous-bets/user"></script>
+<script src="/static/js/player-data.js" data-data-path="results/user"></script>
 <script src="/static/js/match-data.js"></script>
 {% endblock content %}

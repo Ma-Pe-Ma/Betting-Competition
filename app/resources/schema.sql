@@ -1,6 +1,7 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
+DROP TABLE IF EXISTS push_notification;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS match_bet;
@@ -8,10 +9,9 @@ DROP TABLE IF EXISTS tournament_bet;
 DROP TABLE IF EXISTS team_bet;
 DROP TABLE IF EXISTS group_bet;
 DROP TABLE IF EXISTS team_translation;
-DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS match;
+DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS bet_user;
-DROP TABLE IF EXISTS push_notification;
 
 -- Table containing user data
 CREATE TABLE bet_user (
@@ -26,21 +26,6 @@ CREATE TABLE bet_user (
   admin BOOLEAN
 );
 
--- Table containing match data
-CREATE TABLE match (
-  id INTEGER NOT NULL PRIMARY KEY,
-  datetime TEXT NOT NULL,
-  round TEXT,
-  team1 TEXT NOT NULL,
-  team2 TEXT NOT NULL,
-  goal1 INTEGER,
-  goal2 INTEGER,
-  odd1 REAL,
-  oddX REAL,
-  odd2 REAL,
-  max_bet INTEGER
-);
-
 -- Table containing team details 
 CREATE TABLE team (
   name TEXT NOT NULL PRIMARY KEY,
@@ -52,12 +37,30 @@ CREATE TABLE team (
   top8 FLOAT
 );
 
+-- Table containing match data
+CREATE TABLE match (
+  id INTEGER NOT NULL PRIMARY KEY,
+  datetime TEXT NOT NULL,
+  round TEXT,
+  team1 TEXT,
+  team2 TEXT,
+  goal1 INTEGER,
+  goal2 INTEGER,
+  odd1 REAL,
+  oddX REAL,
+  odd2 REAL,
+  max_bet INTEGER
+  FOREIGN KEY(team1) REFERENCES team(name),
+  FOREIGN KEY(team2) REFERENCES team(name),
+);
+
 -- Table containing team name translations
 CREATE TABLE team_translation (
   id SERIAL PRIMARY KEY,
   name TEXT,
   language TEXT,
-  translation TEXT
+  translation TEXT,
+  FOREIGN KEY(name) REFERENCES team(name)
 );
 
 -- Table holding a player's bet on a specific group
@@ -66,7 +69,7 @@ CREATE TABLE group_bet (
   group_id TEXT NOT NULL,
   username TEXT,
   bet INTEGER,
-  --FOREIGN KEY (group_id) REFERENCES team(group_id),
+  FOREIGN KEY (group_id) REFERENCES team(group_id),
   FOREIGN KEY(username) REFERENCES bet_user(username),
   UNIQUE(username, group_id)
 );
@@ -78,6 +81,7 @@ CREATE TABLE team_bet (
   position INTEGER,
   team TEXT,
   FOREIGN KEY(username) REFERENCES bet_user(username),
+  FOREIGN KEY(team) REFERENCES team(name),
   UNIQUE(username, team)
 );
 

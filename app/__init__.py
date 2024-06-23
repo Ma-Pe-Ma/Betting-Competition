@@ -2,11 +2,9 @@ import os
 
 from flask import Flask
 from flask import render_template
-from flask import session
 from flask import g
 from flask import request
 
-from datetime import timedelta
 import json
 import logging
 
@@ -68,7 +66,7 @@ def create_app(test_config = None):
     from app import auth
     from app import group_bet
     from app import home_page
-    from app import previous_bets
+    from app import results
     from app import standings
     from app import admin    
     from app import match_bet
@@ -77,7 +75,7 @@ def create_app(test_config = None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(group_bet.bp)
     app.register_blueprint(home_page.bp)
-    app.register_blueprint(previous_bets.bp)
+    app.register_blueprint(results.bp)
     app.register_blueprint(standings.bp)
     app.register_blueprint(admin.bp)
     app.register_blueprint(match_bet.bp)

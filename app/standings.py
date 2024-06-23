@@ -36,7 +36,7 @@ def create_standings(language = None):
 
     players = create_player_history()
 
-    current_player_standings = [{'username' : player['username'], 'image_path': player['image_path'], 'point' : player['days'][-1]['point'], 'previous_point' : player['days'][-2]['point'], 'position_diff' : 0} for player in players]
+    current_player_standings = [{'username' : player['username'], 'image_path' : player['image_path'], 'point' : player['days'][-1]['point'], 'previous_point' : player['days'][-2]['point'], 'position_diff' : 0} for player in players]
 
     #order the current player standings by the points
     current_player_standings.sort(key=lambda player_standing : player_standing['point'], reverse=True)

@@ -25,6 +25,7 @@ from app.tools import scheduler_handler
 from app.standings import create_standings
 
 import os
+from datetime import timedelta
 from flask_babel import gettext
 from sqlalchemy import text
 
@@ -38,7 +39,7 @@ def admin_page():
     messages = [message._asdict() for message in result.fetchall()]
 
     groups = {}    
-    if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']) :
+    if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']) - timedelta(minutes=30):
         query_string = text("SELECT team.name, team.group_id, team.position, tr.translation AS local_name "
                             "FROM team "
                             "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
@@ -52,11 +53,11 @@ def admin_page():
             groups[team.group_id].append({'name' : team.name, 'local_name' : team.local_name, 'position' :  team.position})
 
     tournament_bets = []
-    if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']):
+    if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']) - timedelta(minutes=30):
         query_string = text("SELECT tournament_bet.*, tr.translation as local_name "
                             "FROM tournament_bet "
                             "LEFT JOIN team_translation AS tr ON tr.name=tournament_bet.team AND tr.language = :language "
-                            "ORDER BY tournament_bet.username")
+                            "ORDER BY UPPER(tournament_bet.username)")
         result = get_db().session.execute(query_string, {'language' : g.user['language']})
 
         tournament_bets = [tournament_bet._asdict() for tournament_bet in result.fetchall()]

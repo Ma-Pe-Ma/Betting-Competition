@@ -90,7 +90,7 @@ def before_deadline():
         tournament_bet = tournament['bet']
         
         query_string = text("INSERT OR REPLACE INTO tournament_bet (username, bet, team, result) "
-                            " VALUES(:u, :b, :t, :r)")
+                            "VALUES(:u, :b, :t, :r)")
         get_db().session.execute(query_string, {'u' : username, 'b' : tournament_bet, 't' : final_team, 'r' : tournament_result})
 
         for group_id in groups:
