@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-23 20:35+0200\n"
+"POT-Creation-Date: 2024-07-07 21:22+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -224,27 +224,27 @@ msgstr "A megadott visszaállító-kulcs nem megfelelő."
 msgid "Invalid data sent!"
 msgstr "Érvényelen üzenet!"
 
-#: app/group_bet.py:43
+#: app/group_bet.py:42
 msgid "Invalid team for tournament bet."
 msgstr "Nem megfelelő csapat a torna-tipphez."
 
-#: app/group_bet.py:49
+#: app/group_bet.py:48
 msgid "Invalid result for tournament bet."
 msgstr "Nem megfelelő végeredmény a torna-tipphez."
 
-#: app/group_bet.py:57
+#: app/group_bet.py:56
 msgid "Invalid bet amount at tournament bet."
 msgstr "Nem megfelelő érték a tornatipphez."
 
-#: app/group_bet.py:74
+#: app/group_bet.py:73
 msgid "Invalid bet amount at group bet."
 msgstr "Nem megfelelő érték a csoportkörfogadáshoz."
 
-#: app/group_bet.py:84
+#: app/group_bet.py:83
 msgid "Invalid group or team name at the group bet."
 msgstr "Érvénytelen csoport- vagy csapat-név a csoportkörfogadásnál."
 
-#: app/group_bet.py:110
+#: app/group_bet.py:109
 msgid "Group bet successfully updated!"
 msgstr "Csoportkör-tippek sikeresen frissítve!"
 
@@ -271,7 +271,7 @@ msgstr "Nem megfelelő (negatív) érték gólnak/kreditnek!"
 msgid "Betting on match %(id)s was successful!"
 msgstr "Sikeres fogadás a következő meccsre: %(id)s!"
 
-#: app/results.py:38
+#: app/results.py:37
 msgid "The username has not been specified."
 msgstr "A felhasználónév nem lett megadva."
 
@@ -651,7 +651,7 @@ msgstr "Meghiúsult regisztráció!"
 
 #: app/templates/auth/register-fail.html:9
 msgid "Registering is not available anymore as the tournament has begun!"
-msgstr "A regisztráció nem már elérhető, mert a torna elkezdődött!"
+msgstr "A regisztráció már nem elérhető, mert a torna elkezdődött!"
 
 #: app/templates/auth/register.html:3 app/templates/auth/register.html:9
 #: app/templates/auth/register.html:43

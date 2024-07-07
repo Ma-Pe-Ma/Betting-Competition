@@ -24,8 +24,8 @@
                 <th scope="row" class="d-md-table-cell w-0 text-center">{{loop.index}}.</th>
                 <td class="d-md-table-cell text-center"><img src="{{standing.image_path}}" alt="" style="width:48px; height:auto;"></td>
                 <td class="d-md-table-cell text-center">{{standing.username}}</td>
-                <td class="d-md-table-cell text-center">{{standing.point|round(1)}}</td>
-                <td class="d-none d-md-table-cell text-center">{{(standing.point - standing.previous_point)|round(1)}}</td>
+                <td class="d-md-table-cell text-center">{{standing.last_point|round(1)}}</td>
+                <td class="d-none d-md-table-cell text-center">{{(standing.last_point - standing.penultimate_point)|round(1)}}</td>
                 <td class="d-none d-md-table-cell text-center">{{standing.position_diff}}</td>
             </tr>
             {% endfor %}

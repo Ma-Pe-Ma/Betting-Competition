@@ -49,9 +49,9 @@ CREATE TABLE match (
   odd1 REAL,
   oddX REAL,
   odd2 REAL,
-  max_bet INTEGER
+  max_bet INTEGER,
   FOREIGN KEY(team1) REFERENCES team(name),
-  FOREIGN KEY(team2) REFERENCES team(name),
+  FOREIGN KEY(team2) REFERENCES team(name)
 );
 
 -- Table containing team name translations
@@ -59,17 +59,15 @@ CREATE TABLE team_translation (
   id SERIAL PRIMARY KEY,
   name TEXT,
   language TEXT,
-  translation TEXT,
-  FOREIGN KEY(name) REFERENCES team(name)
+  translation TEXT
 );
 
 -- Table holding a player's bet on a specific group
 CREATE TABLE group_bet (
   id SERIAL PRIMARY KEY,
-  group_id TEXT NOT NULL,
+  group_id CHAR NOT NULL,
   username TEXT,
   bet INTEGER,
-  FOREIGN KEY (group_id) REFERENCES team(group_id),
   FOREIGN KEY(username) REFERENCES bet_user(username),
   UNIQUE(username, group_id)
 );
@@ -93,8 +91,8 @@ CREATE TABLE tournament_bet (
   bet INTEGER NOT NULL,
   result INTEGER NOT NULL,
   success INTEGER, -- NULL = undetermined, 0 = failure, 1 = success
-  UNIQUE(username)
-  FOREIGN KEY(username) REFERENCES bet_user(username)
+  UNIQUE(username),
+  FOREIGN KEY(username) REFERENCES bet_user(username),
   FOREIGN KEY(team) REFERENCES team(name)
 );
 
