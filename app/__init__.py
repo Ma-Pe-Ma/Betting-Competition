@@ -57,8 +57,7 @@ def create_app(test_config = None):
         user = getattr(g, 'user', None)
         if user is not None:
             return user['language']
-        best_language = request.accept_languages.best_match(app.config['SUPPORTED_LANGUAGES'].keys())
-        return best_language if best_language is not None else list(app.config['SUPPORTED_LANGUAGES'].keys())[0]
+        return (lambda keys : request.accept_languages.best_match(keys) or list(keys)[0])(app.config['SUPPORTED_LANGUAGES'].keys())
 
     babel = Babel(app, locale_selector=get_locale)
 
@@ -81,12 +80,16 @@ def create_app(test_config = None):
     app.register_blueprint(match_bet.bp)
     app.register_blueprint(chat.bp)
 
+    from app.tools.score_calculator import init_calculator
+    init_calculator(app)
+
     if app.config['DIRECT_MESSAGING'] == 2:
         from app.notification import push_methods
         app.register_blueprint(push_methods.bp)
 
     if cache_handler.cache.get('comment_nr') is None:
         cache_handler.cache.set('comment_nr', {}, timeout=0)
+
     @app.context_processor
     def inject_unseen_comment_nr():
         return dict(comment_nr=cache_handler.cache.get('comment_nr'))

@@ -9,7 +9,6 @@ from datetime import datetime
 
 from app.auth import sign_in_required
 from app.tools.db_handler import get_db
-from app.tools import group_calculator
 from app.tools import score_calculator
 from app.tools import time_handler
 
@@ -24,8 +23,8 @@ def before_deadline():
     bet_values = current_app.config['BET_VALUES']
 
     if request.method == 'GET':
-        groups = group_calculator.get_group_bet_dict_for_user(username=username)
-        tournament_bet = group_calculator.get_tournament_bet_dict_for_user(username=username)
+        groups = score_calculator.get_group_bet_dict_for_user(username=username)
+        tournament_bet = score_calculator.get_tournament_bet_dict_for_user(username=username)
 
         return render_template('/group-bet/group-edit.html', bet_values = bet_values, tournament_bet = tournament_bet, groups = groups)
 
@@ -116,8 +115,8 @@ def during_groupstage():
 
     if username is not None:
         amount_after = current_app.config['BET_VALUES']['starting_bet_amount'] - score_calculator.get_group_and_tournament_bet_amount(username=username)
-        groups = group_calculator.get_group_bet_dict_for_user(username=username)
-        tournament_bet = group_calculator.get_tournament_bet_dict_for_user(username=username)
+        groups = score_calculator.get_group_bet_dict_for_user(username=username)
+        tournament_bet = score_calculator.get_tournament_bet_dict_for_user(username=username)
 
         return render_template('/group-bet/group-during.html', groups=groups, tournament_bet=tournament_bet, amount_after=amount_after, starting_bet_amount=current_app.config['BET_VALUES']['starting_bet_amount'])
     
@@ -133,8 +132,8 @@ def after_evaluation():
     if username is not None:
         total_bet = score_calculator.get_group_and_tournament_bet_amount(username=username)
         amount_after = current_app.config['BET_VALUES']['starting_bet_amount'] - total_bet
-        groups = group_calculator.get_group_bet_dict_for_user(username=username)
-        tournament_bet_dict = group_calculator.get_tournament_bet_dict_for_user(username=username)
+        groups = score_calculator.get_group_bet_dict_for_user(username=username)
+        tournament_bet_dict = score_calculator.get_tournament_bet_dict_for_user(username=username)
         total_win_amount = sum(group['prize'] for group in groups.values())        
 
         return render_template('/group-bet/group-after.html', groups=groups, tournament_bet=tournament_bet_dict, amount_after=amount_after, starting_bet_amount=current_app.config['BET_VALUES']['starting_bet_amount'], total_win=total_win_amount, total_bet=total_bet)

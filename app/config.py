@@ -63,11 +63,17 @@ class Default(object):
 	    'default_max_bet_per_match' : 50
     }
 
-    GROUP_BET_HIT_MAP = [0, 1.5, 2.5, 0, 4]
+    GROUP_BET_HIT_MAP = {
+		  'h0' : 0,
+		  'h1' : 1,
+		  'h2' : 2,
+		  'h3' : 0,
+		  'h4' : 4
+	  },
 
     BONUS_MULTIPLIERS = {
       "bullseye" : 4,
       "difference" : 1
     }
 
-    DEBUG_START_TIME = '2022-10-31 18:50'
+    DEBUG_START_TIME = '2024-06-14 16:00'

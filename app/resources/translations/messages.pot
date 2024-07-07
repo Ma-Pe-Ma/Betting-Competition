@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-23 20:35+0200\n"
+"POT-Creation-Date: 2024-07-07 21:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,27 +223,27 @@ msgstr ""
 msgid "Invalid data sent!"
 msgstr ""
 
-#: app/group_bet.py:43
+#: app/group_bet.py:42
 msgid "Invalid team for tournament bet."
 msgstr ""
 
-#: app/group_bet.py:49
+#: app/group_bet.py:48
 msgid "Invalid result for tournament bet."
 msgstr ""
 
-#: app/group_bet.py:57
+#: app/group_bet.py:56
 msgid "Invalid bet amount at tournament bet."
 msgstr ""
 
-#: app/group_bet.py:74
+#: app/group_bet.py:73
 msgid "Invalid bet amount at group bet."
 msgstr ""
 
-#: app/group_bet.py:84
+#: app/group_bet.py:83
 msgid "Invalid group or team name at the group bet."
 msgstr ""
 
-#: app/group_bet.py:110
+#: app/group_bet.py:109
 msgid "Group bet successfully updated!"
 msgstr ""
 
@@ -270,7 +270,7 @@ msgstr ""
 msgid "Betting on match %(id)s was successful!"
 msgstr ""
 
-#: app/results.py:38
+#: app/results.py:37
 msgid "The username has not been specified."
 msgstr ""
 

@@ -8,7 +8,6 @@ from app.tools.db_handler import get_db
 from app.auth import sign_in_required
 
 from app.tools import score_calculator
-from app.tools import group_calculator
 from app.tools import time_handler
 
 from sqlalchemy import text
@@ -18,7 +17,7 @@ bp = Blueprint('results', __name__, '''url_prefix="/results"''')
 
 @bp.route('/results', methods=['GET'])
 @sign_in_required()
-def prev_bets():
+def results():
     player_query_string = text('SELECT username FROM bet_user ORDER BY UPPER(username) ASC')
     player_result = get_db().session.execute(player_query_string)
     players = player_result.fetchall()
@@ -31,15 +30,13 @@ def prev_bets():
 
 @bp.route('/results/user', methods=['GET'])
 @sign_in_required()
-def prev_bets_by_user():
+def results_by_user():
     username : str = request.args.get('name')
 
     if username is None:
         return '', gettext('The username has not been specified.')
 
-    query_string = score_calculator.match_evaluation_query_string.text
-
-    query_string +=  """SELECT match.id, tr1.translation AS team1, tr2.translation AS team2, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match.odd1, match.oddX, match.odd2,
+    query_string = """SELECT match.id, tr1.translation AS team1, tr2.translation AS team2, match.goal1 AS rgoal1, match.goal2 AS rgoal2, match.odd1, match.oddX, match.odd2,
                             match_prize.goal1 AS bgoal1, match_prize.goal2 AS bgoal2, COALESCE(match_prize.bonus * match_prize.bet, 0) AS bonus, COALESCE(match_prize.multiplier * match_prize.bet, 0) AS prize, COALESCE(match_prize.bet, 0) AS bet,
                             COALESCE((match_prize.bonus + match_prize.multiplier - 1) * match_prize.bet, 0) AS diff, COALESCE(match_prize.success, 0) AS success, 
                             (strftime('%w', match.local_datetime) + 6) % 7 AS weekday, date(match.local_datetime) AS date, strftime('%H:%M', match.local_datetime) AS time, match.datetime
@@ -50,31 +47,20 @@ def prev_bets_by_user():
                         WHERE unixepoch(match.datetime) <= unixepoch(:now) 
                         ORDER BY datetime"""
 
-    query_string =  '''
-    WITH results AS (SELECT *,
-            COALESCE(:starting_amount + (CASE WHEN datetime(datetime) > :group_evaluation_time THEN :group_bonus ELSE 0 END) + SUM(diff) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND 0 PRECEDING), :starting_amount) AS balance,
+    query_string =  "WITH match_prize AS (" + score_calculator.match_evaluation_query_string + '''),
+    results AS (SELECT *,
+            COALESCE(:starting_bet_amount + (CASE WHEN datetime(datetime) > :group_evaluation THEN :group_bonus ELSE 0 END) + SUM(diff) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND 0 PRECEDING), :starting_bet_amount) AS balance,
             SUM(success) OVER (PARTITION BY 1) AS sum_success
         FROM (''' + query_string + '''))
 
     SELECT *,
-        (SELECT :starting_amount + SUM(diff) + :group_bonus FROM results WHERE datetime(datetime) < datetime(:group_evaluation_time)) AS after_group
+        (SELECT :starting_bet_amount + SUM(diff) + :group_bonus FROM results WHERE datetime(datetime) < datetime(:group_evaluation)) AS after_group
     FROM results
     '''
+    group_bonus = sum(group['prize'] for group in score_calculator.get_group_bet_dict_for_user(username=username).values())
 
-    group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)
-    group_bonus = sum(group['prize'] for group in group_calculator.get_group_bet_dict_for_user(username=username).values())
-    hit_map = current_app.config['BONUS_MULTIPLIERS']
-    tournament_bet_dict = group_calculator.get_tournament_bet_dict_for_user(username=username)
-    group_evaluation_date = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation']).date().strftime('%Y-%m-%d')
-
-    match_list_query_parameters = {
-        'now' : time_handler.get_now_time_string(),
-        'group_evaluation_time' : current_app.config['DEADLINE_TIMES']['group_evaluation'],
-        'starting_amount' : current_app.config['BET_VALUES']['starting_bet_amount'] - group_and_tournament_bet_credit,
-        'group_bonus' : group_bonus,
-        'bullseye' : hit_map['bullseye'], 'difference' : hit_map['difference'],
-        'u' : username, 'l' : g.user['language'], 'tz' : g.user['timezone']
-    }
+    match_list_query_parameters = score_calculator.get_daily_point_parameters()
+    match_list_query_parameters.update({'now' : time_handler.get_now_time_string(),'u' : username, 'l' : g.user['language'], 'tz' : g.user['timezone'], 'group_bonus' : group_bonus})
 
     query_string = text(query_string)
     matches = get_db().session.execute(query_string, match_list_query_parameters)
@@ -91,24 +77,28 @@ def prev_bets_by_user():
         
         days[m.date]['matches'].append(match_dict)
 
+    group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)
+    tournament_bet_dict = score_calculator.get_tournament_bet_dict_for_user(username=username)
+    group_evaluation_time = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation'])
+    knockout = time_handler.get_now_time_object() > group_evaluation_time
+
     extra_data = {
         'start_amount' : current_app.config['BET_VALUES']['starting_bet_amount'],
         'group_and_tournament_bet_credit' : group_and_tournament_bet_credit,
-        'group_bonus' : group_bonus,
-        'balance_after_group' : match_result[-1].after_group if len(match_result) > 0 else None,
+        'group_bonus' : group_bonus if knockout else None,
+        'balance_after_group' : match_result[-1].after_group if len(match_result) > 0 and knockout else None,
         'current_balance' : match_result[-1].balance + tournament_bet_dict['prize'] if len(match_result) > 0 else current_app.config['BET_VALUES']['starting_bet_amount'] - group_and_tournament_bet_credit,
         'success_rate' : (match_result[0].sum_success / len(match_result)) * 100 if len(match_result) > 0 else 0
     }
 
-    return render_template('/results/results-user.html', days=days, group_evaluation_date=group_evaluation_date, tournament_bet=tournament_bet_dict, extra_data=extra_data)
+    return render_template('/results/results-user.html', days=days, group_evaluation_date=group_evaluation_time.date().strftime('%Y-%m-%d'), tournament_bet=tournament_bet_dict, extra_data=extra_data)
 
 @bp.route('/results/match', methods=['GET'])
 @sign_in_required()
-def prev_bets_by_match():
+def results_by_match():
     date = request.args.get('date')
 
-    match_query_string = score_calculator.match_evaluation_query_string.text \
-                        + '''SELECT tr1.translation AS tr1, tr2.translation AS tr2, match.id AS id, tr3.translation AS round, match.goal1 AS rgoal1, match.goal2 AS rgoal2, 
+    match_query_string = '''WITH match_prize AS (''' + score_calculator.match_evaluation_query_string + ''') SELECT tr1.translation AS tr1, tr2.translation AS tr2, match.id AS id, tr3.translation AS round, match.goal1 AS rgoal1, match.goal2 AS rgoal2, 
                                 match_prize.bonus * match_prize.bet AS bonus, match_prize.multiplier * match_prize.bet AS prize, match_prize.bet AS bet, 
                                 (match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet) AS credit_diff, match_prize.success, 
                                 bet_user.username AS username, match_prize.goal1 AS bgoal1, match_prize.goal2 AS bgoal2, 
@@ -119,7 +109,7 @@ def prev_bets_by_match():
                             LEFT JOIN team_translation AS tr1 ON tr1.name = match.team1 AND tr1.language = :l 
                             LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = :l 
                             LEFT JOIN team_translation AS tr3 ON tr3.name = match.round AND tr3.language = :l 
-                            WHERE unixepoch(match.datetime) < unixepoch(:now) {date_filter}
+                            WHERE unixepoch(match.datetime) <= unixepoch(:now) {date_filter}
                             ORDER BY datetime ASC, UPPER(bet_user.username)'''
     
     date_filter = 'AND date(match.datetime) = :date' if date is not '' else ''

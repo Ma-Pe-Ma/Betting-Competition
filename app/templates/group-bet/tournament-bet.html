@@ -40,7 +40,7 @@
     {% for hit in [0,1,2,4] %}
         <div class="row d-flex align-items-center">
             <label class="col-4 col-md-2 ms-3">{% trans %}{{hit}} hit{% pluralize %}{{hit}} hits{% endtrans %}:</label>
-            <div class="col-5 col-md-4 d-flex align-items-center">{{config['GROUP_BET_HIT_MAP'][hit]}}×</div>
+            <div class="col-5 col-md-4 d-flex align-items-center">{{config['GROUP_BET_HIT_MAP']['h{hit}'.format(hit=hit)]}}×</div>
         </div>
     {% endfor %}
     </div>
