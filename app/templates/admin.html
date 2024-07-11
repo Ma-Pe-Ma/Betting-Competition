@@ -263,6 +263,10 @@
                                 <div class="ms-3">
                                     {{loop.index}} - {{job}}
                                 </div>
+                                {% else %}
+                                <div class="ms-3">
+                                    {% trans %}None{% endtrans %}
+                                </div>
                                 {% endfor %}
                             </div>
                         </div>

@@ -31,7 +31,7 @@ function getMatchDataByDate(date) {
         matchResultNode.innerHTML = request.response;
 
         dateSelector.disabled = false;
-        dateSpinner.classList.add("d-none")
+        dateSpinner.classList.add("d-none");
     }
 
     request.ontimeout = function() {
@@ -40,7 +40,7 @@ function getMatchDataByDate(date) {
         rootElement.insertBefore(alert, rootElement.children[0]);
 
         dateSelector.disabled = false;
-        dateSpinner.classList.add("d-none")
+        dateSpinner.classList.add("d-none");
     }
 
     request.open(`GET`, `./results/match?date=${date}`);

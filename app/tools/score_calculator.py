@@ -89,7 +89,8 @@ group_dict = '''SELECT ts2.*, COALESCE(ts2.multiplier * ts2.bet, 0) AS prize, (t
 def get_daily_points_by_current_time_query(user_filter : str, users : str) -> str:
     simple_entry_query = '''SELECT date_values.*
                     FROM (SELECT strftime('%Y', date.datetime) AS year, strftime('%m', date.datetime) -1 AS month, strftime('%d', date.datetime) AS day, date.datetime, date(date.datetime) AS date, NULL AS id
-                            FROM (SELECT DATE('{st}', '{days}' || ' days') AS datetime) AS date) AS date_values
+                            FROM (SELECT DATE('{st}', '{days}' || ' days') AS datetime) AS date
+                            {filter}) AS date_values
                     UNION ALL '''
 
     match_query = '''SELECT * FROM 
@@ -102,17 +103,17 @@ def get_daily_points_by_current_time_query(user_filter : str, users : str) -> st
     deadline_times = current_app.config['DEADLINE_TIMES']
 
     # add starting credit
-    complete_query = simple_entry_query.format(st=deadline_times['register'], days=-2)
+    complete_query = simple_entry_query.format(st=deadline_times['register'], days=-2, filter='')
     # subtract group + tournament bet credits
-    complete_query += simple_entry_query.format(st=deadline_times['register'], days=-1)
+    complete_query += simple_entry_query.format(st=deadline_times['register'], days=-1, filter='')
     # calculate group stage results
     complete_query += match_query.format(r='<')
     # # add group stage bonus
-    complete_query += simple_entry_query.format(st=deadline_times['group_evaluation'], days=1)
+    complete_query += simple_entry_query.format(st=deadline_times['group_evaluation'], days=1, filter='WHERE unixepoch(date.datetime) < unixepoch(:now)')
     # # calculate knock-out stage results
     complete_query += match_query.format(r='>')
     # # add tournament bonus
-    complete_query += simple_entry_query.format(st=deadline_times['tournament_end'], days=1)
+    complete_query += simple_entry_query.format(st=deadline_times['tournament_end'], days=1, filter='WHERE unixepoch(date.datetime) < unixepoch(:now)')
     # add empty SELECT after UNION ALL
     complete_query += 'SELECT 1, 2, 3, 4, 5, 6 WHERE 0 = 1'
 
@@ -144,9 +145,7 @@ def get_daily_points_by_current_time_query(user_filter : str, users : str) -> st
         diff + COALESCE(SUM(diff) OVER (PARTITION BY username ORDER BY username ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) AS point,
         diff AS diff,
         COALESCE(SUM(diff) OVER (PARTITION BY username ORDER BY username ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) as penultimate
-    FROM (''' + complete_query + ''') AS days
-    WHERE unixepoch(datetime) < unixepoch(:now)'''
-
+    FROM (''' + complete_query + ''') AS days '''
     return complete_query
 
 def get_daily_points_by_current_time(username):    

@@ -241,6 +241,7 @@ To setup babel translations these commands need to be launched:
 
 ## TO-DO
 * make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean, containerization
+* fix [group bonus calculation error](./app/results.py#L85) + restructure results
 * clean-up ReadMe
 
 ### Backlog
