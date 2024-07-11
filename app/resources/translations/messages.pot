@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-07-07 21:22+0200\n"
+"POT-Creation-Date: 2024-07-11 16:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -481,23 +481,27 @@ msgstr ""
 msgid "Scheduled tasks"
 msgstr ""
 
-#: app/templates/admin.html:274
+#: app/templates/admin.html:268
+msgid "None"
+msgstr ""
+
+#: app/templates/admin.html:278
 msgid "Password reset keys"
 msgstr ""
 
-#: app/templates/admin.html:282 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:286 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr ""
 
-#: app/templates/admin.html:283
+#: app/templates/admin.html:287
 msgid "Expiration time"
 msgstr ""
 
-#: app/templates/admin.html:284
+#: app/templates/admin.html:288
 msgid "Key"
 msgstr ""
 
-#: app/templates/admin.html:297
+#: app/templates/admin.html:301
 msgid "No reset keys have been generated!"
 msgstr ""
 

@@ -49,18 +49,19 @@ def results_by_user():
 
     query_string =  "WITH match_prize AS (" + score_calculator.match_evaluation_query_string + '''),
     results AS (SELECT *,
-            COALESCE(:starting_bet_amount + (CASE WHEN datetime(datetime) > :group_evaluation THEN :group_bonus ELSE 0 END) + SUM(diff) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND 0 PRECEDING), :starting_bet_amount) AS balance,
+            COALESCE(:starting_bet_amount - :group_and_tournament_bet_credit + (CASE WHEN datetime(datetime) > :group_evaluation THEN :group_bonus ELSE 0 END) + SUM(diff) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND 0 PRECEDING), :starting_bet_amount) AS balance,
             SUM(success) OVER (PARTITION BY 1) AS sum_success
         FROM (''' + query_string + '''))
 
     SELECT *,
-        (SELECT :starting_bet_amount + SUM(diff) + :group_bonus FROM results WHERE datetime(datetime) < datetime(:group_evaluation)) AS after_group
+        (SELECT :starting_bet_amount - :group_and_tournament_bet_credit + :group_bonus + SUM(diff) FROM results WHERE datetime(datetime) < datetime(:group_evaluation)) AS after_group
     FROM results
     '''
+    group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)
     group_bonus = sum(group['prize'] for group in score_calculator.get_group_bet_dict_for_user(username=username).values())
 
     match_list_query_parameters = score_calculator.get_daily_point_parameters()
-    match_list_query_parameters.update({'now' : time_handler.get_now_time_string(),'u' : username, 'l' : g.user['language'], 'tz' : g.user['timezone'], 'group_bonus' : group_bonus})
+    match_list_query_parameters.update({'now' : time_handler.get_now_time_string(), 'u' : username, 'l' : g.user['language'], 'tz' : g.user['timezone'], 'group_and_tournament_bet_credit' : group_and_tournament_bet_credit, 'group_bonus' : group_bonus})
 
     query_string = text(query_string)
     matches = get_db().session.execute(query_string, match_list_query_parameters)
@@ -77,11 +78,11 @@ def results_by_user():
         
         days[m.date]['matches'].append(match_dict)
 
-    group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)
     tournament_bet_dict = score_calculator.get_tournament_bet_dict_for_user(username=username)
     group_evaluation_time = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['group_evaluation'])
     knockout = time_handler.get_now_time_object() > group_evaluation_time
 
+    # TODO: current balance not working between last group stage match and first knockout match!
     extra_data = {
         'start_amount' : current_app.config['BET_VALUES']['starting_bet_amount'],
         'group_and_tournament_bet_credit' : group_and_tournament_bet_credit,

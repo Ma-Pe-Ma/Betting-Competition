@@ -132,8 +132,9 @@ myModal.addEventListener('shown.bs.modal', (event) => {
             goalInput1.value = response['goal1'];
             goalInput2.value = response['goal2'];
 
+            matchDate.innerText = `${response['datetime']}`;
+
             if (admin) {
-                matchDate.innerText = `${response['datetime']}`;
                 creditInput.value = response['max_bet'];
 
                 odd1.value = response['odd1'].toFixed(2);
@@ -141,8 +142,6 @@ myModal.addEventListener('shown.bs.modal', (event) => {
                 odd2.value = response['odd2'].toFixed(2);
             }
             else {
-                matchDate.innerText = `${response['date']} ${response['time']} `;
-
                 creditInput.max = response['max_bet'];
                 creditInput.value = response['bet'];
 

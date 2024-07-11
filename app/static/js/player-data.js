@@ -22,6 +22,7 @@ var playerDataMap = new Map();
 var resultNode = document.getElementById("resultNode");
 
 function getPlayerData(nameID) {
+    listSelector.disabled = true;
     playerSpinner.classList.remove("d-none");
     
     var request = new XMLHttpRequest();    
@@ -29,13 +30,15 @@ function getPlayerData(nameID) {
     request.onload = function() {
         playerDataMap.set(nameID, request.response);
         resultNode.innerHTML = request.response;
-        playerSpinner.classList.add("d-none")
+        playerSpinner.classList.add("d-none");
+        listSelector.disabled = false;
     }
 
     request.ontimeout = function() {
         const alert = document.getElementById("alertTemplate").content.cloneNode(true);
         const rootElement = document.getElementById("alertNode");
         rootElement.insertBefore(alert, rootElement.children[0]);
+        listSelector.disabled = false;
     }
 
     request.open(`GET`, `./${requestAddress}?name=${nameID}`);    
