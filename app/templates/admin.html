@@ -181,6 +181,7 @@
                             <div class="row ms-3 mt-2">
                                 <div class="col-1">{{loop.index}}</div>
                                 <div class="col-3 col-md-2">{{tournament_bet.username}}</div>
+                                <div class="col-3 col-md-2">{{tournament_bet.local_name}}</div>
                                 <div class="col-3 col-md-2" id="result-{{loop.index}}">{{tournament_bet_template.name_map[tournament_bet.result]}}</div>
                                 <select class="col-3 col-md-2" name="tournamentBet" data-user="{{tournament_bet.username}}">
                                     <option value=""  {% if tournament_bet.success is none %} selected {% endif %}>{% trans %}Undetermined{% endtrans %}</option>

@@ -17,11 +17,12 @@
 
         {% set ns = namespace(row=1) %}
 
-        <h5 class="mt-5 mb-5">{% trans %}Current credit{% endtrans %}: {{current_balance|round(1)}}</h5>
-
         {% for date, day in days.items() %}
 
         {% if loop.index == 1 %}
+
+        <h5 class="mt-5 mb-5">{% trans %}Current credit{% endtrans %}: {{current_balance|round(1)}}</h5>
+
         <div class="row mb-3 ms-1 me-1 text-center">
             <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center"><div class="ms-3">#</div></div>
             <div class="col-3 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center">{% trans %}Time{% endtrans %}</div>
@@ -51,7 +52,11 @@
             {% endfor %}
 
         {% else %}
+            {% if statistics is not none %}
+                {% include "statistics.html" %}
+            {% else %}
         <h3>{% trans %}The competition has ended! Please check out the results!{% endtrans %}</h3>
+            {% endif %}
         {% endfor %}
     </div>
 

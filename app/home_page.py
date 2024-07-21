@@ -2,15 +2,16 @@ from flask import Blueprint
 from flask import g
 from flask import flash
 from flask import render_template
-from flask import request
+from flask import current_app
+
 from app.tools.db_handler import get_db
 from app.auth import sign_in_required
 
 from app.tools import time_handler
 from app.tools import score_calculator
+from app.tools import statistics
 
 from sqlalchemy import text
-from flask_babel import gettext
 
 bp = Blueprint('home', __name__, '''url_prefix="/"''')
 
@@ -60,6 +61,12 @@ def homepage():
 
         days[match_dict['date']]['matches'].append(match_dict)
 
-    amount = score_calculator.get_daily_points_by_current_time(g.user['username'])[-1]['point']
+    daily_point_parameters = score_calculator.get_daily_point_parameters()
+    daily_point_parameters.update({'u' : g.user['username'], 'l' : g.user['language'], 'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M')})
 
-    return render_template('/home-page.html', days=days, current_balance=amount)
+    daily_point_query = score_calculator.get_daily_points_by_current_time_query(users=':u')
+    day_result = get_db().session.execute(text(daily_point_query), daily_point_parameters)
+
+    stats = statistics.get_statistics(g.user['language'], g.user['timezone']) if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']) else None        
+
+    return render_template('/home-page.html', days=days, current_balance=day_result.fetchall()[-1]._asdict()['point'], statistics = stats)

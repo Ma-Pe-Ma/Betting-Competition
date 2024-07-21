@@ -28,7 +28,7 @@ group_and_tournament_bet_query_string = '''SELECT COALESCE(SUM(group_bet.bet), 0
                                         GROUP BY group_bet.username'''
 
 match_evaluation_query_string = '''SELECT match.id, match.outcome AS match_outcome, match_bet.outcome AS bet_outcome, (match.outcome = match_bet.outcome) AS success, 
-                                match_bet.goal1, match_bet.goal2, match_bet.username AS username, 
+                                match_bet.goal1, match_bet.goal2, bet_user.username AS username, match.datetime, match.max_bet, match.team1, match.team2,
                                     CASE match.outcome = match_bet.outcome 
                                         WHEN 1 THEN CASE match.outcome 
                                             WHEN 1 THEN match.odd1 
@@ -49,11 +49,12 @@ match_evaluation_query_string = '''SELECT match.id, match.outcome AS match_outco
                                     END AS bonus, 
                                     COALESCE(match_bet.bet, 0) AS bet 
                                 FROM (SELECT match.*, SIGN(match.goal1 - match.goal2) AS outcome FROM match) AS match 
-                                LEFT JOIN (SELECT match_bet.*, SIGN(match_bet.goal1 - match_bet.goal2) AS outcome FROM match_bet) AS match_bet ON match_bet.match_id = match.id'''
+                                LEFT JOIN bet_user
+                                LEFT JOIN (SELECT match_bet.*, SIGN(match_bet.goal1 - match_bet.goal2) AS outcome FROM match_bet) AS match_bet ON match_bet.match_id = match.id AND match_bet.username = bet_user.username'''
 
 tournament_dict = '''SELECT t_bet.*, 
-                            CASE t_bet.success WHEN 1 THEN COALESCE(t_bet.bet, 0) * (t_bet.multiplier - 1) ELSE 0 END AS prize, 
-                            COALESCE(t_bet.bet, 0) * (t_bet.multiplier - 1) AS expected_prize 
+                            CASE t_bet.success WHEN 1 THEN COALESCE(t_bet.bet, 0) * (t_bet.multiplier) ELSE 0 END AS prize, 
+                            COALESCE(t_bet.bet, 0) * (t_bet.multiplier) AS expected_prize 
                         FROM bet_user 
                         LEFT JOIN (
                             SELECT tournament_bet.*, COALESCE(tournament_bet.bet, 0) AS bet, tr.translation AS local_name, 
@@ -86,7 +87,7 @@ group_dict = '''SELECT ts2.*, COALESCE(ts2.multiplier * ts2.bet, 0) AS prize, (t
                 ) AS ts1 
             ) AS ts2'''
 
-def get_daily_points_by_current_time_query(user_filter : str, users : str) -> str:
+def get_daily_points_by_current_time_query(users : str) -> str:
     simple_entry_query = '''SELECT date_values.*
                     FROM (SELECT strftime('%Y', date.datetime) AS year, strftime('%m', date.datetime) -1 AS month, strftime('%d', date.datetime) AS day, date.datetime, date(date.datetime) AS date, NULL AS id
                             FROM (SELECT DATE('{st}', '{days}' || ' days') AS datetime) AS date
@@ -148,20 +149,11 @@ def get_daily_points_by_current_time_query(user_filter : str, users : str) -> st
     FROM (''' + complete_query + ''') AS days '''
     return complete_query
 
-def get_daily_points_by_current_time(username):    
-    daily_point_parameters = get_daily_point_parameters()
-    daily_point_parameters.update({'u' : username, 'l' : g.user['language'], 'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M')})
-
-    complete_query = get_daily_points_by_current_time_query(user_filter='AND bet_user.username = :u', users=':u')
-    day_result = get_db().session.execute(text(complete_query), daily_point_parameters)
-
-    return [day._asdict() for day in day_result.fetchall()]
-
 # this method returns the sum of group bets and the tournament bet of a user
 def get_group_and_tournament_bet_amount(username : str) -> int:
-    query_string  = group_and_tournament_bet_query_string.format(filter='WHERE group_bet.username = :username')
+    query_string  = group_and_tournament_bet_query_string.format(filter='WHERE group_bet.username = :u')
     query_string = " SELECT * FROM ({q})".format(q=query_string)
-    result = get_db().session.execute(text(query_string), {'username' : username})
+    result = get_db().session.execute(text(query_string), {'u' : username})
 
     return result.fetchone()._asdict()['total_bet']
 

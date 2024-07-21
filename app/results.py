@@ -45,16 +45,17 @@ def results_by_user():
                         LEFT JOIN team_translation AS tr1 ON tr1.name=match.team1 AND tr1.language = :l 
                         LEFT JOIN team_translation AS tr2 ON tr2.name=match.team2 AND tr2.language = :l 
                         WHERE unixepoch(match.datetime) <= unixepoch(:now) 
-                        ORDER BY datetime"""
+                        ORDER BY match.datetime"""
 
     query_string =  "WITH match_prize AS (" + score_calculator.match_evaluation_query_string + '''),
     results AS (SELECT *,
             COALESCE(:starting_bet_amount - :group_and_tournament_bet_credit + (CASE WHEN datetime(datetime) > :group_evaluation THEN :group_bonus ELSE 0 END) + SUM(diff) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND 0 PRECEDING), :starting_bet_amount) AS balance,
             SUM(success) OVER (PARTITION BY 1) AS sum_success
-        FROM (''' + query_string + '''))
+        FROM (''' + query_string + ''')
+    )
 
     SELECT *,
-        (SELECT :starting_bet_amount - :group_and_tournament_bet_credit + :group_bonus + SUM(diff) FROM results WHERE datetime(datetime) < datetime(:group_evaluation)) AS after_group
+        (SELECT :starting_bet_amount - :group_and_tournament_bet_credit + :group_bonus + SUM(diff) FROM results WHERE datetime(results.datetime) < datetime(:group_evaluation)) AS after_group
     FROM results
     '''
     group_and_tournament_bet_credit = score_calculator.get_group_and_tournament_bet_amount(username)
@@ -111,7 +112,7 @@ def results_by_match():
                             LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = :l 
                             LEFT JOIN team_translation AS tr3 ON tr3.name = match.round AND tr3.language = :l 
                             WHERE unixepoch(match.datetime) <= unixepoch(:now) {date_filter}
-                            ORDER BY datetime ASC, UPPER(bet_user.username)'''
+                            ORDER BY match.datetime ASC, UPPER(bet_user.username)'''
     
     date_filter = 'AND date(match.datetime) = :date' if date is not '' else ''
     match_query_string = text(match_query_string.format(date_filter=date_filter))

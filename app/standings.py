@@ -15,7 +15,7 @@ bp = Blueprint('standings', __name__, '''url_prefix="/standings"''')
 cache_time = 5
 
 def create_player_history(select='*', group_by='', order_by=''):
-    user_query = score_calculator.get_daily_points_by_current_time_query(user_filter='', users='SELECT username FROM bet_user ORDER BY UPPER(username)')
+    user_query = score_calculator.get_daily_points_by_current_time_query(users='SELECT username FROM bet_user ORDER BY UPPER(username)')
     user_query = '''WITH days AS (
                         SELECT days.*, 
                         LAST_VALUE(point) OVER (PARTITION BY days.username) AS last_point,
