@@ -1,0 +1,79 @@
+<div class="mb-3">
+    <h5 class="">{% trans %}Player statistics{% endtrans %}:</h5>
+    <div class="row ms-2 mb-1">
+        <h7 class="mt-0">{% trans %}Number of bets{% endtrans %}: {{statistics['players'][0]['total_bet_count']}}</h7>
+        <h7 class="">{% trans %}Number of hits{% endtrans %}: {{statistics['players'][0]['total_hit_count']}} - {{(100 * statistics['players'][0]['total_hit_count'] / statistics['players'][0]['total_bet_count'])|round(1)}} %</h7>
+        <h7 class="">{% trans %}Number of bullseyes{% endtrans %}: {{statistics['players'][0]['total_bullseye_count']}} - {{(100 * statistics['players'][0]['total_bullseye_count'] / statistics['players'][0]['total_bet_count'])|round(1)}} %</h7>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">{% trans %}Name{% endtrans %}</th>
+            <th scope="col">{% trans %}Bet count{% endtrans %}</th>
+            <th scope="col">{% trans %}Hit count{% endtrans %}</th>
+            <th scope="col">{% trans %}Hit ratio{% endtrans %}</th>                        
+            <th scope="col">{% trans %}Bullseye count{% endtrans %}</th>
+            <th scope="col">{% trans %}Bullseye ratio{% endtrans %}</th>
+            <th scope="col">{% trans %}Max winning streak{% endtrans %}</th>
+            <th scope="col">{% trans %}Max bullseye streak{% endtrans %}</th>
+            <th scope="col">{% trans %}Max loosing streak{% endtrans %}</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+            {% for player in statistics['players'] %}
+        <tr>
+            <th>{{player['username']}}</th>
+            <td class="align-middle text-center">{{player['bet_count']}}</td>
+            <td class="align-middle text-center {% if player.hit_count_global %}table-success{% endif %}">{{player['hit_count']}}</td>
+            <td class="align-middle text-center {% if player.success_ratio_global %}table-success{% endif %}">{{player['success_ratio']|round(1)}}%</td>
+            <td class="align-middle text-center {% if player.bullseye_count_global %}table-success{% endif %}">{{player['bullseye_count']}}</td>
+            <td class="align-middle text-center {% if player.bullseye_ratio_global %}table-success{% endif %}">{{player['bullseye_ratio']|round(1)}}%</td>
+            <td class="align-middle text-center {% if player.max_win_streak_global %}table-success{% endif %}">{{player['max_win_streak_length']}}</td>
+            <td class="align-middle text-center {% if player.max_bonus_streak_global %}table-success{% endif %}">{{player['max_bonus_streak_length']}}</td>
+            <td class="align-middle text-center {% if player.max_loose_streak_global %}table-success{% endif %}">{{player['max_loose_streak_length']}}</td>
+        </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-5">
+    <h5>{% trans %}Match statistics{% endtrans %}:</h5>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">{% trans %}ID{% endtrans %}</th>
+            <th scope="col">{% trans %}Date{% endtrans %}</th>
+            <th scope="col">{% trans %}Teams{% endtrans %}</th>
+            <th scope="col">{% trans %}Bet count{% endtrans %}</th>
+            <th scope="col">{% trans %}Hit count{% endtrans %}</th>
+            <th scope="col">{% trans %}Hit ratio{% endtrans %}</th>
+            <th scope="col">{% trans %}Total bet credit{% endtrans %}</th>
+            <th scope="col">{% trans %}Normalized total bet credit{% endtrans %}</th>
+            <th scope="col">{% trans %}Sum credit difference{% endtrans %}</th>
+            <th scope="col">{% trans %}Normalized sum credit difference{% endtrans %}</th>
+            <th scope="col">{% trans %}Difference / total credit{% endtrans %}</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for match in statistics['matches'] %}
+        <tr>
+            <td scope="col" class="align-middle text-center">{{match['id']}}</td>
+            <td scope="col" class="align-middle text-center">{{match['local_datetime']}}</td>
+            <td scope="col" class="align-middle text-center">{{match['team1']}} - {{match['team2']}}</td>
+            <td scope="col" class="align-middle text-center">{{match['bet_count']}}</td>
+            <td scope="col" class="align-middle text-center {% if match.max_hit_count_flag %}table-success{% endif %}{% if match.min_hit_count_flag %}table-danger{% endif %}">{{match['hit_count']}}</td>
+            <td scope="col" class="align-middle text-center {% if match.max_hit_ratio_flag %}table-success{% endif %}{% if match.min_hit_ratio_flag %}table-danger{% endif %}">{{match['hit_ratio']|round(1)}}%</td>
+            <td scope="col" class="align-middle text-center {% if match.total_max_flag %}table-success{% endif %}{% if match.total_min_flag %}table-danger{% endif %}">{{match['total_bet']}}</td>
+            <td scope="col" class="align-middle text-center {% if match.normalized_total_max_flag %}table-success{% endif %}{% if match.normalized_total_min_flag %}table-danger{% endif %}">{{match['normalized_total_bet']}}</td>
+            <td scope="col" class="align-middle text-center {% if match.max_flag %}table-success{% endif %}{% if match.min_flag %}table-danger{% endif %}">{{match['diff_by']|int}}</td>
+            <td scope="col" class="align-middle text-center {% if match.normalized_max_flag %}table-success{% endif %}{% if match.normalized_min_flag %}table-danger{% endif %}">{{match['normalized_diff_by']|int}}</td>
+            <td scope="col" class="align-middle text-center {% if match.credit_ratio_max_flag %}table-success{% endif %}{% if match.credit_ratio_min_flag %}table-danger{% endif %}">{{match['credit_ratio']|round(1)}}%</td>
+        </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

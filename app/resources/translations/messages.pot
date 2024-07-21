@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-07-11 16:30+0200\n"
+"POT-Creation-Date: 2024-07-21 11:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -300,14 +300,14 @@ msgstr ""
 msgid "Update match data from fixture"
 msgstr ""
 
-#: app/templates/admin.html:37 app/templates/home-page.html:27
+#: app/templates/admin.html:37 app/templates/home-page.html:28
 msgid "Time"
 msgstr ""
 
-#: app/templates/admin.html:38 app/templates/home-page.html:28
+#: app/templates/admin.html:38 app/templates/home-page.html:29
 #: app/templates/includes/match-modal.html:19
 #: app/templates/results/results-date.html:10
-#: app/templates/results/results-user.html:16
+#: app/templates/results/results-user.html:16 app/templates/statistics.html:50
 msgid "Teams"
 msgstr ""
 
@@ -329,7 +329,7 @@ msgstr ""
 msgid "Cr."
 msgstr ""
 
-#: app/templates/admin.html:51 app/templates/home-page.html:45
+#: app/templates/admin.html:51 app/templates/home-page.html:46
 msgid "unknown"
 msgstr ""
 
@@ -367,7 +367,7 @@ msgid "Message"
 msgstr ""
 
 #: app/templates/admin.html:100 app/templates/admin.html:161
-#: app/templates/admin.html:192 app/templates/chat.html:76
+#: app/templates/admin.html:193 app/templates/chat.html:76
 #: app/templates/group-bet/group-edit.html:121
 #: app/templates/includes/match-modal.html:74
 msgid "Send"
@@ -413,95 +413,95 @@ msgstr ""
 msgid "Tournament result evaluation"
 msgstr ""
 
-#: app/templates/admin.html:186
+#: app/templates/admin.html:187
 msgid "Undetermined"
 msgstr ""
 
-#: app/templates/admin.html:187
+#: app/templates/admin.html:188
 msgid "Successful"
 msgstr ""
 
-#: app/templates/admin.html:188
+#: app/templates/admin.html:189
 msgid "Failed"
 msgstr ""
 
-#: app/templates/admin.html:195
+#: app/templates/admin.html:196
 msgid "Tournament bet evaluation will take place later."
 msgstr ""
 
-#: app/templates/admin.html:203
+#: app/templates/admin.html:204
 msgid "Team-data initialization"
 msgstr ""
 
-#: app/templates/admin.html:209
+#: app/templates/admin.html:210
 msgid "Team description"
 msgstr ""
 
-#: app/templates/admin.html:214
+#: app/templates/admin.html:215
 msgid "Team translation"
 msgstr ""
 
-#: app/templates/admin.html:218 app/templates/admin.html:236
+#: app/templates/admin.html:219 app/templates/admin.html:237
 msgid "Upload"
 msgstr ""
 
-#: app/templates/admin.html:225
+#: app/templates/admin.html:226
 msgid "Maintenance"
 msgstr ""
 
-#: app/templates/admin.html:232
+#: app/templates/admin.html:233
 msgid "Database file"
 msgstr ""
 
-#: app/templates/admin.html:239 app/templates/admin.html:245
+#: app/templates/admin.html:240 app/templates/admin.html:246
 msgid "Download"
 msgstr ""
 
-#: app/templates/admin.html:244
+#: app/templates/admin.html:245
 msgid "Log-file"
 msgstr ""
 
-#: app/templates/admin.html:250
+#: app/templates/admin.html:251
 msgid "Maintenance-mode"
 msgstr ""
 
-#: app/templates/admin.html:251
+#: app/templates/admin.html:252
 msgid "Toggle"
 msgstr ""
 
-#: app/templates/admin.html:256
+#: app/templates/admin.html:257
 msgid "Daily checker"
 msgstr ""
 
-#: app/templates/admin.html:257
+#: app/templates/admin.html:258
 msgid "Initiate"
 msgstr ""
 
-#: app/templates/admin.html:261
+#: app/templates/admin.html:262
 msgid "Scheduled tasks"
 msgstr ""
 
-#: app/templates/admin.html:268
+#: app/templates/admin.html:269
 msgid "None"
 msgstr ""
 
-#: app/templates/admin.html:278
+#: app/templates/admin.html:279
 msgid "Password reset keys"
 msgstr ""
 
-#: app/templates/admin.html:286 app/templates/auth/reset-password.html:16
+#: app/templates/admin.html:287 app/templates/auth/reset-password.html:16
 msgid "Email"
 msgstr ""
 
-#: app/templates/admin.html:287
+#: app/templates/admin.html:288
 msgid "Expiration time"
 msgstr ""
 
-#: app/templates/admin.html:288
+#: app/templates/admin.html:289
 msgid "Key"
 msgstr ""
 
-#: app/templates/admin.html:301
+#: app/templates/admin.html:302
 msgid "No reset keys have been generated!"
 msgstr ""
 
@@ -534,17 +534,17 @@ msgstr ""
 msgid "Home page"
 msgstr ""
 
-#: app/templates/home-page.html:20 app/templates/results/results-user.html:5
+#: app/templates/home-page.html:24 app/templates/results/results-user.html:5
 msgid "Current credit"
 msgstr ""
 
-#: app/templates/home-page.html:29 app/templates/results/results-date.html:13
+#: app/templates/home-page.html:30 app/templates/results/results-date.html:13
 msgid "Round"
 msgstr ""
 
 #: app/templates/group-bet/group-after.html:58
 #: app/templates/group-bet/group-during.html:32
-#: app/templates/group-bet/group-edit.html:91 app/templates/home-page.html:31
+#: app/templates/group-bet/group-edit.html:91 app/templates/home-page.html:32
 #: app/templates/includes/match-modal.html:26
 #: app/templates/results/results-date.html:23
 #: app/templates/results/results-user.html:18
@@ -556,16 +556,16 @@ msgstr ""
 #: app/templates/group-bet/group-edit.html:56
 #: app/templates/group-bet/group-edit.html:101
 #: app/templates/group-bet/tournament-bet.html:26
-#: app/templates/home-page.html:32 app/templates/results/results-date.html:24
+#: app/templates/home-page.html:33 app/templates/results/results-date.html:24
 #: app/templates/results/results-user.html:19
 msgid "Bet"
 msgstr ""
 
-#: app/templates/home-page.html:37 app/templates/results/results-user.html:27
+#: app/templates/home-page.html:38 app/templates/results/results-user.html:27
 msgid "day"
 msgstr ""
 
-#: app/templates/home-page.html:54
+#: app/templates/home-page.html:58
 msgid "The competition has ended! Please check out the results!"
 msgstr ""
 
@@ -601,6 +601,91 @@ msgstr ""
 
 #: app/templates/standings.html:35
 msgid "credit"
+msgstr ""
+
+#: app/templates/statistics.html:2
+msgid "Player statistics"
+msgstr ""
+
+#: app/templates/statistics.html:4
+msgid "Number of bets"
+msgstr ""
+
+#: app/templates/statistics.html:5
+msgid "Number of hits"
+msgstr ""
+
+#: app/templates/statistics.html:6
+msgid "Number of bullseyes"
+msgstr ""
+
+#: app/templates/statistics.html:12
+msgid "Name"
+msgstr ""
+
+#: app/templates/statistics.html:13 app/templates/statistics.html:51
+msgid "Bet count"
+msgstr ""
+
+#: app/templates/statistics.html:14 app/templates/statistics.html:52
+msgid "Hit count"
+msgstr ""
+
+#: app/templates/statistics.html:15 app/templates/statistics.html:53
+msgid "Hit ratio"
+msgstr ""
+
+#: app/templates/statistics.html:16
+msgid "Bullseye count"
+msgstr ""
+
+#: app/templates/statistics.html:17
+msgid "Bullseye ratio"
+msgstr ""
+
+#: app/templates/statistics.html:18
+msgid "Max winning streak"
+msgstr ""
+
+#: app/templates/statistics.html:19
+msgid "Max bullseye streak"
+msgstr ""
+
+#: app/templates/statistics.html:20
+msgid "Max loosing streak"
+msgstr ""
+
+#: app/templates/statistics.html:43
+msgid "Match statistics"
+msgstr ""
+
+#: app/templates/statistics.html:48
+msgid "ID"
+msgstr ""
+
+#: app/templates/includes/match-modal.html:14
+#: app/templates/results/match-selector.html:2 app/templates/statistics.html:49
+msgid "Date"
+msgstr ""
+
+#: app/templates/statistics.html:54
+msgid "Total bet credit"
+msgstr ""
+
+#: app/templates/statistics.html:55
+msgid "Normalized total bet credit"
+msgstr ""
+
+#: app/templates/statistics.html:56
+msgid "Sum credit difference"
+msgstr ""
+
+#: app/templates/statistics.html:57
+msgid "Normalized sum credit difference"
+msgstr ""
+
+#: app/templates/statistics.html:58
+msgid "Difference / total credit"
 msgstr ""
 
 #: app/templates/auth/forgotten-password.html:5
@@ -1002,11 +1087,6 @@ msgstr ""
 #: app/templates/includes/player-selector.html:11
 #: app/templates/results/match-selector.html:12
 msgid "Loading..."
-msgstr ""
-
-#: app/templates/includes/match-modal.html:14
-#: app/templates/results/match-selector.html:2
-msgid "Date"
 msgstr ""
 
 #: app/templates/includes/match-modal.html:49
