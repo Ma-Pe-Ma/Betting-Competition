@@ -14,8 +14,8 @@
         <tr style="padding-bottom:5px;">
             <td style="text-align:left;">{{loop.index}}.</td>
             <td style="text-align:center;">{{standing.username}}</td>
-            <td style="text-align:center;">{{standing.point|round(2)}}</td>
-            <td style="text-align:center;">{{(standing.point - standing.previous_point)|round(2)}}</td>
+            <td style="text-align:center;">{{standing.last_point|round(2)}}</td>
+            <td style="text-align:center;">{{(standing.last_point - standing.penultimate_point)|round(2)}}</td>
             <td style="text-align:center;">{{standing.position_diff}}</td> 
         </tr>
         {% endfor %}
