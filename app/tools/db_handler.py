@@ -35,9 +35,9 @@ def init_db(app):
 @with_appcontext
 def init_db_command():
     #script_dir = os.path.dirname(os.path.abspath(__file__))
-    #schema_directory = os.path.join(script_dir, 'resources', 'db-schemas')
+    #schema_directory = os.path.join(script_dir, 'assets', 'db-schemas')
 
-    with current_app.open_resource('./resources/schema.sql', 'rb') as f:
+    with current_app.open_resource('./assets/schema.sql', 'rb') as f:
         database_uri = current_app.config['SQLALCHEMY_DATABASE_URI']
         
         if db.engine.dialect.name == 'sqlite':            

@@ -13,3 +13,6 @@ env__/
 app/db.sqlite3
 /instance/*
 *.mo
+/deployment/configuration.json
+/deployment/nginx.conf
+*.pem
