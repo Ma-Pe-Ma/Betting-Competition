@@ -1,7 +1,12 @@
 class Default(object):
-    def __init__(self, instance_path):
-        import os
-        Default.CACHE_DIR = os.path.join(instance_path, 'cache')
+    # url of the site
+    SITE_ADDRESS = 'betting.app'
+
+    # email which will be notified for expiring certificates
+    CERT_EMAIL = 'email@betting.app'
+
+    # location of cache files
+    CACHE_DIR = './cache'
 
     # the supported lanugages on the site
     SUPPORTED_LANGUAGES = {'en' : ['English', 'Angol'], 'hu' : ['Hungarian', 'Magyar']}
@@ -20,7 +25,7 @@ class Default(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///flaskr.sqlite'
     MATCH_URL = 'https://path.fixture'
 
-    BABEL_TRANSLATION_DIRECTORIES = './resources/translations'
+    BABEL_TRANSLATION_DIRECTORIES = './assets/translations'
 
     IDENT_URL = 'https://www.gravatar.com/avatar/{email_hash}?d=identicon&s=128'
 
@@ -69,7 +74,7 @@ class Default(object):
 		  'h2' : 2,
 		  'h3' : 0,
 		  'h4' : 4
-	  },
+	  }
 
     BONUS_MULTIPLIERS = {
       "bullseye" : 4,

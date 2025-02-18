@@ -1,0 +1,87 @@
+events {}
+
+http {
+    upstream app_server {
+        server unix:/BettingApp/gunicorn.socket fail_timeout=0;
+    }
+
+    # redirecting http requests to https
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name $site_address www.$site_address;
+
+        return 301 https://$host$request_uri;
+    }
+
+    # the working server
+    server {
+        listen [::]:443 ssl;
+        listen 443 ssl;
+        server_name $site_address www.$site_address;
+
+        access_log /BettingInstance/nginx-access.log;
+        error_log /BettingInstance/nginx-error.log;
+
+        client_max_body_size 4G;
+        keepalive_timeout 5;
+
+        location /static/ {
+            alias /BettingApp/app/static/;
+            #autoindex off;
+            expires max;
+            access_log off;
+
+            types {
+                image/svg+xml   svg svgz;
+            }
+        }
+
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $host;
+            proxy_redirect off;
+            proxy_buffering off;
+
+            proxy_pass http://app_server;
+        }
+		
+        ssl_certificate /etc/letsencrypt/live/$site_address/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/$site_address/privkey.pem;
+        #include /etc/letsencrypt/options-ssl-nginx.conf;
+        #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    }
+
+    # default http server
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        server_name _;
+
+        client_max_body_size 4G;
+        keepalive_timeout 5;
+
+        location / {
+            return 301 https://$site_address$request_uri;
+        }
+    }
+
+    # default https server
+    server {
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
+
+        server_name _;
+
+        client_max_body_size 4G;
+        keepalive_timeout 5;
+
+        ssl_certificate /etc/letsencrypt/live/$site_address/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/$site_address/privkey.pem;
+
+        location / {
+            return 301 https://$site_address$request_uri;
+        }
+    }
+}

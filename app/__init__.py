@@ -16,16 +16,26 @@ from app.notification import notification_handler
 from app.config import Default
 
 from flask_babel import Babel
+from pathlib import Path
 
-def create_app(test_config = None):
-    app = Flask(__name__, instance_relative_config=True)
+def create_app(instance_path = None):
+    app = Flask(__name__, instance_relative_config=True) if instance_path is None else Flask(__name__, instance_relative_config=True, instance_path=instance_path)
+
     # create custom default filter for none object
     app.jinja_env.filters['d_none'] = lambda value, default_text : value if value is not None else default_text
     app.jinja_env.filters['d_round'] = lambda value, default_text, precision = 2 : round(value, precision) if value is not None and value != '' else default_text
 
     # load configuration from file
-    app.config.from_object(Default(app.instance_path))
+    app.config.from_object(Default())
     app.config.from_file('configuration.json', load=json.load, silent=True)
+    app.config['CACHE_DIR'] = os.path.join(app.instance_path, 'cache')
+
+    # ensure the instance folder exists
+    try:
+        Path(app.instance_path).mkdir(parents=True, exist_ok=True)
+        Path(os.path.join(app.instance_path, app.config['UPLOAD_FOLDER'])).mkdir(parents=True, exist_ok=True)
+    except OSError:
+        app.logger.info('Error while creating app directories.')
 
     # configure logging
     info_handler = logging.FileHandler(os.path.join(app.instance_path, 'logfile_info.log'))
@@ -36,14 +46,6 @@ def create_app(test_config = None):
     app.logger.addHandler(info_handler)
 
     app.logger.info('Server startup.')
-
-    # ensure the instance folder exists
-    try:
-        from pathlib import Path
-        Path(app.instance_path).mkdir(parents=True, exist_ok=True)
-        Path(os.path.join(app.instance_path, app.config['UPLOAD_FOLDER'])).mkdir(parents=True, exist_ok=True)
-    except OSError:
-        app.logger.info('Error while creating app directories.')
 
     # setup various tools
     db_handler.init_db(app)

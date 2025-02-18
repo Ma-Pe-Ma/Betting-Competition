@@ -14,7 +14,7 @@ This application's backend was implemented with the [Flask](https://flask.pallet
 
 ## Demo
 
-A statically seved demo of the application can be checked out [here](https://mapema.hu/assets/betting-competition/index.html).
+A statically served demo of the application can be checked out [here](https://mapema.hu/assets/betting-competition/index.html).
 
 ## Course/rules of the competition
 The logic of the game is quite simple. The players starts with a given amount of credits.
@@ -97,6 +97,8 @@ At the end of match days users can recieve the current standing of the game if t
 
 The application automatically updates its result database after every match (but the update can be invoked manually too).
 
+The users can get notified through the browser's [webpush](https://web.dev/articles/push-notifications-web-push-protocol) messages if they subscribe to notificiations on the home page.
+
 ### Additional scopes for the admins
 This section only appears for admins they have permission to do this additional tasks:
 
@@ -106,88 +108,40 @@ This section only appears for admins they have permission to do this additional 
 * determine the group stages final result order (as it is not automated)
 * determine if a user's tournament result bet was successful or not (as it is not automated)
 
-## Hosting
-The application (probably) can be hosted on any service which has Flask support.
-
-### Self-hosting
-First clone your app to a place where the server has read/write permissions like the intended `/var/www/` (write permission is needed for saving uploaded [initialization files](#team-description-files)).
-
-To prevent package-collision problems it is suggested to create new a [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environemnt. After cloning the project activate the new environment and install the dependencies:
-
-    python -m pip install -r requirements.txt
-
-After [setting up](#setting-up) you can run the application with Flask's development server with the following command:
-
-    python -m flask run
-
-While Flask's own server is suitable for developing the application, later it becomes a bottleneck when the app goes live. The suggested solution is to use a web server. 
-
-<details>
-  <summary>Self-hosting with Apache2</summary>
-  
-  This section guides you to set up the project it with [Apache2](https://httpd.apache.org/) through [mod_wsgi](https://modwsgi.readthedocs.io/en/master/) on Ubuntu.
-
-  The first step is to install Apache2 and its developer tools.
-
-    sudo apt install apache2 apache2-dev
-
-The next step is to open the apache configuration file for your site (the default is /etc/apache2/sites-enabled/000-default.conf) then configure and add the following lines:
-
-    WSGIDaemonProcess betting python-path=/path/to/miniconda3/envs/%env_name%/lib/python3.x/site-packages locale='C.UTF-8' threads=15 maximum-requests=20000
-    WSGIScriptAlias / /path/to/BettingApp.wsgi
-    WSGIProcessGroup betting
-	WSGIApplicationGroup %{GLOBAL}
-
-The next step is to install the mod_wsgi module for Apache2.
-
-There are two possible solutions for this, one is to install it to the used conda environment:
-  
-    python -m pip install mod_wsgi
-    
-Which is then needeed to be installed to Apache's modules:
-
-    mod_wsgi-express install-module
-
-Copy and paste the LoadModule line to the config file.
-
-The other solution is to install apache's own module:
-
-    sudo apt-get install libapache2-mod-wsgi-py3
-
-This method does not need further configuring. To enable or disable the module:
-
-    sudo a2enmod/a2dismod mod_wsgi
-
-After finishing the configuration restart apache2
-    
-    sudo systemctl restart apache2.service
-
-Logs for the apache can be found here: `/var/log/apache2/`
-
-You have to [create TLS certificate](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs) (make sure it uses at least 2048-bit encryption) and [specify it to Apache](https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html) if you want your connection to be secure.
-
-Lastly the project configuration variables [have to be specifed](#setting-up).
-
-</details>
 
 ## Setting up
-
-### Fixture note
-
-This project updates the result database with parsing fixtures from https://fixturedownload.com/. The app is set up to parse files which has this site's format.
-
-If an other fixture format is needed to be parsed then the [database_manager.py](./app/database_manager.py) script have to be rewritten for it accordingly.
-
-### Database
-
-The app uses `SQLAlchemy` for database connection, which is a implementation-agnostic solution. However many specific tasks have to be solved differently with various SQL implementations. Therefore some raw queries only work with `SQLite` as it was chosen for the implementation as it is a very lightweight solution.
 
 ### Configuration file
 Before launching the application the first time the correct values have to be specified in the [configuration file](./configuration.json).
 
-After the configuration happened initialize the app with the following command:
+Apart from the web-push keys, every field is self-explanatory.
+
+To generate the webpush keys, install the following node js module and run the proper command:
+    
+    npm install web-push -g
+    web-push generate-vapid-keys [--json]
+
+### Launching the app
+
+#### Development server 
+
+Before starting the development you have to initialize the database with:
 
     python -m flask init-db
+
+After, you can launch the development server.
+
+    python -m flask run --debug
+
+#### Hosting
+
+The easiest way to host the application is using docker (either self-hosting or on a online service).
+
+By launching the [install.sh](./install.sh) the script will ask you to properly configure the site and game parameters in the [configuration file](#configuration-file), after specifying them correctly the docker compose should set up the application.
+
+The installer sets ups a `certbot` container which acquires the TLS certificate/key for the webserver (this requires an open 80 port), the needed parameters are acquired from the aforementioned `configuration.json` file.
+
+Then the app/server container is built. The application is served with nginx + gunicorn, these require the 80 and 443 ports to be exposed to the web.
 
 ### Team description files
 
@@ -217,39 +171,42 @@ The fields for this are the following:
 
 The email sending is implemented with the [Google API](https://developers.google.com/gmail/api/quickstart/python). First you have to create an account and a cloud project.
 
-The process of setting up email sending is specified in [this source](./app/gmail_handler.py) file
+The process of setting up email sending is specified in [this source](./app/gmail_handler.py) file-->
 
-To manually launch the automated reminders:
+## Customizing the application
 
-To immidiately send the standings (if it wasn't send due to some error):
-    python -m flask standings-manual
+### Fixture
 
-To start scheduling (if app was rebooted midday)
-* python -m flask checker-manual-->
+This project updates the result database with parsing fixtures from https://fixturedownload.com/. The app is set up to parse files which has this site's format.
+
+If an other fixture format is needed to be parsed then the [database_manager.py](./app/database_manager.py) script have to be rewritten for it accordingly.
+
+### Database
+
+The app uses `SQLAlchemy` for database connection, which is a implementation-agnostic solution. However many specific tasks have to be solved differently with various SQL implementations. Therefore some raw queries only work with `SQLite` as it was chosen for the implementation as it is a very lightweight solution.
+
+To use a different db, the `SQLite` specific parts have to be rewritten and specify the proper `SQLAlchemy` engine in the config file.
 
 ### Translation
 
-Currently only English version is available and it is planned to properly mark the translatable resource strings in the jinja templates. Then with flask-babel it will be possible to translate the pages easily.
+Currently English and Hungarian versions are available. The translation is implemented with `Flask-Babel` so the site can be translated easily.
 
 To setup babel translations these commands need to be launched:
 
-    pybabel extract -F babel.cfg -o ./app/resources/translations/messages.pot .
-    pybabel init -i ./app/resources/translations/messages.pot -d ./app/resources/translations -l `hu`
+    pybabel extract -F ./app/babel.cfg -o ./app/assets/translations/messages.pot .
+    pybabel init -i ./app/assets/translations/messages.pot -d ./app/assets/translations -l `hu`
 
-    pybabel update -i ./app/resources/translations/messages.pot -d ./app/resources/translations
-    pybabel compile -d ./app/resources/translations
+    pybabel update -i ./app/assets/translations/messages.pot -d ./app/assets/translations
+    pybabel compile -d ./app/assets/translations
 
 ## TO-DO
-* make deploying and hosting an easier process + let's encript / hosting with pythonanywhere/digital ocean, containerization
 * fix [group bonus calculation error](./app/results.py#L85) + restructure results
 * clean-up statistics
 * create SQL views
-* clean-up ReadMe
 
 ### Backlog
 * check foreign key relations in DB
 * trim whitespaces with jinja
-* cleanup css files
 * email notification/smtp?
 * session handling with Flask-login
 * Add timezone selector for user
