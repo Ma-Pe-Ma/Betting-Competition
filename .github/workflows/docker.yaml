@@ -1,0 +1,53 @@
+name: Build Docker image
+run-name: Build Docker image
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create Nginx config file
+        run: |
+          site_address="localhost" && export site_address && certificate_directory="/BettingApp/app/" && export certificate_directory
+          cat  ${{ github.workspace }}/deployment/nginx.conf.template | envsubst '$site_address $certificate_directory' > ${{ github.workspace }}/deployment/nginx.conf && cp ${{ github.workspace }}/app/assets/configuration.json ${{ github.workspace }}/deployment/
+          echo "actions_certificate_dir=${{ github.workspace }}/app/" >> $GITHUB_ENV
+
+      - name: Create test TLS certificates
+        run: |
+          openssl req -x509 -nodes -newkey rsa:2048 -keyout "$actions_certificate_dir/privkey.pem" -out "$actions_certificate_dir/fullchain.pem" -days 4096 -subj "/CN=localhost"
+
+      - name: Build Docker Image
+        run: docker build -t betting:latest .      
+
+      - name: Run Docker Image
+        run: docker run -d -p 80:80 -p 443:443 --name betting_container betting:latest
+
+      - name: Test server
+        run: |
+          sleep 2
+          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/sign-in)
+          echo "HTTP Status: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "Request failed with status $status"
+            exit 1
+          fi 
+
+      - name: Log
+        run: docker logs betting_container
+
+      - name: Stop Docker Image
+        run: docker container stop betting_container
