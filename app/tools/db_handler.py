@@ -32,21 +32,26 @@ def init_db(app):
         event.listen(db.engine, 'connect', register_custom_functions)        
 
 @click.command('init-db')
+@click.option('-f', 'force_delete', is_flag=True)
 @with_appcontext
-def init_db_command():
+def init_db_command(force_delete = None):
     #script_dir = os.path.dirname(os.path.abspath(__file__))
     #schema_directory = os.path.join(script_dir, 'assets', 'db-schemas')
 
     with current_app.open_resource('./assets/schema.sql', 'rb') as f:
         database_uri = current_app.config['SQLALCHEMY_DATABASE_URI']
         
-        if db.engine.dialect.name == 'sqlite':            
+        if db.engine.dialect.name == 'sqlite':
             database_file_path = os.path.join(current_app.instance_path, database_uri.replace('sqlite:///', ''))
 
-            import sqlite3
-            db_initer = sqlite3.connect(database_file_path, detect_types=sqlite3.PARSE_DECLTYPES)
-            db_initer.row_factory = sqlite3.Row
-            db_initer.executescript(f.read().decode('utf8'))
+            if not os.path.exists(database_file_path) or force_delete:
+                import sqlite3
+                db_initer = sqlite3.connect(database_file_path, detect_types=sqlite3.PARSE_DECLTYPES)
+                db_initer.row_factory = sqlite3.Row
+                db_initer.executescript(f.read().decode('utf8'))
+                click.echo("Initialized the database.")
+            else:
+                click.echo("Database already exists.")
 
         elif db.engine.dialect.name == 'postgresql':
             database_uri = database_uri.replace('postgres//', '')
@@ -63,5 +68,3 @@ def init_db_command():
         # TODO 
         elif db.engine.dialect.name == 'mysql':
             pass
-
-    click.echo("Initialized the database.")

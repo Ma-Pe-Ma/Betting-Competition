@@ -114,7 +114,7 @@ def results_by_match():
                             WHERE unixepoch(match.datetime) <= unixepoch(:now) {date_filter}
                             ORDER BY match.datetime ASC, UPPER(bet_user.username)'''
     
-    date_filter = 'AND date(match.datetime) = :date' if date is not '' else ''
+    date_filter = 'AND date(match.datetime) = :date' if date != '' else ''
     match_query_string = text(match_query_string.format(date_filter=date_filter))
     
     hit_map = current_app.config['BONUS_MULTIPLIERS']
