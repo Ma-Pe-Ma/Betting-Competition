@@ -46,8 +46,8 @@ http {
             proxy_pass http://app_server;
         }
 		
-        ssl_certificate /etc/letsencrypt/live/$site_address/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/$site_address/privkey.pem;
+        ssl_certificate $certificate_directory/fullchain.pem;
+        ssl_certificate_key $certificate_directory/privkey.pem;
         #include /etc/letsencrypt/options-ssl-nginx.conf;
         #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
     }
@@ -77,8 +77,8 @@ http {
         client_max_body_size 4G;
         keepalive_timeout 5;
 
-        ssl_certificate /etc/letsencrypt/live/$site_address/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/$site_address/privkey.pem;
+        ssl_certificate $certificate_directory/fullchain.pem;
+        ssl_certificate_key $certificate_directory/privkey.pem;
 
         location / {
             return 301 https://$site_address$request_uri;

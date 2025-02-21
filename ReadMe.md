@@ -1,8 +1,8 @@
 # Betting Competition Web Application
 
-![status](https://badgen.net/badge/status/finished/green) ![license](https://badgen.net/github/license/Ma-Pe-Ma/BettingApp)
+![status](https://badgen.net/badge/status/finished/green) ![license](https://badgen.net/github/license/Ma-Pe-Ma/Betting-Competition)
 
-![browser](https://badgen.net/badge/browser/working/green) 
+![Docker](https://github.com/Ma-Pe-Ma/Betting-Competition/actions/workflows/docker.yaml/badge.svg)
 
 ## Description
 
@@ -10,7 +10,7 @@ This hobby project's goal is to host a simple betting competition on the web amo
 
 Earlier this game was carried out manually sending emails and editing files on a cloud service. This application was developed to automate many of the cumbersome tasks for the admin and to provide a user-friendly interface for the players where they can publish their tips.
 
-This application's backend was implemented with the [Flask](https://flask.palletsprojects.com/en/3.0.x/) framework while the frontend part was designed with [Bootstrap](https://getbootstrap.com/).
+This application's backend was implemented with the [Flask](https://flask.palletsprojects.com/en/3.0.x/) framework while the frontend part was designed with [Bootstrap](https://getbootstrap.com/). The application can be hosted by building and running a [Docker](https://www.docker.com/) image.
 
 ## Demo
 

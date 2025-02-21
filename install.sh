@@ -17,7 +17,11 @@ else
     else
         export site_address
         export cert_email
-        cat ./deployment/nginx.conf.template | envsubst '$site_address' > ./deployment/nginx.conf
+
+        certificate_directory="/etc/letsencrypt/live/$site_address"
+        export certificate_directory
+
+        cat ./deployment/nginx.conf.template | envsubst '$site_address $certificate_directory' > ./deployment/nginx.conf
 
         echo "Nginx config file created."
         echo "Starting composing project..."

@@ -3,9 +3,9 @@ services:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - cert-volume:/etc/letsencrypt/
-      #- cert-volume:/var/lib/letsencrypt/
-      - cert-volume:/var/log/letsencrypt/
+      - betting-volume:/etc/letsencrypt/
+      #- betting-volume:/var/lib/letsencrypt/
+      - betting-volume:/var/log/letsencrypt/
     command: certonly --standalone -d $site_address -m $cert_email --agree-tos --no-eff-email
     ports:
       - "80:80"
@@ -18,10 +18,11 @@ services:
         condition: service_completed_successfully
     container_name: betting_app
     volumes:
-      - cert-volume:/etc/letsencrypt/
+      - betting-volume:/etc/letsencrypt/
+      - betting-volume:/BettingInstance/
     ports:
       - "80:80"
       - "443:443"
 
 volumes:
-  cert-volume:
+  betting-volume:
