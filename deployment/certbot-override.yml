@@ -1,0 +1,27 @@
+services:
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - cert-volume:/etc/letsencrypt/
+      - cert-volume:/var/log/letsencrypt/
+      #- cert-volume:/var/lib/letsencrypt/
+    command: certonly --standalone -d $site_address -m $cert_email --agree-tos --no-eff-email
+    ports:
+      - "80:80"
+    restart: "no"
+
+  nginx_server:
+    depends_on:
+      certbot:
+        condition: service_completed_successfully
+    volumes:
+      - cert-volume:/etc/letsencrypt/:ro
+        
+  flask_server:
+    depends_on:
+      certbot:
+        condition: service_completed_successfully
+        
+volumes:
+  cert-volume:

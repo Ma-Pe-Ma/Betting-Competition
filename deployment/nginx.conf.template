@@ -2,7 +2,7 @@ events {}
 
 http {
     upstream app_server {
-        server unix:/BettingApp/gunicorn.socket fail_timeout=0;
+        server unix:/BettingInstance/gunicorn.socket fail_timeout=0;
     }
 
     # redirecting http requests to https
@@ -16,6 +16,8 @@ http {
 
     # the working server
     server {
+        include /etc/nginx/mime.types;
+
         listen [::]:443 ssl;
         listen 443 ssl;
         server_name $site_address www.$site_address;
@@ -31,10 +33,6 @@ http {
             #autoindex off;
             expires max;
             access_log off;
-
-            types {
-                image/svg+xml   svg svgz;
-            }
         }
 
         location / {

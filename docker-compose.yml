@@ -1,28 +1,26 @@
 services:
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - betting-volume:/etc/letsencrypt/
-      #- betting-volume:/var/lib/letsencrypt/
-      - betting-volume:/var/log/letsencrypt/
-    command: certonly --standalone -d $site_address -m $cert_email --agree-tos --no-eff-email
-    ports:
-      - "80:80"
-    restart: "no"
+  nginx_server:
+    image: nginx
+    container_name: http_server
 
-  flask_server:
-    build: .
-    depends_on:
-      certbot:
-        condition: service_completed_successfully
-    container_name: betting_app
     volumes:
-      - betting-volume:/etc/letsencrypt/
       - betting-volume:/BettingInstance/
+      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro      
+      - ./app/:/BettingApp/app/:ro
+     
     ports:
       - "80:80"
       - "443:443"
+    
+    depends_on:
+      flask_server:
+        condition: service_healthy
+
+  flask_server:
+    build: .
+    container_name: betting_app
+    volumes:
+      - betting-volume:/BettingInstance/
 
 volumes:
   betting-volume:

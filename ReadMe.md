@@ -2,7 +2,7 @@
 
 ![status](https://badgen.net/badge/status/finished/green) ![license](https://badgen.net/github/license/Ma-Pe-Ma/Betting-Competition)
 
-![Docker](https://github.com/Ma-Pe-Ma/Betting-Competition/actions/workflows/docker.yaml/badge.svg)
+![Docker](https://github.com/Ma-Pe-Ma/Betting-Competition/actions/workflows/docker.yml/badge.svg)
 
 ## Description
 

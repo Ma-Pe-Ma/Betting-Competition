@@ -713,7 +713,7 @@ msgstr "Adj meg egy érvényes email címet."
 #: app/templates/auth/reset-password.html:11
 #: app/templates/auth/reset-password.html:47
 msgid "Reset password"
-msgstr "Jelszó visszallítása"
+msgstr "Jelszó visszaállítása"
 
 #: app/templates/auth/forgotten-password.html:32
 msgid "New password requested! Check your email for further action!"
