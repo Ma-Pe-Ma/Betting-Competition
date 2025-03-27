@@ -1,0 +1,56 @@
+name: Compose Docker Images
+run-name: Compose Docker Images
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
+
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Install the application (compose the images)
+        run: |
+          LOCAL_TEST=1
+          export LOCAL_TEST
+          chmod +x ${{ github.workspace }}/install.sh
+          ${{ github.workspace }}/install.sh      
+
+      - name: Test the server
+        run: |
+          sleep 2
+          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/sign-in)
+          echo "HTTP Status: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "Request failed with status $status"
+            exit 1
+          fi 
+
+      - name: Print logs
+        run: |
+          docker logs betting_app
+          docker logs http_server
+
+      - name: Stop Docker Images
+        run: |
+          docker container stop betting_app
+          docker container stop http_server
