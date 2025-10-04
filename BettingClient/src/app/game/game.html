@@ -1,0 +1,35 @@
+<main>
+<div class="container">
+    <header class="py-3 mb-4 border-bottom">
+    <div class="d-flex flex-wrap justify-content-between mb-3">
+        <a [routerLink]="'/'" class="d-flex align-items-center mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <svg class="bi me-2" width="40" height="32"><image xlink:href="/static/ball.svg" width="40" height="32"/></svg>
+            <span class="fs-4 d-none d-sm-inline" i18n="game_name">Betting competition!</span>
+            <span class="fs-6 d-sm-none" i18n="game_name">Betting competition!</span>
+        </a>
+    
+        <div class="d-flex dropdown text-end align-items-center">
+            <a class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+            <img [src]="emailHash" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>{{username}}</strong>
+            </a>
+            <ul class="dropdown-menu text-small">
+            <li><a class="dropdown-item" href="/auth/profile" i18n="profile">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/auth/sign-out" i18n="sign_out">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <ul class="nav nav-pills justify-content-center">
+        @for (navigationAddress of navigationAddresses; track navigationAddress;) {
+            <li class="nav-item"><a [routerLink]="navigationAddress.route"
+                                    [class]="navigationAddress.route == currentLocation ? 'nav-link active' : 'nav-link'"
+                                    [attr.aria-current]="navigationAddress.route == currentLocation ? 'page' : null">{{navigationAddress.title}}</a></li>    
+        }
+    </ul>
+
+    </header>
+</div>
+
+<router-outlet></router-outlet>
