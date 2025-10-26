@@ -1,0 +1,11 @@
+@switch (mainState) {
+    @case(MainState.GAME) {
+        <app-betting></app-betting>
+    }
+    @case(MainState.STATISTICS) {
+        <app-statistics></app-statistics>
+    }
+    @default {
+        <div i18n="loading">Loading...</div>
+    }
+}

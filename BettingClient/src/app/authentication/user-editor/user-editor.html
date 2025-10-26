@@ -1,0 +1,32 @@
+<div class="col-12">
+    <label for="lastName" class="form-label" i18n="usernameLabel">Username</label>
+    <input type="text" class="form-control" id="lastName" name="username" placeholder="" [(ngModel)]="userData.username" [disabled]="disabledAfterRegister">
+    <div class="invalid-feedback" i18n="usernameInvalidFeedback">
+        A valid username is required.
+    </div>
+</div>
+
+<div class="col-12 mt-2">
+    <label for="email" class="form-label" i18n="emailLabel">Email <span class="text-body-secondary"></span></label>
+    <input type="email" class="form-control" id="email" placeholder="email@address.com" name="email" [(ngModel)]="userData.email" [disabled]="disabledAfterRegister" [required]="!disabledAfterRegister">
+    <div class="invalid-feedback" i18n="emailInvalidFeedback">
+        Please enter a valid email address.
+    </div>
+</div>
+
+<div class="col-12 mt-2">
+    <label for="langSelect" class="form-label" i18n="languageLabel">Language</label>
+    <div class="container">
+        <div class="d-flex align-items-center">
+        <div ngbDropdown>
+            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+                {{getLanguageNameByKey(userData.language ?? "")}}
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                @for(item of gameConfiguration?.serverConfiguration?.languages; track item.key) {
+                    <button ngbDropdownItem (click)="userData.language = item.key">{{getLanguageNameByKey(item.key)}}</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

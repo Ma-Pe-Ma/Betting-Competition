@@ -1,0 +1,14 @@
+@switch (groupState$ | async ) {
+    @case(GroupState.NOT_STARTED) {
+        <app-group-before></app-group-before>
+    }
+    @case(GroupState.IN_PROGRESS) {
+        <app-group-after></app-group-after>
+    }
+    @case(GroupState.EVALUATED) {
+        <app-group-after></app-group-after>
+    }
+    @default {
+        <div>Processing...</div>
+    }
+}

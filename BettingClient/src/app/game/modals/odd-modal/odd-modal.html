@@ -1,0 +1,34 @@
+<div class="modal" tabindex="-1" style="display:block;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 ms-2" id="tabularLabel" i18n="tournamentOdds">Tournament bet odds</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" i18n="team">Team</th>
+                    @for(i of getResultCount(); track i) {
+                        <th scope="col">{{ i | resultName}}</th>
+                    } 
+                  </tr>
+                </thead>
+                <tbody>
+                    @for(team of odds; track team.team) {
+                        <tr>
+                            <th scope="row">{{$index + 1}}.</th>
+                            <th scope="row">{{team.team_tr}}</th>
+                        @for(i of getResultCount(); track i) {
+                            <td>{{team.odds[i]}}</td>
+                        }
+                        </tr>
+                    }
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+</div>

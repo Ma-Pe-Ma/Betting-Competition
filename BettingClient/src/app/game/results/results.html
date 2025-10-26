@@ -1,0 +1,21 @@
+<div class="container">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs justify-content-center">
+        <li [ngbNavItem]="1">
+            <button ngbNavLink i18n="by_player">By player</button>
+            <ng-template ngbNavContent>
+                <app-player-results></app-player-results>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <button ngbNavLink i18n="by_match">By match</button>
+            <ng-template ngbNavContent>
+                <app-match-results></app-match-results>
+            </ng-template>
+        </li>
+    </ul>
+</div>
+
+<div class="container">
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</div>
+

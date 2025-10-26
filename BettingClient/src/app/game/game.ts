@@ -1,57 +1,63 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
-
-interface NavElement {
-  route: string,
-  title: string,
-  admin: boolean
-}
+import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd, Routes} from '@angular/router';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { routes as gameRoutes } from './game.routes';
+import { AuthService } from '../service/auth-service';
+import { Observable, tap, take } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
+import { PushNotificationService } from '../service/push-notification-service';
 
 @Component({
   selector: 'app-game',
-  imports: [RouterOutlet, RouterModule],
+  imports: [RouterOutlet, RouterModule, NgbDropdownModule, AsyncPipe, NgbAlertModule, MarkdownComponent],
   standalone: true,
   templateUrl: './game.html',
-  styleUrl: './game.scss'
+  providers: [provideMarkdown()]
 })
 export class Game {
+  ribbonRoutes = ['', 'results', 'standings', 'group-bet', 'chat', 'admin'];
+  routes: Routes = [];
+  currentLocation = "";
+  alerts: Alert[] = []
 
-  emailHash: string = ""; //config['IDENT_URL'].format(email_hash=g.user['email_hash'])
-  username: string = "MPM"; //"{{g.user['username']}}
-  admin: boolean = true;
+  user$: Observable<User | null>  = new Observable<User | null>();
 
-  currentLocation = "/";
+  constructor(private router: Router, private auth: AuthService, private pushNotificationService: PushNotificationService) {
+    this.user$ = auth.getUser$
 
-  navigationAddresses: NavElement[] = [
-    {
-      route: '/',
-      title: $localize`:betting:Betting`,
-      admin: false
-    },
-    {
-      route: '/results',
-      title: $localize`:results:Results`,
-      admin: false
-    },
-    {
-      route: '/standings',
-      title: $localize`:standings:Standings`,
-      admin: false
-    },
-    {
-      route: '/group-bet',
-      title: $localize`:group_bet:Group bet`,
-      admin: false
-    },
-    {
-      route: '/chat',
-      title: $localize`:chat:Chat`,
-      admin: false
-    },
-    {
-      route: '/admin',
-      title: $localize`:admin:Admin`,
-      admin: false
-    },
-  ]
+    this.user$.pipe(
+      take(1),
+      tap(user => {
+        for (let r of gameRoutes) {
+          if (!this.ribbonRoutes.includes(r.path!)) {
+            continue;
+          }
+          
+          if ((user?.role ?? 0) < (r.data?.['role'] ?? 0)) {
+            continue;     
+          }
+
+          this.routes.push(r);
+        }
+
+        this.alerts = user?.messages ?? [];
+      })
+    ).subscribe();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.currentLocation = event.url[0] === '/' ? event.url.slice(1) : event.url;
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.pushNotificationService.subscribeToPush();
+  }
+
+  close(alert: Alert) {
+		this.alerts.splice(this.alerts.indexOf(alert), 1);
+  }
 }

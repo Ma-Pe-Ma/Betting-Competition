@@ -1,0 +1,95 @@
+<div class="container">
+@if (playerStatistics.length == 0 || matchStatistics.length == 0) {
+    <h5 i18n="playerStatistics" i18n="statisticsUnavailable">Statistics are not available yet!</h5>
+}
+@else {
+    <div class="mb-3">
+        <h5 i18n="playerStatistics">Player statistics:</h5>
+        <div class="row ms-2 mb-1">
+            <h4 class="mt-0">
+                <span i18n="betNr">Number of bets: </span>
+                <span>{{ playerStatistics[0].total_bet_count | number:'1.0-1' }}</span>             
+            </h4>
+            <h4 class="mt-0">
+                <span i18n="hitNr">Number of hits: </span>
+                <span>{{playerStatistics[0].total_hit_count}} - {{(100 * playerStatistics[0].total_hit_count / playerStatistics[0].total_bet_count) | number:'1.0-1'}}%</span>
+            </h4>
+            <h4 class="">
+                <span i18n="bullseyeNr">Number of bullseyes: </span>
+                <span>{{playerStatistics[0].total_bullseye_count}} - {{(100 * playerStatistics[0].total_bullseye_count / playerStatistics[0].total_bet_count) | number:'1.0-1' }} %</span>
+            </h4>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col" i18n="name">Name</th>
+                <th scope="col" class="align-middle text-center" i18n="betCount">Bet count</th>
+                <th scope="col" class="align-middle text-center" i18n="hitCount">Hit count</th>
+                <th scope="col" class="align-middle text-center" i18n="hitRatio">Hit ratio</th>
+                <th scope="col" class="align-middle text-center" i18n="bullseyeCount">Bullseye count</th>
+                <th scope="col" class="align-middle text-center" i18n="bullseyeRatio">Bullseye ratio</th>
+                <th scope="col" class="align-middle text-center" i18n="maxWinningWtreak">Max winning streak</th>
+                <th scope="col" class="align-middle text-center" i18n="maxBullseyeStreak">Max bullseye streak</th>
+                <th scope="col" class="align-middle text-center" i18n="maxLosingStreak">Max losing streak</th>
+            </tr>
+            </thead>
+            
+            <tbody>
+            @for(player of playerStatistics; track player.username) {        
+            <tr>
+                <th>{{player.username}}</th>
+                <td class="align-middle text-center">{{player.bet_count}}</td>
+                <td class="align-middle text-center" [ngClass]="player.hit_count_global ? 'table-success' :  null">{{player.hit_count}}</td>
+                <td class="align-middle text-center" [ngClass]="player.success_ratio_global ? 'table-success' :  null">{{player.success_ratio | number:'1.0-1' }}%</td>
+                <td class="align-middle text-center" [ngClass]="player.bullseye_count_global ? 'table-success' :  null">{{player.bullseye_count}}</td>
+                <td class="align-middle text-center" [ngClass]="player.bullseye_ratio_global ? 'table-success' :  null">{{player.bullseye_ratio | number:'1.0-1' }}%</td>
+                <td class="align-middle text-center" [ngClass]="player.max_win_streak_global ? 'table-success' :  null">{{player.max_win_streak_length}}</td>
+                <td class="align-middle text-center" [ngClass]="player.max_bonus_streak_global ? 'table-success' :  null">{{player.max_bonus_streak_length}}</td>
+                <td class="align-middle text-center" [ngClass]="player.max_loose_streak_global ? 'table-danger' :  null">{{player.max_loose_streak_length}}</td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-5">
+        <h5 i18n="matchStatistics">Match statistics:</h5>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col" class="align-middle text-center" i18n="id">ID</th>
+                <th scope="col" class="align-middle text-center" i18n="date">Date</th>
+                <th scope="col" class="align-middle text-center" i18n="teams">Teams</th>
+                <th scope="col" class="align-middle text-center" i18n="betCount">Bet count</th>
+                <th scope="col" class="align-middle text-center" i18n="hitCount">Hit count</th>
+                <th scope="col" class="align-middle text-center" i18n="hitRatio">Hit ratio</th>
+                <th scope="col" class="align-middle text-center" i18n="totalBetCredit">Total bet credit</th>
+                <th scope="col" class="align-middle text-center" i18n="normalizedBet">Normalized total bet credit</th>
+                <th scope="col" class="align-middle text-center" i18n="sumCreditDiff">Sum credit difference</th>
+                <th scope="col" class="align-middle text-center" i18n="normSumCreditDiff">Normalized sum credit difference</th>
+                <th scope="col" class="align-middle text-center" i18n="diffTotalCredit">Difference / total credit</th>
+            </tr>
+            </thead>
+            <tbody>
+                @for(match of matchStatistics; track match.id) {
+            <tr>
+                <td scope="col" class="align-middle text-center">{{match.id}}</td>
+                <td scope="col" class="align-middle text-center">{{match.datetime | localDate:user?.timezone!:'datetime'}}</td>
+                <td scope="col" class="align-middle text-center">{{match.team1}} - {{match.team2}}</td>
+                <td scope="col" class="align-middle text-center">{{match.bet_count}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.max_hit_count_flag ? 'table-success' : match.min_hit_count_flag ? 'table-danger' : null">{{match.hit_count}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.max_hit_ratio_flag ? 'table-success' : match.min_hit_count_flag ? 'table-danger' : null">{{match.hit_ratio | number:'1.0-1'}}%</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.total_max_flag ? 'table-success' : match.total_min_flag ? 'table-danger' : null">{{match.total_bet}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.normalized_total_max_flag > 0 ? 'table-success' : match.normalized_total_min_flag ? 'table-danger' : null">{{match.normalized_total_bet}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.max_flag ? 'table-success' : match.min_flag ? 'table-danger' : null">{{match.diff_by | number:'1.0-0'}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.normalized_max_flag ? 'table-success' : match.normalized_min_flag ? 'table-danger' : null">{{match.normalized_diff_by | number:'1.0-0'}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.credit_ratio_max_flag ? 'table-success' : match.credit_ratio_min_flag ? 'table-danger' : null">{{match.credit_ratio | number:'1.0-1'}}%</td>
+            </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+</div>

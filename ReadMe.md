@@ -200,13 +200,16 @@ To setup babel translations these commands need to be launched:
     pybabel compile -d ./app/assets/translations
 
 ## TO-DO
-* fix [group bonus calculation error](./app/results.py#L85) + restructure results
+* fix push notifications
+* create Angular translations + clean-up Babel translations
+* fix maintenance mode
+* adapt deployment to Angular client (docker images + redirect with nginx to client routes)
 * clean-up statistics
 * create SQL views
 
 ### Backlog
 * check foreign key relations in DB
-* trim whitespaces with jinja
+* trim whitespaces with angular
 * email notification/smtp?
 * session handling with Flask-login
 * Add timezone selector for user

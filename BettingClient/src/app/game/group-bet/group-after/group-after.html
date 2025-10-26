@@ -1,0 +1,135 @@
+<div class="container">
+    <app-dropdown-selector [selectorName]="'Player'" [listLocation]="playerListLocation" [defaultValue]="currentPlayerName" (itemSelected)="receiveSelectedPlayer($event)"></app-dropdown-selector>
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+            <h5 class="mt-5">
+                <span i18n="startingCredit">Starting credit amount:</span>
+                <span class="ms-2">{{ betValues?.starting_bet_amount }}</span>
+            </h5>
+
+            <h5>
+                <span i18n="totalBet">Total group + tournament bet amount:</span>
+                <span class="ms-2">{{ totalBet }}</span>
+            </h5>
+
+            <h5>
+                <span i18n="remainingCredit">Remaining credit after group + tournament bet:</span>
+                <span class="ms-2">{{ betValues?.starting_bet_amount! - totalBet }}</span>
+            </h5>
+
+            <h5 class="mb-4">
+                <span i18n="totalWin">Total group win amount:</span>
+                <span class="ms-2">{{ totalWin }}</span>
+            </h5>
+    
+            <!--app-tournament-bet></app-tournament-bet-->
+
+            <div class="row">
+                <h4 class="col-7 col-md-6 d-flex align-items-center" i18n="tournamentBet">Tournament-bet:</h4>
+            </div>
+
+            <div class="row d-flex align-items-center">
+                <label class="col-4 col-md-4 ms-3" for="teamSelector" i18n="team">Team:</label>
+                <div class="col-5 col-md-4 d-flex align-items-center">{{currentPlayer?.tournament?.local_name ?? 'No team was chosen'}}</div>
+            </div>
+
+            <div class="row mt-3 d-flex align-items-center">
+                <label class="col-4 col-md-4 ms-3" for="resultSelector" i18n="result">Result:</label>
+                <div class="col-5 col-md-4 d-flex align-items-center"> 
+                    {{(currentPlayer?.tournament?.result! | resultName) ?? 'No result was selected!'}}
+                </div>
+            </div>
+
+            <div class="row mt-3 d-flex align-items-center">
+                <p class="col-4 col-md-4 ms-3" i18n="odd">Odd:</p>
+                <p class="col-4 col-md-2 ms-2 badge bg-info">{{currentPlayer?.tournament?.multiplier ?? '-'}}</p>
+            </div>
+
+            <div class="row d-flex align-items-center">
+                <p class="col-4 col-md-4 ms-3" for="tournamentBetCredit" i18n="bet">Bet:</p>
+                <p class="col-4 col-md-2 ms-2 badge bg-info">{{currentPlayer?.tournament?.bet ?? 'x'}}</p>
+            </div>
+
+            <div class="row d-flex align-items-center">
+                @if(currentPlayer?.tournament?.success == 0) {
+                    <p class="col-4 col-md-4 ms-3" i18n="expectedPrize">Expected prize:</p>            
+                    <p class="col-4 col-md-2 ms-2 badge bg-warning">{{currentPlayer?.tournament?.expected_prize ?? 0}}</p>
+                }
+                @else {
+                    <p class="col-4 col-md-4 ms-3" i18n="prize">Prize:</p> 
+                    <p class="col-4 col-md-2 ms-2 badge" [ngClass]="currentPlayer?.tournament?.success ? 'bg-success' : 'bg-danger'">{{ currentPlayer?.tournament?.prize ?? 0 }}</p>    
+                }                
+            </div>
+
+            <div class="row mt-3">
+                <div class="col">
+                    <h4 class="" i18n="groubBet">Group bet:</h4>
+                </div>
+            </div>
+
+            <div class="ms-3">
+            @for (group of currentPlayer?.groups; track group.id) {
+                <div class="row d-flex justify-content-center">
+                    <h5 class="row">
+                        <div class="col-5 col-md-4">
+                            <span i18n="group">Group</span>
+                            <span class="ms-2">{{group.id}}</span>
+                        </div>
+                    </h5>
+
+                    <div class="row ms-2">
+                        <div class="col-3 col-md-2">
+                            <span i18n="bet">Bet:</span>
+                            <span class="ms-2">{{group.bet}}</span>
+                        </div>
+                        
+                    </div>
+                    
+                @if (groupState == GroupState.EVALUATED) {
+                    <div class="row ms-2 mb-1">
+                        <div class="col-3 col-md-3">
+                            <span i18n="hits">Hits:</span>
+                            <span class="ms-2">{{group?.hit_number ?? 'x'}} ({{group.multiplier}}×)</span>
+                        </div>
+                        <div class="col-3 col-md-3">
+                            <span i18n="prize">Prize:</span>
+                            <span class="ms-2">{{group.prize}}</span>
+                        </div>           
+                        <div class="col-5 col-md-3">
+                            <span i18n="difference">Difference:</span>
+                            <span class="ms-2">{{group.prize - group.bet}}</span>
+                        </div>
+                    </div>
+                }
+
+                    <div class="row mb-3 d-flex justify-content-start">
+                        <div class="list-group col-1 ms-3 d-none d-sm-block">
+                            <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+                        @for(team of group.teams; track team) {
+                            <div class="list-group-item d-flex justify-content-center">{{$index + 1}}.</div>
+                        }
+                        </div>
+
+                    @if (groupState == GroupState.EVALUATED) {
+                        <div class="list-group col-5 col-md-4 ms-3">
+                            <div class="list-group-item bg-secondary" i18n="result">Result</div>
+                        @for(team of group.teams; track team) {
+                            <div class="list-group-item">{{team.name_tr}}</div>
+                        }
+                        </div>
+                    }
+            
+                        <div class="list-group ms-3" [ngClass]="groupState != GroupState.EVALUATED ? 'col-7 col-md-6': 'col-5 col-md-4'">
+                            <div class="list-group-item bg-secondary" i18n="tip">Tip</div>
+                        @for(team of group.teams; track team) {
+                            <div class="list-group-item" [class]="groupState != GroupState.EVALUATED ? '' : team.bet_name == team.name ? 'bg-success' : 'bg-danger'">{{team?.bet_name_tr ?? '-'}}</div>
+                        }
+                        </div>   
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>    
+</div>

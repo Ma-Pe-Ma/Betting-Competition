@@ -1,0 +1,40 @@
+<div class="ms-3">
+    @for (group of groups; track group.id) {                
+    <div class="row d-flex justify-content-center">
+        <h5 class="row">
+            <div class="col-5 col-md-4">
+                <span i18n="group">Group</span>
+                <span class="ms-2">{{group.id}}</span>
+            </div>
+        </h5>
+        <div class="row mb-3 d-flex justify-content-start">
+            <div class="list-group col-1 ms-3">
+                <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+            @for (team of group.teams; track team.name) { 
+                <div class="list-group-item d-flex justify-content-center">{{$index + 1}}.</div>
+            }
+            </div>
+
+            <div class="list-group col-6 col-md-4 ms-3">
+                <div class="list-group-item bg-secondary" i18n="tip">Tip</div>
+                <div cdkDropList (cdkDropListDropped)="drop($event, group.teams)">
+                    @for (team of group.teams; track team.name) { 
+                    <div class="list-group-item" cdkDrag>{{team.name_tr}}</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (groups.length == 0) {
+        <h6 class="row mt-3 ms-2 mb-3" i18n="groupLater">Group evaluation will take place later.</h6>
+    }
+    @else {
+        <button class="btn btn-primary btn-sm ms-3 mt-2 mb-1 col-2" type="button" (click)="postGroupOrder()" i18n="send">Send</button> 
+    }
+
+    @for (alert of alerts; track alert) {
+	    <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+    }
+</div>
