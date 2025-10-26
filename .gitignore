@@ -11,7 +11,7 @@ env/
 env__/
 .vscode/symbols.json
 app/db.sqlite3
-/instance/*
+/BettingServer/instance/*
 *.mo
 /deployment/configuration.json
 /deployment/nginx.conf

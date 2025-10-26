@@ -1,0 +1,8 @@
+{
+  "name": "BettingClient",
+  "short_name": "BettingClient",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": []
+}

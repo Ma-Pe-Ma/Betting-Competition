@@ -18,7 +18,7 @@ else
         exit
     fi
     
-    site_address=$(jq -r '.SITE_ADDRESS' ./deployment/configuration.json)
+    site_address=$(jq -r '.BACKEND_ADDRESS' ./deployment/configuration.json)
     cert_email=$(jq -r '.CERT_EMAIL' ./deployment/configuration.json)
     certificate_directory="/etc/letsencrypt/live/$site_address"
 	

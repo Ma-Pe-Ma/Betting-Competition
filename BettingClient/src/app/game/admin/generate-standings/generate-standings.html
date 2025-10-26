@@ -1,0 +1,18 @@
+<div class="mb-3">
+    <button class="btn btn-primary btn-sm" type="submit" (click)="sendStandingsImmediately()" i18n="sendStandings">Sending standings immediately</button>
+</div>
+
+ <div class="container mt-3">
+    <button class="btn btn-primary btn-sm mt-0 mb-2" type="button" (click)="getStandings()" i18n="generate">Generate</button> 
+
+    <div class="container mt-3">
+        <label i18n="emailAddress">Email adresses</label>
+        <div class="list-group list-group-flush border-bottom scrollarea bg-secondary user-select-all">{{emails}}</div>
+        <label class="mt-2" i18n="standings">Standings</label>
+        <div class="list-group list-group-flush border-bottom scrollarea bg-secondary user-select-all">{{standings}}</div>
+    </div>
+
+    @for (alert of alerts; track alert) {
+        <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+    }
+</div>

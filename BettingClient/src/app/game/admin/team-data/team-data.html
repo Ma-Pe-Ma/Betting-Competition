@@ -1,0 +1,17 @@
+  <div class="container">
+    <div class="row ms-2 mt-2">
+        <label class="col-3" for="team" i18n="teamDescription">Team description</label>
+        <input class="col-4" type=file name="team" (change)="onFileSelected(teamFile, $event)">
+    </div>
+
+    <div class="row ms-2">
+        <label class="col-3" for="translation" i18n="teamTranslation">Team translation</label>
+        <input class="col-4" type=file name="translation" (change)="onFileSelected(teamFile, $event)">
+    </div>
+
+    <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" (click)="uploadFiles()" i18n="upload">Upload</button>
+
+@for (alert of alerts; track alert) {
+    <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+}
+</div>

@@ -1,0 +1,28 @@
+<div class="container">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" class="d-md-table-cell w-0 text-center" i18n="position">Position</th>
+            <th scope="col" class="d-md-table-cell text-center" i18n="icon">Icon</th>
+            <th scope="col" class="d-md-table-cell text-center" i18n="player">Player</th>
+            <th scope="col" class="d-none d-md-table-cell text-center" i18n="scoreChange">Score change</th>
+            <th scope="col" class="d-md-table-cell text-center" i18n="score">Score</th>            
+            <th scope="col" class="d-none d-md-table-cell text-center" i18n="posChange">Position change</th>
+          </tr>
+        </thead>
+        <tbody>
+            @for(standings of standings; track standings) {
+                <tr>
+                  <th scope="row" class="d-md-table-cell w-0 text-center">{{$index + 1}}.</th>
+                  <td class="d-md-table-cell text-center"><img src="{{standings.image}}" alt="" style="width:48px; height:auto;"></td>
+                  <td class="d-md-table-cell text-center">{{standings.username}}</td>
+                  <td class="d-none d-md-table-cell text-center">{{standings.point - standings.penultimatePoint}}</td>
+                  <td class="d-md-table-cell text-center">{{standings.point}}</td>                  
+                  <td class="d-none d-md-table-cell text-center">{{standings.penultimatePosition - $index}}</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <canvasjs-chart [options]="chartOptions" style="height: 360px; width: 100%;" (chartInstance)="chartInstance = $event"></canvasjs-chart>
+</div>

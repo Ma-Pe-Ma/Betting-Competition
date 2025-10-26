@@ -1,0 +1,156 @@
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="row">
+                <div class="col mb-2">
+                    <h4 class="">
+                        <span i18n="startingCredit">Starting credit amount:</span>
+                        <span class="ms-2">{{betValues?.starting_bet_amount}}</span>
+                    </h4>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <h4 class="" i18n="yournamentBet">Tournament-bet:</h4>
+                </div>
+            </div>
+
+            <div class="row align-items-center mt-3 ms-1">
+                <div class="col-12 d-flex align-items-center">
+                    <h5 class="me-2 mb-0 col-2" i18n="team">Team:</h5>
+                    <div ngbDropdown class="col-2">
+                        <button type="button" class="btn btn-outline-primary" ngbDropdownToggle>
+                            {{playerInput?.tournament?.local_name }}
+                        </button>
+                        <div ngbDropdownMenu>
+                        @for(tournamentOdd of tournamentOdds ?? []; track tournamentOdd.team) {
+                            <button ngbDropdownItem (click)="teamSelected(tournamentOdd.team)">{{tournamentOdd?.team_tr }}</button>
+                        }
+                        </div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row align-items-center mt-3 ms-1">
+                <div class="col-12 d-flex align-items-center">
+                    <h5 class="me-2 mb-0 col-2" i18n="result">Result:</h5>
+                    <div ngbDropdown class="col-2">
+                        <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+                            {{playerInput?.tournament?.result! | resultName }}
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                            <button ngbDropdownItem (click)="resultSelected(0)">{{0 | resultName }}</button>
+                            <button ngbDropdownItem (click)="resultSelected(1)">{{1 | resultName }}</button>
+                            <button ngbDropdownItem (click)="resultSelected(2)">{{2 | resultName }}</button>
+                            <button ngbDropdownItem (click)="resultSelected(3)">{{3 | resultName }}</button>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-start align-items-center mt-3">
+                <div class="col-5 col-md-3 ms-2 d-flex align-items-center">
+                    <button type="button" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tabularModal" i18n="odd" (click)="showOddModal()">Odd:</button>
+                </div>                    
+                <div class="col-5 col-md-4 d-flex align-items-center ms-1">
+                    <p class="ms-2 badge bg-info mb-0">{{getCurrentTournamentOdd()}}</p>
+                </div>
+            </div>
+
+            <div class="row mt-2 d-flex justify-content-start align-items-center">
+                <label class="col-5 col-md-3 ms-3" for="tournamentBetCredit" i18n="bet">Bet:</label>
+                <input class="col-2 col-md-2 ms-3" type="number" [(ngModel)]="playerInput?.tournament!.bet" min="0" max="{{betValues?.max_tournament_bet_value}}">
+                <div class="col-2">/&nbsp;{{betValues?.max_tournament_bet_value}}</div>
+            </div>
+    
+            <div class="row d-flex justify-content-start mt-3 d-flex align-items-center">
+                <p class="col-5 col-md-3 ms-3" i18n="expectedPrize">Expected prize:</p>
+                <div class="col-5 col-md-4 d-flex">
+                    <p class="col-4 col-md-3 ms-2 badge bg-info" id="tournamentExpectedPrize">{{calculatePrize() | number:'1.0-1' }}</p>
+                </div>  
+            </div>
+
+            <div class="row mt-3">
+                <div class="col">
+                    <h4 class="" i18n="groupBet">Group bet:</h4>
+                </div>
+            </div>
+
+            <div class="container mb-3">
+                <div i18n="winningMultiplers">The winning multipliers for the group bet are the following:</div>
+                <div class="mt-2 ms-2">
+                    <div class="row d-flex align-items-center">
+                        <label class="col-4 col-md-2 ms-3"i18n="hit0">0 hits:</label>
+                        <div class="col-5 col-md-4 d-flex align-items-center">{{groupHitMap?.h0}}×</div>
+                    </div>
+                     <div class="row d-flex align-items-center">
+                        <label class="col-4 col-md-2 ms-3"i18n="hit1">1 hit:</label>
+                        <div class="col-5 col-md-4 d-flex align-items-center">{{groupHitMap?.h1}}×</div>
+                    </div>
+                     <div class="row d-flex align-items-center">
+                        <label class="col-4 col-md-2 ms-3"i18n="hit2">2 hits:</label>
+                        <div class="col-5 col-md-4 d-flex align-items-center">{{groupHitMap?.h2}}×</div>
+                    </div>
+                     <div class="row d-flex align-items-center">
+                        <label class="col-4 col-md-2 ms-3"i18n="hit4">4 hits:</label>
+                        <div class="col-5 col-md-4 d-flex align-items-center">{{groupHitMap?.h4}}×</div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="row ms-3 mb-2 d-flex justify-content-left" i18n="setOrder">Set the order of the groups by dragging!</h5>
+           
+            <div class="ms-3">
+                @for (group of playerInput?.groups ?? []; track group.id) {                
+                <div class="row d-flex justify-content-center">
+                    <h5 class="row">
+                        <div class="col-5 col-md-4">
+                            <span i18n="group">Group</span>
+                            <span class="ms-2">{{group.id}}</span>
+                        </div>
+                    </h5>
+                    <div class="row mb-3 d-flex justify-content-start">
+                        <div class="list-group col-1 ms-3">
+                            <div class="list-group-item bg-secondary d-flex justify-content-center">P</div>
+                        @for (team of group.teams; track team.name) { 
+                            <div class="list-group-item d-flex justify-content-center">{{$index + 1}}.</div>
+                        }
+                        </div>
+
+                        <div class="list-group col-8 col-md-6 ms-3">
+                            <div class="list-group-item bg-secondary" i18n="tip">Tip</div>
+                            <div cdkDropList (cdkDropListDropped)="drop($event, group.teams)">
+                                @for (team of group.teams; track team.name) { 
+                                <div class="list-group-item" cdkDrag>{{team.bet_name_tr}}</div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-5 col-md-4 mt-2">
+                            <div class="row">
+                                <label class="col-4 col-md-3" for="sortableCredit" i18n="bet">Bet:</label>
+                                <input class="col-6 col-md-4 form-control-sm d-flex align-items-center" type="number" [(ngModel)]="group.bet" min="0" max="{{betValues?.max_group_bet_value}}">
+                                <div class="col-2 form-control-sm d-flex align-items-center">/&nbsp;{{betValues?.max_group_bet_value}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-6 col-md-4 d-flex align-items-center">
+                    <p class="mb-0" i18b="remainingCredit">Remaining credit:</p>
+                </div>
+                <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
+                    <p class="badge bg-info mb-0">{{ calculateRemainingCredit() }}</p>
+                </div>
+            </div>
+        @for (alert of alerts; track alert) {
+            <ngb-alert class="mt-2" [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+        }
+
+            <button class="btn btn-primary btn-sm mt-1 mb-5" type="button" i18n="send" (click)="postGroups()">Send</button>
+        </div>        
+    </div>
+</div>

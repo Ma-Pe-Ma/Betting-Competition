@@ -1,0 +1,57 @@
+<app-dropdown-selector [selectorName]="'Date'" [listLocation]="dateListLocation" (itemSelected)="receiveSelectedDate($event)"></app-dropdown-selector>
+
+<div class="container mt-4">
+    @for(container of currentDate ; track container.match.id) { 
+    <div class="mb-3">
+            <h5 i18n="matchID">Match {{container.match.id}}</h5>
+            <div class="ms-2">
+                <h6>
+                    <span i18n="teams">Teams:</span>
+                    <span class="ms-2">{{container.match.team1}} - {{container.match.team2}}</span>
+                </h6>
+                <h6>
+                    <span i18n="result">Result:</span>
+                    <span class="ms-2">{{container.match.goal1 ?? '?'}} - {{container.match.goal2 ?? '?'}}</span>
+                </h6>
+                <h6>
+                    <span i18n="odds">Odds:</span>
+                    <span class="ms-2">{{container.match.odd1}} / {{container.match.oddX}} / {{container.match.odd2}}</span>
+                </h6>
+                <h6>
+                    <span i18n="round">Round:</span>
+                    <span class="ms-2">{{container.match.round}}</span>
+                </h6>
+                <h6>
+                    <span i18n="successRate">Success rate:</span>
+                    <span class="ms-2">{{(container.success / (container?.players?.length || 1) * 100) | number:'1.0-0'}}%</span>
+                </h6>
+            </div>
+            
+            <div>
+                <div class="container">
+                    <div class="row mb-3 mt-3 text-center themed-grid-col1">
+                        <div class="col-3 d-flex align-items-center justify-content-center" i18n="player">Player</div>
+                        <div class="col-3 col-sm-2 d-flex align-items-center justify-content-center" i18n="tip">Tip</div>
+                        <div class="col-1 col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center" i18n="bet">Bet</div>
+                        <div class="col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="prize">Prize</div>
+                        <div class="col-3 pt-1 pb-1 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none" i18n="pr">Pr.</div>
+                        <div class="col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="difference">Difference</div>
+                        <div class="col-1 pt-1 pb-1 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none" i18n="diff">Diff.</div>
+                    </div>
+                </div>
+
+                @for(player of container.players || []; track player.username) {
+                    <div class="container">
+                        <div class="row mb-3 mt-3 text-center {{ player.success ? 'bg-success' :  (player.success != null ? 'bg-danger' : 'bg-warning-subtle')}}">
+                            <div class="col-3 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player.username}}</div>
+                            <div class="col-3 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player?.bgoal1 ?? 'x' }} - {{player?.bgoal2 ?? 'x'}}</div>
+                            <div class="col-1 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{player?.bet ?? 'x'}}</div>
+                            <div class="col-3 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{ player.success != null ? ((player?.prize ?? 'x') + ' + ' + (player?.bonus ?? 'x')) : 'x + x'}}</div>
+                            <div class="col-1 col-sm-2 pt-3 pb-3 d-flex align-items-center justify-content-center">{{ player.success != null ? (player.credit_diff | number:'1.0-1') : 'x'}}</div>
+                        </div>
+                    </div>       
+                }
+            </div>
+        </div>
+    }
+</div>

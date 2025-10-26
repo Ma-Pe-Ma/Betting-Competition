@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="d-flex align-items-center">
+    <h5 class="me-2 mb-0">{{selectorName}}:</h5>
+    <div ngbDropdown>
+        <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+            {{selectedItem}}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            @for(item of listElements$ | async; track item) {
+                <button ngbDropdownItem (click)="onItemSelected(item)">{{item}}</button>
+            }
+        </div>
+    </div>
+</div>

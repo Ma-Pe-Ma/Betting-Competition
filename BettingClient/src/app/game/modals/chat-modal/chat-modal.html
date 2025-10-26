@@ -1,0 +1,22 @@
+ <div class="modal" tabindex="-1" style="display:block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" i18n="newComment">New comment</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <textarea class="form-control" rows="1" id="commentInputArea" style="height: 175px;" [(ngModel)]="inputMessage.comment" #commentInput></textarea>
+            <markdown class="form-control mt-3" [data]="previewText" rows="8" disabled></markdown>
+        </div>
+    
+        <div class="modal-footer">
+        @for (alert of alerts; track alert) {
+            <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+        }
+            <button type="button" class="btn btn-primary" id="previewCommentButton" i18n="preview" (click)="createPreview()">Preview</button>
+            <button type="button" class="btn btn-primary" id="postCommentButton" i18n="send" (click)="postMessage()">Send</button>
+        </div>
+        </div>
+    </div>
+</div>
