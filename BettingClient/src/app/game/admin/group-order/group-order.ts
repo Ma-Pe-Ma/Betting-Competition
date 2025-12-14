@@ -15,7 +15,7 @@ export class GroupOrder {
   alerts: Alert[] = []
 
   constructor(private http: HttpClient, private httpDataHandler: HttpDataHandler) {
-    let getGroupPath = environment.serverAddress + environment.locations.admin.group.get;
+    let getGroupPath = environment.locations.admin.group.get;
 
     this.httpDataHandler.getData<Group[]>(getGroupPath).subscribe(value => {
       if (value && (value as any).message) {
@@ -28,7 +28,7 @@ export class GroupOrder {
   }
 
   postGroupOrder() {
-    let setGroupPath = environment.serverAddress + environment.locations.admin.group.set;
+    let setGroupPath = environment.locations.admin.group.set;
 
     this.httpDataHandler.postData(setGroupPath, this.groups).subscribe(value => {
         this.alerts.push(value); 

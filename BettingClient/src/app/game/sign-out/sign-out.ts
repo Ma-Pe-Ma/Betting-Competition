@@ -12,7 +12,7 @@ import { take } from 'rxjs';
 })
 export class SignOut {
   constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
-    let path = environment.serverAddress + environment.locations.auth.signOut;
+    let path = environment.locations.auth.signOut;
     this.http.get<Alert>(path, {observe: 'response'}).pipe(take(1)).subscribe(res => {
       if (res.status === 200) {
         let newAlert: Alert = res.body!;

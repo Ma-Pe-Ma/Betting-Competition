@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, filter, tap, catchError, EMPTY} from 'rxjs';
-import { firstValueFrom } from 'rxjs';
+import { Observable, tap, catchError, EMPTY} from 'rxjs';
 import { GroupState } from '../models/group-state';
 import { MainState } from '../models/main-state';
 import { environment } from '../../environments/environment';
@@ -10,97 +9,61 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class GameConfigurationService {
-  gameConfiguration$: BehaviorSubject<GameConfiguration | null > = new BehaviorSubject<GameConfiguration | null >(null);
+  gameConfiguration!: GameConfiguration;
 
   constructor(private http: HttpClient) {}
 
-  getGameConfiguration$(): Observable<GameConfiguration | null> {
-    if (this.gameConfiguration$.value === null) {
-      this.fetchGameData();
-    }
-
-    return this.gameConfiguration$.asObservable();
+  getGameConfiguration(): GameConfiguration {
+    return this.gameConfiguration;
   }
 
-  private fetchGameData() {
-    let configPath = environment.serverAddress + environment.locations.gameConfiguration;
+  public fetchGameData(): Observable<any> {
+    let configPath = environment.locations.gameConfiguration;
 
-    this.http.get<GameConfiguration>(configPath, {observe: 'response'}).pipe(
+    return this.http.get<GameConfiguration>(configPath, {observe: 'response'}).pipe(
       tap(res => {
         if (res.status === 200) {
           let processedBody = res.body!
-
-          this.gameConfiguration$.next({
-            betValues: processedBody.betValues,
-            deadlineTimes: {              
-              register: new Date(processedBody.deadlineTimes.register),
-              group_evaluation: new Date(processedBody.deadlineTimes.group_evaluation),
-              tournament_end: new Date(processedBody.deadlineTimes.tournament_end)
-            },
-            serverConfiguration: processedBody.serverConfiguration,
-            groupHitMap: processedBody.groupHitMap
-          });
-        }
-        else {
-          this.gameConfiguration$.next(null);
+          this.gameConfiguration = processedBody;
+          this.gameConfiguration.deadlineTimes = {              
+            register: new Date(processedBody.deadlineTimes.register),
+            group_evaluation: new Date(processedBody.deadlineTimes.group_evaluation),
+            tournament_end: new Date(processedBody.deadlineTimes.tournament_end)
+          };
         }
       }),
       catchError(err => {
         console.error('Error fetching config: ', err);
         return EMPTY
       })
-    ).subscribe();  
+    )
   }
 
-  async getGroupState(): Promise<GroupState | null> {
-    let gameData: GameConfiguration = await firstValueFrom(
-      this.getGameConfiguration$().pipe(
-        filter((v): v is GameConfiguration => v !== null)
-      )
-    );
-
+  getGroupState(): GroupState {
     let currentTime = this.getCurrentTime().getTime();
 
-    if (currentTime < gameData.deadlineTimes.register.getTime()) {
-      return Promise.resolve(GroupState.NOT_STARTED);
+    if (currentTime < this.gameConfiguration.deadlineTimes.register.getTime()) {
+      return GroupState.NOT_STARTED;
     }
-    else if (gameData.deadlineTimes.register.getTime() <= currentTime && currentTime < gameData.deadlineTimes.group_evaluation.getTime()) {
-      return Promise.resolve(GroupState.IN_PROGRESS);
+    else if (this.gameConfiguration.deadlineTimes.register.getTime() <= currentTime && currentTime < this.gameConfiguration.deadlineTimes.group_evaluation.getTime()) {
+      return GroupState.IN_PROGRESS;
     }
-    else if (gameData.deadlineTimes.group_evaluation.getTime() <= currentTime) {
-      return Promise.resolve(GroupState.EVALUATED);
-    }
-
-    return Promise.resolve(null);
+    
+    return GroupState.EVALUATED;
   }
 
-  async getMainState(): Promise<MainState | null> {
-    let gameData: GameConfiguration = await firstValueFrom(
-      this.getGameConfiguration$().pipe(
-        filter((v): v is GameConfiguration => v !== null)
-      )
-    );
-
+  getMainState(): MainState {
     let currentTime = this.getCurrentTime().getTime();   
 
-    if (currentTime < gameData.deadlineTimes.tournament_end.getTime()) {
-      return Promise.resolve(MainState.GAME);
+    if (currentTime < this.gameConfiguration.deadlineTimes.tournament_end.getTime()) {
+      return MainState.GAME;
     }
-    else if (gameData.deadlineTimes.tournament_end.getTime() <= currentTime) {
-      return Promise.resolve(MainState.STATISTICS);
-    }
-
-    return Promise.resolve(null);
+    
+    return MainState.STATISTICS;
   }
 
-  async getBetValues(): Promise<BetValues | null> {
-     let gameData: GameConfiguration = await firstValueFrom(
-      this.getGameConfiguration$().pipe(
-        filter((v): v is GameConfiguration => v !== null)
-      )
-    );
-
-    return Promise.resolve(gameData.betValues);
+  getBetValues(): BetValues {
+    return this.gameConfiguration.betValues;
   }
 
   getCurrentTime(): Date {

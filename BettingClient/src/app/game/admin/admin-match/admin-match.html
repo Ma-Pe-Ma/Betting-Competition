@@ -12,7 +12,7 @@
     @for (match of matches; track match.id; let i = $index) {
     <div class="row mb-3 mt-3 text-center">
         <div class="col-1 themed-grid-col1 d-flex align-items-center justify-content-center"><button type="button" class="ms-3 btn btn-sm btn-primary" (click)="modifyMatch(match.id!)">{{match.id}}</button></div>
-        <div class="col-4 col-sm-2 themed-grid-col1 d-flex align-items-center justify-content-center">{{match.datetime | localDate:user?.timezone!:'datetime'}}</div>
+        <div class="col-4 col-sm-2 themed-grid-col1 d-flex align-items-center justify-content-center">{{match.datetime | localDate:user.timezone!:'datetime'}}</div>
         <div class="col-4 col-sm-4 themed-grid-col1 d-flex align-items-center justify-content-center" i18n="unknown">{{match.team1 ?? 'unknown'}} - {{match.team2 ?? 'unknown' }}</div> <div class="col-2 themed-grid-col1 d-flex align-items-center justify-content-center d-none d-sm-flex">{{(match.odd1 | number:'1.1-2') ?? '?'}} / {{(match.oddX | number:'1.1-2') ?? '?'}} / {{(match.odd2 | number:'1.1-2') ?? '?'}}</div>
         <div class="col-2 col-sm-1 themed-grid-col1 d-flex align-items-center justify-content-center"><span class="badge" [class]="match.goal1 !=null ? 'bg-success' : 'bg-danger'">{{match.goal1 ?? '?'}}-{{match.goal2 ?? '?'}}</span></div>
         <div class="col-2 themed-grid-col1 d-flex align-items-center justify-content-center">{{match.max_bet}}</div>

@@ -22,10 +22,6 @@ from pathlib import Path
 def create_app(instance_path = None):
     app = Flask(__name__, instance_relative_config=True) if instance_path is None else Flask(__name__, instance_relative_config=True, instance_path=instance_path)
 
-    # create custom default filter for none object
-    app.jinja_env.filters['d_none'] = lambda value, default_text : value if value is not None else default_text
-    app.jinja_env.filters['d_round'] = lambda value, default_text, precision = 2 : round(value, precision) if value is not None and value != '' else default_text
-
     # load configuration from file
     app.config.from_object(Default())
     app.config.from_file('configuration.json', load=json.load, silent=True)
@@ -99,7 +95,6 @@ def create_app(instance_path = None):
 
     if cache_handler.cache.get('comment_nr') is None:
         cache_handler.cache.set('comment_nr', {}, timeout=0)
-
 
     @app.errorhandler(403)
     def page_403(e):

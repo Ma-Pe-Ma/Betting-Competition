@@ -22,8 +22,8 @@ export class Betting {
   }
 
   fetchMetchData() {
-    let r1 = this.http.get<Day[]>(environment.serverAddress + environment.locations.main.matches);
-    let r2 = this.http.get<{credit: number}>(environment.serverAddress + environment.locations.main.credit);
+    let r1 = this.http.get<Day[]>(environment.locations.main.matches);
+    let r2 = this.http.get<{credit: number}>(environment.locations.main.credit);
 
     forkJoin([r1, r2]).subscribe({
       next: ([days, credit] : [Day[], {credit: number}]) => {

@@ -3,6 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { tap, catchError, of} from 'rxjs';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { ClientConfigService } from '../../../service/client-config-service';
 
 @Component({
   selector: 'app-maintenance',
@@ -11,13 +12,13 @@ import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class Maintenance {
   scheduledTasks: string[] = []
-  serverAddress: string = environment.serverAddress;
+  serverAddress: string;
   alerts: Alert[] = []
 
   selectedFile: File | null = null;
   
-  constructor(private http: HttpClient) {
-
+  constructor(private http: HttpClient, private clientConfigService: ClientConfigService) {
+    this.serverAddress = this.clientConfigService.clientConfig.endpoint;
   }
 
   onFileSelected(event: any) {
@@ -33,7 +34,7 @@ export class Maintenance {
     const formData = new FormData();
     formData.append('file', this.selectedFile);
 
-    let path = environment.serverAddress + environment.locations.admin.maintenance.dbUpload;
+    let path = environment.locations.admin.maintenance.dbUpload;
 
     this.http.post<Alert>(path, formData).pipe(
       tap(data => {
@@ -50,8 +51,7 @@ export class Maintenance {
   }
 
   launchRequest(path: string) {
-    let fullpath = environment.serverAddress + path;
-    this.http.get<Alert>(fullpath).pipe(
+    this.http.get<Alert>(path).pipe(
       tap(data => {
         return data;  
       }),

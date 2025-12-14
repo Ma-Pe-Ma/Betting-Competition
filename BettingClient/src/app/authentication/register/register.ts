@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 import { UserEditor } from '../user-editor/user-editor';
 import { Reminder } from '../reminder/reminder';
 import { GameConfigurationService } from '../../service/game-configuration-service';
-import { filter, take } from 'rxjs';
+import { take } from 'rxjs';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { AuthService } from '../../service/auth-service';
 
@@ -25,19 +25,17 @@ export class Register {
   registerClosed: boolean = true;
 
   constructor(private http: HttpClient, private router: Router, private gameConfigurationService: GameConfigurationService, private authService: AuthService) {
-    this.gameConfigurationService.getGameConfiguration$().pipe(
-      filter((value): value is GameConfiguration => value !== null) 
-    ).subscribe(value => {
-      if (value.deadlineTimes.group_evaluation > gameConfigurationService.getCurrentTime()) {
-        let registerMessagePath = environment.serverAddress + environment.locations.auth.registerMessage;
+    let gameConfig = this.gameConfigurationService.getGameConfiguration();
+
+    if (gameConfig.deadlineTimes.group_evaluation > gameConfigurationService.getCurrentTime()) {
+        let registerMessagePath = environment.locations.auth.registerMessage;
         this.http.get<{introduction: string}>(registerMessagePath).subscribe(message => this.registerMessage = message.introduction);
         this.registerClosed = false;
-      }
-    });
+    }
   }
 
   register() {
-    let location = environment.serverAddress + environment.locations.auth.register;
+    let location = environment.locations.auth.register;
     this.http.post<Alert>(location, this.userData, {observe: 'response'}).subscribe((response: HttpResponse<Alert>) => {
       let newAlert: Alert = response.body!;
 

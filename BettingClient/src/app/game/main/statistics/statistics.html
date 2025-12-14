@@ -76,13 +76,13 @@
                 @for(match of matchStatistics; track match.id) {
             <tr>
                 <td scope="col" class="align-middle text-center">{{match.id}}</td>
-                <td scope="col" class="align-middle text-center">{{match.datetime | localDate:user?.timezone!:'datetime'}}</td>
+                <td scope="col" class="align-middle text-center">{{match.datetime | localDate:user.timezone!:'datetime'}}</td>
                 <td scope="col" class="align-middle text-center">{{match.team1}} - {{match.team2}}</td>
                 <td scope="col" class="align-middle text-center">{{match.bet_count}}</td>
                 <td scope="col" class="align-middle text-center" [ngClass]="match.max_hit_count_flag ? 'table-success' : match.min_hit_count_flag ? 'table-danger' : null">{{match.hit_count}}</td>
                 <td scope="col" class="align-middle text-center" [ngClass]="match.max_hit_ratio_flag ? 'table-success' : match.min_hit_count_flag ? 'table-danger' : null">{{match.hit_ratio | number:'1.0-1'}}%</td>
                 <td scope="col" class="align-middle text-center" [ngClass]="match.total_max_flag ? 'table-success' : match.total_min_flag ? 'table-danger' : null">{{match.total_bet}}</td>
-                <td scope="col" class="align-middle text-center" [ngClass]="match.normalized_total_max_flag > 0 ? 'table-success' : match.normalized_total_min_flag ? 'table-danger' : null">{{match.normalized_total_bet}}</td>
+                <td scope="col" class="align-middle text-center" [ngClass]="match.normalized_total_max_flag ?? 0 > 0 ? 'table-success' : match.normalized_total_min_flag ? 'table-danger' : null">{{match.normalized_total_bet}}</td>
                 <td scope="col" class="align-middle text-center" [ngClass]="match.max_flag ? 'table-success' : match.min_flag ? 'table-danger' : null">{{match.diff_by | number:'1.0-0'}}</td>
                 <td scope="col" class="align-middle text-center" [ngClass]="match.normalized_max_flag ? 'table-success' : match.normalized_min_flag ? 'table-danger' : null">{{match.normalized_diff_by | number:'1.0-0'}}</td>
                 <td scope="col" class="align-middle text-center" [ngClass]="match.credit_ratio_max_flag ? 'table-success' : match.credit_ratio_min_flag ? 'table-danger' : null">{{match.credit_ratio | number:'1.0-1'}}%</td>

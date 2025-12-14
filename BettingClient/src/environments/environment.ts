@@ -1,7 +1,4 @@
-import { B } from "@angular/cdk/keycodes";
-
 export const environment = {
-    serverAddress: 'http://localhost:5000/',
     locations : {
         gameConfiguration: 'game-configuration',
         auth: {

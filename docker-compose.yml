@@ -1,26 +1,20 @@
 services:
-  nginx_server:
-    image: nginx
-    container_name: http_server
-
+  betting-client:
+    build: ./BettingClient/
+    container_name: betting-client
     volumes:
-      - betting-volume:/BettingInstance/
-      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro      
-      - ./app/:/BettingApp/app/:ro
-     
+      - ${instance_directory}:/BettingInstance/      
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config.json:/usr/share/nginx/html/config.json:ro
     ports:
       - "80:80"
       - "443:443"
-    
     depends_on:
-      flask_server:
+      betting-server:
         condition: service_healthy
 
-  flask_server:
-    build: .
-    container_name: betting_app
+  betting-server:
+    build: ./BettingServer/
+    container_name: betting-server
     volumes:
-      - betting-volume:/BettingInstance/
-
-volumes:
-  betting-volume:
+      - ${instance_directory}:/BettingInstance/

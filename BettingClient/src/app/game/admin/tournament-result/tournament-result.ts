@@ -22,7 +22,7 @@ export class TournamentResult {
   tournamentBets: TournamentBet[] = []
 
   constructor(private http: HttpClient, private httpDataHandler: HttpDataHandler) {
-    let tournamentGetPath = environment.serverAddress + environment.locations.admin.tournamentBet.get;
+    let tournamentGetPath = environment.locations.admin.tournamentBet.get;
     
     this.httpDataHandler.getData<TournamentBet[]>(tournamentGetPath).subscribe(value => {
       if (value && (value as any).message) {
@@ -35,7 +35,7 @@ export class TournamentResult {
   }
 
   postTournamentBets() {
-    let tournamentSetPath = environment.serverAddress + environment.locations.admin.tournamentBet.set;
+    let tournamentSetPath = environment.locations.admin.tournamentBet.set;
 
     this.httpDataHandler.postData(tournamentSetPath, this.tournamentBets).subscribe(value => {
         this.alerts.push(value); 

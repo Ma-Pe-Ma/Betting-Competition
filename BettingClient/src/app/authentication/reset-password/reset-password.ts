@@ -37,7 +37,7 @@ export class ResetPassword {
   }
 
   resetPassword() {
-    let resetPath = environment.serverAddress + environment.locations.auth.resetPassword;
+    let resetPath = environment.locations.auth.resetPassword;
     this.http.post<Alert>(resetPath, {email:this.email, key: this.key, password1: this.password1, password2: this.password2, })
     .subscribe(response => {
       this.alerts.push(response);

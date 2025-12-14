@@ -6,20 +6,20 @@ import { tap, catchError } from 'rxjs/operators';
 import { DecimalPipe } from '@angular/common';
 
 interface PlayerBet {
-  username: string,
-  bgoal1: number,
-  bgoal2: number,
-  bet: number,
-  bonus: number,
-  prize: number,
-  credit_diff: number,
-  success: number
+  username?: string,
+  bgoal1?: number,
+  bgoal2?: number,
+  bet?: number,
+  bonus?: number,
+  prize?: number,
+  credit_diff?: number,
+  success?: number
 } 
 
 interface MatchContainer {
-  success: number,
-  players: PlayerBet[]
-  match: Match
+  success?: number,
+  players?: PlayerBet[]
+  match?: Match
 }
 
 @Component({
@@ -28,11 +28,11 @@ interface MatchContainer {
   templateUrl: './match-results.html'
 })
 export class MatchResults {
-  dateListLocation: string = environment.serverAddress + environment.locations.results.dates;
+  dateListLocation: string = environment.locations.results.dates;
   dateMap: Map<string, MatchContainer[]> = new Map<string, MatchContainer[]>(); 
   currentDate: MatchContainer[] | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   receiveSelectedDate(date: string) {
     if (this.dateMap.has(date)) {
@@ -40,7 +40,7 @@ export class MatchResults {
       }
     else {
       this.currentDate = null;
-      let path = environment.serverAddress + environment.locations.results.dateResults;
+      let path = environment.locations.results.dateResults;
       const params = { date: date };
 
       this.http.get<MatchContainer[]>(path, {params}).pipe(

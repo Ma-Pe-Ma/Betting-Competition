@@ -23,7 +23,7 @@
                 {{getLanguageNameByKey(userData.language ?? "")}}
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                @for(item of gameConfiguration?.serverConfiguration?.languages; track item.key) {
+                @for(item of gameConfiguration.serverConfiguration.languages; track item.key) {
                     <button ngbDropdownItem (click)="userData.language = item.key">{{getLanguageNameByKey(item.key)}}</button>
                 }
             </div>

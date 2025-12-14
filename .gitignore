@@ -13,6 +13,7 @@ env__/
 app/db.sqlite3
 /BettingServer/instance/*
 *.mo
-/deployment/configuration.json
-/deployment/nginx.conf
+/configuration.json
+/nginx.conf
+/config.json
 *.pem

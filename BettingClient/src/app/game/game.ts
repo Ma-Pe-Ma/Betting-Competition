@@ -1,17 +1,15 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd, Routes} from '@angular/router';
+import { RouterOutlet, RouterModule, Router, NavigationEnd, Routes} from '@angular/router';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes as gameRoutes } from './game.routes';
 import { AuthService } from '../service/auth-service';
-import { Observable, tap, take } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { PushNotificationService } from '../service/push-notification-service';
 
 @Component({
   selector: 'app-game',
-  imports: [RouterOutlet, RouterModule, NgbDropdownModule, AsyncPipe, NgbAlertModule, MarkdownComponent],
+  imports: [RouterOutlet, RouterModule, NgbDropdownModule, NgbAlertModule, MarkdownComponent],
   standalone: true,
   templateUrl: './game.html',
   providers: [provideMarkdown()]
@@ -20,31 +18,25 @@ export class Game {
   ribbonRoutes = ['', 'results', 'standings', 'group-bet', 'chat', 'admin'];
   routes: Routes = [];
   currentLocation = "";
-  alerts: Alert[] = []
-
-  user$: Observable<User | null>  = new Observable<User | null>();
+  alerts: Alert[] = [];
+  user: User;
 
   constructor(private router: Router, private auth: AuthService, private pushNotificationService: PushNotificationService) {
-    this.user$ = auth.getUser$
+    this.user = this.auth.getUser();
 
-    this.user$.pipe(
-      take(1),
-      tap(user => {
-        for (let r of gameRoutes) {
-          if (!this.ribbonRoutes.includes(r.path!)) {
-            continue;
-          }
-          
-          if ((user?.role ?? 0) < (r.data?.['role'] ?? 0)) {
-            continue;     
-          }
+    for (let r of gameRoutes) {
+      if (!this.ribbonRoutes.includes(r.path!)) {
+        continue;
+      }
+      
+      if ((this.user.role ?? 0) < (r.data?.['role'] ?? 0)) {
+        continue;     
+      }
 
-          this.routes.push(r);
-        }
+      this.routes.push(r);
+    }
 
-        this.alerts = user?.messages ?? [];
-      })
-    ).subscribe();
+    this.alerts = this.user.messages ?? [];
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {

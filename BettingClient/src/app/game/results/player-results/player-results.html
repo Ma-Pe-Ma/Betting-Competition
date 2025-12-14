@@ -77,7 +77,7 @@
             </div>
         }
 
-        @if(day.date == ((gameData$ | async)!.deadlineTimes!.group_evaluation | date:'yyyy-MM-dd')) {
+        @if(day.date == (gameData.deadlineTimes!.group_evaluation | date:'yyyy-MM-dd')) {
             <div class="container row d-flex align-items-center">
                 <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">
                     <span i18n="groupTotalPrize">Group bet total prize:</span>

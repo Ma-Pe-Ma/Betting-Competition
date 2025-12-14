@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GameConfigurationService } from '../../service/game-configuration-service';
-import { filter } from 'rxjs';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -15,14 +14,10 @@ export class UserEditor {
   @Input() disabledAfterRegister: boolean = false;
   @Input() currentLanguage: string = 'en';
 
-  gameConfiguration: GameConfiguration | null = null;
+  gameConfiguration: GameConfiguration;
 
   constructor(private gameConfigurationService: GameConfigurationService) {
-    this.gameConfigurationService.getGameConfiguration$().pipe(
-      filter((value): value is GameConfiguration => value !== null) 
-    ).subscribe(value => {
-      this.gameConfiguration = value;
-    });
+    this.gameConfiguration = this.gameConfigurationService.getGameConfiguration();
   }
 
   getLanguageNameByKey(key: string) {

@@ -12,12 +12,9 @@ import { Statistics } from './statistics/statistics';
 })
 export class Main {
   MainState = MainState;  
-  mainState: MainState | null = null;
+  mainState: MainState;
 
   constructor(private gameConfigurationService : GameConfigurationService) {
-    let mainState$ = this.gameConfigurationService.getMainState();
-    mainState$.then(mainState =>{
-      this.mainState = mainState;
-    });
+    this.mainState = this.gameConfigurationService.getMainState();
   }    
 }
