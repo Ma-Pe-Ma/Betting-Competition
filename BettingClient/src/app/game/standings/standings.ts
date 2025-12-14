@@ -66,8 +66,7 @@ export class Standings {
   }
 
   constructor(private http: HttpClient, private ngZone: NgZone) { 
-
-    let standingsPath = environment.serverAddress + environment.locations.standings;
+    let standingsPath = environment.locations.standings;
 
     this.http.get<UserStanding[]>(standingsPath).pipe(
       map(data => {

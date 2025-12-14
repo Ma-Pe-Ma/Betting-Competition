@@ -1,8 +1,6 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from '../../../../environments/environment';
-import { tap, catchError } from 'rxjs';
 import { HttpDataHandler } from '../../../service/http-data-handler';
 
 @Component({
@@ -21,7 +19,7 @@ export class GenerateStandings {
   }
 
   sendStandingsImmediately() {
-    let sendImmediatelyPath = environment.serverAddress + environment.locations.admin.standings.sendImmediately;
+    let sendImmediatelyPath = environment.locations.admin.standings.sendImmediately;
 
     this.httpDataHandler.getData<Alert>(sendImmediatelyPath).subscribe(value => {
         this.alerts.push(value as Alert);
@@ -29,7 +27,7 @@ export class GenerateStandings {
   }
 
   getStandings() {
-    let standingsGetPath = environment.serverAddress + environment.locations.admin.standings.get;
+    let standingsGetPath = environment.locations.admin.standings.get;
   
     this.httpDataHandler.getData<{emails: string, standings: string}>(standingsGetPath).subscribe(value => {
       if (value && (value as any).message) {

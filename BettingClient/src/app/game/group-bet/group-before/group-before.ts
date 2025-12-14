@@ -5,7 +5,7 @@ import { DecimalPipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
 import { FormsModule } from '@angular/forms';
-import { tap, catchError, forkJoin, of, filter} from 'rxjs';
+import { tap, catchError, forkJoin, of} from 'rxjs';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -27,17 +27,13 @@ export class GroupBefore {
   alerts: Alert[] = []
 
   constructor(private http: HttpClient, private gameConfigurationService: GameConfigurationService, private modalService: NgbModal) {
-    gameConfigurationService.getGameConfiguration$().
-    pipe(
-      filter((value): value is GameConfiguration => value !== null)
-    ).
-    subscribe(gameConfiguration => {
-      this.betValues = gameConfiguration?.betValues;
-      this.groupHitMap = gameConfiguration?.groupHitMap;
-    });
+    let gameConfiguration = this.gameConfigurationService.getGameConfiguration();
 
-    let groupStatusPath = environment.serverAddress + environment.locations.group.get;
-    let tournamentOddPath = environment.serverAddress + environment.locations.group.tournament;
+    this.betValues = gameConfiguration?.betValues;
+    this.groupHitMap = gameConfiguration?.groupHitMap;
+
+    let groupStatusPath = environment.locations.group.get;
+    let tournamentOddPath = environment.locations.group.tournament;
     
     forkJoin({
       group: this.http.get<GroupResponse>(groupStatusPath).pipe(
@@ -57,7 +53,7 @@ export class GroupBefore {
         this.playerInput = group;
         this.tournamentOdds = tournamentOdds;
 
-        if (this.playerInput?.tournament.team == undefined) {
+        if (this.playerInput?.tournament.team == undefined && tournamentOdds!.length > 0) {
           this.playerInput!.tournament.team = tournamentOdds![0].team;
           this.playerInput!.tournament.local_name! = tournamentOdds![0].team_tr;
         }
@@ -105,7 +101,7 @@ export class GroupBefore {
   }
 
   postGroups() {
-    let groupPostPath = environment.serverAddress + environment.locations.group.set;
+    let groupPostPath = environment.locations.group.set;
 
     this.http.post<Alert>(groupPostPath, this.playerInput).pipe(
       tap(alert => {

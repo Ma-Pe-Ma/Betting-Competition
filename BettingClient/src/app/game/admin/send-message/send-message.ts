@@ -20,7 +20,7 @@ export class SendMessage {
   }
 
   sendMessage() {
-    let notificationPath = environment.serverAddress + environment.locations.admin.sendNotification;    
+    let notificationPath = environment.locations.admin.sendNotification;    
 
     this.httpDataHandler.postData(notificationPath, {subject: this.subject, message: this.message}).subscribe(value => {
         this.alerts.push(value); 

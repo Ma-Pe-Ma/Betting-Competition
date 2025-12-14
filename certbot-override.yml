@@ -11,14 +11,14 @@ services:
       - "80:80"
     restart: "no"
 
-  nginx_server:
+  betting-client:
     depends_on:
       certbot:
         condition: service_completed_successfully
     volumes:
       - cert-volume:/etc/letsencrypt/:ro
         
-  flask_server:
+  betting-server:
     depends_on:
       certbot:
         condition: service_completed_successfully

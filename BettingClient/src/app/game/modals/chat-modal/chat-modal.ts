@@ -38,7 +38,7 @@ export class ChatModal {
   }
 
   postMessage() {
-    let postChatPath = environment.serverAddress + environment.locations.chat.set;
+    let postChatPath = environment.locations.chat.set;
 
     this.http.post<Alert>(postChatPath, this.inputMessage).pipe(
         tap(alert => {

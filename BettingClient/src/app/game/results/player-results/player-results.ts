@@ -4,8 +4,7 @@ import { DayNamePipe } from '../../../pipes/day-name-pipe';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { GameConfigurationService } from '../../../service/game-configuration-service';
 import { AuthService } from '../../../service/auth-service';
-import { AsyncPipe } from '@angular/common';
-import { Observable, map, tap, catchError } from 'rxjs';
+import { tap, catchError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
 
@@ -26,19 +25,19 @@ interface PlayerData {
 
 @Component({
   selector: 'app-player-results',
-  imports: [DayNamePipe, DecimalPipe, DatePipe, AsyncPipe, DropdownSelector],
+  imports: [DayNamePipe, DecimalPipe, DatePipe, DropdownSelector],
   templateUrl: './player-results.html'
 })
 export class PlayerResults {
-  playerListLocation = environment.serverAddress + environment.locations.results.playerNames;
-  gameData$: Observable<GameConfiguration | null> = new Observable<GameConfiguration | null>();
+  playerListLocation: string = environment.locations.results.playerNames;
+  gameData: GameConfiguration;
 
   playerResults: Map<string, PlayerData> = new Map<string, PlayerData>(); 
   currentPlayer: PlayerData | null = null;
   currentPlayerName: string = "";
 
   constructor(private http: HttpClient, gameConfigurationService: GameConfigurationService, private authService: AuthService) {
-    this.gameData$ = gameConfigurationService.getGameConfiguration$();
+    this.gameData = gameConfigurationService.getGameConfiguration();
   } 
 
   ngOnInit() {
@@ -53,7 +52,7 @@ export class PlayerResults {
     }
     else {
       this.currentPlayer = null;
-      let path = environment.serverAddress + environment.locations.results.playerResults;
+      let path = environment.locations.results.playerResults;
       const params = { name: playerName };
 
       this.http.get<PlayerData>(path, {params}).pipe(

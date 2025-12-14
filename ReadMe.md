@@ -10,7 +10,7 @@ This hobby project's goal is to host a simple betting competition on the web amo
 
 Earlier this game was carried out manually sending emails and editing files on a cloud service. This application was developed to automate many of the cumbersome tasks for the admin and to provide a user-friendly interface for the players where they can publish their tips.
 
-This application's backend was implemented with the [Flask](https://flask.palletsprojects.com/en/3.0.x/) framework while the frontend part was designed with [Bootstrap](https://getbootstrap.com/). The application can be hosted by building and running a [Docker](https://www.docker.com/) image.
+This application's backend was implemented with the [Flask](https://flask.palletsprojects.com/en/3.0.x/) framework while the frontend part was created with [Angular](https://angular.dev/) while [Bootstrap](https://getbootstrap.com/) was used to design the UI. The application can be hosted by building and running a [Docker](https://www.docker.com/) image.
 
 ## Demo
 
@@ -112,7 +112,7 @@ This section only appears for admins they have permission to do this additional 
 ## Setting up
 
 ### Configuration file
-Before launching the application the first time the correct values have to be specified in the [configuration file](./configuration.json).
+Before launching the application the first time the correct values have to be specified in the [configuration file](./BettingServer/app/assets/configuration.json).
 
 Apart from the web-push keys, every field is self-explanatory.
 
@@ -141,7 +141,15 @@ By launching the [install.sh](./install.sh) the script will ask you to properly 
 
 The installer sets ups a `certbot` container which acquires the TLS certificate/key for the webserver (this requires an open 80 port), the needed parameters are acquired from the aforementioned `configuration.json` file.
 
-Then the app/server container is built. The application is served with nginx + gunicorn, these require the 80 and 443 ports to be exposed to the web.
+Then both the client/nginx and server/flask container is built. The application can be reached through the client which serves the SPA client and acts as a reverse proxy for the backend, this requires the 80 and 443 ports to be exposed to the web.
+
+To install the app run:
+
+    sudo -E ./install.sh /BettingInstance/
+
+To update a container:
+
+    sudo -E docker compose -f ./docker-compose.yml -f ./certbot-override.yml up -d --build --force-recreate --no-deps betting-server
 
 ### Team description files
 
@@ -166,20 +174,13 @@ The fields for this are the following:
 * teamname: the same key as in the previous csv file
 * the other columns hold the translations for the team names
 
-<!--
-### Email sending 
-
-The email sending is implemented with the [Google API](https://developers.google.com/gmail/api/quickstart/python). First you have to create an account and a cloud project.
-
-The process of setting up email sending is specified in [this source](./app/gmail_handler.py) file-->
-
 ## Customizing the application
 
 ### Fixture
 
 This project updates the result database with parsing fixtures from https://fixturedownload.com/. The app is set up to parse files which has this site's format.
 
-If an other fixture format is needed to be parsed then the [database_manager.py](./app/database_manager.py) script have to be rewritten for it accordingly.
+If an other fixture format is needed to be parsed then the [database_manager.py](./BettingServer/app/database_manager.py) script have to be rewritten for it accordingly.
 
 ### Database
 
@@ -193,17 +194,17 @@ Currently English and Hungarian versions are available. The translation is imple
 
 To setup babel translations these commands need to be launched:
 
-    pybabel extract -F ./app/babel.cfg -o ./app/assets/translations/messages.pot .
-    pybabel init -i ./app/assets/translations/messages.pot -d ./app/assets/translations -l `hu`
+    pybabel extract -F ./BettingServer/app/babel.cfg -o ./BettingServer/app/assets/translations/messages.pot .
+    pybabel init -i ./BettingServer/app/assets/translations/messages.pot -d ./BettingServer/app/assets/translations -l `hu`
 
-    pybabel update -i ./app/assets/translations/messages.pot -d ./app/assets/translations
-    pybabel compile -d ./app/assets/translations
+    pybabel update -i ./BettingServer/app/assets/translations/messages.pot -d ./BettingServer/app/assets/translations
+    pybabel compile -d ./BettingServer/app/assets/translations
 
 ## TO-DO
-* fix push notifications
 * create Angular translations + clean-up Babel translations
 * fix maintenance mode
 * adapt deployment to Angular client (docker images + redirect with nginx to client routes)
+* fix error handling pages
 * clean-up statistics
 * create SQL views
 

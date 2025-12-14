@@ -1,7 +1,5 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { tap, catchError } from 'rxjs';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { HttpDataHandler } from '../../../service/http-data-handler';
@@ -21,7 +19,7 @@ export class HomeMessage {
   alerts: Alert[] = []
 
   constructor(private httpDataHandler: HttpDataHandler) {
-    let getHomeMessagePath = environment.serverAddress + environment.locations.admin.homeMessage.get;
+    let getHomeMessagePath = environment.locations.admin.homeMessage.get;
     
     this.httpDataHandler.getData<HomeMessageContainer[]>(getHomeMessagePath).subscribe(value => {
       if (value && (value as any).message) {
@@ -34,7 +32,7 @@ export class HomeMessage {
   }
 
   postMessages() {
-    let setHomeMessagePath = environment.serverAddress + environment.locations.admin.homeMessage.set;  
+    let setHomeMessagePath = environment.locations.admin.homeMessage.set;  
 
     this.httpDataHandler.postData(setHomeMessagePath, this.homeMessages).subscribe(value => {
         this.alerts.push(value); 

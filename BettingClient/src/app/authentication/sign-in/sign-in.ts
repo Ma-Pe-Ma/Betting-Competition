@@ -17,12 +17,10 @@ export class SignIn {
   
   alerts: Alert[] = []
 
-  constructor(private router: Router, private http: HttpClient, private authService: AuthService) {
-  
-  }
+  constructor(private router: Router, private http: HttpClient, private authService: AuthService) {}
 
   signIn() {
-    let location = environment.serverAddress + environment.locations.auth.signIn;
+    let location = environment.locations.auth.signIn;
     this.http.post<Alert>(location, this.userData, {observe: 'response'}).pipe(take(1)).subscribe((response: HttpResponse<Alert>) => {      
       if (response.status === 200) {
         let newAlert: Alert = response.body!;

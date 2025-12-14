@@ -19,7 +19,7 @@ export class ForgottenPassword {
   }
 
   requestNewPassword(): void {
-    let location = environment.serverAddress + environment.locations.auth.forgottenPassword;
+    let location = environment.locations.auth.forgottenPassword;
     this.http.post<Alert>(location, {email: this.email}).subscribe(response => {
       this.alerts.push(response);
     });

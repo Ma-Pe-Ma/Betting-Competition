@@ -15,14 +15,14 @@ export class Profile {
   alerts: Alert[] = []
 
   constructor(private http: HttpClient) {
-    let profilePath = environment.serverAddress + environment.locations.auth.profile.get;
+    let profilePath = environment.locations.auth.profile.get;
     http.get<UserData>(profilePath).subscribe( profileData => {
       this.userData = profileData;
     });
   }
 
   postProfile() {
-    let profilePath = environment.serverAddress + environment.locations.auth.profile.set;
+    let profilePath = environment.locations.auth.profile.set;
 
     this.http.post<Alert>(profilePath, this.userData).subscribe(alert => {
         this.alerts.push(alert);

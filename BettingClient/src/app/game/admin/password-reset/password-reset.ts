@@ -17,7 +17,7 @@ export class PasswordReset {
   resetKeys: ResetKey[] = []
 
   constructor(private httpDataHandler: HttpDataHandler) {
-    let resetKeyPath = environment.serverAddress + environment.locations.admin.resetKeys;
+    let resetKeyPath = environment.locations.admin.resetKeys;
     
     this.httpDataHandler.getData<ResetKey[]>(resetKeyPath).subscribe(value => {
       if (value && (value as any).message) {

@@ -18,7 +18,7 @@ export class GroupAfter {
   GroupState = GroupState;  
   groupState: GroupState | null = null;
 
-  playerListLocation: string = environment.serverAddress + environment.locations.results.playerNames;
+  playerListLocation: string = environment.locations.results.playerNames;
   players: Map<string, GroupResponse> = new Map();
   currentPlayer: GroupResponse | null = null;
   currentPlayerName: string = "";
@@ -27,22 +27,13 @@ export class GroupAfter {
   totalBet: number = 0;
   totalWin?: number = undefined;
 
-  constructor(private http: HttpClient, private authService: AuthService, private gameConfigurationService: GameConfigurationService) {
-    let betValues$ = gameConfigurationService.getBetValues();
-    betValues$.then(betValues => {
-      this.betValues = betValues;
-    }); 
-
-    let groupState$ = gameConfigurationService.getGroupState();
-    groupState$.then(groupState => {
-      this.groupState = groupState;
-    })
+  constructor(private http: HttpClient, private authService: AuthService, private gameConfigurationService: GameConfigurationService) {    
+    this.betValues = gameConfigurationService.getBetValues();
+    this.groupState = gameConfigurationService.getGroupState();
   }
 
   ngOnInit() {
-    this.authService.getUser$.subscribe(user => {
-      this.currentPlayerName = user!.username!;
-    });
+    this.currentPlayerName = this.authService.getUser().username!;
   }
 
   receiveSelectedPlayer(playerName: string) {
@@ -52,7 +43,7 @@ export class GroupAfter {
     else {
       this.currentPlayer = null;
 
-      let groupStatusPath = environment.serverAddress + environment.locations.group.get;
+      let groupStatusPath = environment.locations.group.get;
       const params = { name: playerName };
       this.http.get<GroupResponse>(groupStatusPath, {params}).pipe(
         tap(data => {

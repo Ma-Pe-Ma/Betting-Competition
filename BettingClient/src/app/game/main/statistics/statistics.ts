@@ -29,32 +29,32 @@ interface PlayerStatistics {
 }
 
 interface MatchStatistics {
-  id: number
-  datetime: string
-  team1: string
-  team2: string
-  bet_count: number
-  diff_by: number
-  normalized_diff_by: number
-  total_bet: number
-  normalized_total_bet: number
-  credit_ratio: number
-  hit_count: number
-  hit_ratio: number
-  max_flag: number
-  min_flag: number
-  normalized_max_flag: number
-  normalized_min_flag: number
-  total_max_flag: number
-  total_min_flag: number
-  normalized_total_max_flag: number
-  normalized_total_min_flag: number
-  credit_ratio_max_flag: number
-  credit_ratio_min_flag: number
-  max_hit_count_flag: number
-  min_hit_count_flag: number
-  max_hit_ratio_flag: number
-  min_hit_ratio_flag: number
+  id?: number
+  datetime?: string
+  team1?: string
+  team2?: string
+  bet_count?: number
+  diff_by?: number
+  normalized_diff_by?: number
+  total_bet?: number
+  normalized_total_bet?: number
+  credit_ratio?: number
+  hit_count?: number
+  hit_ratio?: number
+  max_flag?: number
+  min_flag?: number
+  normalized_max_flag?: number
+  normalized_min_flag?: number
+  total_max_flag?: number
+  total_min_flag?: number
+  normalized_total_max_flag?: number
+  normalized_total_min_flag?: number
+  credit_ratio_max_flag?: number
+  credit_ratio_min_flag?: number
+  max_hit_count_flag?: number
+  min_hit_count_flag?: number
+  max_hit_ratio_flag?: number
+  min_hit_ratio_flag?: number
 }
 
 @Component({
@@ -64,17 +64,14 @@ interface MatchStatistics {
 })
 export class Statistics {
   alerts: Alert[] = []
-  user: User|null = null;
+  user: User;
 
   playerStatistics: PlayerStatistics[] = [];
   matchStatistics: MatchStatistics [] = [];
 
   constructor(private httpDataHandler: HttpDataHandler, private authService: AuthService) {
-    let path = environment.serverAddress + environment.locations.main.statistics;
-
-    this.authService.getUser$.subscribe(user => {
-      this.user = user;
-    });
+    let path = environment.locations.main.statistics;
+    this.user = this.authService.getUser();
    
     httpDataHandler.getData<{players: PlayerStatistics[], matches: MatchStatistics[]}>(path).subscribe(value => {
       if (value && (value as any).message) {

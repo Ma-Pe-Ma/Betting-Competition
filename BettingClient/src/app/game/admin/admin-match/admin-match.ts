@@ -17,18 +17,15 @@ export class AdminMatch {
   matches: Match[] = []
   timeZone: string = "";
 
-  user: User|null = null;
+  user: User;
 
   constructor(private http: HttpClient, private authService: AuthService,  private modalService: NgbModal) {
-    this.authService.getUser$.subscribe(user => {
-      this.user = user;
-    });
-
+    this.user = this.authService.getUser();
     this.fetchMatches();
   }
 
   fetchMatches() {
-    let adminMatchPath = environment.serverAddress + environment.locations.admin.match.list;
+    let adminMatchPath = environment.locations.admin.match.list;
 
     this.http.get<Match[]>(adminMatchPath).pipe(
       tap(data => {
@@ -53,7 +50,7 @@ export class AdminMatch {
   }
 
   fetchFromFixture() {
-    let updateMatchPath = environment.serverAddress + environment.locations.admin.match.update;
+    let updateMatchPath = environment.locations.admin.match.update;
 
     this.http.get<Alert>(updateMatchPath).pipe(
       tap(data => {

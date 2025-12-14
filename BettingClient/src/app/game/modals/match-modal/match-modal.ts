@@ -22,7 +22,7 @@ export class MatchModal {
 
   alerts: Alert[] = []
 
-  user: User|null = null;      
+  user: User|null = null;
 
   constructor(private httpDataHandler: HttpDataHandler, private http: HttpClient, public activeModal: NgbActiveModal, private authService: AuthService) {
     this.authService.getUser$.subscribe(user => {
@@ -37,7 +37,7 @@ export class MatchModal {
 
   fetchMatchData(matchID: number) {
     const params = new HttpParams().set('matchID', matchID);
-    let path = this.admin ? environment.serverAddress + environment.locations.admin.match.get : environment.serverAddress + environment.locations.match;
+    let path = this.admin ? environment.locations.admin.match.get : environment.locations.match;
 
     this.http.get<Match>(path, { params, observe: 'response' }).pipe(
       map(response => response.body),
@@ -62,7 +62,7 @@ export class MatchModal {
 
   postMatchData(matchID: number) {
     const params = new HttpParams().set('matchID', matchID);
-    let path = this.admin ? environment.serverAddress + environment.locations.admin.match.set : environment.serverAddress + environment.locations.match;
+    let path = this.admin ? environment.locations.admin.match.set : environment.locations.match;
     this.http.post<Alert>(path, this.match$.value, { params }).pipe(
       tap(value => {
         this.betPosted.emit(true);

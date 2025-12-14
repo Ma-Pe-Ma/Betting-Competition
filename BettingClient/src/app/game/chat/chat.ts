@@ -20,28 +20,24 @@ export class Chat {
   chatMessages: ChatMessage[] = []
 
   previousDisabled: boolean = true;
-
-  user: User|null = null;
+  user: User;
 
   constructor(private http: HttpClient, private modalService: NgbModal, private authService: AuthService) {
     this.getComments()
-
-    this.authService.getUser$.subscribe(user => {
-      this.user = user;
-    });
+    this.user = this.authService.getUser();
   }
 
   getComments(age: string|null = '<') {
-    let groupStatusPath = environment.serverAddress + environment.locations.chat.get;
+    let groupStatusPath = environment.locations.chat.get;
     
     let dateString: string|undefined;
 
     if (this.chatMessages.length > 0) {
       if (age === '>') {
-        dateString = this.chatMessages[this.chatMessages.length - 1].datetime;//.toDateString();
+        dateString = this.chatMessages[this.chatMessages.length - 1].datetime;
       }
       else if (age === '<') {
-        dateString = this.chatMessages[0].datetime;//.toDateString();
+        dateString = this.chatMessages[0].datetime;
       }
     }    
 

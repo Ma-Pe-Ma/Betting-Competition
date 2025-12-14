@@ -10,8 +10,8 @@
 
         <div ngbDropdown class="d-flex text-end align-items-center">
             <button ngbDropdownToggle class="d-block link-body-emphasis text-decoration-none btn btn-link p-0 border-0">
-                <img [src]="(user$ | async)?.hash" alt="" width="32" height="32" class="rounded-circle me-2"/>
-                <strong>{{ (user$ | async)?.username }}</strong>
+                <img [src]="user.hash" alt="" width="32" height="32" class="rounded-circle me-2"/>
+                <strong>{{ user.username }}</strong>
             </button>
 
             <ul ngbDropdownMenu class="dropdown-menu text-small">

@@ -1,29 +1,29 @@
 <app-dropdown-selector [selectorName]="'Date'" [listLocation]="dateListLocation" (itemSelected)="receiveSelectedDate($event)"></app-dropdown-selector>
 
 <div class="container mt-4">
-    @for(container of currentDate ; track container.match.id) { 
+    @for(container of currentDate ; track container.match!.id) { 
     <div class="mb-3">
-            <h5 i18n="matchID">Match {{container.match.id}}</h5>
+            <h5 i18n="matchID">Match {{container.match!.id}}</h5>
             <div class="ms-2">
                 <h6>
                     <span i18n="teams">Teams:</span>
-                    <span class="ms-2">{{container.match.team1}} - {{container.match.team2}}</span>
+                    <span class="ms-2">{{container.match?.team1 ?? '?'}} - {{container.match?.team2 ?? '?'}}</span>
                 </h6>
                 <h6>
                     <span i18n="result">Result:</span>
-                    <span class="ms-2">{{container.match.goal1 ?? '?'}} - {{container.match.goal2 ?? '?'}}</span>
+                    <span class="ms-2">{{container.match?.goal1 ?? '?'}} - {{container.match?.goal2 ?? '?'}}</span>
                 </h6>
                 <h6>
                     <span i18n="odds">Odds:</span>
-                    <span class="ms-2">{{container.match.odd1}} / {{container.match.oddX}} / {{container.match.odd2}}</span>
+                    <span class="ms-2">{{container.match?.odd1 ?? '?'}} / {{container.match?.oddX ?? '?'}} / {{container.match?.odd2 ?? '?'}}</span>
                 </h6>
                 <h6>
                     <span i18n="round">Round:</span>
-                    <span class="ms-2">{{container.match.round}}</span>
+                    <span class="ms-2">{{container.match?.round ?? '?'}}</span>
                 </h6>
                 <h6>
                     <span i18n="successRate">Success rate:</span>
-                    <span class="ms-2">{{(container.success / (container?.players?.length || 1) * 100) | number:'1.0-0'}}%</span>
+                    <span class="ms-2">{{(container?.success ?? 0 / (container?.players?.length || 1) * 100) | number:'1.0-0'}}%</span>
                 </h6>
             </div>
             

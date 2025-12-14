@@ -18,7 +18,6 @@ from datetime import datetime, timedelta, UTC
 
 from sqlalchemy import text
 from flask_babel import gettext
-from flask_babel import force_locale
 
 from app.tools.db_handler import get_db
 from app.tools.cache_handler import cache
@@ -30,22 +29,23 @@ bp = Blueprint('auth', __name__, '''url_prefix="/auth"''')
 @bp.before_app_request
 def load_signed_in_user() -> None:
     session.permanent = True
-    
-    if 'last' in session:
-        now = datetime.now(UTC)
-
-        if now - session.get('last') >= timedelta(minutes=current_app.config['SESSION_LIFE_TIME']):
-            session.clear()
-            return '', 401
-        
-        session['last'] = now
-        session.modified = True
 
     username = session.get('username')
 
     if username is None:
         g.user = None
+        session.clear()
     else:
+        if 'last' in session:
+            now = datetime.now(UTC)
+
+            if now - session.get('last') >= timedelta(minutes=current_app.config['SESSION_LIFE_TIME']):
+                session.clear()
+                return '', 401
+        
+            session['last'] = now
+            session.modified = True
+
         query_string = text('SELECT * FROM bet_user WHERE username = :username')
         result = get_db().session.execute(query_string, {'username' : username})
 
@@ -173,9 +173,6 @@ def register() -> str:
 
     # if first time sign in upload team data
     result = db.session.execute(text('SELECT * FROM bet_user'))
-
-    if len(result.fetchall()) <= 1:
-        return {'message': gettext(''), 'type': ''}
 
     return {'message': gettext('Registering successful'), 'type': 'success'}
 
@@ -371,4 +368,6 @@ def check_auth_status():
                 'timezone' : g.user['timezone']
                 }
     
+    session.clear()
+
     return {'role' : None}
