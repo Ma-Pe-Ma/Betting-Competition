@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../../../environments/environment';
 import { HttpDataHandler } from '../../../service/http-data-handler';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-generate-standings',
@@ -19,7 +19,7 @@ export class GenerateStandings {
   }
 
   sendStandingsImmediately() {
-    let sendImmediatelyPath = environment.locations.admin.standings.sendImmediately;
+    let sendImmediatelyPath = paths.admin.standings.sendImmediately;
 
     this.httpDataHandler.getData<Alert>(sendImmediatelyPath).subscribe(value => {
         this.alerts.push(value as Alert);
@@ -27,7 +27,7 @@ export class GenerateStandings {
   }
 
   getStandings() {
-    let standingsGetPath = environment.locations.admin.standings.get;
+    let standingsGetPath = paths.admin.standings.get;
   
     this.httpDataHandler.getData<{emails: string, standings: string}>(standingsGetPath).subscribe(value => {
       if (value && (value as any).message) {

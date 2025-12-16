@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../service/auth-service';
-import { take } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
+import { GameConfigurationService } from '../../service/game-configuration-service';
+import { paths } from '../../paths';
 
 @Component({
   selector: 'app-reset-password',
@@ -20,9 +20,7 @@ export class ResetPassword {
 
   alerts: Alert[] = []
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
-
-  }
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router, private route: ActivatedRoute, private gameConfigurationService: GameConfigurationService) {}
 
   ngOnInit(): void {
     let qEmail = this.route.snapshot.queryParamMap.get('email');
@@ -37,21 +35,19 @@ export class ResetPassword {
   }
 
   resetPassword() {
-    let resetPath = environment.locations.auth.resetPassword;
+    let resetPath = paths.auth.resetPassword;
     this.http.post<Alert>(resetPath, {email:this.email, key: this.key, password1: this.password1, password2: this.password2, })
     .subscribe(response => {
       this.alerts.push(response);
 
       if (response.type === 'success') {
-        this.authService.signIn();
-        this.authService.getUser$.pipe(take(1)).subscribe(user => {
+        this.authService.signIn().subscribe(user => {
           setTimeout(() => {
             this.router.navigate(['/']);
           }, 1000);
         });    
       }
     });
-
   }
 
   close(alert: Alert) {

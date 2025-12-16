@@ -143,6 +143,9 @@ The installer sets ups a `certbot` container which acquires the TLS certificate/
 
 Then both the client/nginx and server/flask container is built. The application can be reached through the client which serves the SPA client and acts as a reverse proxy for the backend, this requires the 80 and 443 ports to be exposed to the web.
 
+Note: before installing set the correct serve paths for the different languages (this should be automated later).
+[1](./docker-compose.yml#L8), [2](./BettingClient/Dockerfile#L13), [3](./BettingClient/Dockerfile#L21), [4](./nginx.conf.template#L34)
+
 To install the app run:
 
     sudo -E ./install.sh /BettingInstance/
@@ -190,9 +193,15 @@ To use a different db, the `SQLite` specific parts have to be rewritten and spec
 
 ### Translation
 
-Currently English and Hungarian versions are available. The translation is implemented with `Flask-Babel` so the site can be translated easily.
+Currently English and Hungarian versions are available.
 
-To setup babel translations these commands need to be launched:
+On the client side the translation is implemented with Angular's  built-in i18n module:
+    
+    ng extract-i18n
+
+After extracting the strings update the existing locale file or crete a new one.
+
+On the server side, the translation is implemented with `Flask-Babel` so the site can be translated easily. To setup babel translations these commands need to be launched:
 
     pybabel extract -F ./BettingServer/app/babel.cfg -o ./BettingServer/app/assets/translations/messages.pot .
     pybabel init -i ./BettingServer/app/assets/translations/messages.pot -d ./BettingServer/app/assets/translations -l `hu`
@@ -201,11 +210,11 @@ To setup babel translations these commands need to be launched:
     pybabel compile -d ./BettingServer/app/assets/translations
 
 ## TO-DO
-* create Angular translations + clean-up Babel translations
+* list every match in results
 * fix maintenance mode
-* adapt deployment to Angular client (docker images + redirect with nginx to client routes)
+* new message count
 * fix error handling pages
-* clean-up statistics
+* clean-up statistics + check GUI
 * create SQL views
 
 ### Backlog

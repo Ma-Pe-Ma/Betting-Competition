@@ -13,6 +13,15 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "hu": {
+            "translation": "src/locale/messages.hu.xlf",
+            "baseHref": "/"
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -61,6 +70,17 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "hu-build": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hu.ts"
+                }
+              ],
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json",
+              "localize": ["hu"]
             }
           },
           "defaultConfiguration": "production"
@@ -73,6 +93,9 @@
             },
             "development": {
               "buildTarget": "BettingClient:build:development"
+            },
+            "hu-build": {
+              "buildTarget": "BettingClient:build:hu-build"
             }
           },
           "defaultConfiguration": "development"

@@ -12,17 +12,18 @@ export const authCheckerInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
   const baseURL = clientConfigService?.clientConfig?.endpoint;
+  const withCred = req.clone({ withCredentials: true});
 
-  if (baseURL && !req.url.startsWith('http')) {
-    const absoluteURL = baseURL + req.url;  
-    const cloned = req.clone({ withCredentials: true, url: absoluteURL });
+  if (baseURL && !withCred.url.startsWith('http')) {
+    const absoluteURL = baseURL + withCred.url;  
+    const cloned = withCred.clone({ url: absoluteURL });
 
     return next(cloned).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
           // Redirect to login page
           console.log("Error user is not signed in...");
-          authService.signOut();
+          authService.signOut().subscribe();
           router.navigate(['/auth/sign-in']);
           return EMPTY;
         }
@@ -38,5 +39,5 @@ export const authCheckerInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
 
-  return next(req);
+  return next(withCred);
 };

@@ -11,8 +11,9 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class UserEditor {
   @Input() userData: UserData = {};
-  @Input() disabledAfterRegister: boolean = false;
+  @Input() afterRegister: boolean = false;
   @Input() currentLanguage: string = 'en';
+  @Input() useLanguageSelector: boolean = false;
 
   gameConfiguration: GameConfiguration;
 

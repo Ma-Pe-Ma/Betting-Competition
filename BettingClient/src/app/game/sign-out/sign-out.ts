@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import { AuthService } from '../../service/auth-service';
 import { take } from 'rxjs';
+import { paths } from '../../paths';
 
 @Component({
   selector: 'app-sign-out',
@@ -12,17 +12,16 @@ import { take } from 'rxjs';
 })
 export class SignOut {
   constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
-    let path = environment.locations.auth.signOut;
+    let path = paths.auth.signOut;
     this.http.get<Alert>(path, {observe: 'response'}).pipe(take(1)).subscribe(res => {
       if (res.status === 200) {
         let newAlert: Alert = res.body!;
         if (newAlert.type === 'success') {
-          this.authService.signOut();        
-          this.authService.getUser$.pipe(take(1)).subscribe(user => {
+          this.authService.signOut().subscribe(user => {
             setTimeout(() => {
               this.router.navigate(['/auth/sign-in']);
             }, 1000);    
-          });    
+          });
         } 
       }
     });

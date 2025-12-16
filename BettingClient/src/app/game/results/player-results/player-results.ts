@@ -5,7 +5,7 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { GameConfigurationService } from '../../../service/game-configuration-service';
 import { AuthService } from '../../../service/auth-service';
 import { tap, catchError } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { paths } from '../../../paths';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
 
 interface ExtraData {
@@ -29,7 +29,7 @@ interface PlayerData {
   templateUrl: './player-results.html'
 })
 export class PlayerResults {
-  playerListLocation: string = environment.locations.results.playerNames;
+  playerListLocation: string = paths.results.playerNames;
   gameData: GameConfiguration;
 
   playerResults: Map<string, PlayerData> = new Map<string, PlayerData>(); 
@@ -52,7 +52,7 @@ export class PlayerResults {
     }
     else {
       this.currentPlayer = null;
-      let path = environment.locations.results.playerResults;
+      let path = paths.results.playerResults;
       const params = { name: playerName };
 
       this.http.get<PlayerData>(path, {params}).pipe(

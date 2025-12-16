@@ -1,37 +1,37 @@
 <div class="container">
 @if (playerStatistics.length == 0 || matchStatistics.length == 0) {
-    <h5 i18n="playerStatistics" i18n="statisticsUnavailable">Statistics are not available yet!</h5>
+    <h5 i18n="@@statisticsUnavailable">Statistics are not available yet!</h5>
 }
 @else {
     <div class="mb-3">
-        <h5 i18n="playerStatistics">Player statistics:</h5>
+        <h5 i18n="@@playerStatistics">Player statistics</h5>
         <div class="row ms-2 mb-1">
             <h4 class="mt-0">
-                <span i18n="betNr">Number of bets: </span>
+                <span i18n="@@betCount">Bet count</span>
                 <span>{{ playerStatistics[0].total_bet_count | number:'1.0-1' }}</span>             
             </h4>
             <h4 class="mt-0">
-                <span i18n="hitNr">Number of hits: </span>
-                <span>{{playerStatistics[0].total_hit_count}} - {{(100 * playerStatistics[0].total_hit_count / playerStatistics[0].total_bet_count) | number:'1.0-1'}}%</span>
+                <span i18n="@@hitCount">Hit count</span>
+                <span>{{playerStatistics[0].total_hit_count}} - {{(100 * (playerStatistics[0].total_hit_count ?? 0) / (playerStatistics[0].total_bet_count ?? 1)) | number:'1.0-1'}}%</span>
             </h4>
             <h4 class="">
-                <span i18n="bullseyeNr">Number of bullseyes: </span>
-                <span>{{playerStatistics[0].total_bullseye_count}} - {{(100 * playerStatistics[0].total_bullseye_count / playerStatistics[0].total_bet_count) | number:'1.0-1' }} %</span>
+                <span i18n="@@bullseyeCount">Bullseye count</span>
+                <span>{{playerStatistics[0].total_bullseye_count}} - {{(100 * (playerStatistics[0].total_bullseye_count ?? 0) / (playerStatistics[0].total_bet_count ?? 1)) | number:'1.0-1' }}%</span>
             </h4>
         </div>
 
         <table class="table">
             <thead>
             <tr>
-                <th scope="col" i18n="name">Name</th>
-                <th scope="col" class="align-middle text-center" i18n="betCount">Bet count</th>
-                <th scope="col" class="align-middle text-center" i18n="hitCount">Hit count</th>
-                <th scope="col" class="align-middle text-center" i18n="hitRatio">Hit ratio</th>
-                <th scope="col" class="align-middle text-center" i18n="bullseyeCount">Bullseye count</th>
-                <th scope="col" class="align-middle text-center" i18n="bullseyeRatio">Bullseye ratio</th>
-                <th scope="col" class="align-middle text-center" i18n="maxWinningWtreak">Max winning streak</th>
-                <th scope="col" class="align-middle text-center" i18n="maxBullseyeStreak">Max bullseye streak</th>
-                <th scope="col" class="align-middle text-center" i18n="maxLosingStreak">Max losing streak</th>
+                <th scope="col" i18n="@@name">Name</th>
+                <th scope="col" class="align-middle text-center" i18n="@@betCount">Bet count</th>
+                <th scope="col" class="align-middle text-center" i18n="@@hitCount">Hit count</th>
+                <th scope="col" class="align-middle text-center" i18n="@@hitRatio">Hit ratio</th>
+                <th scope="col" class="align-middle text-center" i18n="@@bullseyeCount">Bullseye count</th>
+                <th scope="col" class="align-middle text-center" i18n="@@bullseyeRatio">Bullseye ratio</th>
+                <th scope="col" class="align-middle text-center" i18n="@@maxWinningWtreak">Max winning streak</th>
+                <th scope="col" class="align-middle text-center" i18n="@@maxBullseyeStreak">Max bullseye streak</th>
+                <th scope="col" class="align-middle text-center" i18n="@@maxLosingStreak">Max losing streak</th>
             </tr>
             </thead>
             
@@ -54,22 +54,22 @@
     </div>
 
     <div class="mt-5">
-        <h5 i18n="matchStatistics">Match statistics:</h5>
+        <h5 i18n="@@matchStatistics">Match statistics</h5>
 
         <table class="table">
             <thead>
             <tr>
-                <th scope="col" class="align-middle text-center" i18n="id">ID</th>
-                <th scope="col" class="align-middle text-center" i18n="date">Date</th>
-                <th scope="col" class="align-middle text-center" i18n="teams">Teams</th>
-                <th scope="col" class="align-middle text-center" i18n="betCount">Bet count</th>
-                <th scope="col" class="align-middle text-center" i18n="hitCount">Hit count</th>
-                <th scope="col" class="align-middle text-center" i18n="hitRatio">Hit ratio</th>
-                <th scope="col" class="align-middle text-center" i18n="totalBetCredit">Total bet credit</th>
-                <th scope="col" class="align-middle text-center" i18n="normalizedBet">Normalized total bet credit</th>
-                <th scope="col" class="align-middle text-center" i18n="sumCreditDiff">Sum credit difference</th>
-                <th scope="col" class="align-middle text-center" i18n="normSumCreditDiff">Normalized sum credit difference</th>
-                <th scope="col" class="align-middle text-center" i18n="diffTotalCredit">Difference / total credit</th>
+                <th scope="col" class="align-middle text-center" i18n="@@id">ID</th>
+                <th scope="col" class="align-middle text-center" i18n="@@date">Date</th>
+                <th scope="col" class="align-middle text-center" i18n="@@teams">Teams</th>
+                <th scope="col" class="align-middle text-center" i18n="@@betCount">Bet count</th>
+                <th scope="col" class="align-middle text-center" i18n="@@hitCount">Hit count</th>
+                <th scope="col" class="align-middle text-center" i18n="@@hitRatio">Hit ratio</th>
+                <th scope="col" class="align-middle text-center" i18n="@@totalBetCredit">Total bet credit</th>
+                <th scope="col" class="align-middle text-center" i18n="@@normalizedBet">Normalized total bet credit</th>
+                <th scope="col" class="align-middle text-center" i18n="@@sumCreditDiff">Sum credit difference</th>
+                <th scope="col" class="align-middle text-center" i18n="@@normSumCreditDiff">Normalized sum credit difference</th>
+                <th scope="col" class="align-middle text-center" i18n="@@diffTotalCredit">Difference / total credit</th>
             </tr>
             </thead>
             <tbody>

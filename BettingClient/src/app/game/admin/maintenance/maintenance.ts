@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { tap, catchError, of} from 'rxjs';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { ClientConfigService } from '../../../service/client-config-service';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-maintenance',
@@ -34,7 +34,7 @@ export class Maintenance {
     const formData = new FormData();
     formData.append('file', this.selectedFile);
 
-    let path = environment.locations.admin.maintenance.dbUpload;
+    let path = paths.admin.maintenance.dbUpload;
 
     this.http.post<Alert>(path, formData).pipe(
       tap(data => {

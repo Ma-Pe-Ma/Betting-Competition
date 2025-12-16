@@ -4,8 +4,8 @@
     <div class="d-flex flex-wrap justify-content-between mb-3">
         <a [routerLink]="'/'" class="d-flex align-items-center mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <svg class="bi me-2" width="40" height="32"><image xlink:href="/ball.svg" width="40" height="32"/></svg>
-            <span class="fs-4 d-none d-sm-inline" i18n="game_name">Betting competition!</span>
-            <span class="fs-6 d-sm-none" i18n="game_name">Betting competition!</span>
+            <span class="fs-4 d-none d-sm-inline" i18n="@@bettingComp">Betting competition!</span>
+            <span class="fs-6 d-sm-none" i18n="@@bettingComp">Betting competition!</span>
         </a>
 
         <div ngbDropdown class="d-flex text-end align-items-center">
@@ -16,16 +16,12 @@
 
             <ul ngbDropdownMenu class="dropdown-menu text-small">
                 <li>
-                    <a class="dropdown-item" routerLink="/profile" i18n="profile">
-                        Profile
-                    </a>
+                    <a class="dropdown-item" routerLink="/profile" i18n="@@profile">Profile</a>
                 </li>
                 <li>
                     <hr class="dropdown-divider"/></li>
                 <li>
-                    <a class="dropdown-item" routerLink="/sign-out" i18n="sign_out">
-                        Sign out
-                    </a>
+                    <a class="dropdown-item" routerLink="/sign-out" i18n="@@signOut">Sign out</a>
                 </li>
             </ul>
         </div>

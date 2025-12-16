@@ -3,12 +3,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { BehaviorSubject, of, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../../../environments/environment';
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
 import { AuthService } from '../../../service/auth-service';
 import { HttpDataHandler } from '../../../service/http-data-handler';
 import { map, catchError } from 'rxjs';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-match-modal',
@@ -37,9 +37,9 @@ export class MatchModal {
 
   fetchMatchData(matchID: number) {
     const params = new HttpParams().set('matchID', matchID);
-    let path = this.admin ? environment.locations.admin.match.get : environment.locations.match;
+    let path = this.admin ? paths.admin.match.get : paths.match;
 
-    this.http.get<Match>(path, { params, observe: 'response' }).pipe(
+    this.http.get<Match>(path, { params: params, observe: 'response' }).pipe(
       map(response => response.body),
       catchError((err: HttpErrorResponse) => {
         if(err.status == 400) {
@@ -62,7 +62,7 @@ export class MatchModal {
 
   postMatchData(matchID: number) {
     const params = new HttpParams().set('matchID', matchID);
-    let path = this.admin ? environment.locations.admin.match.set : environment.locations.match;
+    let path = this.admin ? paths.admin.match.set : paths.match;
     this.http.post<Alert>(path, this.match$.value, { params }).pipe(
       tap(value => {
         this.betPosted.emit(true);

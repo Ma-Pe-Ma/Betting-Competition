@@ -6,6 +6,7 @@ services:
       - ${instance_directory}:/BettingInstance/      
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./config.json:/usr/share/nginx/html/config.json:ro
+      - ./config.json:/usr/share/nginx/html/hu/config.json:ro
     ports:
       - "80:80"
       - "443:443"

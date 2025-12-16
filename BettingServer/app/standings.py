@@ -1,11 +1,10 @@
 from flask import Blueprint
-from flask import g
+from flask import session
 
 from app.tools.db_handler import get_db
 from app.auth import sign_in_required
 from app.tools import score_calculator 
 from app.tools import time_handler
-from app.tools.cache_handler import cache
 
 from sqlalchemy import text
 
@@ -15,7 +14,7 @@ bp = Blueprint('standings', __name__, '''url_prefix="/standings"''')
 @sign_in_required()
 def standings(language = None):
     daily_point_parameters = score_calculator.get_daily_point_parameters()
-    daily_point_parameters.update({'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M'), 'l' : g.user['language'] or language})
+    daily_point_parameters.update({'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M'), 'l' : session['language'] or language})
 
     user_query = score_calculator.get_daily_points_by_current_time_query(users='SELECT username FROM bet_user ORDER BY UPPER(username)')
     user_query = '''

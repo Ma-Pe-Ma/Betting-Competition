@@ -1,8 +1,8 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 import { CanvasJSAngularChartsModule, CanvasJSChart } from '@canvasjs/angular-charts';
+import { paths } from '../../paths';
 
 interface DayPoint {
   date: string,
@@ -28,7 +28,7 @@ export class Standings {
   chartOptions = {
       theme: "dark2",
       title: {
-          text : 'History of standings'
+          text : $localize`:@@history:History of standings`
       },
       axisX: {
           valueFormatString: "MMM-DD",
@@ -38,7 +38,7 @@ export class Standings {
       },
       axisY2: {
           title: "",
-          suffix: 'Credit'
+          suffix: $localize`:@@credit:credit`
       },
       toolTip: {
           shared: true
@@ -66,7 +66,7 @@ export class Standings {
   }
 
   constructor(private http: HttpClient, private ngZone: NgZone) { 
-    let standingsPath = environment.locations.standings;
+    let standingsPath = paths.standings;
 
     this.http.get<UserStanding[]>(standingsPath).pipe(
       map(data => {

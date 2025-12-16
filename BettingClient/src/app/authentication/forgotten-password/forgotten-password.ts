@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { paths } from '../../paths';
 
 @Component({
   selector: 'app-forgotten-password',
@@ -19,7 +19,7 @@ export class ForgottenPassword {
   }
 
   requestNewPassword(): void {
-    let location = environment.locations.auth.forgottenPassword;
+    let location = paths.auth.forgottenPassword;
     this.http.post<Alert>(location, {email: this.email}).subscribe(response => {
       this.alerts.push(response);
     });

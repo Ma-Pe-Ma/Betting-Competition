@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5 ms-2" id="tabularLabel" i18n="tournamentOdds">Tournament bet odds</h1>
+          <h1 class="modal-title fs-5 ms-2" id="tabularLabel" i18n="@@tournamentOdds">Tournament bet odds</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
         </div>
         <div class="modal-body" id="modalBody">
@@ -10,7 +10,7 @@
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col" i18n="team">Team</th>
+                    <th scope="col" i18n="@@team">Team</th>
                     @for(i of getResultCount(); track i) {
                         <th scope="col">{{ i | resultName}}</th>
                     } 

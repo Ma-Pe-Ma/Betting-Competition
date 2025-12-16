@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../../../environments/environment';
 import { HttpDataHandler } from '../../../service/http-data-handler';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
+import { paths } from '../../../paths';
 
 const RESULTNAME_MAP: Record<number, string> = {
-  0: $localize`:undet:Undetermined`,
-  1: $localize`:successful:Successful`,
-  2: $localize`:failed:Failed`,
+  0: $localize`:@@undetermined:Undetermined`,
+  1: $localize`:@@successful:Successful`,
+  2: $localize`:@@failed:Failed`,
 };
 
 @Component({
@@ -22,7 +22,7 @@ export class TournamentResult {
   tournamentBets: TournamentBet[] = []
 
   constructor(private http: HttpClient, private httpDataHandler: HttpDataHandler) {
-    let tournamentGetPath = environment.locations.admin.tournamentBet.get;
+    let tournamentGetPath = paths.admin.tournamentBet.get;
     
     this.httpDataHandler.getData<TournamentBet[]>(tournamentGetPath).subscribe(value => {
       if (value && (value as any).message) {
@@ -35,7 +35,7 @@ export class TournamentResult {
   }
 
   postTournamentBets() {
-    let tournamentSetPath = environment.locations.admin.tournamentBet.set;
+    let tournamentSetPath = paths.admin.tournamentBet.set;
 
     this.httpDataHandler.postData(tournamentSetPath, this.tournamentBets).subscribe(value => {
         this.alerts.push(value); 

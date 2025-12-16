@@ -4,6 +4,7 @@ import { Observable, tap, catchError, EMPTY} from 'rxjs';
 import { GroupState } from '../models/group-state';
 import { MainState } from '../models/main-state';
 import { environment } from '../../environments/environment';
+import { paths } from '../paths';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class GameConfigurationService {
   }
 
   public fetchGameData(): Observable<any> {
-    let configPath = environment.locations.gameConfiguration;
+    let configPath = paths.gameConfiguration;
 
     return this.http.get<GameConfiguration>(configPath, {observe: 'response'}).pipe(
       tap(res => {

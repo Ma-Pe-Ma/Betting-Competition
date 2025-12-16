@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import g
+from flask import session
 from flask import request
 from flask import current_app
 
@@ -24,7 +25,6 @@ def set_group_bet():
     bet_object = request.get_json()
     response_string = None
 
-    # parsing and checking final bet properties
     tournament = bet_object['tournament']
 
     final_team = tournament['team']
@@ -127,7 +127,7 @@ def tournament_bet_odds():
                         "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
                         "ORDER BY team.name "
                         )
-    result = get_db().session.execute(query_string, {'l' : g.user['language']})
+    result = get_db().session.execute(query_string, {'l' : session['language']})
 
     teams = []
     for team in result.fetchall():

@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../../../environments/environment';
 import { tap, catchError, of } from 'rxjs';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-team-data',
@@ -37,7 +37,7 @@ export class TeamData {
     formData.append('team', this.teamFile);
     formData.append('translation', this.translationFile);
 
-    let path = environment.locations.admin.teamData;
+    let path = paths.admin.teamData;
     this.http.post<Alert>(path, formData).pipe(
       tap(data => {
         return data;  

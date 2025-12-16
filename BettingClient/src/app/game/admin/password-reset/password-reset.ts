@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpDataHandler } from '../../../service/http-data-handler';
-import { environment } from '../../../../environments/environment';
+import { paths } from '../../../paths';
 
 interface ResetKey {
   email: string
@@ -17,7 +17,7 @@ export class PasswordReset {
   resetKeys: ResetKey[] = []
 
   constructor(private httpDataHandler: HttpDataHandler) {
-    let resetKeyPath = environment.locations.admin.resetKeys;
+    let resetKeyPath = paths.admin.resetKeys;
     
     this.httpDataHandler.getData<ResetKey[]>(resetKeyPath).subscribe(value => {
       if (value && (value as any).message) {

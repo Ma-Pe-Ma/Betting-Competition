@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, EMPTY, Observable, tap} from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { paths } from '../paths';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { getDefaultFormatCodeSettings } from 'typescript';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +13,12 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   public fetchAuthStatus(): Observable<any> {
-    let statusPath = environment.locations.auth.status;
+    let statusPath = paths.auth.status;
 
-    return this.http.get<User>(statusPath, {observe: 'response'}).pipe(
+    let params = new HttpParams()
+      .set('lan', environment.languageKey);
+
+    return this.http.get<User>(statusPath, {params: params, observe: 'response'}).pipe(
       tap(res => {
         if (res.status === 200) {
           this.userSubject.next(res.body);
@@ -40,10 +43,10 @@ export class AuthService {
   }
 
   signIn() {
-    this.fetchAuthStatus().subscribe();
+    return this.fetchAuthStatus();
   }
 
   signOut() {
-    this.fetchAuthStatus().subscribe();
+    return this.fetchAuthStatus();
   }
 }

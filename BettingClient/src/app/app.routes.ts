@@ -18,5 +18,10 @@ export const routes: Routes = [
         canActivate: [authGuard],
         canActivateChild: [authGuard],
         data: { role: null}
-    }       
+    },
+    {
+        path: '**', 
+        redirectTo: '/',
+        pathMatch: 'full'
+    }
 ];

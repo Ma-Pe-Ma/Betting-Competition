@@ -1,5 +1,5 @@
 export const environment = {
-    languageKey: 'en',
+    languageKey: 'hu',
     useMockTime: false,
     mockTime: ''
 };

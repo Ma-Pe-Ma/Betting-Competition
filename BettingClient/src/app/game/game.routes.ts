@@ -4,7 +4,7 @@ export const routes: Routes = [
     {
         path: '',
         loadComponent: () => import('./main/main').then(m => m.Main),
-        title: $localize`:betting:Betting`,
+        title: $localize`:@@betting:Betting`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         canActivateChild: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
@@ -12,7 +12,7 @@ export const routes: Routes = [
     {
         path: 'results',
         loadComponent: () => import('./results/results').then(m => m.Results),
-        title: $localize`:results:Results`,
+        title: $localize`:@@results:Results`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         canActivateChild: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
@@ -20,7 +20,7 @@ export const routes: Routes = [
     {
         path: 'standings',
         loadComponent: () => import('./standings/standings').then(m => m.Standings),
-        title: $localize`:standings:Standings`,
+        title: $localize`:@@standings:Standings`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         canActivateChild: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
@@ -28,7 +28,7 @@ export const routes: Routes = [
     {
         path: 'group-bet',
         loadComponent: () => import('./group-bet/group-bet').then(m => m.GroupBet),
-        title: $localize`:group_bet:Group bet`,
+        title: $localize`:@@groupBet:Group bet`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         canActivateChild: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
@@ -36,7 +36,7 @@ export const routes: Routes = [
     {
         path: 'chat',
         loadComponent: () => import('./chat/chat').then(m => m.Chat),
-        title: $localize`:chat:Chat`,
+        title: $localize`:@@chat:Chat`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         canActivateChild: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
@@ -44,7 +44,7 @@ export const routes: Routes = [
     {
         path: 'admin',
         loadComponent: () => import('./admin/admin').then(m => m.Admin),
-        title: $localize`:admin:Admin`,
+        title: $localize`:@@admin:Admin`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         canActivateChild: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 1 }
@@ -52,14 +52,14 @@ export const routes: Routes = [
     {
         path: 'profile',
         loadComponent: () => import('./profile/profile').then(m => m.Profile),
-        title: $localize`:betting:Profile`,
+        title: $localize`:@@profile:Profile`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
     },
     {
         path: 'sign-out',
         loadComponent: () => import('./sign-out/sign-out').then(m => m.SignOut),
-        title: $localize`:betting:Sign-out`,
+        title: $localize`:@@signOut:Sign out`,
         canActivate: [() => import('../service/auth-guard').then(m => m.authGuard)],
         data: { role: 0 }
     }

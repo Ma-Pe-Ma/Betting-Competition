@@ -33,12 +33,12 @@ jobs:
           LOCAL_TEST=1
           export LOCAL_TEST
           chmod +x ${{ github.workspace }}/install.sh
-          ${{ github.workspace }}/install.sh      
+          sudo -E ${{ github.workspace }}/install.sh /BettingInstance/
 
       - name: Test the server
         run: |
           sleep 2
-          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/sign-in)
+          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/api/status/)
           echo "HTTP Status: $status"
           if [ "$status" -ne 200 ]; then
             echo "Request failed with status $status"
@@ -47,10 +47,10 @@ jobs:
 
       - name: Print logs
         run: |
-          docker logs betting_app
-          docker logs http_server
+          docker logs betting-client
+          docker logs betting-server
 
       - name: Stop Docker Images
         run: |
-          docker container stop betting_app
-          docker container stop http_server
+          docker container stop betting-client
+          docker container stop betting-server

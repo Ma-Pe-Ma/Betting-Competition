@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { environment } from '../../../../environments/environment';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpDataHandler } from '../../../service/http-data-handler';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-send-message',
@@ -20,7 +20,7 @@ export class SendMessage {
   }
 
   sendMessage() {
-    let notificationPath = environment.locations.admin.sendNotification;    
+    let notificationPath = paths.admin.sendNotification;    
 
     this.httpDataHandler.postData(notificationPath, {subject: this.subject, message: this.message}).subscribe(value => {
         this.alerts.push(value); 

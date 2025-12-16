@@ -4,6 +4,7 @@ from flask import Flask
 from flask import render_template
 from flask import g
 from flask import request
+from flask import session, has_request_context
 
 import json
 import logging
@@ -60,6 +61,10 @@ def create_app(instance_path = None):
 
     def get_locale():
         # if a user is signed in, use the locale from the user settings
+        if has_request_context():
+            if session is not None and session.get('language') is not None:
+                return session['language']
+            
         user = getattr(g, 'user', None)
         if user is not None:
             return user['language']

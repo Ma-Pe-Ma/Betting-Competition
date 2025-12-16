@@ -34,13 +34,12 @@ def load_signed_in_user() -> None:
 
     if username is None:
         g.user = None
-        session.clear()
     else:
         if 'last' in session:
             now = datetime.now(UTC)
 
             if now - session.get('last') >= timedelta(minutes=current_app.config['SESSION_LIFE_TIME']):
-                session.clear()
+                session['username'] = None
                 return '', 401
         
             session['last'] = now
@@ -52,7 +51,7 @@ def load_signed_in_user() -> None:
         user_row = result.fetchone()
 
         if user_row is None:
-            session.clear()
+            session['username'] = None
             return '', 401
 
         g.user = (
@@ -87,8 +86,6 @@ def introduction():
     introduction_query = text('SELECT message FROM messages WHERE id = 0')
     introduction = get_db().session.execute(introduction_query).fetchone().message
     return {'introduction': introduction }
-    #with force_locale(user_data['language']):
-        # return render_template('/auth/register.html', user_data=user_data, introduction=introduction)
 
 @bp.route('/register', methods=['POST'])
 def register() -> str:
@@ -103,7 +100,7 @@ def register() -> str:
 
     user_data = request.json
 
-    if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
+    if 'language' not in user_data or user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
         best_language = (lambda keys : request.accept_languages.best_match(keys) or list(keys)[0])([language['key'] for language in current_app.config['SUPPORTED_LANGUAGES']])
         user_data['language'] = best_language
 
@@ -116,13 +113,13 @@ def register() -> str:
     except ValueError:
         error = (gettext('Invalid reminder/summary value.'), 'danger')
     else:
-        if not user_data['username'] or len(str(user_data['username'])) < 3:
+        if 'username' not in user_data or len(str(user_data['username'])) < 3:
             error = (gettext('Chosen nickname is too short (min. 3 characters).'), 'danger')
         elif len(str(user_data['username'])) > 20:
             error = (gettext('Chosen nickname is too long (max. 20 characters).'), 'danger')
-        elif not user_data['email']:
+        elif 'email' not in user_data:
             error = (gettext('E-mail address is required.'), 'danger')
-        elif not user_data['password1'] or len(user_data['password1']) < 8:
+        elif 'password1' not in user_data or 'password2' not in user_data or len(user_data['password1']) < 8:
             error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
         elif user_data['password1'] != user_data['password2']:
             error = (gettext('The two passwords are not identical.'), 'danger')
@@ -158,7 +155,6 @@ def register() -> str:
     result = db.session.execute(query_string, user_data)
     db.session.commit()
 
-    session.clear()
     session['username'] = user_data['username']
     session.permanent = True
 
@@ -182,6 +178,9 @@ def sign_in() -> str:
     if g.user is not None:
         return '', 409
 
+    if 'username' not in request.json or 'password1' not in request.json:
+        return {'message': gettext('Username or password is not specified!'), 'type': 'danger'}
+
     username = request.json['username']
     password = request.json['password1']
     
@@ -199,7 +198,6 @@ def sign_in() -> str:
     if error is not None:        
         return {'message': error[0], 'type': error[1]}
 
-    session.clear()
     session['username'] = user.username
     session.permanent = True
 
@@ -211,7 +209,7 @@ def sign_in() -> str:
 @bp.route('/sign-out')
 @sign_in_required()
 def sign_out() -> str:
-    session.clear()
+    session['username'] = None
     return {'message': gettext('Successful sign out'), 'type': 'success'}
 
 @bp.route('/profile-get', methods=['GET'])
@@ -228,9 +226,6 @@ def get_profile():
 def post_profile() -> str:
     user_data = request.json
 
-    if user_data['language'] not in current_app.config['SUPPORTED_LANGUAGES']:
-        user_data['language'] = request.accept_languages.best_match([language['key'] for language in current_app.config['SUPPORTED_LANGUAGES']])
-
     try:
         user_data['reminder'] = 1 if 'reminder' not in user_data else int(user_data['reminder'])
         user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
@@ -238,11 +233,9 @@ def post_profile() -> str:
         user_data['reminder'] = 1
         user_data['summary'] = 0
 
-    query_string = text('UPDATE bet_user SET reminder=:r, summary=:s, language=:l WHERE username=:u')
-    get_db().session.execute(query_string, {'r' : user_data['reminder'], 's' : user_data['summary'], 'l' : user_data['language'], 'u' : g.user['username']})
+    query_string = text('UPDATE bet_user SET reminder=:r, summary=:s WHERE username=:u')
+    get_db().session.execute(query_string, {'r' : user_data['reminder'], 's' : user_data['summary'], 'u' : g.user['username']})
     get_db().session.commit()
-
-    g.user['language'] = user_data['language']
 
     return {'message': gettext('Settings were successfully modified'), 'type': 'success'}
 
@@ -286,14 +279,11 @@ def forgotten_password():
 
     cache.set('password_reset_keys', reset_keys, 3600 * 24)
 
-    message = gettext('New password requested! Please contact one of the admins for further action!')
+    message = gettext('New password requested! Please contact one of the admins for further actions!')
     if current_app.config['DIRECT_MESSAGING'] == 1:
-        message = gettext('New password requested! Check your email for further action!')              
+        message = gettext('New password requested! Check your email for further actions!')              
 
     return  {'message': message, 'type' : 'success'}
-    # best_language = (lambda keys : request.accept_languages.best_match(keys) or list(keys)[0])([language['key'] for language in current_app.config['SUPPORTED_LANGUAGES']])
-    # with force_locale(best_language):
-    #     return render_template('auth/forgotten-password.html', requested=requested, email=email)
 
 @bp.route('/reset-password', methods=['POST'])
 def reset_password() -> str:
@@ -306,11 +296,11 @@ def reset_password() -> str:
     error = None
     user = None
 
-    if not user_data['email']:
+    if 'email' not in user_data:
         error = (gettext('Email is not specified.'), 'danger')
-    elif not user_data['key']:
+    elif 'key' not in user_data:
         error = (gettext('Reset key is not specified.'), 'danger')
-    elif not user_data['password1'] or len(user_data['password1']) < 8:
+    elif 'password1' not in user_data or len(user_data['password1']) < 8:
         error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
     elif user_data['password1'] != user_data['password2']:
         error = (gettext('The two passwords are not identical.'), 'danger')
@@ -345,7 +335,6 @@ def reset_password() -> str:
     result = db.session.execute(password_change_query_string, user_data)
     db.session.commit()
 
-    session.clear()
     session['username'] = user.username
     session.permanent = True
 
@@ -353,7 +342,16 @@ def reset_password() -> str:
 
 @bp.route('/status', methods=['GET'])
 def check_auth_status():
+    session['language'] = request.args.get('lan', current_app.config['SUPPORTED_LANGUAGES'][0]['key'])
+    session.permanent = True
+    session.modified = True
+
     if g.user is not None:
+        if session['language'] != g.user['language']:
+            query_string = text('UPDATE bet_user SET language=:l WHERE username=:u')
+            get_db().session.execute(query_string, {'l' : session['language'], 'u' : g.user['username']})
+            get_db().session.commit()
+
         query_string = text('SELECT * FROM messages WHERE id > 0')
         messages = []
         
@@ -361,13 +359,14 @@ def check_auth_status():
             if row.message is not None and row.message != '':
                 messages.append({'message' : row.message, 'type' : 'info'})        
 
-        return {'role' : (1 if g.user['admin'] else 0),
-                'hash' : current_app.config['IDENT_URL'].format(email_hash=g.user['email_hash']),
-                'username' : g.user['username'],
-                'messages' : messages,
-                'timezone' : g.user['timezone']
-                }
-    
-    session.clear()
+        return {
+            'role' : (1 if g.user['admin'] else 0),
+            'hash' : current_app.config['IDENT_URL'].format(email_hash=g.user['email_hash']),
+            'username' : g.user['username'],
+            'messages' : messages,
+            'timezone' : g.user['timezone']
+        }
+
+    session['username'] = None
 
     return {'role' : None}
