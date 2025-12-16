@@ -3,13 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import { UserEditor } from '../user-editor/user-editor';
 import { Reminder } from '../reminder/reminder';
 import { GameConfigurationService } from '../../service/game-configuration-service';
-import { take } from 'rxjs';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { AuthService } from '../../service/auth-service';
+import { paths } from '../../paths';
 
 @Component({
   selector: 'app-register',
@@ -22,32 +21,34 @@ export class Register {
   alerts: Alert[] = []
 
   registerMessage: string = "";
-  registerClosed: boolean = true;
+  registerClosed: boolean | null = null;
 
   constructor(private http: HttpClient, private router: Router, private gameConfigurationService: GameConfigurationService, private authService: AuthService) {
     let gameConfig = this.gameConfigurationService.getGameConfiguration();
 
     if (gameConfig.deadlineTimes.group_evaluation > gameConfigurationService.getCurrentTime()) {
-        let registerMessagePath = environment.locations.auth.registerMessage;
-        this.http.get<{introduction: string}>(registerMessagePath).subscribe(message => this.registerMessage = message.introduction);
-        this.registerClosed = false;
+      let registerMessagePath = paths.auth.registerMessage;
+      this.http.get<{introduction: string}>(registerMessagePath).subscribe(message => this.registerMessage = message.introduction);
+      this.registerClosed = false;
+    }
+    else {
+      this.registerClosed = true;
     }
   }
 
   register() {
-    let location = environment.locations.auth.register;
+    let location = paths.auth.register;
     this.http.post<Alert>(location, this.userData, {observe: 'response'}).subscribe((response: HttpResponse<Alert>) => {
       let newAlert: Alert = response.body!;
 
       this.alerts.push(newAlert);
 
       if (newAlert.type === 'success') {
-        this.authService.signIn();
-        this.authService.getUser$.pipe(take(1)).subscribe(user => {
+        this.authService.signIn().subscribe(user => {
           setTimeout(() => {
             this.router.navigate(['/']);
           }, 1000);
-        });    
+        });
       }
     });
   }

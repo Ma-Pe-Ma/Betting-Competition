@@ -2,41 +2,45 @@
 
 <div class="container mt-4">
     @if (currentPlayer?.days?.length != 0) {
-        <div class="mt-1">
-            <span i18n="currentCredit">Current credit:</span>
-            <span class="ms-2">{{this.currentPlayer?.extraData?.currentBalance | number:'1.0-2'}}</span>
+        <div class="row col-mb-2 ms-0">
+            <span class="col-4" i18n="@@currentCredit">Current credit</span>
+            <span class="ms-1 col-4">{{this.currentPlayer?.extraData?.currentBalance | number:'1.0-2'}}</span>
         </div>
-        <div class="">
-            <span i18n="successRate">Success rate:</span>
-            <span class="ms-2">{{this.currentPlayer?.extraData?.successRate | number:'1.0-2'}}%</span>
+
+        <div class="row col-mb-2 ms-0">
+            <span class="col-4" i18n="@@successRate">Success rate</span>
+            <span class="ms-1 col-4">{{this.currentPlayer?.extraData?.successRate | number:'1.0-2'}}%</span>
         </div>
-        <div class="mt-0">
-            <span i18n="startingCredit">Starting credit amount:</span>
-            <span class="ms-2">{{this.currentPlayer?.extraData?.startAmount}}</span>
+
+        <div class="row col-mb-2 ms-0">
+            <span class="col-4" i18n="@@startingCredit">Starting credit amount</span>
+            <span class="ms-1 col-4">{{this.currentPlayer?.extraData?.startAmount}}</span>
         </div>
-        <div class>
-            <span i18n="totalBetAmount">Total group + tournament bet amount:</span>
-            <span class="ms-2">{{this.currentPlayer?.extraData?.groupAndTournamentBetCredit}}</span>
+
+        <div class="row col-mb-2 ms-0">
+            <span class="col-4" i18n="@@totalBetAmount">Total group + tournament bet amount</span>
+            <span class="ms-1 col-4">{{this.currentPlayer?.extraData?.groupAndTournamentBetCredit}}</span>
         </div>
-        <div class="">
-            <span i18n="remainingCredit">Remaining after group + tournament bet:</span>
-            <span class="ms-2">{{(this.currentPlayer?.extraData?.startAmount ?? 0) - (this.currentPlayer?.extraData?.groupAndTournamentBetCredit ?? 0)}}</span>
+
+        <div class="row col-mb-2 ms-0">
+            <span class="col-4" i18n="@@remainingCredit">Remaining credit after group + tournament bet</span>
+            <span class="ms-1 col-4">{{(this.currentPlayer?.extraData?.startAmount ?? 0) - (this.currentPlayer?.extraData?.groupAndTournamentBetCredit ?? 0)}}</span>
         </div>
 
         <div class="container mt-4">
             <div class="row mb-3 mt-3 text-center">
-                <div class="col-4 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="teamsHeader">Teams</div>
-                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="oddsHeader">1 / X / 2</div>
-                <div class="col-3 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="resultTipHeader">Result / Tip</div>
-                <div class="col-3 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="betPrizeHeader">Bet / Prize</div>
-                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="balanceHeader">Balance</div>
-                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none" i18n="creditShortHeader">Cr.</div>
+                <div class="col-4 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@teamsHeader">Teams</div>
+                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="@@oddsHeader">1 / X / 2</div>
+                <div class="col-3 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@resultTipHeader">Result / Tip</div>
+                <div class="col-3 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@betPrizeHeader">Bet / Prize</div>
+                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="@@balanceHeader">Balance</div>
+                <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none" i18n="@@creditShortHeader">Cr.</div>
             </div>
         </div>
     }
     @else {
         <div class="container justify-content-center">
-            <h1 i18n="notBegun">The tournament has not begun!</h1>
+            <h1 i18n="@@notBegun">The tournament has not begun!</h1>
         </div>
     }
 
@@ -44,7 +48,7 @@
         <div class="row mb-3 text-left">
             <div class="col-12 col-sm-8 themed-grid-col">
                 <span class="entry-number">{{ day.number }}</span>. 
-                <span class="day-label" i18n="day">day</span> - 
+                <span class="day-label" i18n="@@day">day</span> - 
                 <span class="date">{{ day.date }}</span> - 
             <span class="day-name">{{ day.weekday | dayName}}</span>
         </div>
@@ -80,12 +84,12 @@
         @if(day.date == (gameData.deadlineTimes!.group_evaluation | date:'yyyy-MM-dd')) {
             <div class="container row d-flex align-items-center">
                 <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">
-                    <span i18n="groupTotalPrize">Group bet total prize:</span>
+                    <span i18n="@@groupTotalPrize">Group bet total prize</span>
                     <span>{{ this.currentPlayer?.extraData?.groupBonus != null ? (this.currentPlayer?.extraData?.groupBonus | number:'1.0-2') : '?' }}</span>
                 </p>
                 <div class="col-1"></div>
                 <p class="col-3 justify-content-center badge bg-info">
-                    <span i18n="balanceAfter">Balance after group bonus:</span>
+                    <span i18n="@@balanceAfter">Balance after group bonus</span>
                     <span>{{ this.currentPlayer?.extraData?.balanceAfterGroup != null ? (this.currentPlayer?.extraData?.balanceAfterGroup | number:'1.0-2') : '?' }}</span>
                 </p>
             </div>
@@ -99,7 +103,7 @@
             <span>{{currentPlayer?.tournamentBet?.prize | number:'1.0-2'}}</span>
         <div class="col-1"></div>
         <p class="col-3 justify-content-center badge bg-info">
-            <span i18n="finalBalance">Final balance:</span>
+            <span i18n="@@finalBalance">Final balance</span>
             <span>{{currentPlayer?.extraData?.currentBalance| number:'1.0-1'}}</span>
         </p> 
     </div>

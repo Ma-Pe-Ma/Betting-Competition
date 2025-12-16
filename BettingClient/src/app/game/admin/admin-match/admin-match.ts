@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
 import { tap, catchError } from 'rxjs';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
 import { AuthService } from '../../../service/auth-service';
 import { MatchModal } from '../../modals/match-modal/match-modal';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-admin-match',
-  imports: [DecimalPipe, LocalDatePipe],
+  imports: [CommonModule, DecimalPipe, LocalDatePipe],
   templateUrl: './admin-match.html'
 })
 export class AdminMatch {
@@ -25,7 +25,7 @@ export class AdminMatch {
   }
 
   fetchMatches() {
-    let adminMatchPath = environment.locations.admin.match.list;
+    let adminMatchPath = paths.admin.match.list;
 
     this.http.get<Match[]>(adminMatchPath).pipe(
       tap(data => {
@@ -50,7 +50,7 @@ export class AdminMatch {
   }
 
   fetchFromFixture() {
-    let updateMatchPath = environment.locations.admin.match.update;
+    let updateMatchPath = paths.admin.match.update;
 
     this.http.get<Alert>(updateMatchPath).pipe(
       tap(data => {

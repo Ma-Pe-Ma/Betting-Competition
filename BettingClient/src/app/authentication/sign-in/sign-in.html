@@ -1,35 +1,33 @@
 <main class="container">
     <div class="form-signin w-100 m-auto d-flex justify-content-center">
-        <div class="col-12 col-md-6" method="POST">        
-            <h1 class="h3 mb-3 fw-normal" i18n="sign_in">Sign in</h1>
+        <div class="col-12 col-md-6">        
+            <h1 class="h3 mb-3 fw-normal" i18n="@@signIn">Sign in</h1>
         
             <div class="form-floating">
-                <input type="text" class="form-control" id="usernameInput" placeholder="username" name="username" [(ngModel)]="userData.username">
-                <label for="usernameInput" i18n="username">Username</label>
+                <input type="text" class="form-control" id="usernameInput" placeholder="Username" i18n-placeholder="@@username" name="username" [(ngModel)]="userData.username" (keyup.enter)="signIn()">
+                <label for="usernameInput" i18n="@@username">Username</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="passwordInput" placeholder="password" name="password" [(ngModel)]="userData.password1">
-                <label for="passwordInput" i18="password">Password</label>
+                <input type="password" class="form-control" id="passwordInput" placeholder="Password" i18n-placeholder="@@password" name="password" [(ngModel)]="userData.password1" (keyup.enter)="signIn()">
+                <label for="passwordInput" i18n="@@password">Password</label>
             </div>
 
             <div class="row ms-2 mt-3">
                 <div class="col form-check ">
-                    <input class="form-check-input" type="checkbox" id="staySignedIn" name="stay" checked [(ngModel)]="userData.keepSignedIn" >
-                    <label class="form-check-label" for="staySignedIn" i18n="stay_signed">
-                      Stay signed in
-                    </label>
+                    <input class="form-check-input" type="checkbox" id="staySignedIn" name="stay" checked [(ngModel)]="userData.keepSignedIn">
+                    <label class="form-check-label" for="staySignedIn" i18n="@@staySigned">Stay signed in</label>
                 </div>
             </div>
             <div class="col">
             </div>
             <div class="row ms-1 mt-3">
                 <div class="col">
-                    <span i18n="account_yet">Don't have an account yet?</span>
-                    <a routerLink="/auth/register" i18n="sign_up">Sign up</a>
+                    <span i18n="@@accountYet">Don't have an account yet?</span>&nbsp;
+                    <a routerLink="/auth/register" i18n="@@signUp">Sign up</a>
                 </div>
                 <div class="col">
-                    <span i18n="forgot">Forgot your password?</span>
-                    <a routerLink="/auth/forgotten-password" i18n="forgot">Request new</a>
+                    <span i18n="@@forgot">Forgot your password?</span>&nbsp;
+                    <a routerLink="/auth/forgotten-password" i18n="@@requestNew">Request new</a>
                 </div>
             </div>
 
@@ -37,7 +35,7 @@
 	            <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
             }
 
-            <button class="btn btn-primary w-100 py-2 col-6 form-group" type="submit" i18n="sign_in" (click)="signIn()">Sign in</button>
+            <button class="btn btn-primary w-100 py-2 col-6 form-group" type="submit" i18n="@@signIn" (click)="signIn()">Sign in</button>
         </div>
     </div>
 </main>

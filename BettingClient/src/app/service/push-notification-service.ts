@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { GameConfigurationService } from '../service/game-configuration-service';
-import { environment } from '../../environments/environment';
+import { paths } from '../paths';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class PushNotificationService {
           serverPublicKey: gameConfiguration?.serverConfiguration.pushKey!
         })
         .then(subscription => {
-          let pushPath = environment.locations.push;
+          let pushPath = paths.push;
           this.http.post(pushPath, subscription).subscribe(response => {
             console.log("Successfuly sent subscription to server...")
           })

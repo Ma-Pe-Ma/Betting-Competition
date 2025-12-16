@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import g
+from flask import session
 from flask import render_template_string
 from flask import request
 from flask import current_app
@@ -40,7 +41,7 @@ def matches():
                         "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "
                         "LEFT JOIN team_translation AS t2 ON t2.name = match.team2 AND t2.language = :l "
                         "ORDER BY match.datetime")
-    result = get_db().session.execute(query_string, {'l' : g.user['language'], 'tz' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'l' : session['language'], 'tz' : g.user['timezone']})
 
     return [match._asdict() for match in result.fetchall()]
 
@@ -56,7 +57,7 @@ def odd_get():
                             "LEFT JOIN team_translation AS t1 ON t1.name = match.team1 AND t1.language = :l "
                             "LEFT JOIN team_translation AS t2 ON t2.name = match.team2 AND t2.language = :l "
                             "WHERE match.id=:matchID")
-        result = get_db().session.execute(query_string, {'matchID' : matchID, 'l' : g.user['language'], 'tz' : g.user['timezone']})
+        result = get_db().session.execute(query_string, {'matchID' : matchID, 'l' : session['language'], 'tz' : g.user['timezone']})
 
         return result.fetchone()._asdict()
     except Exception as error:
@@ -160,7 +161,7 @@ def get_groups():
                                 "FROM team "
                                 "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
                                 "ORDER BY team.group_id, team.position")
-            result = get_db().session.execute(query_string, {'l' : g.user['language']})
+            result = get_db().session.execute(query_string, {'l' : session['language']})
 
             for team in result.fetchall():
                 current_group = None
@@ -202,7 +203,7 @@ def tournament_bet_get():
                             "FROM tournament_bet "
                             "LEFT JOIN team_translation AS tr ON tr.name=tournament_bet.team AND tr.language = :language "
                             "ORDER BY UPPER(tournament_bet.username)")
-        result = get_db().session.execute(query_string, {'language' : g.user['language']})
+        result = get_db().session.execute(query_string, {'language' : session['language']})
 
         tournament_bets = [tournament_bet._asdict() for tournament_bet in result.fetchall()]
 

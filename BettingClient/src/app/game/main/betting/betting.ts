@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
@@ -7,6 +6,7 @@ import { DayNamePipe } from '../../../pipes/day-name-pipe';
 import { NgTemplateOutlet } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatchModal } from '../../modals/match-modal/match-modal';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-betting',
@@ -22,8 +22,8 @@ export class Betting {
   }
 
   fetchMetchData() {
-    let r1 = this.http.get<Day[]>(environment.locations.main.matches);
-    let r2 = this.http.get<{credit: number}>(environment.locations.main.credit);
+    let r1 = this.http.get<Day[]>(paths.main.matches);
+    let r2 = this.http.get<{credit: number}>(paths.main.credit);
 
     forkJoin([r1, r2]).subscribe({
       next: ([days, credit] : [Day[], {credit: number}]) => {

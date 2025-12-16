@@ -1,32 +1,30 @@
 <div class="col-12">
-    <label for="lastName" class="form-label" i18n="usernameLabel">Username</label>
-    <input type="text" class="form-control" id="lastName" name="username" placeholder="" [(ngModel)]="userData.username" [disabled]="disabledAfterRegister">
-    <div class="invalid-feedback" i18n="usernameInvalidFeedback">
-        A valid username is required.
-    </div>
+    <label for="lastName" class="form-label" i18n="@@username">Username</label>
+    <input type="text" class="form-control" id="lastName" name="username" placeholder="" [(ngModel)]="userData.username" [disabled]="afterRegister">
+    <div class="invalid-feedback" i18n="@@validUsername">A valid username is required.</div>
 </div>
 
 <div class="col-12 mt-2">
-    <label for="email" class="form-label" i18n="emailLabel">Email <span class="text-body-secondary"></span></label>
-    <input type="email" class="form-control" id="email" placeholder="email@address.com" name="email" [(ngModel)]="userData.email" [disabled]="disabledAfterRegister" [required]="!disabledAfterRegister">
-    <div class="invalid-feedback" i18n="emailInvalidFeedback">
-        Please enter a valid email address.
-    </div>
+    <label for="email" class="form-label" i18n="@@email">Email</label>
+    <input type="email" class="form-control" id="email" placeholder="email@address.com" i18n-placeholder="@@emailPlaceholder" name="email" [(ngModel)]="userData.email" [disabled]="afterRegister" [required]="!afterRegister">
+    <div class="invalid-feedback" i18n="@@validEmail">Please enter a valid email address.</div>
 </div>
-
+@if(useLanguageSelector) {
 <div class="col-12 mt-2">
-    <label for="langSelect" class="form-label" i18n="languageLabel">Language</label>
+    <label for="langSelect" class="form-label" i18n="@@language">Language</label>
     <div class="container">
         <div class="d-flex align-items-center">
-        <div ngbDropdown>
-            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
-                {{getLanguageNameByKey(userData.language ?? "")}}
-            </button>
-            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                @for(item of gameConfiguration.serverConfiguration.languages; track item.key) {
-                    <button ngbDropdownItem (click)="userData.language = item.key">{{getLanguageNameByKey(item.key)}}</button>
-                }
+            <div ngbDropdown>
+                <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+                    {{getLanguageNameByKey(userData.language ?? "")}}
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    @for(item of gameConfiguration.serverConfiguration.languages; track item.key) {
+                        <button ngbDropdownItem (click)="this.userData.language = item.key;">{{getLanguageNameByKey(item.key)}}</button>
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
+} 

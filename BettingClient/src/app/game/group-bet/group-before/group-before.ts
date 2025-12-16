@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GameConfigurationService } from '../../../service/game-configuration-service';
 import { DecimalPipe } from '@angular/common';
-import { environment } from '../../../../environments/environment';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
 import { FormsModule } from '@angular/forms';
 import { tap, catchError, forkJoin, of} from 'rxjs';
@@ -11,6 +10,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { OddModal } from '../../modals/odd-modal/odd-modal';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-group-before',
@@ -32,8 +32,8 @@ export class GroupBefore {
     this.betValues = gameConfiguration?.betValues;
     this.groupHitMap = gameConfiguration?.groupHitMap;
 
-    let groupStatusPath = environment.locations.group.get;
-    let tournamentOddPath = environment.locations.group.tournament;
+    let groupStatusPath = paths.group.get;
+    let tournamentOddPath = paths.group.tournament;
     
     forkJoin({
       group: this.http.get<GroupResponse>(groupStatusPath).pipe(
@@ -101,7 +101,7 @@ export class GroupBefore {
   }
 
   postGroups() {
-    let groupPostPath = environment.locations.group.set;
+    let groupPostPath = paths.group.set;
 
     this.http.post<Alert>(groupPostPath, this.playerInput).pipe(
       tap(alert => {

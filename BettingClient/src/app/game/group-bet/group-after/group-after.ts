@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../service/auth-service';
 import { tap, catchError } from 'rxjs';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
@@ -8,6 +7,7 @@ import { GameConfigurationService } from '../../../service/game-configuration-se
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
 import { NgClass } from '@angular/common';
 import { GroupState } from '../../../models/group-state';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-group-after',
@@ -18,7 +18,7 @@ export class GroupAfter {
   GroupState = GroupState;  
   groupState: GroupState | null = null;
 
-  playerListLocation: string = environment.locations.results.playerNames;
+  playerListLocation: string = paths.results.playerNames;
   players: Map<string, GroupResponse> = new Map();
   currentPlayer: GroupResponse | null = null;
   currentPlayerName: string = "";
@@ -43,7 +43,7 @@ export class GroupAfter {
     else {
       this.currentPlayer = null;
 
-      let groupStatusPath = environment.locations.group.get;
+      let groupStatusPath = paths.group.get;
       const params = { name: playerName };
       this.http.get<GroupResponse>(groupStatusPath, {params}).pipe(
         tap(data => {

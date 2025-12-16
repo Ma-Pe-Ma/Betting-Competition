@@ -1,31 +1,31 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpDataHandler } from '../../../service/http-data-handler';
-import { environment } from '../../../../environments/environment';
 import { DecimalPipe } from '@angular/common';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
 import { AuthService } from '../../../service/auth-service';
+import { paths } from '../../../paths';
 
 interface PlayerStatistics {
-  username: string,
-  bullseye_count: number,
-  hit_count: number,
-  bet_count: number,
-  success_ratio: number,
-  bullseye_ratio: number,
-  max_win_streak_length: number,
-  max_loose_streak_length: number,
-  max_bonus_streak_length: number,
-  max_win_streak_global: number,
-  max_loose_streak_global: number,
-  max_bonus_streak_global: number,
-  bullseye_count_global: number,
-  hit_count_global: number,
-  success_ratio_global: number,
-  bullseye_ratio_global: number,
-  total_bet_count: number,
-  total_hit_count: number,
-  total_bullseye_count: number
+  username?: string,
+  bullseye_count?: number,
+  hit_count?: number,
+  bet_count?: number,
+  success_ratio?: number,
+  bullseye_ratio?: number,
+  max_win_streak_length?: number,
+  max_loose_streak_length?: number,
+  max_bonus_streak_length?: number,
+  max_win_streak_global?: number,
+  max_loose_streak_global?: number,
+  max_bonus_streak_global?: number,
+  bullseye_count_global?: number,
+  hit_count_global?: number,
+  success_ratio_global?: number,
+  bullseye_ratio_global?: number,
+  total_bet_count?: number,
+  total_hit_count?: number,
+  total_bullseye_count?: number
 }
 
 interface MatchStatistics {
@@ -70,7 +70,7 @@ export class Statistics {
   matchStatistics: MatchStatistics [] = [];
 
   constructor(private httpDataHandler: HttpDataHandler, private authService: AuthService) {
-    let path = environment.locations.main.statistics;
+    let path = paths.main.statistics;
     this.user = this.authService.getUser();
    
     httpDataHandler.getData<{players: PlayerStatistics[], matches: MatchStatistics[]}>(path).subscribe(value => {

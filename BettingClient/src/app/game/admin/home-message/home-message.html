@@ -2,17 +2,17 @@
     @for(messageContainer of homeMessages; track messageContainer.id) {
     <div class="mb-3">
         @if ($index == 0) {
-            <label for="messsageArea{{messageContainer.id}}" class="form-label" i18n="registerMessage">Registering message</label>
+            <label for="messsageArea{{messageContainer.id}}" class="form-label" i18n="@@registerMessage">Registering message</label>
         }
         @else {
-            <label for="messsageArea{{messageContainer.id}}" class="form-label" i18n="messageLabel">Message {{messageContainer.id}}</label>
+            <label for="messsageArea{{messageContainer.id}}" class="form-label" i18n="@@messageLabel">Message {{messageContainer.id}}</label>
         }
         
         <textarea class="form-control" name="message" rows="1" [(ngModel)]="messageContainer.message"></textarea>
     </div>            
     }
     
-    <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSet" i18n="setMessages" (click)="postMessages()">Set</button> 
+    <button class="btn btn-primary btn-sm mt-3 mb-2" type="button" id="messageSet" i18n="@@setMessages" (click)="postMessages()">Set</button> 
 
     @for (alert of alerts; track alert) {
 	    <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>

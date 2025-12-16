@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import { HttpClient} from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpDataHandler } from '../../../service/http-data-handler';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-group-order',
@@ -15,7 +15,7 @@ export class GroupOrder {
   alerts: Alert[] = []
 
   constructor(private http: HttpClient, private httpDataHandler: HttpDataHandler) {
-    let getGroupPath = environment.locations.admin.group.get;
+    let getGroupPath = paths.admin.group.get;
 
     this.httpDataHandler.getData<Group[]>(getGroupPath).subscribe(value => {
       if (value && (value as any).message) {
@@ -28,7 +28,7 @@ export class GroupOrder {
   }
 
   postGroupOrder() {
-    let setGroupPath = environment.locations.admin.group.set;
+    let setGroupPath = paths.admin.group.set;
 
     this.httpDataHandler.postData(setGroupPath, this.groups).subscribe(value => {
         this.alerts.push(value); 

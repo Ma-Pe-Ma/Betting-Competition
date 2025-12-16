@@ -1,9 +1,8 @@
 from flask import Blueprint
 from flask import g
+from flask import session
 from flask import request
 from flask import jsonify
-from flask import flash
-from markupsafe import escape
 
 from app.auth import sign_in_required
 from app.tools.db_handler import get_db
@@ -34,7 +33,7 @@ def match_bet():
                         "LEFT JOIN (SELECT * FROM match_bet WHERE username = :u ) AS bet ON bet.match_id = match.id "
                         "WHERE match.id = :match_id")
 
-    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string(), 'u' : g.user['username'], 'l' : g.user['language'], 'tz' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string(), 'u' : g.user['username'], 'l' : session['language'], 'tz' : g.user['timezone']})
     match_from_db = result.fetchone()._asdict()
 
     if 'active' not in match_from_db or match_from_db['active'] == None:
@@ -63,6 +62,4 @@ def match_bet():
         get_db().session.execute(query_string, {'m' : match_id, 'u' : g.user['username'], 'b' : bet_value, 'g1' : goal1, 'g2' : goal2})
         get_db().session.commit()
 
-        flash(escape(gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id'])), 'success')
-
-        return {'message': gettext('Match successfully updated.'), 'type': 'success'}, 200
+        return {'message': gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id']), 'type': 'success'}, 200

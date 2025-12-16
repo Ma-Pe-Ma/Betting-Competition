@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { HttpDataHandler } from '../../../service/http-data-handler';
+import { paths } from '../../../paths';
 
 interface HomeMessageContainer {
   id?: number,
@@ -19,7 +19,7 @@ export class HomeMessage {
   alerts: Alert[] = []
 
   constructor(private httpDataHandler: HttpDataHandler) {
-    let getHomeMessagePath = environment.locations.admin.homeMessage.get;
+    let getHomeMessagePath = paths.admin.homeMessage.get;
     
     this.httpDataHandler.getData<HomeMessageContainer[]>(getHomeMessagePath).subscribe(value => {
       if (value && (value as any).message) {
@@ -32,7 +32,7 @@ export class HomeMessage {
   }
 
   postMessages() {
-    let setHomeMessagePath = environment.locations.admin.homeMessage.set;  
+    let setHomeMessagePath = paths.admin.homeMessage.set;  
 
     this.httpDataHandler.postData(setHomeMessagePath, this.homeMessages).subscribe(value => {
         this.alerts.push(value); 

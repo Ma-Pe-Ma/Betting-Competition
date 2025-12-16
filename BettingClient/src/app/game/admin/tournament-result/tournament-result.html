@@ -10,9 +10,9 @@
                 {{getSuccessName(bet.success)}}
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                <button ngbDropdownItem (click)="selectSuccess(bet, 0)" i18n="undetermined">{{getSuccessName(0)}}</button>
-                <button ngbDropdownItem (click)="selectSuccess(bet, 1)" i18n="successful">{{getSuccessName(1)}}</button>
-                <button ngbDropdownItem (click)="selectSuccess(bet, 2)" i18n="failed">{{getSuccessName(2)}}</button>
+                <button ngbDropdownItem (click)="selectSuccess(bet, 0)">{{getSuccessName(0)}}</button>
+                <button ngbDropdownItem (click)="selectSuccess(bet, 1)">{{getSuccessName(1)}}</button>
+                <button ngbDropdownItem (click)="selectSuccess(bet, 2)">{{getSuccessName(2)}}</button>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
     <button class="btn btn-primary btn-sm ms-3 mt-3 mb-1" type="button" id="send" (click)="postTournamentBets()">Send</button> 
 }
 @else {
-    <h6 class="row mt-3 ms-2 mb-3" i18n="tournamentLater">Tournament bet evaluation will take place later.</h6>
+    <h6 class="row mt-3 ms-2 mb-3" i18n="@@tournamentLater">Tournament bet evaluation will take place later.</h6>
 }
 
 @for (alert of alerts; track alert) {

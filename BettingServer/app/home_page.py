@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import g
-from flask import flash
-from flask import render_template
+from flask import session
 from flask import current_app
 
 from app.tools.db_handler import get_db
@@ -31,8 +30,8 @@ def homepage():
                         "LEFT JOIN match_bet ON match_bet.match_id = match.id AND match_bet.username = :u "
                         "WHERE unixepoch(match.datetime) > unixepoch(:now) "
                         "ORDER BY date ASC, time ASC")
-    
-    result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string(), 'l' : g.user['language'], 'u' : g.user['username'], 'tz' : g.user['timezone']})
+
+    result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string(), 'l' : session['language'], 'u' : g.user['username'], 'tz' : g.user['timezone']})
 
     days_query_string = text("SELECT DISTINCT date(time_converter(match.datetime, 'utc', :tz)) AS date FROM match")
     days_result = get_db().session.execute(days_query_string, {'tz' : g.user['timezone']})
@@ -68,7 +67,7 @@ def homepage():
 @sign_in_required()
 def credit():
     daily_point_parameters = score_calculator.get_daily_point_parameters()
-    daily_point_parameters.update({'u' : g.user['username'], 'l' : g.user['language'], 'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M')})
+    daily_point_parameters.update({'u' : g.user['username'], 'l' : session['language'], 'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M')})
 
     daily_point_query = score_calculator.get_daily_points_by_current_time_query(users=':u')
     day_result = get_db().session.execute(text(daily_point_query), daily_point_parameters)
@@ -78,7 +77,7 @@ def credit():
 @bp.route('/statistics', methods=['GET'])
 @sign_in_required()
 def get_statistics():
-    return statistics.get_statistics(g.user['language']) if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']) else {'players': [], 'matches': []}
+    return statistics.get_statistics(session['language']) if time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['tournament_end']) else {'players': [], 'matches': []}
 
 @bp.route('/players', methods=['GET'])
 @sign_in_required()

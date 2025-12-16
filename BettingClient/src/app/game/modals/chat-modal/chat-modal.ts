@@ -4,9 +4,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { FormsModule } from '@angular/forms';
 import { tap, catchError } from 'rxjs';
-import { environment } from '../../../../environments/environment';
 import { EventEmitter } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-chat-modal',
@@ -38,7 +38,7 @@ export class ChatModal {
   }
 
   postMessage() {
-    let postChatPath = environment.locations.chat.set;
+    let postChatPath = paths.chat.set;
 
     this.http.post<Alert>(postChatPath, this.inputMessage).pipe(
         tap(alert => {

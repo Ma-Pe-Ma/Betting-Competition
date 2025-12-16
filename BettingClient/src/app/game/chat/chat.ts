@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../../environments/environment';
 import { map, tap, catchError } from 'rxjs';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { ChatModal } from '../modals/chat-modal/chat-modal';
 import { LocalDatePipe } from '../../pipes/local-date-pipe';
 import { AuthService } from '../../service/auth-service';
+import { paths } from '../../paths';
 
 @Component({
   selector: 'app-chat',
@@ -28,7 +28,7 @@ export class Chat {
   }
 
   getComments(age: string|null = '<') {
-    let groupStatusPath = environment.locations.chat.get;
+    let groupStatusPath = paths.chat.get;
     
     let dateString: string|undefined;
 

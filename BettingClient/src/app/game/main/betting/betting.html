@@ -2,7 +2,21 @@
     <div class="row mb-3 ms-1 me-1 text-center ">            
        <div class="col-1 themed-grid-col{{row}} d-flex align-items-center justify-content-center"><button type="button" class="ms-3 btn btn-sm" [class]="match.active > 0 ? 'btn-primary' : 'btn-warning'" data-bs-toggle="modal" data-bs-target="#matchModal" id="{{match.id}}" [disabled]="!match.active" (click)="makeBet(match.id)">{{match.id}}</button></div>
         <div class="col-3 col-sm-2 themed-grid-col{{row}} d-flex align-items-center justify-content-center">{{match.time}}</div>
-        <div class="col-4 col-sm-3 themed-grid-col{{row}} d-flex align-items-center justify-content-center" i18n="unknown">{{match.team1 ?? 'unknown'}} - {{match.team2 ?? 'unknown' }}</div>
+        <div class="col-4 col-sm-3 themed-grid-col{{row}} d-flex align-items-center justify-content-center">
+            @if (match.team1) {
+                <span>{{ match.team1 }}</span>
+            } 
+            @else {
+                <span i18n="@@unknown">unknown</span>
+            }
+            <span> - </span>
+            @if (match.team2) {
+                <span>{{ match.team2 }}</span>
+            } 
+            @else {
+                <span i18n="@@unknown">unknown</span>
+            }
+        </div>
         <div class="col-2 col-sm-1 themed-grid-col{{row}} d-flex align-items-center justify-content-center d-none d-sm-flex">{{match.round}}</div>
         <div class="col-2 themed-grid-col{{row}} d-flex align-items-center justify-content-center d-none d-sm-flex">{{(match.odd1 | number:'1.1-2') ?? '?'}} / {{(match.oddX | number:'1.1-2') ?? '?'}} / {{(match.odd2 | number:'1.1-2') ?? '?'}}</div>
         <div class="col-2 col-sm-1 themed-grid-col{{row}} d-flex align-items-center justify-content-center"><span class="badge" [class]="match.bgoal1 !=null ? 'bg-success' : 'bg-danger'">{{match.bgoal1 ?? '?'}}-{{match.bgoal2 ?? '?'}}</span></div>
@@ -11,21 +25,25 @@
 </ng-template>
 
 <div class="container">
-    <h5 class="mt-5 mb-5" i18n="balance">Current credit: {{currentBalance | number:'1.0-0'}}</h5>
+    <h5 class="mt-5 mb-5" i18n="@@balance">Current credit: {{currentBalance | number:'1.0-0'}}</h5>
 
     <div class="row mb-3 ms-1 me-1 text-center">
         <div class="col-1 themed-grid-col0 d-flex align-items-center justify-content-center"><div class="ms-3">#</div></div>
-        <div class="col-3 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="time">Time</div>
-        <div class="col-4 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="teams">Teams</div>
-        <div class="col-2 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="round">Round</div>
+        <div class="col-3 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@time">Time</div>
+        <div class="col-4 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@teams">Teams</div>
+        <div class="col-2 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="@@round">Round</div>
         <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block">1 / X / 2</div>
-        <div class="col-2 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="tip">Tip</div>
-        <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="bet">Bet</div>
+        <div class="col-2 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@tip">Tip</div>
+        <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center" i18n="@@bet">Bet</div>
     </div>
 
 @for(day of days; track day;) {
     <div class="row mb-3 text-left">
-        <div class="col-8 themed-grid-col" i18n="day">{{day.number}}. day - {{day.date}} - {{day.weekday | dayName}}</div>
+        <div class="col-8 themed-grid-col">
+            <span>{{day.number}}. </span>
+            <span i18n="@@day">day</span>
+            <span> - {{day.date}} - {{day.weekday | dayName}}</span>
+        </div>
         <div class="col-4 themed-grid-col"></div>
     </div>
     @for (match of day.matches; track match.id; let i = $index) {

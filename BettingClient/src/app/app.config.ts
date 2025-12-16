@@ -18,12 +18,8 @@ export const appConfig: ApplicationConfig = {
       const gameConfig = inject(GameConfigurationService);
 
       await firstValueFrom(clientConfig.loadConfig());      
-      await firstValueFrom(
-        forkJoin([
-          authService.fetchAuthStatus(),
-          gameConfig.fetchGameData()
-        ])
-      );
+      await firstValueFrom(gameConfig.fetchGameData());
+      await firstValueFrom(authService.fetchAuthStatus());
     }),
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),

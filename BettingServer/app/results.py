@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import g
 from flask import request
 from flask import current_app
+from flask import session
 
 from app.tools.db_handler import get_db
 from app.auth import sign_in_required
@@ -52,7 +53,7 @@ def results_by_user():
 
     match_list_query_parameters = score_calculator.get_daily_point_parameters()
 
-    match_list_query_parameters.update({'now' : time_handler.get_now_time_string(), 'u' : username, 'l' : g.user['language'], 'tz' : g.user['timezone'], 'group_and_tournament_bet_credit' : group_and_tournament_bet_credit, 'group_bonus' : group_bonus})
+    match_list_query_parameters.update({'now' : time_handler.get_now_time_string(), 'u' : username, 'l' : session['language'], 'tz' : g.user['timezone'], 'group_and_tournament_bet_credit' : group_and_tournament_bet_credit, 'group_bonus' : group_bonus})
 
     query_string = text(query_string)
     matches = get_db().session.execute(query_string, match_list_query_parameters)
@@ -117,7 +118,7 @@ def results_by_match():
     match_query_string = text(match_query_string.format(date_filter=date_filter))
     
     hit_map = current_app.config['BONUS_MULTIPLIERS']
-    match_result = get_db().session.execute(match_query_string, {'date' : date, 'now' : time_handler.get_now_time_string(), 'l' : g.user['language'], 'bullseye' : hit_map['bullseye'], 'difference' : hit_map['difference']})
+    match_result = get_db().session.execute(match_query_string, {'date' : date, 'now' : time_handler.get_now_time_string(), 'l' : session['language'], 'bullseye' : hit_map['bullseye'], 'difference' : hit_map['difference']})
     matches = match_result.fetchall()
 
     deletable_keys = ['odd1', 'oddX', 'odd2', 'round', 'team1', 'team2', 'goal1', 'goal2', 'id']

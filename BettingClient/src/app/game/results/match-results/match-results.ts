@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
 import { HttpClient } from '@angular/common/http';
 import { tap, catchError } from 'rxjs/operators';
 import { DecimalPipe } from '@angular/common';
+import { paths } from '../../../paths';
 
 interface PlayerBet {
   username?: string,
@@ -28,7 +28,7 @@ interface MatchContainer {
   templateUrl: './match-results.html'
 })
 export class MatchResults {
-  dateListLocation: string = environment.locations.results.dates;
+  dateListLocation: string = paths.results.dates;
   dateMap: Map<string, MatchContainer[]> = new Map<string, MatchContainer[]>(); 
   currentDate: MatchContainer[] | null = null;
 
@@ -40,7 +40,7 @@ export class MatchResults {
       }
     else {
       this.currentDate = null;
-      let path = environment.locations.results.dateResults;
+      let path = paths.results.dateResults;
       const params = { date: date };
 
       this.http.get<MatchContainer[]>(path, {params}).pipe(

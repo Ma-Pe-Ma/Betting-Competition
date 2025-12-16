@@ -1,6 +1,6 @@
 from app.tools.db_handler import get_db
-from flask import g
 from flask import current_app
+from flask import session
 
 from sqlalchemy import text
 
@@ -159,7 +159,7 @@ def get_group_and_tournament_bet_amount(username : str) -> int:
 # get's user's tournament bet, or create default if it does not exist
 def get_tournament_bet_dict_for_user(username : str, language = None) -> dict:
     query_string = text(tournament_dict.format(filter="WHERE bet_user.username = :u"))
-    return get_db().session.execute(query_string, {'u' : username, 'l' : language or g.user['language']}).fetchone()._asdict()
+    return get_db().session.execute(query_string, {'u' : username, 'l' : language or session['language']}).fetchone()._asdict()
 
 # get group object which contains both the results and both the user bets (used in every 3 contexts)
 def get_group_bet_dict_for_user(username : str, language = None):
@@ -167,7 +167,7 @@ def get_group_bet_dict_for_user(username : str, language = None):
 
     hit_map = current_app.config['GROUP_BET_HIT_MAP']
 
-    result = get_db().session.execute(query_string, {'u' : username, 'l' : language or g.user['language'], 'h1' : hit_map['h1'], 'h2' : hit_map['h2'], 'h4' : hit_map['h4']})
+    result = get_db().session.execute(query_string, {'u' : username, 'l' : language or session['language'], 'h1' : hit_map['h1'], 'h2' : hit_map['h2'], 'h4' : hit_map['h4']})
     team_rows = result.fetchall()
 
     groups = []
