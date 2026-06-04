@@ -44,7 +44,11 @@ def initialize_teams(team_file_name, translation_file_name):
 def initialize_matches():
     try:
         bet_values = current_app.config['BET_VALUES']
-        response = urllib.request.urlopen(current_app.config['MATCH_URL'])
+        
+        url = current_app.config['MATCH_URL']
+        req = urllib.request.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        response = urllib.request.urlopen(req)
         data = response.read()
         decoded_text = data.decode("utf-8")
 
@@ -59,6 +63,7 @@ def initialize_matches():
 
         get_db().session.commit()
     except Exception as error:
+        get_db().session.rollback()
         current_app.logger.info('Error while initializing matches: ' + str(error))
         return False
 
@@ -66,7 +71,10 @@ def initialize_matches():
 
 def update_match_data_from_fixture():
     try:
-        response = urllib.request.urlopen(current_app.config['MATCH_URL'])
+        url = current_app.config['MATCH_URL']
+        req = urllib.request.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        response = urllib.request.urlopen(req)
         data = response.read()
         file_text = data.decode("utf-8")
 
@@ -79,19 +87,27 @@ def update_match_data_from_fixture():
 
             goals = row[7]
             if goals is not None and goals != '':
-                goals = goals.replace(" ", "")
-                
-                goals.split("-")
+                goals = goals.replace(" ", "")                
+                goals = goals.split("-")
 
-                goal1 = goals[0]
-                goal2 = goals[2]
+                try:
+                    goal1 = int(goals[0])
+                    goal2 = int(goals[1])
+                except (IndexError, ValueError):
+                    current_app.logger.warning(f"Skipping row due to invalid score format: {row[7]}")
+                    continue
 
-            query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:id AND goal1 IS NULL AND goal2 IS NULL')
-            get_db().session.execute(query_string, {'t1' : row[4], 't2' : row[5], 'g1' : goal1, 'g2' : goal2, 'id' : row[0]})
-        
+            try:
+                with get_db().session.begin_nested():
+                    query_string = text('UPDATE match SET team1=:t1, team2=:t2, goal1=:g1, goal2=:g2 WHERE id=:id AND goal1 IS NULL AND goal2 IS NULL')
+                    get_db().session.execute(query_string, {'t1' : row[4], 't2' : row[5], 'g1' : goal1, 'g2' : goal2, 'id' : row[0]})
+            except Exception as row_error:
+                current_app.logger.error(f"Row match ID {row[0]} failed constraint/DB validation: {row_error}")
+
         get_db().session.commit()
         current_app.logger.info('Match db successfully updated from remote CSV!')
     except Exception as error:
+        get_db().session.rollback()
         current_app.logger.info('Error updating match database: ' + str(error))
         return False
 

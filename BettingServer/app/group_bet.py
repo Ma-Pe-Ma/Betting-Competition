@@ -36,7 +36,7 @@ def set_group_bet():
         tournament_result = int(tournament['result'])
         if tournament_result < 0 or 3 < tournament_result:
             raise ValueError
-    except ValueError:
+    except (ValueError, TypeError):
         response_string = gettext('Invalid result for tournament bet.')
 
     try:
@@ -44,7 +44,7 @@ def set_group_bet():
         if tournament_credit < 0 or tournament_credit > bet_values['max_tournament_bet_value']:
             raise ValueError
         tournament['bet'] = tournament_credit
-    except ValueError:
+    except (ValueError, TypeError):
         response_string = gettext('Invalid bet amount at tournament bet.')
 
     # parsing anc checking group properties
@@ -61,7 +61,7 @@ def set_group_bet():
                 raise ValueError
 
             group['bet'] = group_bet
-        except ValueError:
+        except (ValueError, TypeError):
             response_string = gettext('Invalid bet amount at group bet.')
             break
 

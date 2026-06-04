@@ -11,10 +11,11 @@ import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { OddModal } from '../../modals/odd-modal/odd-modal';
 import { paths } from '../../../paths';
+import { ClampDirective } from '../../../../shared/directives/clamp.directive';
 
 @Component({
   selector: 'app-group-before',
-  imports: [DecimalPipe, ResultNamePipe, FormsModule, NgbDropdownModule, CdkDropList, CdkDrag, NgbAlertModule],
+  imports: [ClampDirective, DecimalPipe, ResultNamePipe, FormsModule, NgbAlertModule, NgbDropdownModule, CdkDropList, CdkDrag],
   templateUrl: './group-before.html'
 })
 export class GroupBefore {

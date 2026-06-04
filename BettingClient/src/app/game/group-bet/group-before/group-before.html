@@ -60,7 +60,7 @@
 
             <div class="row mt-2 d-flex justify-content-start align-items-center">
                 <label class="col-5 col-md-3 ms-3" for="tournamentBetCredit" i18n="@@bet">Bet</label>
-                <input class="col-2 col-md-2 ms-3" type="number" [(ngModel)]="playerInput?.tournament!.bet" min="0" max="{{betValues?.max_tournament_bet_value}}">
+                <input class="col-2 col-md-2 ms-3" type="number" [(ngModel)]="playerInput?.tournament!.bet" appClamp [minClamped]="0" [maxClamped]="betValues?.max_tournament_bet_value ?? 200">
                 <div class="col-2">/&nbsp;{{betValues?.max_tournament_bet_value}}</div>
             </div>
     
@@ -135,7 +135,7 @@
                                     <span>:</span>
                                 </span>
                                 <div class="col-auto row">
-                                    <input class="col-8 col-sm-8 col-md-6 form-control-sm d-flex align-items-center" type="number" [(ngModel)]="group.bet" min="0" max="{{betValues?.max_group_bet_value}}">
+                                    <input class="col-8 col-sm-8 col-md-4 form-control-sm d-flex align-items-center" type="number" [(ngModel)]="group.bet" appClamp [minClamped]="0" [maxClamped]="betValues?.max_group_bet_value ?? 50">
                                     <div class="col-2 form-control-sm d-flex align-items-center">/&nbsp;{{betValues?.max_group_bet_value}}</div>
                                 </div>                                
                             </div>
@@ -147,7 +147,7 @@
 
             <div class="row mt-2">
                 <div class="col-6 col-md-4 d-flex align-items-center">
-                    <p class="mb-0" i18b="remainingCredit">Remaining credit</p>
+                    <p class="mb-0" i18n="remainingCreditValue">Remaining credit</p>
                 </div>
                 <div class="col-2 col-md-1 d-flex align-items-center justify-content-center">
                     <p class="badge bg-info mb-0">{{ calculateRemainingCredit() }}</p>

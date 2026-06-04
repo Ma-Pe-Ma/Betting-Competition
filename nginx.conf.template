@@ -1,85 +1,122 @@
-events {}
+	events {}
 
-http {
-    upstream app_server {
-        server unix:/BettingInstance/gunicorn.socket fail_timeout=0;
-    }
+	http {
+		upstream app_server {
+			server unix:/BettingInstance/gunicorn.socket fail_timeout=0;
+		}
 
-    # redirecting http requests to https
-    server {
-        listen 80;
-        listen [::]:80;
-        server_name $site_address www.$site_address;
+		# redirecting http requests to https
+		server {
+			listen 80;
+			listen [::]:80;
+			server_name $site_address www.$site_address en.$site_address www.en.$site_address;
 
-        return 301 https://$host$request_uri;
-    }
+			return 301 https://$host$request_uri;
+		}
 
-    # the working server
-    server {
-        include /etc/nginx/mime.types;
+		# the working server
+		server {
+			include /etc/nginx/mime.types;
 
-        listen [::]:443 ssl;
-        listen 443 ssl;
-        server_name $site_address www.$site_address;
+			listen [::]:443 ssl;
+			listen 443 ssl;
+			
+			server_name en.$site_address www.en.$site_address;
 
-        access_log /BettingInstance/nginx-access.log;
-        error_log /BettingInstance/nginx-error.log;
+			access_log /BettingInstance/nginx-en-access.log;
+			error_log /BettingInstance/nginx-en-error.log;
 
-        client_max_body_size 4G;
-        keepalive_timeout 5;
+			client_max_body_size 4G;
+			keepalive_timeout 5;
+			
+			root /usr/share/nginx/html/en;
+			
+			if ($host = "www.en.$site_address") {
+				return 301 https://en.$site_address$request_uri;
+			}
 
-        root /usr/share/nginx/html;
+			location / {
+				try_files $uri $uri/ /index.html;
+			}
 
-        location / {
-            try_files $uri $uri/ /index.html;
-        }
-
-        location /hu/ {
-            try_files $uri $uri/ /hu/index.html;
-        }
-
-        location /api/ {
-            proxy_pass http://app_server/;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-        }
+			# API proxy for the English domain
+			location /api/ {
+				proxy_pass http://app_server/;
+				proxy_set_header Host $host;
+				proxy_set_header X-Real-IP $remote_addr;
+			}
+			
+			ssl_certificate $certificate_directory/fullchain.pem;
+			ssl_certificate_key $certificate_directory/privkey.pem;
+			#include /etc/letsencrypt/options-ssl-nginx.conf;
+        	#ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+		}	
 		
-        ssl_certificate $certificate_directory/fullchain.pem;
-        ssl_certificate_key $certificate_directory/privkey.pem;
-        #include /etc/letsencrypt/options-ssl-nginx.conf;
-        #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-    }
+		server {
+			include /etc/nginx/mime.types;
 
-    # default http server
-    server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
+			listen [::]:443 ssl;
+			listen 443 ssl;
+			
+			server_name $site_address www.$site_address;
 
-        server_name _;
+			access_log /BettingInstance/nginx-hu-access.log;
+			error_log /BettingInstance/nginx-hu-error.log;
 
-        client_max_body_size 4G;
-        keepalive_timeout 5;
+			client_max_body_size 4G;
+			keepalive_timeout 5;
+			
+			root /usr/share/nginx/html/hu;
 
-        location / {
-            return 301 https://$site_address$request_uri;
-        }
-    }
+			if ($host = "www.$site_address") {
+				return 301 https://$site_address$request_uri;
+			}
 
-    # default https server
-    server {
-        listen 443 ssl default_server;
-        listen [::]:443 ssl default_server;
+			location / {
+				try_files $uri $uri/ /index.html;
+			}
 
-        server_name _;
+			# API proxy for the Hungarian domain (reuses your app_server upstream)
+			location /api/ {
+				proxy_pass http://app_server/;
+				proxy_set_header Host $host;
+				proxy_set_header X-Real-IP $remote_addr;
+			}
+			
+			ssl_certificate $certificate_directory/fullchain.pem;
+			ssl_certificate_key $certificate_directory/privkey.pem;
+		}
 
-        client_max_body_size 4G;
-        keepalive_timeout 5;
+		# default http server
+		server {
+			listen 80 default_server;
+			listen [::]:80 default_server;
 
-        ssl_certificate $certificate_directory/fullchain.pem;
-        ssl_certificate_key $certificate_directory/privkey.pem;
+			server_name _;
 
-        location / {
-            return 301 https://$site_address$request_uri;
-        }
-    }
-}
+			client_max_body_size 4G;
+			keepalive_timeout 5;
+
+			location / {
+				return 301 https://$site_address$request_uri;
+			}
+		}
+
+		# default https server
+		server {
+			listen 443 ssl default_server;
+			listen [::]:443 ssl default_server;
+
+			server_name _;
+
+			client_max_body_size 4G;
+			keepalive_timeout 5;
+
+			ssl_certificate $certificate_directory/fullchain.pem;
+			ssl_certificate_key $certificate_directory/privkey.pem;
+
+			location / {
+				return 301 https://$site_address$request_uri;
+			}
+		}
+	}
