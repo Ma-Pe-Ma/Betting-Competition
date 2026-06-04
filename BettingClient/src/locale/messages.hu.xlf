@@ -1049,7 +1049,7 @@
       </trans-unit>
       <trans-unit id="teamDescription" datatype="html">
         <source>Team description</source>
-        <target>Csapat-leíró fájl</target>
+        <target>Csapatleíró fájl</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/team-data/team-data.html</context>
           <context context-type="linenumber">3,4</context>
@@ -1057,10 +1057,34 @@
       </trans-unit>
       <trans-unit id="teamTranslation" datatype="html">
         <source>Team translation</source>
-        <target>Csapatnév-fordító fájl</target>
+        <target>Csapatnévfordító fájl</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/team-data/team-data.html</context>
           <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4317785267229701667" datatype="html">
+        <source>@@noTeam: No team file selected!</source>
+        <target>Csapatleírófájl nincs megadva!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/game/admin/team-data/team-data.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8449320574308687498" datatype="html">
+        <source>@@noTranslation: No translation file selected!</source>
+        <target>Csapatnévfordító fájl nincs megadva!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/game/admin/team-data/team-data.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="uploadError" datatype="html">
+        <source>Unknown error: </source>
+        <target>Ismeretlen hiba: </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/game/admin/team-data/team-data.ts</context>
+          <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tournamentLater" datatype="html">
@@ -1404,6 +1428,15 @@
           <context context-type="sourcefile">src/app/game/group-bet/group-before/group-before.html</context>
           <context context-type="linenumber">103,105</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="4627428169179631640" datatype="html">
+        <source>Remaining credit</source>
+        <target>Fennmaradó kredit</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/game/group-bet/group-before/group-before.html</context>
+          <context context-type="linenumber">150,152</context>
+        </context-group>
+        <note priority="1" from="description">remainingCreditValue</note>
       </trans-unit>
       <trans-unit id="balance" datatype="html">
         <source>Current credit: <x id="INTERPOLATION" equiv-text="{{currentBalance | number:&apos;1.0-0&apos;}}"/></source>

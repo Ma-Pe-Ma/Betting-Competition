@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2025 ORGANIZATION
+# Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-16 19:00+0100\n"
+"POT-Creation-Date: 2026-05-31 23:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,8 +38,8 @@ msgid "Successfully updated match data!"
 msgstr ""
 
 #: app/admin.py:102
-#, python-brace-format
-msgid "Error while setting home messages: {e}"
+#, python-format
+msgid "Error while setting home messages: %(e)s"
 msgstr ""
 
 #: app/admin.py:104
@@ -54,6 +54,11 @@ msgstr ""
 msgid "Too short subject!"
 msgstr ""
 
+#: app/admin.py:129
+#, python-format
+msgid "Notifications successfully sent: %(n)s"
+msgstr ""
+
 #: app/admin.py:132
 msgid "Error sending notification to everyone!"
 msgstr ""
@@ -63,8 +68,8 @@ msgid "player"
 msgstr ""
 
 #: app/admin.py:179 app/admin.py:194
-#, python-brace-format
-msgid "Error while setting order: {e}"
+#, python-format
+msgid "Error while setting order: %(e)s"
 msgstr ""
 
 #: app/admin.py:196
@@ -172,11 +177,11 @@ msgstr ""
 msgid "E-mail address is required."
 msgstr ""
 
-#: app/auth.py:123 app/auth.py:306
+#: app/auth.py:123 app/auth.py:304
 msgid "The given password is too short (min. 8 characters)."
 msgstr ""
 
-#: app/auth.py:125 app/auth.py:308
+#: app/auth.py:125 app/auth.py:306
 msgid "The two passwords are not identical."
 msgstr ""
 
@@ -196,69 +201,69 @@ msgstr ""
 msgid "Registering successful"
 msgstr ""
 
-#: app/auth.py:184
+#: app/auth.py:182
 msgid "Username or password is not specified!"
 msgstr ""
 
-#: app/auth.py:196
+#: app/auth.py:194
 msgid "Invalid username!"
 msgstr ""
 
-#: app/auth.py:198
+#: app/auth.py:196
 msgid "Invalid password!"
 msgstr ""
 
-#: app/auth.py:209
+#: app/auth.py:207
 msgid "Successful sign in"
 msgstr ""
 
-#: app/auth.py:215
+#: app/auth.py:213
 msgid "Successful sign out"
 msgstr ""
 
-#: app/auth.py:242
+#: app/auth.py:240
 msgid "Settings were successfully modified"
 msgstr ""
 
-#: app/auth.py:252
+#: app/auth.py:250
 msgid "Email is not specified"
 msgstr ""
 
-#: app/auth.py:259
+#: app/auth.py:257
 msgid "Email is not registered"
 msgstr ""
 
-#: app/auth.py:284
+#: app/auth.py:282
 msgid ""
 "New password requested! Please contact one of the admins for further "
 "actions!"
 msgstr ""
 
-#: app/auth.py:286
+#: app/auth.py:284
 msgid "New password requested! Check your email for further actions!"
 msgstr ""
 
-#: app/auth.py:302
+#: app/auth.py:300
 msgid "Email is not specified."
 msgstr ""
 
-#: app/auth.py:304
+#: app/auth.py:302
 msgid "Reset key is not specified."
 msgstr ""
 
-#: app/auth.py:314
+#: app/auth.py:312
 msgid "The given nickname does not exist."
 msgstr ""
 
-#: app/auth.py:324
+#: app/auth.py:322
 msgid "No password reset key has been requested."
 msgstr ""
 
-#: app/auth.py:326
+#: app/auth.py:324
 msgid "The given reset key is invalid."
 msgstr ""
 
-#: app/auth.py:343
+#: app/auth.py:341
 msgid "Password was reset successfully!"
 msgstr ""
 

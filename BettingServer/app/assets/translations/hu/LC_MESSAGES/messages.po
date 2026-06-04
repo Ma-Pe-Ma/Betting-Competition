@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-16 19:00+0100\n"
+"POT-Creation-Date: 2026-05-31 23:21+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -39,9 +39,8 @@ msgid "Successfully updated match data!"
 msgstr "Meccsadat sikeresen frissítve!"
 
 #: app/admin.py:102
-#, python-brace-format
-msgid "Error while setting home messages: {e}"
-msgstr "Hiba a főoldal üzenetek beállítása közben: {e}"
+msgid "Error while setting home messages: %(e)s"
+msgstr "Hiba a főoldal üzenetek beállítása közben: %(e)s"
 
 #: app/admin.py:104
 msgid "Messages updated successfully!"
@@ -55,6 +54,10 @@ msgstr "Túl rövid üzenet"
 msgid "Too short subject!"
 msgstr "Túl rövid tárgy!"
 
+#: app/admin.py:129
+msgid "Notifications successfully sent: %(n)s"
+msgstr "Értesítések sikeresen kiküldve: %(n)s"
+
 #: app/admin.py:132
 msgid "Error sending notification to everyone!"
 msgstr "Hiba az értesítések küldése közben!"
@@ -64,9 +67,8 @@ msgid "player"
 msgstr "játékos"
 
 #: app/admin.py:179 app/admin.py:194
-#, python-brace-format
-msgid "Error while setting order: {e}"
-msgstr "Hiba a sorrend beállítása közben: {e}"
+msgid "Error while setting order: %(e)s"
+msgstr "Hiba a sorrend beállítása közben: %(e)s"
 
 #: app/admin.py:196
 msgid "Group results set successfully!"
@@ -173,11 +175,11 @@ msgstr "A választott becenév túl hosszú (max. 20 karakter)."
 msgid "E-mail address is required."
 msgstr "E-mail cím megadása kötelező."
 
-#: app/auth.py:123 app/auth.py:306
+#: app/auth.py:123 app/auth.py:304
 msgid "The given password is too short (min. 8 characters)."
 msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
 
-#: app/auth.py:125 app/auth.py:308
+#: app/auth.py:125 app/auth.py:306
 msgid "The two passwords are not identical."
 msgstr "A két jelszó nem egyezik."
 
@@ -197,69 +199,69 @@ msgstr "A megadott email cím már regisztrálva van."
 msgid "Registering successful"
 msgstr "Sikeres regisztráció"
 
-#: app/auth.py:184
+#: app/auth.py:182
 msgid "Username or password is not specified!"
 msgstr "A felhasználónév vagy a jelszó hiányzik!"
 
-#: app/auth.py:196
+#: app/auth.py:194
 msgid "Invalid username!"
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:198
+#: app/auth.py:196
 msgid "Invalid password!"
 msgstr "A megadott jelszó nem megfelelő."
 
-#: app/auth.py:209
+#: app/auth.py:207
 msgid "Successful sign in"
 msgstr "Sikeres bejelentkezés."
 
-#: app/auth.py:215
+#: app/auth.py:213
 msgid "Successful sign out"
 msgstr "Sikeres kisjelentkezés."
 
-#: app/auth.py:242
+#: app/auth.py:240
 msgid "Settings were successfully modified"
 msgstr "A beállítások sikeresen módosítva!"
 
-#: app/auth.py:252
+#: app/auth.py:250
 msgid "Email is not specified"
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:259
+#: app/auth.py:257
 msgid "Email is not registered"
 msgstr "Az email-cím nincs regisztrálva."
 
-#: app/auth.py:284
+#: app/auth.py:282
 msgid ""
 "New password requested! Please contact one of the admins for further "
 "actions!"
 msgstr "Új jelszó igényelve! Kérlek vedd fel a kontaktot valamelyik adminnal!"
 
-#: app/auth.py:286
+#: app/auth.py:284
 msgid "New password requested! Check your email for further actions!"
 msgstr "Új jelszó igényelve! Ellenőrízd az emailjeid a további teendőkért!"
 
-#: app/auth.py:302
+#: app/auth.py:300
 msgid "Email is not specified."
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:304
+#: app/auth.py:302
 msgid "Reset key is not specified."
 msgstr "A visszaállító-kulcs nem lett megadva."
 
-#: app/auth.py:314
+#: app/auth.py:312
 msgid "The given nickname does not exist."
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:324
+#: app/auth.py:322
 msgid "No password reset key has been requested."
 msgstr "Nem lett igényelve visszaállító-kulcs."
 
-#: app/auth.py:326
+#: app/auth.py:324
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
-#: app/auth.py:343
+#: app/auth.py:341
 msgid "Password was reset successfully!"
 msgstr "Jelszó sikeresen visszaállítva!"
 
@@ -485,4 +487,3 @@ msgid ""
 msgstr ""
 "Ha valamilyen oknál fogva nem tudsz fogadni, akkor erre a címre küldd el,"
 " és írd le a probléma okát is."
-

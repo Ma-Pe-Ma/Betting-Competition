@@ -37,10 +37,10 @@ def match_bet():
     match_from_db = result.fetchone()._asdict()
 
     if 'active' not in match_from_db or match_from_db['active'] == None:
-        return  {'message': gettext(u'Match does not exist with the following id: %(id)s!', id=match_id), 'type': 'danger'}, 400
+        return  gettext(u'Match does not exist with the following id: %(id)s!', id=match_id), 400
 
     if match_from_db['active'] > 0:
-        return  {'message': gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 'type': 'danger'}, 400
+        return  gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 400
 
     if request.method == 'GET':
         return jsonify(match_from_db), 200
@@ -52,11 +52,11 @@ def match_bet():
             bet_value = max(0, min(int(parameters['bet']), match_from_db['max_bet']))
             goal1 = int(parameters['bgoal1'])
             goal2 = int(parameters['bgoal2'])
-        except (ValueError, KeyError) as error:
-            return {'message': gettext('Invalid input for goal or credit!'), 'type': 'danger'}, 400
+        except (ValueError, KeyError, TypeError) as error:
+            return gettext('Invalid input for goal or credit!'), 400
         
         if goal1 < 0 or goal2 < 0 or bet_value <= 0:
-            return {'message': gettext('Invalid value (negative) for goal or credit!'), 'type': 'danger'}, 400
+            return gettext('Invalid value (negative) for goal or credit!'), 400
 
         query_string = text("INSERT OR REPLACE INTO match_bet (match_id, username, bet, goal1, goal2) VALUES(:m, :u, :b, :g1, :g2)")
         get_db().session.execute(query_string, {'m' : match_id, 'u' : g.user['username'], 'b' : bet_value, 'g1' : goal1, 'g2' : goal2})

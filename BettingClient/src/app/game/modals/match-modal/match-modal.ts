@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { BehaviorSubject, of, tap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { of, tap } from 'rxjs';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
@@ -9,16 +8,18 @@ import { AuthService } from '../../../service/auth-service';
 import { HttpDataHandler } from '../../../service/http-data-handler';
 import { map, catchError } from 'rxjs';
 import { paths } from '../../../paths';
+import { FormsModule } from '@angular/forms';
+import { ClampDirective } from '../../../../shared/directives/clamp.directive';
 
 @Component({
   selector: 'app-match-modal',
-  imports: [AsyncPipe, NgbAlert, LocalDatePipe],
+  imports: [NgbAlert, LocalDatePipe, FormsModule, ClampDirective],
   templateUrl: './match-modal.html'
 })
 export class MatchModal {
   @Input() admin: boolean = false;
   @Output() betPosted: EventEmitter<boolean> = new EventEmitter<boolean>();
-  match$: BehaviorSubject<Match | null> = new BehaviorSubject<Match | null>(null);
+  match: Match | null = null;
 
   alerts: Alert[] = []
 
@@ -28,11 +29,6 @@ export class MatchModal {
     this.authService.getUser$.subscribe(user => {
         this.user = user;
     });
-  }
-
-  updateMatchField<K extends keyof Match>(key: K, value: Match[K]) {
-    const current = this.match$.getValue();
-    this.match$.next({ ...current, [key]: value });
   }
 
   fetchMatchData(matchID: number) {
@@ -55,7 +51,7 @@ export class MatchModal {
         this.alerts.push(value as Alert);
       }
       else {
-        this.match$?.next(value as Match);
+        this.match = value as Match;
       }
     });
   }
@@ -63,17 +59,18 @@ export class MatchModal {
   postMatchData(matchID: number) {
     const params = new HttpParams().set('matchID', matchID);
     let path = this.admin ? paths.admin.match.set : paths.match;
-    this.http.post<Alert>(path, this.match$.value, { params }).pipe(
+    this.http.post<Alert>(path, this.match, { params }).pipe(
       tap(value => {
         this.betPosted.emit(true);
-      }),
-      catchError((err: HttpErrorResponse) => {
-        console.error('Error updating match: ', err);
-        return of({message: 'Unknown error: ' +err.error, type: 'danger'} as Alert);
       })
     )
-    .subscribe(value => {
-      this.alerts.push(value as Alert); 
+    .subscribe({
+      next: (value: Alert) =>{
+        this.alerts.push(value); 
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alerts.push({'type': 'danger', 'message': err.error})
+      }
     });    
   }
 

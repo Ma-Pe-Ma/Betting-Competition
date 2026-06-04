@@ -3,7 +3,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" i18n="@@match">Match</h1>
-          <h1 class="modal-title fs-5 ms-2" id="matchModalLabel">{{ (match$ | async)?.id ?? 'Loading'}}</h1>
+          <h1 class="modal-title fs-5 ms-2" id="matchModalLabel">{{ match?.id ?? 'Loading'}}</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
         </div>
         <div class="modal-body" id="modalBody">
@@ -15,87 +15,93 @@
                 <div class="row mb-3">
                     <div class="col-3" i18n="@@date">Date</div>
 
-                    <div class="col-6" id="matchDate">{{(match$ | async)?.datetime | localDate:user?.timezone!:'datetime'}}</div>
+                    <div class="col-6" id="matchDate">{{match?.datetime | localDate:user?.timezone!:'datetime'}}</div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-3" i18n="@@teams">Teams</div>
-                    <div class="col-3 text-center">{{ (match$ | async)?.team1 }}</div>
+                    <div class="col-3 text-center">{{ match?.team1 }}</div>
                     <div class="col-1 align-items-center">-</div>
-                    <div class="col-3 text-center">{{ (match$ | async)?.team2 }}</div>
+                    <div class="col-3 text-center">{{ match?.team2 }}</div>
                 </div>
 
                 <div class="form-group row mb-3">
-                    @if (admin) {
-                        <div class="col-3 d-flex align-items-center" i18n="@@result">Result</div>
-                    }
-                    @else {
-                        <div class="col-3 d-flex align-items-center" i18n="@@tip">Tip</div>
-                    }
+                @if (admin) {
+                    <div class="col-3 d-flex align-items-center" i18n="@@result">Result</div>
+                }
+                @else {
+                    <div class="col-3 d-flex align-items-center" i18n="@@tip">Tip</div>
+                }
                     
+                @if(match) {
                     <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-center" min="0" [value]="(match$ | async)?.bgoal1" (input)="updateMatchField('bgoal1', $event.target.valueAsNumber)">                                                
+                        <input type="number" class="form-control d-flex align-items-center justify-content-center" min="0" [(ngModel)]="match.bgoal1" appClamp [minClamped]="0" [maxClamped]="200">
                     </div>
                     <div class="col-1">-</div>
                     <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-right" min="0" [value]="(match$ | async)?.bgoal2" (input)="updateMatchField('bgoal2', $event.target.valueAsNumber)">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" min="0" [(ngModel)]="match.bgoal2" appClamp [minClamped]="0" [maxClamped]="200">
                     </div>
+                }
                 </div>
 
                 @if (admin) {                        
                     <div class="form-group row mt-2">
                         <label for="creditInput" class="col-3 col-form-label" i18n="@@odd1">Odd-1</label>
                         <div class="col-3">
-                            <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" [value]="(match$ | async)?.odd1">
+                            <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" [value]="match?.odd1">
                         </div>
                     </div>
 
                     <div class="form-group row mt-2">
                         <label for="creditInput" class="col-3 col-form-label" i18n="@@oddX">Odd-X</label>
                         <div class="col-3">
-                            <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" [value]="(match$ | async)?.oddX">
+                            <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" [value]="match?.oddX">
                         </div>
                     </div>
 
                     <div class="form-group row mt-2">
                         <label for="creditInput" class="col-3 col-form-label" i18n="@@odd2">Odd-2</label>
                         <div class="col-3">
-                            <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" [value]="(match$ | async)?.odd2">
+                            <input type="number" step="0.01" class="form-control d-flex align-items-center justify-content-right" [value]="match?.odd2">
                         </div>
                     </div>
                 }
                 @else {
                      <div class="row mb-3">
                         <div class="col-3" i18n="@@odds">Odds</div>
-                        <div class="col-3 text-left">1: {{(match$ | async)?.odd1}} </div>
-                        <div class="col-3 text-left">X: {{(match$ | async)?.oddX}}</div>
-                        <div class="col-3 text-left">2: {{(match$ | async)?.odd2}}</div>
+                        <div class="col-3 text-left">1: {{match?.odd1}} </div>
+                        <div class="col-3 text-left">X: {{match?.oddX}}</div>
+                        <div class="col-3 text-left">2: {{match?.odd2}}</div>
                     </div>
                 }
 
                 <div class="form-group row mt-2">
-                    @if (!admin) {
-                        <label for="creditInput" class="col-3 col-form-label" i18n="@@betCredit">Bet credit</label>
-                    }
-                    @else {
-                        <label for="creditInput" class="col-3 col-form-label" i18n="@@maxBetCredit">Max bet credit</label>
-                    }
-                    @if (!admin) {
+                @if (!admin) {
+                    <label for="creditInput" class="col-3 col-form-label" i18n="@@betCredit">Bet credit</label>
+                }
+                @else {
+                    <label for="creditInput" class="col-3 col-form-label" i18n="@@maxBetCredit">Max bet credit</label>
+                }
+                @if (!admin) {
                     <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-right" min="0" [value]="(match$ | async)?.bet" (input)="updateMatchField('bet', $event.target.valueAsNumber)">
+                    @if(match) {
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" min="0" [(ngModel)]="match.bet" appClamp [minClamped]="0" [maxClamped]="match.max_bet ?? 50">
+                    }  
                     </div>
-                    <div class="col-3 d-flex align-items-center justify-content-left">/ {{(match$ | async)?.max_bet}}</div>
-                    }
-                    @else {
+                    <div class="col-3 d-flex align-items-center justify-content-left">/ {{match?.max_bet}}</div>
+                }
+                @else {
+                    @if (match) {
                     <div class="col-3">
-                        <input type="number" class="form-control d-flex align-items-center justify-content-right" min="0" [value]="(match$ | async)?.max_bet" (input)="updateMatchField('max_bet', $event.target.valueAsNumber)">
+                        <input type="number" class="form-control d-flex align-items-center justify-content-right" min="0" [(ngModel)]="match.max_bet" appClamp [minClamped]="0" [maxClamped]="20000">
                     </div>
                     }
+                }
                 </div>
             </div>            
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="sendMatchButton" i18b="send" (click)="postMatchData(match$.value?.id!)">Send</button>
+          <button type="button" class="btn btn-primary" id="sendMatchButton" i18b="send" (click)="postMatchData(match?.id!)">Send</button>
         </div>
       </div>
     </div>

@@ -1,0 +1,11 @@
+ARG NGINX_VERSION=latest
+
+FROM nginx:${NGINX_VERSION} AS runner
+
+EXPOSE 80
+EXPOSE 443
+
+COPY --from=precompiled --chown=nginx:nginx en/browser/. /usr/share/nginx/html/en
+COPY --from=precompiled --chown=nginx:nginx hu/browser/hu/. /usr/share/nginx/html/hu
+
+ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf", "-g", "daemon off;"]

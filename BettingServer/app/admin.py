@@ -99,7 +99,7 @@ def messages_set():
 
         get_db().session.commit()
     except Exception as e:
-        return {'message': gettext('Error while setting home messages: {e}'.format(e=e)), 'type' : 'danger'}
+        return {'message': gettext('Error while setting home messages: %(e)s', e=e), 'type' : 'danger'}
 
     return {'message': gettext('Messages updated successfully!'), 'type': 'success'}
 
@@ -126,7 +126,7 @@ def send_notification():
 
         notifications = notification_handler.get_notifier().send_messages(messages=messages)
 
-        return {'message' : 'Notifications successfully sent: ' + str(notifications) , 'type' : 'success'}
+        return {'message' :  gettext('Notifications successfully sent: %(n)s', n=notifications), 'type' : 'success'}
     except Exception as error:
         current_app.logger.info('Error sending notification to everyone: ' + str(error))
         return {'message' : gettext('Error sending notification to everyone!'), 'type': 'danger' }
@@ -176,7 +176,7 @@ def get_groups():
 
                 current_group['teams'].append({'name' : team.name, 'name_tr' : team.local_name, 'position' :  team.position})
     except Exception as e:
-        return {'message': gettext('Error while setting order: {e}'.format(e=e)), 'type' : 'danger'}
+        return {'message': gettext('Error while setting order: %(e)s', e=e), 'type' : 'danger'}
 
     return groups
 
@@ -191,7 +191,7 @@ def set_groups():
 
         get_db().session.commit()
     except Exception as e:
-        return {'message': gettext('Error while setting order: {e}'.format(e=e)), 'type' : 'danger'}
+        return {'message': gettext('Error while setting order: %(e)s', e=e), 'type' : 'danger'}
 
     return {'message': gettext('Group results set successfully!'), 'type' : 'success'}
 
@@ -229,20 +229,20 @@ def allowed_file(filename):
 def upload_team_data():
     # check if the post request has the file part
     if 'team' not in request.files and 'translation' not in request.files:
-        return gettext('One of the files was not specified for the request!'), 400
+        return {'message': gettext('One of the files was not specified for the request!'), 'type': 'danger'}
 
     # If the user does not select a file, the browser submits an
     # empty file without a filename.
     team_file = request.files['team']        
     if team_file.filename == '':
-        return gettext('No team file was specified!'), 400
+        return {'message': gettext('No team file was specified!'), 'type': 'danger'}
 
     translation_file = request.files['translation']
     if translation_file.filename == '':
-        return gettext('No translation file was specified!'), 400
+        return {'message': gettext('No translation file was specified!'), 'type': 'danger'}
         
     if not team_file or not allowed_file(team_file.filename) or not translation_file or not allowed_file(translation_file.filename):    
-        return gettext('The uploaded file\'s extension is not correct!'), 400
+        return {'message': gettext('The uploaded file\'s extension is not correct!'), 'type': 'danger'}
     
     try:
         team_file_name = secure_filename(team_file.filename)
@@ -254,15 +254,15 @@ def upload_team_data():
         translation_file.save(translation_file_path)
     except Exception as error:
         current_app.logger.info('Failing to write team-data files to local storage: ' + str(error))
-        return gettext('Failing to write team-data files to local storage!'), 400
+        return {'message': gettext('Failing to write team-data files to local storage!'), 'type': 'danger'}
 
     if not database_manager.initialize_teams(team_file_name=team_file_path, translation_file_name=translation_file_path):
-        return gettext('Error while initializing the teams!'), 400
+        return {'message': gettext('Error while initializing the teams!'), 'type': 'danger'}
 
     if not database_manager.initialize_matches():
-        return gettext('Error while initializing the matches!'), 400
+        return {'message': gettext('Error while initializing the matches!'), 'type': 'danger'}
 
-    return gettext('Team data file uploading was successful!'), 200
+    return {'message': gettext('Team data file uploading was successful!'), 'type': 'success'}
 
 @bp.route('/admin/database', methods=['GET', 'POST'])
 @sign_in_required(role=Role.ADMIN)
