@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpDataHandler } from '../../../service/http-data-handler';
 import { paths } from '../../../paths';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generate-standings',
@@ -14,30 +14,38 @@ export class GenerateStandings {
 
   alerts: Alert[] = []
 
-  constructor(private httpDataHandler: HttpDataHandler) {
+  constructor(private http: HttpClient) {
 
   }
 
   sendStandingsImmediately() {
     let sendImmediatelyPath = paths.admin.standings.sendImmediately;
 
-    this.httpDataHandler.getData<Alert>(sendImmediatelyPath).subscribe(value => {
-        this.alerts.push(value as Alert);
-    });
+    this.http.get(sendImmediatelyPath, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({type: 'success', message: message})
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error})
+        }
+      });
   }
 
   getStandings() {
     let standingsGetPath = paths.admin.standings.get;
   
-    this.httpDataHandler.getData<{emails: string, standings: string}>(standingsGetPath).subscribe(value => {
-      if (value && (value as any).message) {
-        this.alerts.push(value as Alert);
-      }
-      else {
-        let v = value as {emails: string, standings: string};
-        this.emails = v.emails;
-        this.standings = v.standings;
-      }
+    type StandingsData = {emails: string, standings: string};
+
+    this.http.get<StandingsData>(standingsGetPath)
+      .subscribe({
+        next: (standingsData: StandingsData ) => {
+          this.emails = standingsData.emails;
+          this.standings = standingsData.standings;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error});
+        }
     });
   }
 

@@ -30,9 +30,9 @@ bp = Blueprint('admin', __name__, '''url_prefix="/admin"''')
 @sign_in_required(role=Role.ADMIN)
 def match_update():
     if not database_manager.update_match_data_from_fixture():
-        return { 'message': gettext('Match data updating failed!'), 'type': 'success'}
+        return gettext('Match data updating failed!'), 400
 
-    return {'message': gettext('Match data succsesfully updated!'), 'type': 'success'}
+    return gettext('Match data successfully updated!'), 200
 
 @bp.route('/admin/matches')
 def matches():
@@ -62,7 +62,7 @@ def odd_get():
         return result.fetchone()._asdict()
     except Exception as error:
         current_app.logger.info('Failed to fetch match data: ' + str(error))
-        return {'message': gettext('Failed to fetch match data!'), 'type': 'danger'}, 400
+        return gettext('Failed to fetch match data!'), 400
 
 @bp.route('/admin/match-set', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
@@ -70,7 +70,7 @@ def odd_set():
     updated_data = request.get_json()
 
     if type(updated_data['bgoal1']) != type(updated_data['bgoal2']) or (updated_data['bgoal1'] is not None and type(updated_data['bgoal1']) is not int):
-        return {'message': gettext('Invalid goal value specified!'), 'type': 'danger'}
+        return gettext('Invalid goal value specified!'), 400
 
     query_string = text('UPDATE match SET odd1=:odd1, oddX=:oddX, odd2=:odd2, max_bet=:max_bet WHERE id=:id')
     get_db().session.execute(query_string, updated_data)
@@ -80,7 +80,7 @@ def odd_set():
 
     get_db().session.commit()
 
-    return {'message': gettext('Successfully updated match data!'), 'type': 'success'}
+    return gettext('Successfully updated match data!'), 200
 
 @bp.route('/admin/message-get', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
@@ -99,9 +99,9 @@ def messages_set():
 
         get_db().session.commit()
     except Exception as e:
-        return {'message': gettext('Error while setting home messages: %(e)s', e=e), 'type' : 'danger'}
+        return gettext('Error while setting home messages: %(e)s', e=e), 400
 
-    return {'message': gettext('Messages updated successfully!'), 'type': 'success'}
+    return gettext('Messages updated successfully!'), 200
 
 @bp.route('/admin/send-notification', methods=['POST'])
 @sign_in_required(role=Role.ADMIN)
@@ -111,10 +111,10 @@ def send_notification():
         message_subject = request.get_json()['subject']
         
         if len(message_text) < 10:
-            return {'message' : gettext('Too short message!'), 'type': 'danger' }
+            return gettext('Too short message!'), 400
             
         if len(message_subject) < 6:
-            return {'message' : gettext('Too short subject!'), 'type': 'danger' }
+            return gettext('Too short subject!'), 400
 
         messages = []
 
@@ -126,10 +126,10 @@ def send_notification():
 
         notifications = notification_handler.get_notifier().send_messages(messages=messages)
 
-        return {'message' :  gettext('Notifications successfully sent: %(n)s', n=notifications), 'type' : 'success'}
+        return gettext('Notifications successfully sent: %(n)s', n=notifications), 200
     except Exception as error:
         current_app.logger.info('Error sending notification to everyone: ' + str(error))
-        return {'message' : gettext('Error sending notification to everyone!'), 'type': 'danger' }
+        return gettext('Error sending notification to everyone!'), 400
 
 @bp.route('/admin/standings', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
@@ -176,7 +176,7 @@ def get_groups():
 
                 current_group['teams'].append({'name' : team.name, 'name_tr' : team.local_name, 'position' :  team.position})
     except Exception as e:
-        return {'message': gettext('Error while setting order: %(e)s', e=e), 'type' : 'danger'}
+        return gettext('Error while setting order: %(e)s', e=e), 400
 
     return groups
 
@@ -191,9 +191,9 @@ def set_groups():
 
         get_db().session.commit()
     except Exception as e:
-        return {'message': gettext('Error while setting order: %(e)s', e=e), 'type' : 'danger'}
+        return gettext('Error while setting order: %(e)s', e=e), 400
 
-    return {'message': gettext('Group results set successfully!'), 'type' : 'success'}
+    return gettext('Group results set successfully!'), 200
 
 @bp.route('/admin/tournament-bet-get', methods=['GET'])
 def tournament_bet_get():
@@ -218,7 +218,7 @@ def tournament_bet_set():
 
     get_db().session.commit()
 
-    return {'message': gettext('Tournament bet results set successfully!'), 'type': 'success'}
+    return gettext('Tournament bet results set successfully!'), 200
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -229,20 +229,20 @@ def allowed_file(filename):
 def upload_team_data():
     # check if the post request has the file part
     if 'team' not in request.files and 'translation' not in request.files:
-        return {'message': gettext('One of the files was not specified for the request!'), 'type': 'danger'}
+        return gettext('One of the files was not specified for the request!'), 400
 
     # If the user does not select a file, the browser submits an
     # empty file without a filename.
     team_file = request.files['team']        
     if team_file.filename == '':
-        return {'message': gettext('No team file was specified!'), 'type': 'danger'}
+        return gettext('No team file was specified!'), 400
 
     translation_file = request.files['translation']
     if translation_file.filename == '':
-        return {'message': gettext('No translation file was specified!'), 'type': 'danger'}
+        return gettext('No translation file was specified!'), 400
         
     if not team_file or not allowed_file(team_file.filename) or not translation_file or not allowed_file(translation_file.filename):    
-        return {'message': gettext('The uploaded file\'s extension is not correct!'), 'type': 'danger'}
+        return gettext('The uploaded file\'s extension is not correct!'), 400
     
     try:
         team_file_name = secure_filename(team_file.filename)
@@ -254,15 +254,15 @@ def upload_team_data():
         translation_file.save(translation_file_path)
     except Exception as error:
         current_app.logger.info('Failing to write team-data files to local storage: ' + str(error))
-        return {'message': gettext('Failing to write team-data files to local storage!'), 'type': 'danger'}
+        return gettext('Failing to write team-data files to local storage!'), 400
 
     if not database_manager.initialize_teams(team_file_name=team_file_path, translation_file_name=translation_file_path):
-        return {'message': gettext('Error while initializing the teams!'), 'type': 'danger'}
+        return gettext('Error while initializing the teams!'), 400
 
     if not database_manager.initialize_matches():
-        return {'message': gettext('Error while initializing the matches!'), 'type': 'danger'}
+        return gettext('Error while initializing the matches!'), 400
 
-    return {'message': gettext('Team data file uploading was successful!'), 'type': 'success'}
+    return gettext('Team data file uploading was successful!'), 200
 
 @bp.route('/admin/database', methods=['GET', 'POST'])
 @sign_in_required(role=Role.ADMIN)
@@ -281,12 +281,12 @@ def database_file():
     
     if request.method == 'POST':
         if 'database' not in request.files:
-            return {'message':gettext('Database file was not specified!'), 'type' : 'danger'}
+            return gettext('Database file was not specified!'), 400
 
         new_file = request.files['database']
 
         if not new_file or new_file.filename == '':
-            return {'message': gettext('Database file is null!'), 'type' : 'danger'}
+            return gettext('Database file is null!'), 400
 
         if allowed_file(new_file.filename):
             try:
@@ -295,12 +295,12 @@ def database_file():
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 new_file.save(file_path)
 
-                return {'message': gettext('Database file uploading was successful!'), 'type' : 'success'}
+                return gettext('Database file uploading was successful!'), 200
             except Exception as error:
                 current_app.logger.info('Error while saving new database file: ' + str(error))
-                return {'message': gettext('Error while saving new database file!'), 'type' : 'danger'}
+                return gettext('Error while saving new database file!'), 400
         
-        return {'message': gettext('The specified format cannot be uploaded!'), 'type' : 'danger'}
+        return gettext('The specified format cannot be uploaded!'), 400
 
 @bp.route('/admin/maintenance', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
@@ -313,21 +313,21 @@ def maintain_toggle():
     cache.set('maintenance', not cache.get('maintenance'), timeout=120)
 
     state_string = gettext('ON') if cache.get('maintenance') else gettext('OFF')
-    return {'message' : gettext('Maintenance successfully turned %(id)s!', id=state_string), 'type' : 'success'}
+    return gettext('Maintenance successfully turned %(id)s!', id=state_string), 200
 
 @bp.route('/admin/manual-daily-checker', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def manual_daily_checker():
     scheduler_handler.daily_checker()
-    return {'message' : gettext('Daily checker manually initiated!'), 'type' : 'success'}
+    return gettext('Daily checker manually initiated!'), 200
 
 @bp.route('/admin/standings-notification', methods=['GET'])
 @sign_in_required(role=Role.ADMIN)
 def standings_notification():
     if not scheduler_handler.daily_standings():
-        return {'message': gettext('Standings notification failed!'), 'type': 'danger'}
+        return gettext('Standings notification failed!'), 400
     
-    return {'message': gettext('Standings successfully notified!'), 'type' : 'success'}
+    return gettext('Standings successfully notified!'), 200
 
 @bp.route('/admin/log')
 @sign_in_required(role=Role.ADMIN)

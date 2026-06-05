@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { tap, catchError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
 import { AuthService } from '../../../service/auth-service';
 import { MatchModal } from '../../modals/match-modal/match-modal';
@@ -27,15 +26,15 @@ export class AdminMatch {
   fetchMatches() {
     let adminMatchPath = paths.admin.match.list;
 
-    this.http.get<Match[]>(adminMatchPath).pipe(
-      tap(data => {
-        this.matches = data;
-      }),
-      catchError(err => {
-        console.error('Error fetching group results:', err);
-        return [];
-      })
-    ).subscribe();
+    this.http.get<Match[]>(adminMatchPath)
+      .subscribe({
+        next: (matches: Match[]) => {
+          this.matches = matches;
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error fetching group results:', err);
+        }
+      });
   }
 
   modifyMatch(matchID: number) {
@@ -52,14 +51,14 @@ export class AdminMatch {
   fetchFromFixture() {
     let updateMatchPath = paths.admin.match.update;
 
-    this.http.get<Alert>(updateMatchPath).pipe(
-      tap(data => {
-        
-      }),
-      catchError(err => {
-        console.error('Error updating matches:', err);
-        return [];
-      })
-    ).subscribe();
+    this.http.get(updateMatchPath, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          console.error('Succesfully fetched matches:', message);
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error updating matches:', err.error);
+        }
+      });
   }
 }

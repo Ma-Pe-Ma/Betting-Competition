@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DayNamePipe } from '../../../pipes/day-name-pipe';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { GameConfigurationService } from '../../../service/game-configuration-service';
 import { AuthService } from '../../../service/auth-service';
-import { tap, catchError } from 'rxjs';
 import { paths } from '../../../paths';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
 
@@ -55,16 +54,16 @@ export class PlayerResults {
       let path = paths.results.playerResults;
       const params = { name: playerName };
 
-      this.http.get<PlayerData>(path, {params}).pipe(
-        tap(data => {
-          this.playerResults.set(playerName, data);
-          this.currentPlayer = data;
-        }),
-        catchError(err => {
-          console.error('Error fetching player results:', err);
-          return [];
-        })
-      ).subscribe();
+      this.http.get<PlayerData>(path, {params})
+        .subscribe({
+          next: (playerData: PlayerData) => {
+            this.playerResults.set(playerName, playerData);
+            this.currentPlayer = playerData;
+          },
+          error: (err: HttpErrorResponse) => {
+            console.error('Error fetching player results:', err);
+          }
+        });
     } 
   }
 }

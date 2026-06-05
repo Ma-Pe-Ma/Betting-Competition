@@ -16,17 +16,19 @@ export class Profile {
 
   constructor(private http: HttpClient) {
     let profilePath = paths.auth.profile.get;
-    http.get<UserData>(profilePath).subscribe( profileData => {
-      this.userData = profileData;
-    });
+    http.get<UserData>(profilePath)
+      .subscribe( profileData => {
+        this.userData = profileData;
+      });
   }
 
   postProfile() {
     let profilePath = paths.auth.profile.set;
 
-    this.http.post<Alert>(profilePath, this.userData).subscribe(alert => {
-        this.alerts.push(alert);
-    });
+    this.http.post<Alert>(profilePath, this.userData)
+      .subscribe(alert => {
+          this.alerts.push(alert);
+      });
   }
 
   close(alert: Alert) {

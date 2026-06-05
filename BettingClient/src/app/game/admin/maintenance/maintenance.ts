@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { tap, catchError, of} from 'rxjs';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { ClientConfigService } from '../../../service/client-config-service';
 import { paths } from '../../../paths';
@@ -36,33 +35,28 @@ export class Maintenance {
 
     let path = paths.admin.maintenance.dbUpload;
 
-    this.http.post<Alert>(path, formData).pipe(
-      tap(data => {
-        return data;  
-      }),
-      catchError((err: HttpErrorResponse) => {
-        console.error('Error uploading db:', err);
-        return of({message: 'Unknown error: ' + err.error, type: 'danger'} as Alert);
-      })
-    )
-    .subscribe(value => {
-      this.alerts.push(value as Alert);      
-    });
+    this.http.post(path, formData, {responseType: 'text'})
+      .subscribe({
+        next: (message: string)=> {
+          this.alerts.push({type: 'success', message: message});      
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error});
+        }      
+      });
   }
 
   launchRequest(path: string) {
-    this.http.get<Alert>(path).pipe(
-      tap(data => {
-        return data;  
-      }),
-      catchError((err: HttpErrorResponse) => {
-        console.error('Error maintenance request:', err);
-        return of({message: 'Unknown error: ' + err.error, type: 'danger'} as Alert);
-      })
-    )
-    .subscribe(value => {
-      this.alerts.push(value as Alert);      
-    });
+    this.http.get(path, {responseType: 'text'})
+      .subscribe({
+        next: (message: string)=> {
+          this.alerts.push({type: 'success', message: message});
+        },
+        error: (err: HttpErrorResponse) => {
+          //console.error('Error maintenance request:', err);
+          this.alerts.push({type: 'danger', message: err.error});
+        }
+      });
   }
 
   close(alert: Alert) {

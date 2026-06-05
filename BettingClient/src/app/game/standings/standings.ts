@@ -1,5 +1,5 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, tap, catchError } from 'rxjs/operators';
 import { CanvasJSAngularChartsModule, CanvasJSChart } from '@canvasjs/angular-charts';
 import { paths } from '../../paths';
@@ -69,9 +69,9 @@ export class Standings {
     let standingsPath = paths.standings;
 
     this.http.get<UserStanding[]>(standingsPath).pipe(
-      map(data => {
-        return data.map(standing => {
-            let result = {
+      map((standings: UserStanding[]) => {
+        return standings.map(standing => {
+            return {
               type : "line",
               axisYType: "secondary",
               name: standing.username,
@@ -83,35 +83,32 @@ export class Standings {
                 return { x: new Date(day.date), y: day.point}
               })
             }
-
-            return result;
         });
-      }),
-      tap(data => {
+      })
+    ).subscribe({
+      next: (standings) => {
         this.ngZone.runOutsideAngular(() => {
-          this.chartOptions.data = data;
+          this.chartOptions.data = standings;
           this.chartInstance.render();
         });
 
-        for (let user of data) {
-            let lastDay = user.dataPoints[user.dataPoints.length - 1];
-            let penultimateDay = user.dataPoints[user.dataPoints.length - 2];
-            this.standings.push({username: user.name, image: user.image, point: lastDay.y, penultimatePoint: penultimateDay.y});
-          }
+        for (let user of standings) {
+          let lastDay = user.dataPoints[user.dataPoints.length - 1];
+          let penultimateDay = user.dataPoints[user.dataPoints.length - 2];
+          this.standings.push({username: user.name, image: user.image, point: lastDay.y, penultimatePoint: penultimateDay.y});
+        }
 
-          this.standings
-            .sort((a, b) => b.penultimatePoint - a.penultimatePoint)
-            .forEach((pos, index) => {
-               pos.penultimatePosition = index;
-             })
+        this.standings
+          .sort((a, b) => b.penultimatePoint - a.penultimatePoint)
+          .forEach((pos, index) => {
+              pos.penultimatePosition = index;
+            })
 
-          this.standings.sort((a, b) => b.point - a.point);
-        
-      }),
-      catchError(err => {
+        this.standings.sort((a, b) => b.point - a.point);
+      },
+      error: (err: HttpErrorResponse) => {
         console.error('Error fetching standings: ', err);
-        return [];
-      })
-    ).subscribe();
+      }
+    });
   }
 }

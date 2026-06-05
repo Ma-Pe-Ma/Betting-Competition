@@ -18,12 +18,8 @@ export class ClientConfigService {
     return this.http.get<ClientConfig>('./config.json').pipe(
       tap(data => {
         this.config = data;
-      }),
-      catchError(error => {
-        console.error('Error loading configuration', error);
-        return throwError(() => error);
       })
-    )
+    );
   }
 
   get clientConfig(): ClientConfig {

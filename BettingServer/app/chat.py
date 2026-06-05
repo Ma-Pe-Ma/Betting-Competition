@@ -48,14 +48,14 @@ def chat_page():
     message : dict = request.get_json()
 
     if len(message['comment']) < 4:
-        return {'message': gettext('Too short message!'), 'type' : 'danger'}
+        return gettext('Too short message!'), 400
     try:
         now_time_string = time_handler.get_now_time_string_with_seconds()
         query_string = text('INSERT INTO comment (username, datetime, content) VALUES (:u, :d, :c)')
         get_db().session.execute(query_string, {'u' : g.user['username'], 'd' : now_time_string, 'c' : message['comment']})
         get_db().session.commit()
     except Exception as err:
-        return {'message': gettext('Invalid data sent!'), 'type' : 'danger'}
+        return gettext('Invalid data sent!'), 400
 
     name_query = text('SELECT username FROM bet_user')
     names = get_db().session.execute(name_query)
@@ -70,4 +70,4 @@ def chat_page():
     comment_nr[g.user['username']] = 0
     cache.set('comment_nr', comment_nr, timeout=0)
 
-    return {'message': gettext('Comment posted successfully!'), 'type' : 'success'}
+    return gettext('Comment posted successfully!'), 200

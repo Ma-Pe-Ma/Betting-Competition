@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-import { HttpDataHandler } from '../../../service/http-data-handler';
 import { paths } from '../../../paths';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 interface HomeMessageContainer {
   id?: number,
@@ -18,25 +18,32 @@ export class HomeMessage {
   homeMessages: HomeMessageContainer[] = []
   alerts: Alert[] = []
 
-  constructor(private httpDataHandler: HttpDataHandler) {
+  constructor(private http: HttpClient) {
     let getHomeMessagePath = paths.admin.homeMessage.get;
     
-    this.httpDataHandler.getData<HomeMessageContainer[]>(getHomeMessagePath).subscribe(value => {
-      if (value && (value as any).message) {
-        this.alerts.push(value as Alert);
-      }
-      else {
-        this.homeMessages = value as HomeMessageContainer[];
-      }
-    });
+    this.http.get<HomeMessageContainer[]>(getHomeMessagePath)
+      .subscribe({
+        next: (messageContainer: HomeMessageContainer[]) => {
+          this.homeMessages = messageContainer;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error});
+        }
+      });
   }
 
   postMessages() {
     let setHomeMessagePath = paths.admin.homeMessage.set;  
 
-    this.httpDataHandler.postData(setHomeMessagePath, this.homeMessages).subscribe(value => {
-        this.alerts.push(value); 
-    });
+    this.http.post(setHomeMessagePath, this.homeMessages, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({type: 'success', message: message}); 
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error});
+        }
+      });
   }
 
   close(alert: Alert) {

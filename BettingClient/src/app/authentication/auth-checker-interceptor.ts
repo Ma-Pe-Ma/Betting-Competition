@@ -23,7 +23,7 @@ export const authCheckerInterceptor: HttpInterceptorFn = (req, next) => {
         if (error.status === 401) {
           // Redirect to login page
           console.log("Error user is not signed in...");
-          authService.signOut().subscribe();
+          authService.fetchAuthStatus().subscribe();
           router.navigate(['/auth/sign-in']);
           return EMPTY;
         }

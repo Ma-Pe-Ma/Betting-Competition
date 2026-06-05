@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpDataHandler } from '../../../service/http-data-handler';
 import { DecimalPipe } from '@angular/common';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
 import { AuthService } from '../../../service/auth-service';
 import { paths } from '../../../paths';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 interface PlayerStatistics {
   username?: string,
@@ -69,18 +69,24 @@ export class Statistics {
   playerStatistics: PlayerStatistics[] = [];
   matchStatistics: MatchStatistics [] = [];
 
-  constructor(private httpDataHandler: HttpDataHandler, private authService: AuthService) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     let path = paths.main.statistics;
     this.user = this.authService.getUser();
    
-    httpDataHandler.getData<{players: PlayerStatistics[], matches: MatchStatistics[]}>(path).subscribe(value => {
-      if (value && (value as any).message) {
-        this.alerts.push(value as Alert);
-      }
-      else {
-        this.playerStatistics = (value as {players: PlayerStatistics[], matches: MatchStatistics[]}).players;        
-        this.matchStatistics = (value as {players: PlayerStatistics[], matches: MatchStatistics[]}).matches;
-      }
-    });
+    type DashboardData = {
+      players: PlayerStatistics[];
+      matches: MatchStatistics[];
+    };
+
+    http.get<DashboardData>(path)
+      .subscribe({
+        next: (value: DashboardData) => {
+          this.playerStatistics = value.players;        
+          this.matchStatistics = value.matches;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error});
+        }
+      });
   }
 }

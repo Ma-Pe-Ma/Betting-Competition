@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AuthService } from '../../../service/auth-service';
-import { tap, catchError } from 'rxjs';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
 import { GameConfigurationService } from '../../../service/game-configuration-service';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
@@ -45,22 +44,22 @@ export class GroupAfter {
 
       let groupStatusPath = paths.group.get;
       const params = { name: playerName };
-      this.http.get<GroupResponse>(groupStatusPath, {params}).pipe(
-        tap(data => {
-          this.players.set(playerName, data);
-          this.setCurrentPlayer(data)
-        }),
-        catchError(err => {
-          console.error('Error fetching group results:', err);
-          return [];
-        })
-      ).subscribe();
+      this.http.get<GroupResponse>(groupStatusPath, {params})
+        .subscribe({
+          next: (groupResponse: GroupResponse) => {
+            this.players.set(playerName, groupResponse);
+            this.setCurrentPlayer(groupResponse);
+          },
+          error: (err: HttpErrorResponse) => {
+            console.error('Error fetching group results:', err);
+          }
+        });
     }
   }
 
   setCurrentPlayer(newPlayer: GroupResponse) {
-      this.currentPlayer = newPlayer;
-      this.totalBet = newPlayer.groups.reduce((sum, item) => sum + item.bet, 0) + newPlayer.tournament.bet;
-      this.totalWin = newPlayer.groups.reduce((sum, item) => sum + item.prize, 0)
+    this.currentPlayer = newPlayer;
+    this.totalBet = newPlayer.groups.reduce((sum, item) => sum + item.bet, 0) + newPlayer.tournament.bet;
+    this.totalWin = newPlayer.groups.reduce((sum, item) => sum + item.prize, 0);
   }
 }

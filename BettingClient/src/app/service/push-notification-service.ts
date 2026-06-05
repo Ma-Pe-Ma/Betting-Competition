@@ -21,9 +21,10 @@ export class PushNotificationService {
         })
         .then(subscription => {
           let pushPath = paths.push;
-          this.http.post(pushPath, subscription).subscribe(response => {
-            console.log("Successfuly sent subscription to server...")
-          })
+          this.http.post(pushPath, subscription)
+            .subscribe(response => {
+              console.log("Successfuly sent subscription to server...")
+            })
         })
       }
     });
