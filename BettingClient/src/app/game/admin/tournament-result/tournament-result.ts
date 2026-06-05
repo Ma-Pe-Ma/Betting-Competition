@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpDataHandler } from '../../../service/http-data-handler';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
 import { paths } from '../../../paths';
 
@@ -21,25 +20,32 @@ export class TournamentResult {
   alerts: Alert[] = []
   tournamentBets: TournamentBet[] = []
 
-  constructor(private http: HttpClient, private httpDataHandler: HttpDataHandler) {
+  constructor(private http: HttpClient) {
     let tournamentGetPath = paths.admin.tournamentBet.get;
     
-    this.httpDataHandler.getData<TournamentBet[]>(tournamentGetPath).subscribe(value => {
-      if (value && (value as any).message) {
-        this.alerts.push(value as Alert);
-      }
-      else {
-        this.tournamentBets = value as TournamentBet[];
-      }
-    });
+    this.http.get<TournamentBet[]>(tournamentGetPath)
+      .subscribe({
+        next: (tournamentBets: TournamentBet[]) => {
+          this.tournamentBets = tournamentBets;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.message});
+        }
+      });
   }
 
   postTournamentBets() {
     let tournamentSetPath = paths.admin.tournamentBet.set;
 
-    this.httpDataHandler.postData(tournamentSetPath, this.tournamentBets).subscribe(value => {
-        this.alerts.push(value); 
-    });
+    this.http.post(tournamentSetPath, this.tournamentBets, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({type: 'success', message: message}); 
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error}); 
+        }
+      });
   }
 
   selectSuccess(bet: TournamentBet, success: number) {

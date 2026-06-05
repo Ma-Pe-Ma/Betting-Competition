@@ -6,7 +6,7 @@
             {{selectedItem}}
         </button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-            @for(item of listElements$ | async; track item) {
+            @for(item of listElements; track item) {
                 <button ngbDropdownItem (click)="onItemSelected(item)">{{item}}</button>
             }
         </div>

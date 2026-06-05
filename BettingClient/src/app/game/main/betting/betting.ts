@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 import { DayNamePipe } from '../../../pipes/day-name-pipe';
 import { NgTemplateOutlet } from '@angular/common';
@@ -30,7 +30,7 @@ export class Betting {
         this.days = days;
         this.currentBalance = credit.credit;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error fetching data: ', err);
       }
     });

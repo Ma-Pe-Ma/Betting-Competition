@@ -1,7 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { tap, catchError, of } from 'rxjs';
 import { paths } from '../../../paths';
 
 @Component({
@@ -17,9 +16,7 @@ export class TeamData {
 
   alerts: Alert[] = []
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) {}
 
   onFileSelected(fileId: string, event: any) {
     this.fileMap.set(fileId, event.target.files[0]);
@@ -41,11 +38,12 @@ export class TeamData {
     formData.append('translation', this.fileMap.get('translation')!);
 
     let path = paths.admin.teamData;
-    this.http.post<Alert>(path, formData)
+    this.http.post(path, formData, {responseType: 'text'})
     .subscribe({
-      next: alert => this.alerts.push(alert),
-      error: err => {
-        console.error('Error uploading db:', err);
+      next: (message: string) => {
+        this.alerts.push({type: 'success', message: message})
+      },
+      error: (err: HttpErrorResponse) => {
         this.alerts.push({
           message: $localize`:@@uploadError:Unknown error: ` + err.error,
           type: 'danger'

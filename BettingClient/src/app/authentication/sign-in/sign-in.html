@@ -4,7 +4,7 @@
             <h1 class="h3 mb-3 fw-normal" i18n="@@signIn">Sign in</h1>
         
             <div class="form-floating">
-                <input type="text" class="form-control" id="usernameInput" placeholder="Username" i18n-placeholder="@@username" name="username" [(ngModel)]="userData.username" (keyup.enter)="signIn()">
+                <input type="text" class="form-control" id="usernameInput" placeholder="Username" i18n-placeholder="@@username" name="username" [(ngModel)]="userData.username" (keyup.enter)="signIn()" #userInput>
                 <label for="usernameInput" i18n="@@username">Username</label>
             </div>
             <div class="form-floating mt-2">

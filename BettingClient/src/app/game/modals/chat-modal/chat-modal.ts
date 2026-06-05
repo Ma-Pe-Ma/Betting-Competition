@@ -1,9 +1,8 @@
-import { Component, ViewChild, ElementRef, Output, input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, ViewChild, ElementRef, Output } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { FormsModule } from '@angular/forms';
-import { tap, catchError } from 'rxjs';
 import { EventEmitter } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { paths } from '../../../paths';
@@ -23,9 +22,7 @@ export class ChatModal {
   inputMessage: ChatMessage = {}
   previewText: string = "";
 
-  constructor(private http: HttpClient, public activeModal: NgbActiveModal) {
-  
-  }
+  constructor(private http: HttpClient, public activeModal: NgbActiveModal) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -40,22 +37,21 @@ export class ChatModal {
   postMessage() {
     let postChatPath = paths.chat.set;
 
-    this.http.post<Alert>(postChatPath, this.inputMessage).pipe(
-        tap(alert => {
-          this.alerts.push(alert);          
+    this.http.post(postChatPath, this.inputMessage, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
           this.postedMessage.emit(true);
 
-          if (alert.type == 'success') {
-            setTimeout(() => {
-              this.activeModal.close();
-            }, 2000);            
-          }          
-        }),
-        catchError(err => {
-          console.error('Error fetching group results:', err);
-          return [];
-        })
-      ).subscribe();
+          this.alerts.push({type: 'success', message: message});
+
+          setTimeout(() => {
+            this.activeModal.close();
+          }, 1500);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'success', message: err.error});
+        }
+      });
   }
 
   close(alert: Alert) {

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { map, tap, catchError } from 'rxjs';
 import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { ChatModal } from '../modals/chat-modal/chat-modal';
 import { LocalDatePipe } from '../../pipes/local-date-pipe';
@@ -45,38 +44,33 @@ export class Chat {
     if (dateString) params = params.set('datetime', dateString);
     if (age !== null) params = params.set('age', age);
 
-    this.http.get<ChatMessage[]>(groupStatusPath, {params}).pipe(
-      map(comments => ({
-        comments,
-        params
-      })),  
-      tap(data => {
-        if (age == '>') {
-          this.chatMessages.push(...data.comments);
+    this.http.get<ChatMessage[]>(groupStatusPath, {params})
+      .subscribe({
+        next: (chatMessages: ChatMessage[]) => {
+          if (age == '>') {
+            this.chatMessages.push(...chatMessages);
 
-          window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-          });
+            window.scrollTo({
+              top: document.body.scrollHeight,
+              behavior: 'smooth'
+            });
+          }
+          else if (age == '<') {
+            chatMessages.reverse();
+            this.chatMessages.unshift(...chatMessages);
+
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
+
+            this.previousDisabled = chatMessages.length < 8 ? true : false;
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error})
         }
-        else if (age == '<') {
-          data.comments.reverse();
-          this.chatMessages.unshift(...data.comments);
-
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-
-          this.previousDisabled = data.comments.length < 8 ? true : false;
-        }
-        
-      }),
-      catchError(err => {
-        console.error('Error fetching group results:', err);
-        return [];
-      })
-    ).subscribe();
+      });
   }
 
   showNewCommentModal() {

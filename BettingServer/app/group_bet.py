@@ -76,7 +76,7 @@ def set_group_bet():
             break
 
     if response_string is not None:
-        return {'message': response_string, 'type': 'danger'}
+        return response_string, 400
     
     tournament_bet = tournament['bet']
     
@@ -99,7 +99,7 @@ def set_group_bet():
 
     get_db().session.commit()
 
-    return {'message': gettext('Successfully updated groups!'), 'type': 'success'}
+    return gettext('Successfully updated groups!'), 200
 
 @bp.route('/group-status', methods=['GET'])
 @sign_in_required()

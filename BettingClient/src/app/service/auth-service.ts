@@ -18,18 +18,14 @@ export class AuthService {
     let params = new HttpParams()
       .set('lan', environment.languageKey);
 
-    return this.http.get<User>(statusPath, {params: params, observe: 'response'}).pipe(
-      tap(res => {
-        if (res.status === 200) {
-          this.userSubject.next(res.body);
-        }
-        else {
+    return this.http.get<User>(statusPath, {params: params}).pipe(
+      tap({
+        next: (user: User) => {
+          this.userSubject.next(user);
+        },
+        error: () => {
           this.userSubject.next(null);
         }
-      }),
-      catchError(err => {
-        console.error('Error fetching auth status', err);
-        return EMPTY
       })
     )
   }
@@ -40,13 +36,5 @@ export class AuthService {
 
   get getUser$(): Observable<User | null> {
     return this.userSubject.asObservable();
-  }
-
-  signIn() {
-    return this.fetchAuthStatus();
-  }
-
-  signOut() {
-    return this.fetchAuthStatus();
   }
 }

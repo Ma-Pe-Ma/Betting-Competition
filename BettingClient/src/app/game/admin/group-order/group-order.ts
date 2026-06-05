@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpDataHandler } from '../../../service/http-data-handler';
 import { paths } from '../../../paths';
 
 @Component({
@@ -14,25 +13,32 @@ export class GroupOrder {
   groups: Group[] = [];
   alerts: Alert[] = []
 
-  constructor(private http: HttpClient, private httpDataHandler: HttpDataHandler) {
+  constructor(private http: HttpClient) {
     let getGroupPath = paths.admin.group.get;
 
-    this.httpDataHandler.getData<Group[]>(getGroupPath).subscribe(value => {
-      if (value && (value as any).message) {
-        this.alerts.push(value as Alert);
-      }
-      else {
-        this.groups = value as Group[];
-      }
-    });
+    this.http.get<Group[]>(getGroupPath)
+      .subscribe({
+        next: (groups: Group[]) => {
+          this.groups = groups;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error});
+        }
+      });
   }
 
   postGroupOrder() {
     let setGroupPath = paths.admin.group.set;
 
-    this.httpDataHandler.postData(setGroupPath, this.groups).subscribe(value => {
-        this.alerts.push(value); 
-    });
+    this.http.post(setGroupPath, this.groups, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({'type': 'success', 'message': message}); 
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({'type': 'danger', 'message': err.error}); 
+        }
+      });
   }
 
   drop(event: CdkDragDrop<string[]>, teams: Team[]) {

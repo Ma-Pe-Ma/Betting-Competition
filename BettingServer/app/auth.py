@@ -84,8 +84,7 @@ def sign_in_required(role : Role = Role.USER):
 @bp.route('/register-message')
 def introduction():
     introduction_query = text('SELECT message FROM messages WHERE id = 0')
-    introduction = get_db().session.execute(introduction_query).fetchone().message
-    return {'introduction': introduction }
+    return get_db().session.execute(introduction_query).fetchone().message
 
 @bp.route('/register', methods=['POST'])
 def register() -> str:
@@ -93,7 +92,7 @@ def register() -> str:
     register_deadline : datetime = time_handler.parse_datetime_string(current_app.config['DEADLINE_TIMES']['register'])
 
     if utc_now > register_deadline:
-        return {'message' : gettext('Registering is not available anymore as the tournament has begun!.'), 'type': 'danger'}
+        return gettext('Registering is not available anymore as the tournament has begun!.'), 400
 
     if g.user is not None:
         return '', 409
@@ -111,33 +110,33 @@ def register() -> str:
         user_data['reminder'] = 1 if 'reminder' not in user_data else int(user_data['reminder'])
         user_data['summary'] = 0 if 'summary' not in user_data else int(user_data['summary'])
     except ValueError:
-        error = (gettext('Invalid reminder/summary value.'), 'danger')
+        error = gettext('Invalid reminder/summary value.')
     else:
         if 'username' not in user_data or len(str(user_data['username'])) < 3:
-            error = (gettext('Chosen nickname is too short (min. 3 characters).'), 'danger')
+            error = gettext('Chosen nickname is too short (min. 3 characters).')
         elif len(str(user_data['username'])) > 20:
-            error = (gettext('Chosen nickname is too long (max. 20 characters).'), 'danger')
+            error = gettext('Chosen nickname is too long (max. 20 characters).')
         elif 'email' not in user_data:
-            error = (gettext('E-mail address is required.'), 'danger')
+            error = gettext('E-mail address is required.')
         elif 'password1' not in user_data or 'password2' not in user_data or len(user_data['password1']) < 8:
-            error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
+            error = gettext('The given password is too short (min. 8 characters).')
         elif user_data['password1'] != user_data['password2']:
-            error = (gettext('The two passwords are not identical.'), 'danger')
+            error = gettext('The two passwords are not identical.')
         elif user_data['key'] != current_app.config['INVITATION_KEYS']['user'] and user_data['key'] != current_app.config['INVITATION_KEYS']['admin']:
-            error = (gettext('The invitation key is not valid.'), 'danger')
+            error = gettext('The invitation key is not valid.')
         else:
             query_string = text('SELECT * FROM bet_user WHERE username = :username')
             result = db.session.execute(query_string, {'username' : user_data['username'] })
             if result.fetchone() is not None:
-                error = (gettext('The chosen nickname is already taken.'), 'danger')
+                error = gettext('The chosen nickname is already taken.')
             else:
                 query_string = text('SELECT * FROM bet_user WHERE email = :email')
                 result = db.session.execute(query_string, {'email' : user_data['email']})
                 if result.fetchone() is not None:
-                    error = (gettext('The chosen email address is already taken.'), 'danger')
+                    error = gettext('The chosen email address is already taken.')
 
     if error is not None:
-        return {'message': error[0], 'type': error[1]}
+        return error, 400
 
     user_data['password1'] = generate_password_hash(user_data['password1'])
     user_data['admin'] = user_data['key'] == current_app.config['INVITATION_KEYS']['admin']
@@ -170,7 +169,7 @@ def register() -> str:
     # if first time sign in upload team data
     result = db.session.execute(text('SELECT * FROM bet_user'))
 
-    return {'message': gettext('Registering successful'), 'type': 'success'}
+    return gettext('Registering successful'), 200
 
 @bp.route('/sign-in', methods=['POST'])
 def sign_in() -> str:
@@ -179,7 +178,7 @@ def sign_in() -> str:
         return '', 409
 
     if 'username' not in request.json or 'password1' not in request.json:
-        return {'message': gettext('Username or password is not specified!'), 'type': 'danger'}
+        return gettext('Username or password is not specified!'), 400
 
     username = request.json['username']
     password = request.json['password1']
@@ -191,12 +190,12 @@ def sign_in() -> str:
     error = None
 
     if user is None:
-        error = (gettext('Invalid username!'), 'danger')
+        error = gettext('Invalid username!')
     elif not check_password_hash(user.password, password):
-        error = (gettext('Invalid password!'), 'danger')
+        error = gettext('Invalid password!')
 
     if error is not None:        
-        return {'message': error[0], 'type': error[1]}
+        return error, 400
 
     session['username'] = user.username
     session.permanent = True
@@ -204,13 +203,13 @@ def sign_in() -> str:
     if 'keepSignedIn' not in request.json or request.json['keepSignedIn'] == False:
         session['last'] = datetime.now(UTC)
 
-    return {'message': gettext('Successful sign in'), 'type': 'success'}
+    return gettext('Successful sign in'), 200
 
 @bp.route('/sign-out')
 @sign_in_required()
 def sign_out() -> str:
     session['username'] = None
-    return {'message': gettext('Successful sign out'), 'type': 'success'}
+    return gettext('Successful sign out'), 200
 
 @bp.route('/profile-get', methods=['GET'])
 @sign_in_required()
@@ -237,7 +236,7 @@ def post_profile() -> str:
     get_db().session.execute(query_string, {'r' : user_data['reminder'], 's' : user_data['summary'], 'u' : g.user['username']})
     get_db().session.commit()
 
-    return {'message': gettext('Settings were successfully modified'), 'type': 'success'}
+    return gettext('Settings were successfully modified'), 200
 
 @bp.route('/forgotten-password', methods=['POST'])
 def forgotten_password():
@@ -247,14 +246,14 @@ def forgotten_password():
     user_data = request.json
 
     if 'email' not in user_data:
-        return  {'message': gettext('Email is not specified'), 'type' : 'danger'}
+        return gettext('Email is not specified'), 400
 
     db = get_db()
     query_string = text('SELECT * FROM bet_user WHERE email = :email')
     result = db.session.execute(query_string, user_data)
 
     if result.fetchone() is None:
-        return  {'message': gettext('Email is not registered'), 'type' : 'danger'}
+        return gettext('Email is not registered'), 400
     
     reset_keys = cache.get('password_reset_keys')
 
@@ -283,7 +282,7 @@ def forgotten_password():
     if current_app.config['DIRECT_MESSAGING'] == 1:
         message = gettext('New password requested! Check your email for further actions!')              
 
-    return  {'message': message, 'type' : 'success'}
+    return message, 200
 
 @bp.route('/reset-password', methods=['POST'])
 def reset_password() -> str:
@@ -297,19 +296,19 @@ def reset_password() -> str:
     user = None
 
     if 'email' not in user_data:
-        error = (gettext('Email is not specified.'), 'danger')
+        error = gettext('Email is not specified.')
     elif 'key' not in user_data:
-        error = (gettext('Reset key is not specified.'), 'danger')
+        error = gettext('Reset key is not specified.')
     elif 'password1' not in user_data or len(user_data['password1']) < 8:
-        error = (gettext('The given password is too short (min. 8 characters).'), 'danger')
+        error = gettext('The given password is too short (min. 8 characters).')
     elif user_data['password1'] != user_data['password2']:
-        error = (gettext('The two passwords are not identical.'), 'danger')
+        error = gettext('The two passwords are not identical.')
     else:
         query_string = text('SELECT * FROM bet_user WHERE email = :email')
         result = db.session.execute(query_string, user_data)
         user = result.fetchone()
         if user is None:
-            error = (gettext('The given nickname does not exist.'), 'danger')
+            error = gettext('The given nickname does not exist.')
         else:
             reset_keys = cache.get('password_reset_keys')
             current_key = None
@@ -319,12 +318,12 @@ def reset_password() -> str:
                     current_key = key
 
             if not reset_keys or not current_key or time_handler.get_now_time_object() > time_handler.parse_datetime_string(current_key['date']):
-                error = (gettext('No password reset key has been requested.'), 'danger')
+                error = gettext('No password reset key has been requested.')
             elif current_key['key'] != user_data['key']:
-                error = (gettext('The given reset key is invalid.'), 'danger')
+                error = gettext('The given reset key is invalid.')
 
     if error is not None:
-        return {'message': error[0], 'type': error[1]}
+        return error, 400
     
     reset_keys.remove(current_key)
 
@@ -338,7 +337,7 @@ def reset_password() -> str:
     session['username'] = user.username
     session.permanent = True
 
-    return {'message': gettext('Password was reset successfully!'), 'type': 'success'}
+    return gettext('Password was reset successfully!'), 200
 
 @bp.route('/status', methods=['GET'])
 def check_auth_status():

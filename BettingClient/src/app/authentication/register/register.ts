@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { UserEditor } from '../user-editor/user-editor';
@@ -21,36 +21,42 @@ export class Register {
   alerts: Alert[] = []
 
   registerMessage: string = "";
-  registerClosed: boolean | null = null;
+  registerClosed: boolean = true;
 
   constructor(private http: HttpClient, private router: Router, private gameConfigurationService: GameConfigurationService, private authService: AuthService) {
     let gameConfig = this.gameConfigurationService.getGameConfiguration();
 
-    if (gameConfig.deadlineTimes.group_evaluation > gameConfigurationService.getCurrentTime()) {
+    if (gameConfigurationService.getCurrentTime() < gameConfig.deadlineTimes.group_evaluation) {
       let registerMessagePath = paths.auth.registerMessage;
-      this.http.get<{introduction: string}>(registerMessagePath).subscribe(message => this.registerMessage = message.introduction);
+      this.http.get(registerMessagePath, {responseType: 'text'})
+        .subscribe({
+          next: (message: string) => {
+            this.registerMessage = message
+          }
+        });
+      
       this.registerClosed = false;
-    }
-    else {
-      this.registerClosed = true;
     }
   }
 
   register() {
     let location = paths.auth.register;
-    this.http.post<Alert>(location, this.userData, {observe: 'response'}).subscribe((response: HttpResponse<Alert>) => {
-      let newAlert: Alert = response.body!;
-
-      this.alerts.push(newAlert);
-
-      if (newAlert.type === 'success') {
-        this.authService.signIn().subscribe(user => {
-          setTimeout(() => {
-            this.router.navigate(['/']);
-          }, 1000);
-        });
-      }
-    });
+    this.http.post(location, this.userData, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({'type': 'success', 'message': message});
+          this.authService.fetchAuthStatus().subscribe({
+            next: () => {
+              setTimeout(() => {
+                this.router.navigate(['/']);
+              }, 1000);
+            }
+          });
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({'type': 'danger', 'message': err.error}) 
+        }
+      });
   }
 
   close(alert: Alert) {

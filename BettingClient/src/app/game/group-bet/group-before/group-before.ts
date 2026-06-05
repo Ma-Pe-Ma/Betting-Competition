@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { GameConfigurationService } from '../../../service/game-configuration-service';
 import { DecimalPipe } from '@angular/common';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
 import { FormsModule } from '@angular/forms';
-import { tap, catchError, forkJoin, of} from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -37,20 +37,10 @@ export class GroupBefore {
     let tournamentOddPath = paths.group.tournament;
     
     forkJoin({
-      group: this.http.get<GroupResponse>(groupStatusPath).pipe(
-        catchError(err => {
-          console.error('Error fetching group results:', err);
-            return of(null);
-        })
-      ),
-      tournamentOdds: this.http.get<TournamentOdds[]>(tournamentOddPath).pipe(
-        catchError(err => {
-          console.error('Error fetching player results:', err);
-          return of(null);
-        })
-      )
+      group: this.http.get<GroupResponse>(groupStatusPath),
+      tournamentOdds: this.http.get<TournamentOdds[]>(tournamentOddPath)
     }).subscribe({
-      next: ({ group, tournamentOdds }) => {
+      next: ({ group, tournamentOdds }: { group: GroupResponse; tournamentOdds: TournamentOdds[] }) => {
         this.playerInput = group;
         this.tournamentOdds = tournamentOdds;
 
@@ -63,7 +53,8 @@ export class GroupBefore {
           this.playerInput!.tournament.result = 0;
         }
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
+        this.alerts.push({type: 'danger', message: err.error});
         console.error('Unexpected error:', err);
       }
     });
@@ -71,12 +62,7 @@ export class GroupBefore {
 
   teamSelected(team: string) {
     this.playerInput!.tournament!.team! = team;
-
-    for (let tournamentOdd of this.tournamentOdds ?? []) {
-      if (tournamentOdd.team == team) {
-        this.playerInput!.tournament!.local_name! = tournamentOdd.team_tr;
-      }
-    }
+    this.playerInput!.tournament!.local_name! = this.tournamentOdds?.find(t => t.team == team)?.team_tr ?? ' - ';
   }
 
   resultSelected(result: number) {
@@ -84,13 +70,8 @@ export class GroupBefore {
   }
 
   getCurrentTournamentOdd(): number {
-    for (let tournamentOdd of this.tournamentOdds ?? []) {
-      if (tournamentOdd.team == this.playerInput!.tournament!.team!) {
-          return tournamentOdd.odds[this.playerInput!.tournament!.result!];
-      }
-    }
-
-    return 0
+    const match = this.tournamentOdds?.find(odd => odd.team === this.playerInput!.tournament!.team!);
+    return match?.odds[this.playerInput!.tournament!.result!] ?? 0;
   }
 
   calculatePrize() {
@@ -104,19 +85,20 @@ export class GroupBefore {
   postGroups() {
     let groupPostPath = paths.group.set;
 
-    this.http.post<Alert>(groupPostPath, this.playerInput).pipe(
-      tap(alert => {
-        this.alerts.push(alert);
-      }),
-      catchError(err => {
-        console.error('Error fetching group results:', err);
-          return of(null);
-      })
-    ).subscribe();
+    this.http.post(groupPostPath, this.playerInput, { responseType: 'text' })
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({'type': 'success', 'message': message}); 
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({'type': 'danger', 'message': err.error})
+        }
+      });
   }
 
   calculateRemainingCredit() {
-    return (this.betValues?.starting_bet_amount ?? 0) - (this.playerInput?.groups ?? []).reduce((sum, item) => sum +item.bet, 0) - (this.playerInput?.tournament?.bet ?? 0);
+    return (this.betValues?.starting_bet_amount ?? 0) - (this.playerInput?.groups ?? [])
+          .reduce((sum, item) => sum + item.bet, 0) - (this.playerInput?.tournament?.bet ?? 0);
   }
 
   close(alert: Alert) {

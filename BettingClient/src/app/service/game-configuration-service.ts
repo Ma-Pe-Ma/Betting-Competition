@@ -32,10 +32,6 @@ export class GameConfigurationService {
             tournament_end: new Date(processedBody.deadlineTimes.tournament_end)
           };
         }
-      }),
-      catchError(err => {
-        console.error('Error fetching config: ', err);
-        return EMPTY
       })
     )
   }

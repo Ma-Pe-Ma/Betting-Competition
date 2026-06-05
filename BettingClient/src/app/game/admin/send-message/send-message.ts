@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpDataHandler } from '../../../service/http-data-handler';
 import { paths } from '../../../paths';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-send-message',
@@ -15,15 +15,19 @@ export class SendMessage {
 
   alerts: Alert[] = []
 
-  constructor(private httpDataHandler: HttpDataHandler) {
-
-  }
+  constructor(private http: HttpClient) {}
 
   sendMessage() {
     let notificationPath = paths.admin.sendNotification;    
 
-    this.httpDataHandler.postData(notificationPath, {subject: this.subject, message: this.message}).subscribe(value => {
-        this.alerts.push(value); 
+    this.http.post(notificationPath, {subject: this.subject, message: this.message}, {responseType: 'text'})
+      .subscribe({
+        next: (message: string) => {
+          this.alerts.push({type: 'success', message: message }); 
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({type: 'danger', message: err.error }); 
+        }
     });
   }
 

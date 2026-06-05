@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { paths } from '../../paths';
@@ -14,15 +14,19 @@ export class ForgottenPassword {
   
   email: string = '';
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) {}
 
   requestNewPassword(): void {
     let location = paths.auth.forgottenPassword;
-    this.http.post<Alert>(location, {email: this.email}).subscribe(response => {
-      this.alerts.push(response);
-    });
+    this.http.post(location, {email: this.email}, {responseType: 'text'})
+      .subscribe({
+        next: (response: string) => {
+          this.alerts.push({'type': 'success', 'message': response});
+        },
+        error: (err: HttpErrorResponse) => {
+          this.alerts.push({'type': 'danger', 'message': err.error});
+        }
+      });
   }
 
   close(alert: Alert) {

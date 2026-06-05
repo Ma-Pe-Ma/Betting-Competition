@@ -37,10 +37,10 @@ def match_bet():
     match_from_db = result.fetchone()._asdict()
 
     if 'active' not in match_from_db or match_from_db['active'] == None:
-        return  gettext(u'Match does not exist with the following id: %(id)s!', id=match_id), 400
+        return gettext(u'Match does not exist with the following id: %(id)s!', id=match_id), 400
 
     if match_from_db['active'] > 0:
-        return  gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 400
+        return gettext(u'Match %(id)s has already started!', id=match_from_db['id']), 400
 
     if request.method == 'GET':
         return jsonify(match_from_db), 200
@@ -62,4 +62,4 @@ def match_bet():
         get_db().session.execute(query_string, {'m' : match_id, 'u' : g.user['username'], 'b' : bet_value, 'g1' : goal1, 'g2' : goal2})
         get_db().session.commit()
 
-        return {'message': gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id']), 'type': 'success'}, 200
+        return gettext(u'Betting on match %(id)s was successful!', id=match_from_db['id']), 200

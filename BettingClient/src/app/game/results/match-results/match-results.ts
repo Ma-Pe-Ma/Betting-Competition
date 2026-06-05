@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { DropdownSelector } from '../../dropdown-selector/dropdown-selector';
-import { HttpClient } from '@angular/common/http';
-import { tap, catchError } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 import { paths } from '../../../paths';
 
@@ -43,16 +42,16 @@ export class MatchResults {
       let path = paths.results.dateResults;
       const params = { date: date };
 
-      this.http.get<MatchContainer[]>(path, {params}).pipe(
-        tap(data => {
-          this.dateMap.set(date, data);
-          this.currentDate = data;
-        }),
-        catchError(err => {
-          console.error('Error fetching player results:', err);
-          return [];
-        })
-      ).subscribe();
+      this.http.get<MatchContainer[]>(path, {params: params})
+        .subscribe({
+          next: (matchContainer: MatchContainer[]) => {
+            this.dateMap.set(date, matchContainer);
+            this.currentDate = matchContainer;
+          },
+          error: (err: HttpErrorResponse) => {
+
+          }
+        });
     } 
   }
 }
