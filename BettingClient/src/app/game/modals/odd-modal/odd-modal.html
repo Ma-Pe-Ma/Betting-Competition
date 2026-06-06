@@ -10,17 +10,28 @@
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col" i18n="@@team">Team</th>
-                    @for(i of getResultCount(); track i) {
-                        <th scope="col">{{ i | resultName}}</th>
-                    } 
+                    <th scope="col" (click)="setSort(null)" style="cursor: pointer;">
+                      <span i18n="@@team">Team</span>
+                      @if (currentField === null) {
+                        <span>{{ currentOrder === 'asc' ? ' ▲' : ' ▼' }}</span>
+                      }
+                    </th>
+
+                  @for(i of getResultCount(); track i) {
+                    <th scope="col" (click)="setSort(i)" style="cursor: pointer;">
+                      {{ i | resultName }}
+                      @if (currentField === i) {
+                        <span>{{ currentOrder === 'asc' ? ' ▲' : ' ▼' }}</span>
+                      }
+                    </th>
+                  }
                   </tr>
                 </thead>
                 <tbody>
-                    @for(team of odds; track team.team) {
+                    @for(team of sortedOdds; track team.team) {
                         <tr>
-                            <th scope="row">{{$index + 1}}.</th>
-                            <th scope="row">{{team.team_tr}}</th>
+                            <td scope="row">{{$index + 1}}.</td>
+                            <td scope="row">{{team.team_tr}}</td>
                         @for(i of getResultCount(); track i) {
                             <td>{{team.odds[i]}}</td>
                         }

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { paths } from '../../../paths';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
+import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-send-message',
@@ -12,15 +13,18 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 export class SendMessage {
   subject: string = ""
   message: string = ""
+  disabled = false;
 
   alerts: Alert[] = []
 
   constructor(private http: HttpClient) {}
 
   sendMessage() {
+    this.disabled = true;
     let notificationPath = paths.admin.sendNotification;    
 
     this.http.post(notificationPath, {subject: this.subject, message: this.message}, {responseType: 'text'})
+      .pipe(finalize( () => {this.disabled = false;}))
       .subscribe({
         next: (message: string) => {
           this.alerts.push({type: 'success', message: message }); 

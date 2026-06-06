@@ -7,7 +7,7 @@
         <label for="notificationText" class="form-label" i18n="@@message">Message</label>
         <textarea class="form-control" id="notificationText" rows="3" [(ngModel)]="message"></textarea>
     </div>
-    <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="notificationSend" (click)="sendMessage()" i18n="@@send">Send</button> 
+    <button class="btn btn-primary btn-sm mt-2 mb-2" type="button" id="notificationSend" [disabled]="disabled" (click)="sendMessage()" i18n="@@send">Send</button> 
 
 @for (alert of alerts; track alert) {
     <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>

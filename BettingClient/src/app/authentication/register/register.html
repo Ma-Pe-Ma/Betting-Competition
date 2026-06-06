@@ -46,7 +46,7 @@
 
         <app-reminder [userData]="userData"></app-reminder>
 
-        <button class="btn btn-primary w-100 mt-3 py-2 col-6 form-group" type="submit" i18n="@@register" (click)="register()">Register</button>
+        <button class="btn btn-primary w-100 mt-3 py-2 col-6 form-group" type="submit" i18n="@@register" [disabled]="disabled" (click)="register()">Register</button>
     </div>
 </div>
 }

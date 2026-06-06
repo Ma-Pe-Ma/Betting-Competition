@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { UserEditor } from '../user-editor/user-editor';
 import { Reminder } from '../reminder/reminder';
 import { GameConfigurationService } from '../../service/game-configuration-service';
@@ -23,6 +24,8 @@ export class Register {
   registerMessage: string = "";
   registerClosed: boolean = true;
 
+  disabled = false;
+
   constructor(private http: HttpClient, private router: Router, private gameConfigurationService: GameConfigurationService, private authService: AuthService) {
     let gameConfig = this.gameConfigurationService.getGameConfiguration();
 
@@ -40,8 +43,13 @@ export class Register {
   }
 
   register() {
+    this.disabled = true;
+
     let location = paths.auth.register;
     this.http.post(location, this.userData, {responseType: 'text'})
+      .pipe(
+        finalize(()=> {this.disabled = false;})
+      )
       .subscribe({
         next: (message: string) => {
           this.alerts.push({'type': 'success', 'message': message});

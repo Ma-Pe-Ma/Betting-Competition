@@ -160,7 +160,7 @@ The first registering admin is redirected to a page where two desciption csv fil
 
 One of them is a description about the teams, 
 
-    teamname|groupid|top1|top2|top4|top8
+    teamname|groupid|top1|top2|top4|top8|top16
 
 The fields for this are the following:
 

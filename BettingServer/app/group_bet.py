@@ -93,7 +93,6 @@ def set_group_bet():
         get_db().session.execute(query_string, {'u' : username, 'g' : group['id'], 'b' : bet})
 
         for index, team in enumerate(team_names):
-            print("INS TEAM: ", index, ", team: ",team)
             query_string = text('INSERT OR REPLACE INTO team_bet (username, team, position) VALUES(:u, :t, :p)')
             get_db().session.execute(query_string, {'u' : username, 't' : team, 'p' : index + 1})
 
@@ -122,7 +121,7 @@ def group_order():
 @bp.route('/tournament-bet', methods=['GET'])
 @sign_in_required()
 def tournament_bet_odds():
-    query_string = text("SELECT top1, top2, top4, top8, team.name, tr.translation AS tr "
+    query_string = text("SELECT top1, top2, top4, top8, top16, team.name, tr.translation AS tr "
                         "FROM team "
                         "INNER JOIN team_translation AS tr ON tr.name = team.name AND tr.language = :l "
                         "ORDER BY team.name "
@@ -134,7 +133,7 @@ def tournament_bet_odds():
         team_dict = {
             'team': team.name,
             'team_tr': team.tr,
-            'odds': [team.top1, team.top2, team.top4, team.top8]
+            'odds': [team.top1, team.top2, team.top4, team.top8, team.top16]
         }
 
         teams.append(team_dict)

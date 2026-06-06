@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import { HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { finalize } from 'rxjs';
 import { paths } from '../../../paths';
 
 @Component({
@@ -12,6 +13,8 @@ import { paths } from '../../../paths';
 export class GroupOrder {
   groups: Group[] = [];
   alerts: Alert[] = []
+
+  disabled = false;
 
   constructor(private http: HttpClient) {
     let getGroupPath = paths.admin.group.get;
@@ -28,9 +31,11 @@ export class GroupOrder {
   }
 
   postGroupOrder() {
+    this.disabled = true;
     let setGroupPath = paths.admin.group.set;
 
     this.http.post(setGroupPath, this.groups, {responseType: 'text'})
+      .pipe(finalize(() => {this.disabled = false;}))
       .subscribe({
         next: (message: string) => {
           this.alerts.push({'type': 'success', 'message': message}); 

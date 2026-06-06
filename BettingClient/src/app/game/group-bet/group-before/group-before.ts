@@ -4,7 +4,7 @@ import { GameConfigurationService } from '../../../service/game-configuration-se
 import { DecimalPipe } from '@angular/common';
 import { ResultNamePipe } from '../../../pipes/result-name-pipe';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, finalize } from 'rxjs';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -26,6 +26,7 @@ export class GroupBefore {
   tournamentOdds: TournamentOdds[] | null = [];
 
   alerts: Alert[] = []
+  disabled = false;
 
   constructor(private http: HttpClient, private gameConfigurationService: GameConfigurationService, private modalService: NgbModal) {
     let gameConfiguration = this.gameConfigurationService.getGameConfiguration();
@@ -83,9 +84,11 @@ export class GroupBefore {
   }
 
   postGroups() {
+    this.disabled = true;
     let groupPostPath = paths.group.set;
 
     this.http.post(groupPostPath, this.playerInput, { responseType: 'text' })
+      .pipe( finalize(() => {this.disabled = false;}))
       .subscribe({
         next: (message: string) => {
           this.alerts.push({'type': 'success', 'message': message}); 
@@ -109,5 +112,8 @@ export class GroupBefore {
     const modalRef = this.modalService.open(OddModal);
     let oddModal: OddModal = modalRef.componentInstance;
     oddModal.odds = this.tournamentOdds ?? [];
+  }
+  get teamName(): string {
+    return this.playerInput?.tournament?.local_name ?? $localize`:@@chooseTeam:Select Team`;
   }
 }
