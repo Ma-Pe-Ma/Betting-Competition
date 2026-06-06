@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-31 23:21+0200\n"
+"POT-Creation-Date: 2026-06-06 18:08+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -23,7 +23,7 @@ msgid "Match data updating failed!"
 msgstr "Hiba a meccs adatok frissítése közben!"
 
 #: app/admin.py:35
-msgid "Match data succsesfully updated!"
+msgid "Match data successfully updated!"
 msgstr "A meccs adatok sikeresen frissítve!"
 
 #: app/admin.py:65
@@ -39,6 +39,7 @@ msgid "Successfully updated match data!"
 msgstr "Meccsadat sikeresen frissítve!"
 
 #: app/admin.py:102
+#, python-format
 msgid "Error while setting home messages: %(e)s"
 msgstr "Hiba a főoldal üzenetek beállítása közben: %(e)s"
 
@@ -46,7 +47,7 @@ msgstr "Hiba a főoldal üzenetek beállítása közben: %(e)s"
 msgid "Messages updated successfully!"
 msgstr "Üzenetek sikeresen frissítve"
 
-#: app/admin.py:114 app/chat.py:51
+#: app/admin.py:114 app/chat.py:54
 msgid "Too short message!"
 msgstr "Túl rövid üzenet"
 
@@ -55,6 +56,7 @@ msgid "Too short subject!"
 msgstr "Túl rövid tárgy!"
 
 #: app/admin.py:129
+#, python-format
 msgid "Notifications successfully sent: %(n)s"
 msgstr "Értesítések sikeresen kiküldve: %(n)s"
 
@@ -67,6 +69,7 @@ msgid "player"
 msgstr "játékos"
 
 #: app/admin.py:179 app/admin.py:194
+#, python-format
 msgid "Error while setting order: %(e)s"
 msgstr "Hiba a sorrend beállítása közben: %(e)s"
 
@@ -76,7 +79,7 @@ msgstr "Csoportkör-eredmények sikereresen megadva!"
 
 #: app/admin.py:221
 msgid "Tournament bet results set successfully!"
-msgstr "Torna-tipp eredmények sikeresen megadva!"
+msgstr "Tornatipp-eredmények sikeresen megadva!"
 
 #: app/admin.py:232
 msgid "One of the files was not specified for the request!"
@@ -155,121 +158,125 @@ msgstr "Hiba az állás-értésítés közben!"
 msgid "Standings successfully notified!"
 msgstr "Az állás sikeresen értesítve!"
 
-#: app/auth.py:96
+#: app/auth.py:95
 msgid "Registering is not available anymore as the tournament has begun!."
 msgstr "A regisztráció már nem elérhető, mert a torna elkezdődött!"
 
-#: app/auth.py:114
+#: app/auth.py:113
 msgid "Invalid reminder/summary value."
 msgstr "Hibás emlékeztető/összesítő érték."
 
-#: app/auth.py:117
+#: app/auth.py:116
 msgid "Chosen nickname is too short (min. 3 characters)."
 msgstr "A választott becenév túl rövid (min. 3 karakter)."
 
-#: app/auth.py:119
+#: app/auth.py:118
 msgid "Chosen nickname is too long (max. 20 characters)."
 msgstr "A választott becenév túl hosszú (max. 20 karakter)."
 
-#: app/auth.py:121
+#: app/auth.py:120
 msgid "E-mail address is required."
 msgstr "E-mail cím megadása kötelező."
 
-#: app/auth.py:123 app/auth.py:304
+#: app/auth.py:122 app/auth.py:303
 msgid "The given password is too short (min. 8 characters)."
 msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
 
-#: app/auth.py:125 app/auth.py:306
+#: app/auth.py:124 app/auth.py:305
 msgid "The two passwords are not identical."
 msgstr "A két jelszó nem egyezik."
 
-#: app/auth.py:127
+#: app/auth.py:126
 msgid "The invitation key is not valid."
 msgstr "A meghívókód nem megfelelő."
 
-#: app/auth.py:132
+#: app/auth.py:131
 msgid "The chosen nickname is already taken."
 msgstr "A megadott becenév már foglalt."
 
-#: app/auth.py:137
+#: app/auth.py:136
 msgid "The chosen email address is already taken."
 msgstr "A megadott email cím már regisztrálva van."
 
-#: app/auth.py:173
+#: app/auth.py:172
 msgid "Registering successful"
 msgstr "Sikeres regisztráció"
 
-#: app/auth.py:182
+#: app/auth.py:181
 msgid "Username or password is not specified!"
 msgstr "A felhasználónév vagy a jelszó hiányzik!"
 
-#: app/auth.py:194
+#: app/auth.py:193
 msgid "Invalid username!"
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:196
+#: app/auth.py:195
 msgid "Invalid password!"
 msgstr "A megadott jelszó nem megfelelő."
 
-#: app/auth.py:207
+#: app/auth.py:206
 msgid "Successful sign in"
 msgstr "Sikeres bejelentkezés."
 
-#: app/auth.py:213
+#: app/auth.py:212
 msgid "Successful sign out"
 msgstr "Sikeres kisjelentkezés."
 
-#: app/auth.py:240
+#: app/auth.py:239
 msgid "Settings were successfully modified"
 msgstr "A beállítások sikeresen módosítva!"
 
-#: app/auth.py:250
+#: app/auth.py:249
 msgid "Email is not specified"
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:257
+#: app/auth.py:256
 msgid "Email is not registered"
 msgstr "Az email-cím nincs regisztrálva."
 
-#: app/auth.py:282
+#: app/auth.py:281
 msgid ""
 "New password requested! Please contact one of the admins for further "
 "actions!"
 msgstr "Új jelszó igényelve! Kérlek vedd fel a kontaktot valamelyik adminnal!"
 
-#: app/auth.py:284
+#: app/auth.py:283
 msgid "New password requested! Check your email for further actions!"
 msgstr "Új jelszó igényelve! Ellenőrízd az emailjeid a további teendőkért!"
 
-#: app/auth.py:300
+#: app/auth.py:299
 msgid "Email is not specified."
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:302
+#: app/auth.py:301
 msgid "Reset key is not specified."
 msgstr "A visszaállító-kulcs nem lett megadva."
 
-#: app/auth.py:312
+#: app/auth.py:311
 msgid "The given nickname does not exist."
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:322
+#: app/auth.py:321
 msgid "No password reset key has been requested."
 msgstr "Nem lett igényelve visszaállító-kulcs."
 
-#: app/auth.py:324
+#: app/auth.py:323
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
-#: app/auth.py:341
+#: app/auth.py:340
 msgid "Password was reset successfully!"
 msgstr "Jelszó sikeresen visszaállítva!"
 
-#: app/chat.py:58
+#: app/chat.py:29
+msgid "Invalid reference value for comments."
+msgstr "Nem megfelelő referencia idő a kommentek lekéréséhez."
+
+#: app/chat.py:61
 msgid "Invalid data sent!"
 msgstr "Érvényelen üzenet!"
 
-#: app/chat.py:73
+#: app/chat.py:76
 msgid "Comment posted successfully!"
 msgstr "Hozzászólás sikeresen rögzítve!"
 
@@ -487,3 +494,4 @@ msgid ""
 msgstr ""
 "Ha valamilyen oknál fogva nem tudsz fogadni, akkor erre a címre küldd el,"
 " és írd le a probléma okát is."
+

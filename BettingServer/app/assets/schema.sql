@@ -34,7 +34,8 @@ CREATE TABLE team (
   top1 FLOAT,
   top2 FLOAT,
   top4 FLOAT,
-  top8 FLOAT
+  top8 FLOAT,
+  top16 FLOAT
 );
 
 -- Table containing match data

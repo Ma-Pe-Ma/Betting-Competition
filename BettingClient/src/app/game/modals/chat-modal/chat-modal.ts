@@ -5,6 +5,7 @@ import { MarkdownComponent, provideMarkdown } from 'ngx-markdown';
 import { FormsModule } from '@angular/forms';
 import { EventEmitter } from '@angular/core';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { finalize } from 'rxjs';
 import { paths } from '../../../paths';
 
 @Component({
@@ -22,6 +23,8 @@ export class ChatModal {
   inputMessage: ChatMessage = {}
   previewText: string = "";
 
+  disabled = false;
+
   constructor(private http: HttpClient, public activeModal: NgbActiveModal) {}
 
   ngAfterViewInit(): void {
@@ -35,13 +38,14 @@ export class ChatModal {
   }
 
   postMessage() {
+    this.disabled = true;
     let postChatPath = paths.chat.set;
 
     this.http.post(postChatPath, this.inputMessage, {responseType: 'text'})
+      .pipe(finalize(() => {this.disabled = false;}))
       .subscribe({
         next: (message: string) => {
           this.postedMessage.emit(true);
-
           this.alerts.push({type: 'success', message: message});
 
           setTimeout(() => {

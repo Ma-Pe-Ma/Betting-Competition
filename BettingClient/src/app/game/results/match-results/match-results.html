@@ -1,4 +1,4 @@
-<app-dropdown-selector [selectorName]="'Date'" [listLocation]="dateListLocation" (itemSelected)="receiveSelectedDate($event)"></app-dropdown-selector>
+<app-dropdown-selector selectorName="Date" i18n-selectorName="@@date" [listLocation]="dateListLocation" (itemSelected)="receiveSelectedDate($event)"></app-dropdown-selector>
 
 <div class="container mt-4">
     @for(container of currentDate ; track container.match!.id) { 
@@ -38,7 +38,7 @@
                     <div class="col-1 col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center" i18n="@@bet">Bet</div>
                     <div class="col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="@@prize">Prize</div>
                     <div class="col-3 pt-1 pb-1 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none" i18n="@@pr">Pr.</div>
-                    <div class="col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="@@difference">Difference</div>
+                    <div class="col-sm-2 pt-1 pb-1 d-flex align-items-center justify-content-center d-none d-sm-block" i18n="@@netReturn">Net Return</div>
                     <div class="col-1 pt-1 pb-1 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none" i18n="@@diff">Diff.</div>
                 </div>
             </div>

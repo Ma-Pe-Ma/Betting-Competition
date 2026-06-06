@@ -1,7 +1,7 @@
 <div class="container">
     <table class="table">
         <thead>
-          <tr>
+          <tr class="align-middle">
             <th scope="col" class="d-md-table-cell w-0 text-center" i18n="@@position">Position</th>
             <th scope="col" class="d-md-table-cell text-center" i18n="@@icon">Icon</th>
             <th scope="col" class="d-md-table-cell text-center" i18n="@@player">Player</th>
@@ -12,7 +12,7 @@
         </thead>
         <tbody>
             @for(standings of standings; track standings) {
-                <tr>
+                <tr class="align-middle">
                   <th scope="row" class="d-md-table-cell w-0 text-center">{{$index + 1}}.</th>
                   <td class="d-md-table-cell text-center"><img src="{{standings.image}}" alt="" style="width:48px; height:auto;"></td>
                   <td class="d-md-table-cell text-center">{{standings.username}}</td>

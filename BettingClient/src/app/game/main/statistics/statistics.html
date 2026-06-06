@@ -7,15 +7,15 @@
         <h5 i18n="@@playerStatistics">Player statistics</h5>
         <div class="row ms-2 mb-1">
             <h4 class="mt-0">
-                <span i18n="@@betCount">Bet count</span>
+                <span i18n="@@betCount">Bet count</span>:&nbsp;
                 <span>{{ playerStatistics[0].total_bet_count | number:'1.0-1' }}</span>             
             </h4>
             <h4 class="mt-0">
-                <span i18n="@@hitCount">Hit count</span>
+                <span i18n="@@hitCount">Hit count</span>:&nbsp;
                 <span>{{playerStatistics[0].total_hit_count}} - {{(100 * (playerStatistics[0].total_hit_count ?? 0) / (playerStatistics[0].total_bet_count ?? 1)) | number:'1.0-1'}}%</span>
             </h4>
             <h4 class="">
-                <span i18n="@@bullseyeCount">Bullseye count</span>
+                <span i18n="@@bullseyeCount">Bullseye count</span>:&nbsp;
                 <span>{{playerStatistics[0].total_bullseye_count}} - {{(100 * (playerStatistics[0].total_bullseye_count ?? 0) / (playerStatistics[0].total_bet_count ?? 1)) | number:'1.0-1' }}%</span>
             </h4>
         </div>

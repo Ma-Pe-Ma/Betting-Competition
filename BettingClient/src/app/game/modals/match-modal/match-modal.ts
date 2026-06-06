@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { tap } from 'rxjs';
+import { finalize } from 'rxjs';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { LocalDatePipe } from '../../../pipes/local-date-pipe';
@@ -20,8 +20,9 @@ export class MatchModal {
   match: Match | null = null;
 
   alerts: Alert[] = []
-
   user: User|null = null;
+
+  disabled = false;
 
   constructor(private http: HttpClient, public activeModal: NgbActiveModal, private authService: AuthService) {
     this.authService.getUser$.subscribe(user => {
@@ -45,10 +46,12 @@ export class MatchModal {
   }
 
   postMatchData(matchID: number) {
+    this.disabled = true;
     const params = new HttpParams().set('matchID', matchID);
 
     let path = this.admin ? paths.admin.match.set : paths.match;
     this.http.post(path, this.match, { params: params, responseType: 'text' })
+      .pipe(finalize(() => {this.disabled = false;}))
       .subscribe({
         next: (message: string) => {
           this.betPosted.emit(true);

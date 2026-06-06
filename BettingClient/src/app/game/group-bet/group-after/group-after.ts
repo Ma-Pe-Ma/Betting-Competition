@@ -10,7 +10,8 @@ import { paths } from '../../../paths';
 
 @Component({
   selector: 'app-group-after',
-  imports: [DropdownSelector, ResultNamePipe, NgClass],
+  imports: [DropdownSelector, NgClass],
+  providers: [ResultNamePipe],
   templateUrl: './group-after.html'
 })
 export class GroupAfter {
@@ -23,10 +24,10 @@ export class GroupAfter {
   currentPlayerName: string = "";
   betValues: BetValues | null = null;
 
-  totalBet: number = 0;
-  totalWin?: number = undefined;
+  totalGroupBet: number = 0;
+  totalGroupWin: number = 0;
 
-  constructor(private http: HttpClient, private authService: AuthService, private gameConfigurationService: GameConfigurationService) {    
+  constructor(private http: HttpClient, private authService: AuthService, private gameConfigurationService: GameConfigurationService, private resultNamePipe: ResultNamePipe) {    
     this.betValues = gameConfigurationService.getBetValues();
     this.groupState = gameConfigurationService.getGroupState();
   }
@@ -37,7 +38,7 @@ export class GroupAfter {
 
   receiveSelectedPlayer(playerName: string) {
     if (this.players.has(playerName)) {
-      this.setCurrentPlayer(this.players.get(playerName)!)
+      this.setCurrentPlayer(this.players.get(playerName)!);
     }
     else {
       this.currentPlayer = null;
@@ -59,7 +60,19 @@ export class GroupAfter {
 
   setCurrentPlayer(newPlayer: GroupResponse) {
     this.currentPlayer = newPlayer;
-    this.totalBet = newPlayer.groups.reduce((sum, item) => sum + item.bet, 0) + newPlayer.tournament.bet;
-    this.totalWin = newPlayer.groups.reduce((sum, item) => sum + item.prize, 0);
+    this.totalGroupBet = newPlayer.groups.reduce((sum, item) => sum + item.bet, 0);
+    this.totalGroupWin = newPlayer.groups.reduce((sum, item) => sum + item.prize, 0);
+  }
+
+  get teamName(): string {
+    return this.currentPlayer?.tournament?.local_name ?? $localize`:@@noTeamChosen:No team was chosen`;
+  }
+
+  get resultName(): string {    
+    if (this.currentPlayer?.tournament?.result) {
+      return this.resultNamePipe.transform(this.currentPlayer?.tournament?.result);
+    }
+
+    return $localize`:@@noResultSelected:No result was selected!`;
   }
 }

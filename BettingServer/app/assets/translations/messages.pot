@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-31 23:21+0200\n"
+"POT-Creation-Date: 2026-06-06 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "Match data updating failed!"
 msgstr ""
 
 #: app/admin.py:35
-msgid "Match data succsesfully updated!"
+msgid "Match data successfully updated!"
 msgstr ""
 
 #: app/admin.py:65
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Messages updated successfully!"
 msgstr ""
 
-#: app/admin.py:114 app/chat.py:51
+#: app/admin.py:114 app/chat.py:54
 msgid "Too short message!"
 msgstr ""
 
@@ -157,121 +157,125 @@ msgstr ""
 msgid "Standings successfully notified!"
 msgstr ""
 
-#: app/auth.py:96
+#: app/auth.py:95
 msgid "Registering is not available anymore as the tournament has begun!."
 msgstr ""
 
-#: app/auth.py:114
+#: app/auth.py:113
 msgid "Invalid reminder/summary value."
 msgstr ""
 
-#: app/auth.py:117
+#: app/auth.py:116
 msgid "Chosen nickname is too short (min. 3 characters)."
 msgstr ""
 
-#: app/auth.py:119
+#: app/auth.py:118
 msgid "Chosen nickname is too long (max. 20 characters)."
 msgstr ""
 
-#: app/auth.py:121
+#: app/auth.py:120
 msgid "E-mail address is required."
 msgstr ""
 
-#: app/auth.py:123 app/auth.py:304
+#: app/auth.py:122 app/auth.py:303
 msgid "The given password is too short (min. 8 characters)."
 msgstr ""
 
-#: app/auth.py:125 app/auth.py:306
+#: app/auth.py:124 app/auth.py:305
 msgid "The two passwords are not identical."
 msgstr ""
 
-#: app/auth.py:127
+#: app/auth.py:126
 msgid "The invitation key is not valid."
 msgstr ""
 
-#: app/auth.py:132
+#: app/auth.py:131
 msgid "The chosen nickname is already taken."
 msgstr ""
 
-#: app/auth.py:137
+#: app/auth.py:136
 msgid "The chosen email address is already taken."
 msgstr ""
 
-#: app/auth.py:173
+#: app/auth.py:172
 msgid "Registering successful"
 msgstr ""
 
-#: app/auth.py:182
+#: app/auth.py:181
 msgid "Username or password is not specified!"
 msgstr ""
 
-#: app/auth.py:194
+#: app/auth.py:193
 msgid "Invalid username!"
 msgstr ""
 
-#: app/auth.py:196
+#: app/auth.py:195
 msgid "Invalid password!"
 msgstr ""
 
-#: app/auth.py:207
+#: app/auth.py:206
 msgid "Successful sign in"
 msgstr ""
 
-#: app/auth.py:213
+#: app/auth.py:212
 msgid "Successful sign out"
 msgstr ""
 
-#: app/auth.py:240
+#: app/auth.py:239
 msgid "Settings were successfully modified"
 msgstr ""
 
-#: app/auth.py:250
+#: app/auth.py:249
 msgid "Email is not specified"
 msgstr ""
 
-#: app/auth.py:257
+#: app/auth.py:256
 msgid "Email is not registered"
 msgstr ""
 
-#: app/auth.py:282
+#: app/auth.py:281
 msgid ""
 "New password requested! Please contact one of the admins for further "
 "actions!"
 msgstr ""
 
-#: app/auth.py:284
+#: app/auth.py:283
 msgid "New password requested! Check your email for further actions!"
 msgstr ""
 
-#: app/auth.py:300
+#: app/auth.py:299
 msgid "Email is not specified."
 msgstr ""
 
-#: app/auth.py:302
+#: app/auth.py:301
 msgid "Reset key is not specified."
 msgstr ""
 
-#: app/auth.py:312
+#: app/auth.py:311
 msgid "The given nickname does not exist."
 msgstr ""
 
-#: app/auth.py:322
+#: app/auth.py:321
 msgid "No password reset key has been requested."
 msgstr ""
 
-#: app/auth.py:324
+#: app/auth.py:323
 msgid "The given reset key is invalid."
 msgstr ""
 
-#: app/auth.py:341
+#: app/auth.py:340
 msgid "Password was reset successfully!"
 msgstr ""
 
-#: app/chat.py:58
+#: app/chat.py:29
+msgid "Invalid reference value for comments."
+msgstr ""
+
+#: app/chat.py:61
 msgid "Invalid data sent!"
 msgstr ""
 
-#: app/chat.py:73
+#: app/chat.py:76
 msgid "Comment posted successfully!"
 msgstr ""
 

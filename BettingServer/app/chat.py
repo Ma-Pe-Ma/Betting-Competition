@@ -20,10 +20,13 @@ def get_chat():
     datetime = request.args.get('datetime')
     age = '>' if request.args.get('age') == '>' else '<'
 
-    if datetime is None:
-        utc_date = time_handler.get_now_time_object()
-    else:
-        utc_date = time_handler.parse_datetime_string(datetime)
+    try: 
+        if datetime is None:
+            utc_date = time_handler.get_now_time_object()
+        else:
+            utc_date = time_handler.parse_datetime_string(datetime)
+    except ValueError as e:
+        return gettext('Invalid reference value for comments.'), 400
 
     o, s = ('ASC', '') if age == '>' else ('DESC', 'LIMIT 8')
 

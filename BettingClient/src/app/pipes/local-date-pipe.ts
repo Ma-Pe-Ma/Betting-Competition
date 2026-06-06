@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class LocalDatePipe implements PipeTransform {
 
-  transform(value: string | Date | null | undefined, timeZone: string, mode: 'date' | 'datetime' | 'full' = 'datetime'): string {
+  transform(value: string | Date | null | undefined, timeZone: string, mode: 'date' | 'time' | 'datetime' | 'full' = 'datetime'): string {
     if (!value || '') {
       return '';
     }
@@ -19,7 +19,9 @@ export class LocalDatePipe implements PipeTransform {
       case 'date':
         formatOptions = { year: 'numeric',month: '2-digit', day: '2-digit' };
         break;
-
+      case 'time':
+        formatOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        break;
       case 'datetime':
         formatOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
         break;
@@ -30,7 +32,8 @@ export class LocalDatePipe implements PipeTransform {
     }
 
     try {
-      return new Intl.DateTimeFormat('hu-HU', formatOptions).format(date);
+      const options = { ...formatOptions, timeZone: timeZone };
+      return new Intl.DateTimeFormat('hu-HU', options).format(date);
     } catch (err) {
       console.warn('Invalid timezone or dat e:', err);
       return '';

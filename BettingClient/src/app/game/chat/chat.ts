@@ -27,7 +27,7 @@ export class Chat {
   }
 
   getComments(age: string|null = '<') {
-    let groupStatusPath = paths.chat.get;
+    let chatMessagesPath = paths.chat.get;
     
     let dateString: string|undefined;
 
@@ -44,7 +44,7 @@ export class Chat {
     if (dateString) params = params.set('datetime', dateString);
     if (age !== null) params = params.set('age', age);
 
-    this.http.get<ChatMessage[]>(groupStatusPath, {params})
+    this.http.get<ChatMessage[]>(chatMessagesPath, {params})
       .subscribe({
         next: (chatMessages: ChatMessage[]) => {
           if (age == '>') {
@@ -78,9 +78,7 @@ export class Chat {
     let chatModal: ChatModal = modalRef.componentInstance;
 
     chatModal.postedMessage.subscribe((posted: boolean) => {
-      if (this.chatMessages.length > 0) {
-        this.getComments('>');
-      }
+      this.getComments('>');
     })    
   }
 

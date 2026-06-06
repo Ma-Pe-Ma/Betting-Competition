@@ -15,7 +15,7 @@
             <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
         }
             <button type="button" class="btn btn-primary" id="previewCommentButton" i18n="@@preview" (click)="createPreview()">Preview</button>
-            <button type="button" class="btn btn-primary" id="postCommentButton" i18n="@@send" (click)="postMessage()">Send</button>
+            <button type="button" class="btn btn-primary" id="postCommentButton" i18n="@@send" [disabled]="disabled" (click)="postMessage()">Send</button>
         </div>
         </div>
     </div>
