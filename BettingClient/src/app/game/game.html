@@ -41,7 +41,7 @@
 @for (alert of alerts; track alert) {
     <div class ="container">
         <ngb-alert [type]="alert.type" (closed)="close(alert)">
-            <markdown [data]="alert.message"></markdown>
+            <markdown [data]="alert.message" [inline]="true"></markdown>
         </ngb-alert>
     </div>	
 }

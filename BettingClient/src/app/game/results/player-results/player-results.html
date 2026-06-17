@@ -4,56 +4,80 @@
 <div class="container mt-4">
     @if (currentPlayer?.days?.length != 0) {
     <div class="row">
-        <div class="col-md-6">
-            <div class="row col-mb-2 ms-0">
-                <span class="col-7" i18n="@@currentCredit">Current credit</span>
-                <span class="col-5">{{this.currentPlayer?.extraData?.currentBalance | number:'1.0-2'}}</span>
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="row mb-2 ms-0">
+                <span class="col-9" i18n="@@currentCredit">Current credit</span>
+                <span class="col-3 text-end text-md-start">{{currentPlayer?.extraData?.currentBalance |
+                    number:'1.0-2'}}</span>
             </div>
 
-            <div class="row col-mb-2 ms-0">
-                <span class="col-7" i18n="@@successRate">Success rate</span>
-                <span class="col-5">{{this.currentPlayer?.extraData?.successRate | number:'1.0-2'}}%</span>
+            <div class="row mb-2 ms-0">
+                <span class="col-9" i18n="@@successRate">Success rate</span>
+                <span class="col-3 text-end text-md-start">{{currentPlayer?.extraData?.successRate |
+                    number:'1.0-2'}}%</span>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="row col-mb-2 ms-0">
+            <div class="row mb-2 ms-0">
                 <span class="col-9" i18n="@@startingCredit">Starting credit amount</span>
-                <span class="col-3 text-end text-md-start">{{this.currentPlayer?.extraData?.startAmount}}</span>
+                <span class="col-3 text-end text-md-start">{{currentPlayer?.extraData?.startAmount}}</span>
             </div>
 
-            <div class="row col-mb-2 ms-0">
+            <div class="row mb-2 ms-0">
                 <span class="col-9" i18n="@@totalBetAmount">Total group + tournament bet amount</span>
                 <span
-                    class="col-3 text-end text-md-start">-{{this.currentPlayer?.extraData?.groupAndTournamentBetCredit}}</span>
+                    class="col-3 text-end text-md-start">-{{currentPlayer?.extraData?.groupAndTournamentBetCredit}}</span>
             </div>
 
-            <div class="row col-mb-2 ms-0">
+            <div class="row mb-2 ms-0">
                 <span class="col-9" i18n="@@remainingCreditAfter">Remaining credit after group + tournament bet</span>
-                <span class="col-3 text-end text-md-start">{{(this.currentPlayer?.extraData?.startAmount ?? 0) -
-                    (this.currentPlayer?.extraData?.groupAndTournamentBetCredit ?? 0)}}</span>
+                <span class="col-3 text-end text-md-start">{{(currentPlayer?.extraData?.startAmount ?? 0) -
+                    (currentPlayer?.extraData?.groupAndTournamentBetCredit ?? 0)}}</span>
             </div>
         </div>
     </div>
 
     <div class="container mt-4">
-        <div class="row mb-3 mt-3 text-center">
-            <div class="col-4 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center"
+        <div class="row mb-3 mt-3 text-center align-items-center flex-wrap flex-lg-nowrap">
+
+            <div class="col-3 col-sm-3 themed-grid-col0 d-flex align-items-center justify-content-center align-self-stretch min-w-0"
                 i18n="@@teamsHeader">Teams</div>
-            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block"
+
+            <div class="col-lg-2 themed-grid-col0 d-none d-lg-flex align-items-center justify-content-center align-self-stretch min-w-0"
                 i18n="@@oddsHeader">1 / X / 2</div>
-            <div class="col-2 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center"
-                i18n="@@resultTipHeader">Result / Tip</div>
-            <div class="col-1 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center"
+
+            <div
+                class="col-2 col-lg-1 themed-grid-col0 d-flex align-items-center justify-content-center align-self-stretch overflow-hidden min-w-0">
+                <div class="d-flex flex-wrap align-items-center justify-content-center text-nowrap w-100">
+                    <span class="text-truncate" i18n="@@resultHeader">Result</span>
+                    <span class="d-none d-lg-inline flex-shrink-0 mx-1">/</span>
+                    <span class="text-truncate" i18n="@@tipHeader">Tip</span>
+                </div>
+            </div>
+
+            <div class="col-1 col-lg-1 themed-grid-col0 d-flex align-items-center justify-content-center align-self-stretch min-w-0"
                 i18n="@@betHeader">Bet</div>
-            <div class="col-2 col-sm-2 themed-grid-col0 d-flex align-items-center justify-content-center"
-                i18n="@@prizeHeader">Prize</div>
-            <div class="col-1 col-sm-1 themed-grid-col0 d-flex align-items-center justify-content-center"
-                i18n="@@netHeader">Net difference</div>
-            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-none d-sm-block"
-                i18n="@@balanceHeader">Balance</div>
-            <div class="col-2 themed-grid-col0 d-flex align-items-center justify-content-center d-block d-sm-none d-md-none d-lg-none d-xl-none"
-                i18n="@@creditShortHeader">Cr.</div>
+
+            <div
+                class="col-2 col-lg-2 themed-grid-col0 d-flex align-items-center justify-content-center align-self-stretch overflow-hidden min-w-0">
+                <div class="d-flex flex-wrap align-items-center justify-content-center text-nowrap w-100">
+                    <span class="text-truncate" i18n="@@prizeHeader">Prize</span>
+                    <span class="d-none d-lg-inline flex-shrink-0 mx-1">+</span>
+                    <span class="text-truncate" i18n="@@bonusHeader">Bonus</span>
+                </div>
+            </div>
+
+            <div
+                class="col-2 col-lg-1 themed-grid-col0 d-flex align-items-center justify-content-center align-self-stretch overflow-hidden min-w-0">
+                <span class="text-truncate d-lg-none w-100" i18n="@@netHeader">Net difference</span>
+                <span class="d-none d-lg-inline text-wrap" i18n="@@netHeader">Net difference</span>
+            </div>
+
+            <div
+                class="col-2 col-lg-2 themed-grid-col0 d-flex align-items-center justify-content-center align-self-stretch min-w-0">
+                <span class="text-truncate w-100" i18n="@@balanceHeader">Balance</span>
+            </div>
         </div>
     </div>
     }
@@ -76,68 +100,73 @@
 
     @for(match of day.matches; track match) {
     <div class="container mb-3">
-        <div class="row text-center">
-            <div class="col-4 col-sm-3 themed-grid-col1 d-flex align-items-center justify-content-center">
-                {{match.team1}} - {{match.team2}}</div>
-            <div class="col-2 themed-grid-col1 d-flex align-items-center justify-content-center d-none d-sm-flex">{{
-                match.odd1 == null ? '?' : (match.odd1 | number:'1.2-2')}} / {{match.oddX == null ? '?' : (match.oddX |
-                number:'1.2-2')}} / {{match.odd2 == null ? '?' : (match.odd2 | number:'1.2-2')}}</div>
-            <div class="col-2 col-sm-1 themed-grid-col1 d-flex align-items-center justify-content-center">
-                <div class="d-inline-flex align-items-center justify-content-center flex-nowrap gap-1">
+        <div class="row text-center align-items-center themed-grid-col1 rounded">
 
+            <div class="col-3 d-flex flex-column align-items-center justify-content-center text-center d-sm-none"
+                style="min-width: 0;">
+                <span class="text-truncate w-100">{{match.team1}}</span>
+                <span class="text-truncate w-100">{{match.team2}}</span>
+            </div>
+
+            <div class="col-sm-3 d-none d-sm-flex align-items-center justify-content-center text-center"
+                style="min-width: 0;">
+                <span class="text-truncate flex-grow-1 text-end">{{match.team1}}</span>
+                <span class="px-2">-</span>
+                <span class="text-truncate flex-grow-1 text-start">{{match.team2}}</span>
+            </div>
+
+            <div class="col-lg-2 d-flex align-items-center justify-content-center d-none d-lg-block">
+                {{match.odd1 == null ? '?' : (match.odd1 | number:'1.2-2')}} /
+                {{match.oddX == null ? '?' : (match.oddX | number:'1.2-2')}} /
+                {{match.odd2 == null ? '?' : (match.odd2 | number:'1.2-2')}}
+            </div>
+
+            <div class="col-2 col-lg-1 d-flex align-items-center justify-content-center">
+                <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center flex-nowrap gap-1">
                     <div class="badge bg-info px-2 py-1">
                         {{match.goal1 ?? '?'}}-{{match.goal2 ?? '?'}}
                     </div>
-
-                    <div class="text-light small">/</div>
-
+                    <div class="text-light small d-none d-sm-inline">/</div>
                     <div
-                        class="badge bg-{{match.bgoal1 == null ? 'warning' : match.goal1 == null ? 'info' : (match.success == 1 ? 'success' : 'danger')}} px-2 py-1">
+                        class="badge bg-{{match.bgoal1 == null ? 'warning' : match.goal1 == null ? 'warning' : (match.success == 1 ? 'success' : 'danger')}} px-2 py-1">
                         {{match.bgoal1 ?? 'x'}}-{{match.bgoal2 ?? 'x'}}
                     </div>
                 </div>
             </div>
 
-            <div class="col-1 col-sm-1 themed-grid-col1 d-flex align-items-center justify-content-center">
-                <div class="col-5 col-sm-2 d-flex align-items-center justify-content-center">-{{match.bet ?? '0'}}</div>
+            <div class="col-1 col-sm-1 d-flex align-items-center justify-content-center">
+                -{{match.bet ?? '0'}}
             </div>
 
-            <div class="col-2 col-sm-2 themed-grid-col1 d-flex align-items-center justify-content-center">
-                <div class="row d-flex w-100 align-items-center justify-content-center">
-                    <div class="col-5 col-sm-8 d-flex align-items-center justify-content-center">
-                        {{ (match.goal1 != null && match.goal2 != null) ? (match.prize | number:'1.0-1') + ' \u00A0 +
-                        \u00A0 ' + (match.bonus | number:'1.0-1') : '?' }}
-                    </div>
-                </div>
+            <div
+                class="col-2 col-lg-2 d-flex flex-column flex-lg-row align-items-center justify-content-center gap-lg-1 small min-w-0">
+                @if(match.goal1 != null && match.goal2 != null) {
+                <span class="text-truncate">{{match.prize | number:'1.0-1'}}</span>
+                <span class="text-muted text-xs flex-shrink-0">+</span>
+                <span class="text-truncate">{{match.bonus | number:'1.0-1'}}</span>
+                } @else {
+                <span>?</span>
+                }
             </div>
 
-            <div class="col-1 col-sm-1 themed-grid-col1 d-flex align-items-center justify-content-center">
+            <div class="col-2 col-lg-1 d-flex align-items-center justify-content-center">
                 @if(match.goal1 != null && match.goal2 != null) {
                 @if ((match.diff ?? 0) == 0) {
-                    <div class="col-5 col-sm-2 d-flex align-items-center justify-content-center">
-                        <span class="badge bg-warning px-2 py-1">0</span>
-                    </div>
+                <span class="badge bg-warning px-2 py-1">0</span>
+                } @else if (match.diff! > 0) {
+                <span class="badge bg-success px-2 py-1">+{{match.diff | number:'1.0-1'}}</span>
+                } @else {
+                <span class="badge bg-danger px-2 py-1">{{match.diff | number:'1.0-1'}}</span>
                 }
-                @else if (match.diff! > 0) {
-                <div class="col-5 col-sm-2 d-flex align-items-center justify-content-center">
-                    <span class="badge bg-success px-2 py-1">+{{match.diff | number:'1.0-1'}}</span>
-                </div>
-                }
-                @else {
-                <div class="col-5 col-sm-2 d-flex align-items-center justify-content-center">
-                    <span class="badge bg-danger px-2 py-1">{{match.diff | number:'1.0-1'}}</span>
-                </div>
-                }
-                }
-                @else {
-                <div class="col-5 col-sm-2 d-flex align-items-center justify-content-center">
-                    <span class="badge bg-info px-2 py-1">?</span>
-                </div>
+                } @else {
+                <span class="badge bg-info px-2 py-1">?</span>
                 }
             </div>
 
-            <div class="col-2 themed-grid-col1 d-flex align-items-center justify-content-center">{{match.balance |
-                number:'1.1-2' }}</div>
+            <div class="col-2 col-sm-2 d-flex align-items-center justify-content-center">
+                {{match.balance | number:'1.0-0' }}
+            </div>
+
         </div>
     </div>
     }
@@ -146,14 +175,14 @@
     <div class="container row d-flex align-items-center">
         <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">
             <span i18n="@@groupTotalPrize">Group bet total prize</span>
-            <span>{{ this.currentPlayer?.extraData?.groupBonus != null ? (this.currentPlayer?.extraData?.groupBonus |
+            <span>{{ currentPlayer?.extraData?.groupBonus != null ? (currentPlayer?.extraData?.groupBonus |
                 number:'1.0-2') : '?' }}</span>
         </p>
         <div class="col-1"></div>
         <p class="col-3 justify-content-center badge bg-info">
             <span i18n="@@balanceAfter">Balance after group bonus</span>
-            <span>{{ this.currentPlayer?.extraData?.balanceAfterGroup != null ?
-                (this.currentPlayer?.extraData?.balanceAfterGroup | number:'1.0-2') : '?' }}</span>
+            <span>{{ currentPlayer?.extraData?.balanceAfterGroup != null ?
+                (currentPlayer?.extraData?.balanceAfterGroup | number:'1.0-0') : '?' }}</span>
         </p>
     </div>
     }
@@ -162,12 +191,12 @@
     @if(currentPlayer?.tournamentBet != null && currentPlayer?.tournamentBet?.success! > 0) {
     <div class="container row d-flex align-items-center">
         <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">
-            <span i18b="tournamentTotal">Tournament bet total prize</span>
+            <span i18n="@@tournamentTotal">Tournament bet prize</span>
             <span>{{currentPlayer?.tournamentBet?.prize | number:'1.0-2'}}</span>
         <div class="col-1"></div>
         <p class="col-3 justify-content-center badge bg-info">
             <span i18n="@@finalBalance">Final balance</span>
-            <span>{{currentPlayer?.extraData?.currentBalance| number:'1.0-1'}}</span>
+            <span>{{currentPlayer?.extraData?.currentBalance| number:'1.0-0'}}</span>
         </p>
     </div>
     }

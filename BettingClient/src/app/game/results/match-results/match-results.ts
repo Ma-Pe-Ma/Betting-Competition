@@ -31,6 +31,8 @@ export class MatchResults {
   dateMap: Map<string, MatchContainer[]> = new Map<string, MatchContainer[]>(); 
   currentDate: MatchContainer[] | null = null;
 
+  everyValue: [string, string][] = [[$localize`:@@everyMatch:Every Match`, '']]
+
   constructor(private http: HttpClient) {}
 
   receiveSelectedDate(date: string) {

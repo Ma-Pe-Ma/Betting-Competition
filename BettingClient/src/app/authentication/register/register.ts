@@ -29,7 +29,7 @@ export class Register {
   constructor(private http: HttpClient, private router: Router, private gameConfigurationService: GameConfigurationService, private authService: AuthService) {
     let gameConfig = this.gameConfigurationService.getGameConfiguration();
 
-    if (gameConfigurationService.getCurrentTime() < gameConfig.deadlineTimes.group_evaluation) {
+    if (gameConfigurationService.getCurrentTime() < gameConfig.deadlineTimes.register) {
       let registerMessagePath = paths.auth.registerMessage;
       this.http.get(registerMessagePath, {responseType: 'text'})
         .subscribe({

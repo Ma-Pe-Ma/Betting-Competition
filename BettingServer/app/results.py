@@ -112,7 +112,7 @@ def results_by_match():
                             LEFT JOIN team_translation AS tr2 ON tr2.name = match.team2 AND tr2.language = :l 
                             LEFT JOIN team_translation AS tr3 ON tr3.name = match.round AND tr3.language = :l 
                             WHERE unixepoch(match.datetime) <= unixepoch(:now) {date_filter}
-                            ORDER BY match.datetime ASC, UPPER(bet_user.username)'''
+                            ORDER BY match.datetime DESC, UPPER(bet_user.username)'''
     
     date_filter = 'AND date(match.datetime) = :date' if date != '' else ''
     match_query_string = text(match_query_string.format(date_filter=date_filter))

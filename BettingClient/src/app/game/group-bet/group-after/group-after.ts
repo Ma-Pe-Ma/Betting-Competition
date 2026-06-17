@@ -69,7 +69,7 @@ export class GroupAfter {
   }
 
   get resultName(): string {    
-    if (this.currentPlayer?.tournament?.result) {
+    if (this.currentPlayer?.tournament?.result != undefined && this.currentPlayer?.tournament?.result != null) {
       return this.resultNamePipe.transform(this.currentPlayer?.tournament?.result);
     }
 

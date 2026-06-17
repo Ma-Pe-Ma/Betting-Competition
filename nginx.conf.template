@@ -35,8 +35,19 @@
 				return 301 https://en.$site_address$request_uri;
 			}
 
+			location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg)$ {
+				expires 1y;
+				add_header Cache-Control "public, max-age=31536000, immutable";
+			}
+
 			location / {
 				try_files $uri $uri/ /index.html;
+
+				add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+			}
+
+			location = /ngsw.json {
+    			add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
 			}
 
 			# API proxy for the English domain
@@ -72,8 +83,19 @@
 				return 301 https://$site_address$request_uri;
 			}
 
+			location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg)$ {
+				expires 1y;
+				add_header Cache-Control "public, max-age=31536000, immutable";
+			}
+
 			location / {
 				try_files $uri $uri/ /index.html;
+
+				add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+			}
+
+			location = /ngsw.json {
+    			add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
 			}
 
 			# API proxy for the Hungarian domain (reuses your app_server upstream)
