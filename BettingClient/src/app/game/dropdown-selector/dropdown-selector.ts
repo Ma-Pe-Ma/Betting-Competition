@@ -12,10 +12,11 @@ export class DropdownSelector {
   @Input() selectorName: string = "";
   @Input() listLocation: string = "";
   @Input() defaultValue: string | null = null;
+  @Input() specialElements: [string, string][] = [];
   @Output() itemSelected: EventEmitter<string> = new EventEmitter<string>();
-
-  listElements: string[] = []
-  selectedItem: string | null = null;
+  
+  listElements: [string, string][] = []
+  selectedItem: [string, string] | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -23,10 +24,14 @@ export class DropdownSelector {
     this.http.get<string[]>(this.listLocation)
       .subscribe({
         next: (listelements: string[]) => {
-          this.listElements = listelements;
+          this.listElements = [...this.specialElements, ...listelements.map(e => [e, e] as [string, string])];
 
           if (this.defaultValue != null) { 
-            this.onItemSelected(this.defaultValue);
+            let defaultItem = this.listElements.find(e=>e[1] === this.defaultValue);
+
+            if (defaultItem) {
+              this.onItemSelected(defaultItem)
+            }
           }
           else {
             this.onItemSelected(this.listElements[0]);
@@ -38,8 +43,8 @@ export class DropdownSelector {
       });  
   }
 
-  onItemSelected(itemName: string) {
-    this.selectedItem = itemName;
-    this.itemSelected.emit(itemName);
+  onItemSelected(item: [string, string]) {
+    this.selectedItem = item;
+    this.itemSelected.emit(item[1]);
   }
 }

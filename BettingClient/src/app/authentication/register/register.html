@@ -14,7 +14,7 @@
         <h1 class="h3 mb-3 fw-normal" i18n="@@register">Register</h1>
 
         <div class="mb-3 alert alert-info" role="alert">
-            <markdown [data]="registerMessage"></markdown>
+            <markdown [data]="registerMessage" [inline]="true"></markdown>
         </div>
 
         @for (alert of alerts; track alert) {

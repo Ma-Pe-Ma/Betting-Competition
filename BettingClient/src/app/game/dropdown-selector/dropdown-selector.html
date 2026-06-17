@@ -3,11 +3,11 @@
     <h5 class="me-2 mb-0">{{selectorName}}:</h5>
     <div ngbDropdown>
         <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
-            {{selectedItem}}
+            {{selectedItem?.[0] ?? ''}}
         </button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             @for(item of listElements; track item) {
-                <button ngbDropdownItem (click)="onItemSelected(item)">{{item}}</button>
+                <button ngbDropdownItem (click)="onItemSelected(item)">{{item[0]}}</button>
             }
         </div>
     </div>

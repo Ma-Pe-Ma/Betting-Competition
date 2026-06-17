@@ -1,7 +1,8 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, tap, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { CanvasJSAngularChartsModule, CanvasJSChart } from '@canvasjs/angular-charts';
+import { DecimalPipe } from '@angular/common';
 import { paths } from '../../paths';
 
 interface DayPoint {
@@ -18,7 +19,7 @@ interface UserStanding {
 
 @Component({
   selector: 'app-standings',
-  imports: [CanvasJSAngularChartsModule],
+  imports: [CanvasJSAngularChartsModule, DecimalPipe],
   templateUrl: './standings.html'
 })
 export class Standings {

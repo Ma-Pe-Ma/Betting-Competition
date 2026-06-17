@@ -45,6 +45,8 @@ export class GroupBefore {
         this.playerInput = group;
         this.tournamentOdds = tournamentOdds;
 
+        this.tournamentOdds.sort((a, b) => { return a.team_tr.localeCompare(b.team_tr)});
+
         if (this.playerInput?.tournament.team == undefined && tournamentOdds!.length > 0) {
           this.playerInput!.tournament.team = tournamentOdds![0].team;
           this.playerInput!.tournament.local_name! = tournamentOdds![0].team_tr;
