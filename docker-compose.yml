@@ -15,7 +15,7 @@ services:
     build:
       context: ./BettingClient/
       additional_contexts:
-        precompiled: ${PRECOMPILED_DIR:-./precompiled}
+        precompiled: ${PRECOMPILED_DIR:-.}
       dockerfile: ${client_docker_file:-Dockerfile-builder}
       args:
         CONFIGURATION: ${configuration:-standard}
