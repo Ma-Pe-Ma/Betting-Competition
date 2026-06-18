@@ -1,0 +1,19 @@
+services:
+  certbot:
+    image: alpine/openssl:latest
+    container_name: local-cert-mock
+    volumes:
+      - cert-volume:/etc/letsencrypt/
+      - cert-volume:/var/log/letsencrypt/
+    entrypoint: ["sh", "-c"]
+    command: >
+      "mkdir -p /etc/letsencrypt/live/localhost &&
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /etc/letsencrypt/live/localhost/privkey.pem \
+      -out /etc/letsencrypt/live/localhost/fullchain.pem \
+      -subj '/CN=localhost' \
+      -addext 'subjectAltName = DNS:localhost, DNS:*.localhost, IP:127.0.0.1'"
+    restart: "no"
+
+volumes:
+  cert-volume:

@@ -30,15 +30,25 @@ jobs:
 
       - name: Install the application (compose the images)
         run: |
-          LOCAL_TEST=1
-          export LOCAL_TEST
+          sudo mkdir -p /BettingInstance
+          sudo cp ${{ github.workspace }}/.github/test-config.json /BettingInstance/configuration.json
           chmod +x ${{ github.workspace }}/install.sh
-          sudo -E ${{ github.workspace }}/install.sh /BettingInstance/
+          sudo -E launch_mode=1 client_mode=1 instance_directory=/BettingInstance/ standard_modifier="-f ${{ github.workspace }}/docker-compose.yml -f ${{ github.workspace }}/.github/local-cert.yml" ${{ github.workspace }}/install.sh
+
+      - name: Test the client
+        run: |
+          sleep 2
+          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/)
+          echo "HTTP Status: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "Request failed with status $status"
+            exit 1
+          fi
 
       - name: Test the server
         run: |
           sleep 2
-          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/api/status/)
+          status=$(curl -o /dev/null -k -s -w "%{http_code}" https://localhost/api/status)
           echo "HTTP Status: $status"
           if [ "$status" -ne 200 ]; then
             echo "Request failed with status $status"

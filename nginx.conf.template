@@ -9,7 +9,7 @@
 		server {
 			listen 80;
 			listen [::]:80;
-			server_name $site_address www.$site_address en.$site_address www.en.$site_address;
+			server_name ${site_address} www.${site_address} en.${site_address} www.en.${site_address};
 
 			return 301 https://$host$request_uri;
 		}
@@ -21,7 +21,7 @@
 			listen [::]:443 ssl;
 			listen 443 ssl;
 			
-			server_name en.$site_address www.en.$site_address;
+			server_name en.${site_address} www.en.${site_address};
 
 			access_log /BettingInstance/nginx-en-access.log;
 			error_log /BettingInstance/nginx-en-error.log;
@@ -31,8 +31,8 @@
 			
 			root /usr/share/nginx/html/en;
 			
-			if ($host = "www.en.$site_address") {
-				return 301 https://en.$site_address$request_uri;
+			if ($host = "www.en.${site_address}") {
+				return 301 https://en.${site_address}$request_uri;
 			}
 
 			location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg)$ {
@@ -57,8 +57,8 @@
 				proxy_set_header X-Real-IP $remote_addr;
 			}
 			
-			ssl_certificate $certificate_directory/fullchain.pem;
-			ssl_certificate_key $certificate_directory/privkey.pem;
+			ssl_certificate ${certificate_directory}/fullchain.pem;
+			ssl_certificate_key ${certificate_directory}/privkey.pem;
 			#include /etc/letsencrypt/options-ssl-nginx.conf;
         	#ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 		}	
@@ -69,7 +69,7 @@
 			listen [::]:443 ssl;
 			listen 443 ssl;
 			
-			server_name $site_address www.$site_address;
+			server_name ${site_address} www.${site_address};
 
 			access_log /BettingInstance/nginx-hu-access.log;
 			error_log /BettingInstance/nginx-hu-error.log;
@@ -79,8 +79,8 @@
 			
 			root /usr/share/nginx/html/hu;
 
-			if ($host = "www.$site_address") {
-				return 301 https://$site_address$request_uri;
+			if ($host = "www.${site_address}") {
+				return 301 https://${site_address}$request_uri;
 			}
 
 			location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg)$ {
@@ -105,8 +105,8 @@
 				proxy_set_header X-Real-IP $remote_addr;
 			}
 			
-			ssl_certificate $certificate_directory/fullchain.pem;
-			ssl_certificate_key $certificate_directory/privkey.pem;
+			ssl_certificate ${certificate_directory}/fullchain.pem;
+			ssl_certificate_key ${certificate_directory}/privkey.pem;
 		}
 
 		# default http server
@@ -120,7 +120,7 @@
 			keepalive_timeout 5;
 
 			location / {
-				return 301 https://$site_address$request_uri;
+				return 301 https://${site_address}$request_uri;
 			}
 		}
 
@@ -134,11 +134,11 @@
 			client_max_body_size 4G;
 			keepalive_timeout 5;
 
-			ssl_certificate $certificate_directory/fullchain.pem;
-			ssl_certificate_key $certificate_directory/privkey.pem;
+			ssl_certificate ${certificate_directory}/fullchain.pem;
+			ssl_certificate_key ${certificate_directory}/privkey.pem;
 
 			location / {
-				return 301 https://$site_address$request_uri;
+				return 301 https://${site_address}$request_uri;
 			}
 		}
 	}
