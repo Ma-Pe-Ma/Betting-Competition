@@ -2,7 +2,7 @@ FROM python:3.13-slim
 WORKDIR /BettingApp/
 COPY ./requirements.txt /BettingApp/
 RUN ["python", "-m", "pip", "install", "--no-cache-dir", "-r", "requirements.txt"]
-RUN ["python", "-m", "pip", "install", "--no-cache-dir", "gunicorn", "gevent", "requests_unixsocket"]
+RUN ["python", "-m", "pip", "install", "--no-cache-dir", "gunicorn", "gevent", "packaging", "requests_unixsocket"]
 COPY ./socket_test.py ./launch.sh /BettingApp/
 COPY ./app /BettingApp/app/
 RUN ["pybabel", "compile", "-d", "./app/assets/translations"]

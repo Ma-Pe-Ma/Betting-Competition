@@ -172,16 +172,19 @@
     }
 
     @if(day.date == (gameData.deadlineTimes!.group_evaluation | date:'yyyy-MM-dd')) {
-    <div class="container row d-flex align-items-center">
-        <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">
-            <span i18n="@@groupTotalPrize">Group bet total prize</span>
-            <span>{{ currentPlayer?.extraData?.groupBonus != null ? (currentPlayer?.extraData?.groupBonus |
-                number:'1.0-2') : '?' }}</span>
+    <div
+        class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-center gap-2 p-1">
+        <p class="badge bg-info m-0 px-3 py-2 d-flex align-items-center justify-content-center fw-normal text-wrap"
+            style="font-size: 0.9rem; min-height: 38px;">
+            <span i18n="@@groupTotalPrize">Group bet total prize</span>:&nbsp;
+            <span class="fw-bold">{{ currentPlayer?.extraData?.groupBonus != null ?
+                (currentPlayer?.extraData?.groupBonus | number:'1.0-2') : '?' }}</span>
         </p>
-        <div class="col-1"></div>
-        <p class="col-3 justify-content-center badge bg-info">
-            <span i18n="@@balanceAfter">Balance after group bonus</span>
-            <span>{{ currentPlayer?.extraData?.balanceAfterGroup != null ?
+
+        <p class="badge bg-info m-0 px-3 py-2 d-flex align-items-center justify-content-center fw-normal text-wrap"
+            style="font-size: 0.9rem; min-height: 38px;">
+            <span i18n="@@balanceAfter">Balance after group bonus</span>:&nbsp;
+            <span class="fw-bold">{{ currentPlayer?.extraData?.balanceAfterGroup != null ?
                 (currentPlayer?.extraData?.balanceAfterGroup | number:'1.0-0') : '?' }}</span>
         </p>
     </div>
@@ -189,14 +192,18 @@
     }
 
     @if(currentPlayer?.tournamentBet != null && currentPlayer?.tournamentBet?.success! > 0) {
-    <div class="container row d-flex align-items-center">
-        <p class="col-3 d-flex align-items-center justify-content-center badge bg-info">
-            <span i18n="@@tournamentTotal">Tournament bet prize</span>
-            <span>{{currentPlayer?.tournamentBet?.prize | number:'1.0-2'}}</span>
-        <div class="col-1"></div>
-        <p class="col-3 justify-content-center badge bg-info">
-            <span i18n="@@finalBalance">Final balance</span>
-            <span>{{currentPlayer?.extraData?.currentBalance| number:'1.0-0'}}</span>
+    <div
+        class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-center gap-2 p-1">
+        <p class="badge bg-info m-0 px-3 py-2 d-flex align-items-center justify-content-center fw-normal text-wrap"
+            style="font-size: 0.9rem; min-height: 38px;">
+            <span i18n="@@tournamentTotal">Tournament bet prize</span>:&nbsp;
+            <span class="fw-bold">{{ currentPlayer?.tournamentBet?.prize | number:'1.0-2' }}</span>
+        </p>
+
+        <p class="badge bg-info m-0 px-3 py-2 d-flex align-items-center justify-content-center fw-normal text-wrap"
+            style="font-size: 0.9rem; min-height: 38px;">
+            <span i18n="@@finalBalance">Final balance</span>:&nbsp;
+            <span class="fw-bold">{{ currentPlayer?.extraData?.currentBalance | number:'1.0-0' }}</span>
         </p>
     </div>
     }

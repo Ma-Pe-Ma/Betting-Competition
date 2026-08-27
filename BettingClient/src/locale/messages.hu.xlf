@@ -241,7 +241,7 @@
         <target>Tippbajnokság!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/authentication/authentication.html</context>
-          <context context-type="linenumber">6,7</context>
+          <context context-type="linenumber">6,8</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/game.html</context>
@@ -377,7 +377,7 @@
         <target>Egy érvényes meghívókulcs megadása kötelező.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/authentication/register/register.html</context>
-          <context context-type="linenumber">32,34</context>
+          <context context-type="linenumber">32,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="password" datatype="html">
@@ -500,7 +500,7 @@
         <target>Egy érvényes felhasználónév megadás kötelező.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/authentication/reset-password/reset-password.html</context>
-          <context context-type="linenumber">9,11</context>
+          <context context-type="linenumber">9,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/authentication/user-editor/user-editor.html</context>
@@ -536,11 +536,11 @@
         <target>Egy érvényes jelszó megadás kötelező.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/authentication/reset-password/reset-password.html</context>
-          <context context-type="linenumber">21,23</context>
+          <context context-type="linenumber">21,24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/authentication/reset-password/reset-password.html</context>
-          <context context-type="linenumber">27,29</context>
+          <context context-type="linenumber">27,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="newPasswordAgain" datatype="html">
@@ -680,7 +680,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/group-bet/group-after/group-after.html</context>
-          <context context-type="linenumber">202,203</context>
+          <context context-type="linenumber">203,204</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/group-bet/group-before/group-before.html</context>
@@ -700,7 +700,7 @@
         <target>Max tét</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/admin-match/admin-match.html</context>
-          <context context-type="linenumber">10,12</context>
+          <context context-type="linenumber">10,13</context>
         </context-group>
       </trans-unit>
       <trans-unit id="unknown" datatype="html">
@@ -708,11 +708,11 @@
         <target>nem ismert</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/admin-match/admin-match.html</context>
-          <context context-type="linenumber">22,23</context>
+          <context context-type="linenumber">22,24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/admin-match/admin-match.html</context>
-          <context context-type="linenumber">29,30</context>
+          <context context-type="linenumber">29,31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/main/betting/betting.html</context>
@@ -720,7 +720,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/main/betting/betting.html</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">19,23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/main/betting/betting.html</context>
@@ -728,7 +728,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/main/betting/betting.html</context>
-          <context context-type="linenumber">35,37</context>
+          <context context-type="linenumber">35,38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="matchModify" datatype="html">
@@ -793,6 +793,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/admin.html</context>
           <context context-type="linenumber">75,76</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/game/game.html</context>
+          <context context-type="linenumber">53,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="passwordResetKeys" datatype="html">
@@ -880,7 +884,7 @@
         <target>A csoportkörtippek kiértékelése később esedékes.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/group-order/group-order.html</context>
-          <context context-type="linenumber">31,33</context>
+          <context context-type="linenumber">31,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="send" datatype="html">
@@ -888,7 +892,7 @@
         <target>Beküld</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/group-order/group-order.html</context>
-          <context context-type="linenumber">34,36</context>
+          <context context-type="linenumber">34,37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/send-message/send-message.html</context>
@@ -1016,7 +1020,7 @@
         <target>Nincs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/maintenance/maintenance.html</context>
-          <context context-type="linenumber">42,43</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="expiration" datatype="html">
@@ -1032,7 +1036,7 @@
         <target>Kulcs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/admin/password-reset/password-reset.html</context>
-          <context context-type="linenumber">7,8</context>
+          <context context-type="linenumber">7,9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="noKey" datatype="html">
@@ -1185,6 +1189,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/game.routes.ts</context>
           <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="maintenanceDescription" datatype="html">
+        <source>The site is under maintenance! Please try again in a few minutes.</source>
+        <target></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/game/game.html</context>
+          <context context-type="linenumber">53,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="betting" datatype="html">
@@ -1362,7 +1374,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/main/betting/betting.html</context>
-          <context context-type="linenumber">66,67</context>
+          <context context-type="linenumber">66,68</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/match-results/match-results.html</context>
@@ -1446,7 +1458,7 @@
         <target>Tippelt sorrend</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/group-bet/group-after/group-after.html</context>
-          <context context-type="linenumber">215,216</context>
+          <context context-type="linenumber">216,217</context>
         </context-group>
       </trans-unit>
       <trans-unit id="noTeamChosen" datatype="html">
@@ -1806,7 +1818,7 @@
         <target>Max tét</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/modals/match-modal/match-modal.html</context>
-          <context context-type="linenumber">85,86</context>
+          <context context-type="linenumber">85,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tournamentOdds" datatype="html">
@@ -1905,7 +1917,7 @@
         <source>1 / X / 2</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">48,50</context>
+          <context context-type="linenumber">48,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resultHeader" datatype="html">
@@ -1955,10 +1967,6 @@
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="balanceHeader" datatype="html">
-        <source>Balance</source>
-        <target>Egyenleg</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
           <context context-type="linenumber">74,75</context>
@@ -1969,7 +1977,7 @@
         <target>Egyenleg</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">79,80</context>
+          <context context-type="linenumber">79,81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="notBegun" datatype="html">
@@ -1977,7 +1985,7 @@
         <target>A bajnokság még nem kezdődött el!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">86,88</context>
+          <context context-type="linenumber">86,89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="groupTotalPrize" datatype="html">
@@ -1985,7 +1993,7 @@
         <target>Teljes csoportkörtipp nyeremény</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">177,178</context>
+          <context context-type="linenumber">179,180</context>
         </context-group>
       </trans-unit>
       <trans-unit id="balanceAfter" datatype="html">
@@ -1993,7 +2001,7 @@
         <target>Egyenleg a csoportkörtipp nyeremény után</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">183,184</context>
+          <context context-type="linenumber">186,187</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tournamentTotal" datatype="html">
@@ -2001,7 +2009,7 @@
         <target>Tornatipp-nyeremény</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">194,195</context>
+          <context context-type="linenumber">199,200</context>
         </context-group>
       </trans-unit>
       <trans-unit id="finalBalance" datatype="html">
@@ -2009,7 +2017,7 @@
         <target>Végső egyenleg</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/game/results/player-results/player-results.html</context>
-          <context context-type="linenumber">198,199</context>
+          <context context-type="linenumber">205,206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="byPlayer" datatype="html">

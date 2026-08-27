@@ -46,6 +46,11 @@
     </div>	
 }
 
-<router-outlet></router-outlet>
+@if (!isMaintenance()) {
+    <router-outlet></router-outlet>
+}
+@else {
+    <div class="container" i18n="@@maintenanceDescription">The site is under maintenance! Please try again in a few minutes.</div>
+}
 
 </main>

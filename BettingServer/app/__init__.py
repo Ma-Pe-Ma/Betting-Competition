@@ -56,7 +56,10 @@ def create_app(instance_path = None):
     db_handler.init_db(app)
     cache_handler.init_cache(app)
     time_handler.init_time_handler(app)
-    scheduler_handler.init_scheduler(app)
+
+    if os.environ.get("RUN_SCHEDULER") == True:
+        scheduler_handler.init_scheduler(app)
+
     notification_handler.init_notifier(app)
 
     def get_locale():

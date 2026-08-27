@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-06 18:08+0200\n"
+"POT-Creation-Date: 2026-06-29 00:06+0200\n"
 "PO-Revision-Date: 2024-06-02 16:13+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 #: app/admin.py:33
 msgid "Match data updating failed!"
@@ -158,113 +158,125 @@ msgstr "Hiba az állás-értésítés közben!"
 msgid "Standings successfully notified!"
 msgstr "Az állás sikeresen értesítve!"
 
-#: app/auth.py:95
+#: app/auth.py:70
+msgid "User is not authorized."
+msgstr "A felhasználónak nincs felhatalmazása."
+
+#: app/auth.py:76
+msgid "Page is unavailable."
+msgstr "Az oldal nem elérhető."
+
+#: app/auth.py:79
+msgid "The site is under maintenance. Please try again in a few minutes."
+msgstr "A szerver nem elérhető karbantartás miatt. Kérlek látogass vissza pár perc múlva!"
+
+#: app/auth.py:98
 msgid "Registering is not available anymore as the tournament has begun!."
 msgstr "A regisztráció már nem elérhető, mert a torna elkezdődött!"
 
-#: app/auth.py:113
+#: app/auth.py:116
 msgid "Invalid reminder/summary value."
 msgstr "Hibás emlékeztető/összesítő érték."
 
-#: app/auth.py:116
+#: app/auth.py:119
 msgid "Chosen nickname is too short (min. 3 characters)."
 msgstr "A választott becenév túl rövid (min. 3 karakter)."
 
-#: app/auth.py:118
+#: app/auth.py:121
 msgid "Chosen nickname is too long (max. 20 characters)."
 msgstr "A választott becenév túl hosszú (max. 20 karakter)."
 
-#: app/auth.py:120
+#: app/auth.py:123
 msgid "E-mail address is required."
 msgstr "E-mail cím megadása kötelező."
 
-#: app/auth.py:122 app/auth.py:303
+#: app/auth.py:125 app/auth.py:306
 msgid "The given password is too short (min. 8 characters)."
 msgstr "A megadott jelszó túl rövid (min. 8 karakter)."
 
-#: app/auth.py:124 app/auth.py:305
+#: app/auth.py:127 app/auth.py:308
 msgid "The two passwords are not identical."
 msgstr "A két jelszó nem egyezik."
 
-#: app/auth.py:126
+#: app/auth.py:129
 msgid "The invitation key is not valid."
 msgstr "A meghívókód nem megfelelő."
 
-#: app/auth.py:131
+#: app/auth.py:134
 msgid "The chosen nickname is already taken."
 msgstr "A megadott becenév már foglalt."
 
-#: app/auth.py:136
+#: app/auth.py:139
 msgid "The chosen email address is already taken."
 msgstr "A megadott email cím már regisztrálva van."
 
-#: app/auth.py:172
+#: app/auth.py:175
 msgid "Registering successful"
 msgstr "Sikeres regisztráció"
 
-#: app/auth.py:181
+#: app/auth.py:184
 msgid "Username or password is not specified!"
 msgstr "A felhasználónév vagy a jelszó hiányzik!"
 
-#: app/auth.py:193
+#: app/auth.py:196
 msgid "Invalid username!"
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:195
+#: app/auth.py:198
 msgid "Invalid password!"
 msgstr "A megadott jelszó nem megfelelő."
 
-#: app/auth.py:206
+#: app/auth.py:209
 msgid "Successful sign in"
 msgstr "Sikeres bejelentkezés."
 
-#: app/auth.py:212
+#: app/auth.py:215
 msgid "Successful sign out"
 msgstr "Sikeres kisjelentkezés."
 
-#: app/auth.py:239
+#: app/auth.py:242
 msgid "Settings were successfully modified"
 msgstr "A beállítások sikeresen módosítva!"
 
-#: app/auth.py:249
+#: app/auth.py:252
 msgid "Email is not specified"
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:256
+#: app/auth.py:259
 msgid "Email is not registered"
 msgstr "Az email-cím nincs regisztrálva."
 
-#: app/auth.py:281
+#: app/auth.py:284
 msgid ""
 "New password requested! Please contact one of the admins for further "
 "actions!"
 msgstr "Új jelszó igényelve! Kérlek vedd fel a kontaktot valamelyik adminnal!"
 
-#: app/auth.py:283
+#: app/auth.py:286
 msgid "New password requested! Check your email for further actions!"
 msgstr "Új jelszó igényelve! Ellenőrízd az emailjeid a további teendőkért!"
 
-#: app/auth.py:299
+#: app/auth.py:302
 msgid "Email is not specified."
 msgstr "Az email-cím nem lett megadva."
 
-#: app/auth.py:301
+#: app/auth.py:304
 msgid "Reset key is not specified."
 msgstr "A visszaállító-kulcs nem lett megadva."
 
-#: app/auth.py:311
+#: app/auth.py:314
 msgid "The given nickname does not exist."
 msgstr "A megadott felhasználónév nem létezik."
 
-#: app/auth.py:321
+#: app/auth.py:324
 msgid "No password reset key has been requested."
 msgstr "Nem lett igényelve visszaállító-kulcs."
 
-#: app/auth.py:323
+#: app/auth.py:326
 msgid "The given reset key is invalid."
 msgstr "A megadott visszaállító-kulcs nem megfelelő."
 
-#: app/auth.py:340
+#: app/auth.py:343
 msgid "Password was reset successfully!"
 msgstr "Jelszó sikeresen visszaállítva!"
 
@@ -300,7 +312,7 @@ msgstr "Nem megfelelő érték a csoportkörfogadáshoz."
 msgid "Invalid group or team name at the group bet."
 msgstr "Érvénytelen csoport- vagy csapat-név a csoportkörfogadásnál."
 
-#: app/group_bet.py:102
+#: app/group_bet.py:101
 msgid "Successfully updated groups!"
 msgstr "Csoportkörtippek sikeresen frissítve!"
 

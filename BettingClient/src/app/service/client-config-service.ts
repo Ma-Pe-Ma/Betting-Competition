@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, catchError, throwError, Observable } from 'rxjs';
+import { tap, Observable } from 'rxjs';
 
 interface ClientConfig {
   endpoint: string;

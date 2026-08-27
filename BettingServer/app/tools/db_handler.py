@@ -20,7 +20,7 @@ def init_db(app):
         import pytz
         import dateutil.parser
 
-        def time_converter(datetime, tz, target_tz, format='%Y-%m-%d %H:%M'):
+        def time_converter(datetime, tz, target_tz, format='%Y-%m-%dT%H:%M:%SZ'):
             if datetime is None or datetime == '':
                 return None
             return pytz.timezone(tz).localize(dateutil.parser.parse(datetime)).astimezone(pytz.timezone(target_tz)).strftime(format)

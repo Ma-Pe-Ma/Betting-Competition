@@ -67,13 +67,16 @@ def sign_in_required(role : Role = Role.USER):
         @functools.wraps(view)
         def wrapped_view(*args, **kwargs):
             if g.user is None:
-                return '', 401
+                return gettext('User is not authorized.'), 401
+
+            if g.user['admin'] == 1:
+                return view(*args, **kwargs)
 
             if role == Role.ADMIN:
-                if g.user['admin'] != 1:
-                    return render_template('/error-handling/page-404.html'), 404
-            elif cache.get('maintenance'):
-                return render_template('/error-handling/page-503.html'), 503
+                return gettext('Page is unavailable.'), 404
+            
+            if cache.get('maintenance'):
+                return gettext('The site is under maintenance. Please try again in a few minutes.'), 503
 
             return view(*args, **kwargs)
 

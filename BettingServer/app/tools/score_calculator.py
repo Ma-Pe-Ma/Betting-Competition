@@ -126,7 +126,7 @@ def get_daily_points_by_current_time_query(users : str) -> str:
         CASE point_entries.date
             WHEN date(:register, '-2 days') THEN COALESCE(:starting_bet_amount, 0)
             WHEN date(:register, '-1 days') THEN COALESCE(-gt_bet_amount.total_bet, 0)
-            WHEN date(:group_evaluation, '1 days') THEN COALESCE(group_bonus.prize, 0)
+            WHEN date(:group_evaluation, '0 days') THEN COALESCE(group_bonus.prize, 0) + SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet, 0))
             WHEN date(:tournament_end, '1 days') THEN COALESCE(tournament_bonus.prize, 0)
             ELSE SUM(COALESCE(match_prize.bonus * match_prize.bet + match_prize.multiplier * match_prize.bet - match_prize.bet, -match_prize.bet, 0))
         END AS diff

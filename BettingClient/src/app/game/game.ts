@@ -52,4 +52,14 @@ export class Game {
   close(alert: Alert) {
 		this.alerts.splice(this.alerts.indexOf(alert), 1);
   }
+
+  isMaintenance() {
+    const user = this.auth.getUser();
+
+    if(user?.maintenance && user?.role == 0) {
+      return true;
+    }
+
+    return false;
+  }
 }

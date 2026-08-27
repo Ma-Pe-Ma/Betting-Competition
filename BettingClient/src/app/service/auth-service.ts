@@ -37,4 +37,15 @@ export class AuthService {
   get getUser$(): Observable<User | null> {
     return this.userSubject.asObservable();
   }
+
+  updateUserField(updatedFields: Partial<User>) {
+    const currentUser = this.userSubject.value;
+
+    if (currentUser) {
+      this.userSubject.next({
+        ...currentUser,
+        ...updatedFields
+      });
+    }
+}
 }

@@ -203,19 +203,20 @@ After extracting the strings update the existing locale file or crete a new one.
 
 On the server side, the translation is implemented with `Flask-Babel` so the site can be translated easily. To setup babel translations these commands need to be launched:
 
-    pybabel extract -F ./BettingServer/app/babel.cfg -o ./BettingServer/app/assets/translations/messages.pot .
-    pybabel init -i ./BettingServer/app/assets/translations/messages.pot -d ./BettingServer/app/assets/translations -l `hu`
+    pybabel extract -F ./app/babel.cfg -o ./app/assets/translations/messages.pot .
+    pybabel init -i ./app/assets/translations/messages.pot -d ./app/assets/translations -l `hu`
 
-    pybabel update -i ./BettingServer/app/assets/translations/messages.pot -d ./BettingServer/app/assets/translations
-    pybabel compile -d ./BettingServer/app/assets/translations
+    pybabel update -i ./app/assets/translations/messages.pot -d ./app/assets/translations
+    pybabel compile -d ./app/assets/translations
 
 ## TO-DO
-* list every match in results
-* fix maintenance mode
-* new message count
-* fix error handling pages
-* clean-up statistics + check GUI
+* create static demo page for new client
+* fix unseen chat message count
+* solve schedulings: gunicorn now schedules tasks on each worker
+* fix error handling pages on server side
+* clean-up statistics + score calculation
 * create SQL views
+* admin gui cleanup
 
 ### Backlog
 * check foreign key relations in DB
@@ -223,4 +224,3 @@ On the server side, the translation is implemented with `Flask-Babel` so the sit
 * email notification/smtp?
 * session handling with Flask-login
 * Add timezone selector for user
-* forcing redirect to group bet before start + redirect to team data upload at very first startup for admin

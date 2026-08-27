@@ -29,6 +29,12 @@ validate_path() {
     fi
 }
 
+# Set default values
+export client_docker_file="Dockerfile-builder"
+export BUILD_ENV="standard"
+export MEM_LIMIT="2048M"
+export CPU_LIMIT="1"
+
 # Prompt and set the configuration mode (Standard / Precompiled / Low-memory)
 configure_mode() {
     # Only prompt if client_mode isn't already set
@@ -40,12 +46,6 @@ configure_mode() {
         echo -n "Enter choice [1-3]: "
         read -r client_mode
     fi
-
-    # Set default values
-    export client_docker_file="Dockerfile-builder"
-    export BUILD_ENV="standard"
-    export MEM_LIMIT="2048M"
-    export CPU_LIMIT="1"
 
     case "$client_mode" in
         1)

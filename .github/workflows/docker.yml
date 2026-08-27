@@ -56,11 +56,17 @@ jobs:
           fi 
 
       - name: Print logs
+        if: always()
         run: |
-          docker logs betting-client
-          docker logs betting-server
+          echo "=== Local Cert Mock Logs ==="
+          docker logs local-cert-mock || true
+          echo "=== Betting Server Logs ==="
+          docker logs betting-server || true
+          echo "=== Betting Client Logs ==="
+          docker logs betting-client || true
 
       - name: Stop Docker Images
+        if: always()
         run: |
-          docker container stop betting-client
-          docker container stop betting-server
+          docker container stop betting-client || true
+          docker container stop betting-server || true
