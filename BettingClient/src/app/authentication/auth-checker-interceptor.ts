@@ -34,6 +34,10 @@ export const authCheckerInterceptor: HttpInterceptorFn = (req, next) => {
           return EMPTY;
         }
 
+        if (error.status === 503) {
+          authService.updateUserField({maintenance: true})
+        }
+
         return throwError(() => error);
       })
     );

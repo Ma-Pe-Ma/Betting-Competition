@@ -114,7 +114,7 @@ def daily_standings():
             query_string = text("SELECT username, email, language, date(:now) AS date "
                                 "FROM bet_user "
                                 "WHERE summary = 1")
-            result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string()})
+            result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string_with_seconds()})
             for user in result.fetchall():
                 if user.language not in notification_map:
                     notification_map[user.language] = notification_handler.get_notifier().get_notification_resource_by_tag('standings')
@@ -150,7 +150,7 @@ def daily_checker():
                             "FROM match "
                             "WHERE date(match.datetime) = date(:now_date) AND unixepoch(match.datetime) > unixepoch(:now_time) "
                             "ORDER BY unixepoch(match.datetime)")
-        result = get_db().session.execute(query_string, {'now_date' : utc_now.strftime('%Y-%m-%d'), 'now_time' : utc_now.strftime('%Y-%m-%d %H:%M')})
+        result = get_db().session.execute(query_string, {'now_date' : utc_now.strftime('%Y-%m-%d'), 'now_time' : utc_now.strftime('%Y-%m-%dT%H:%M:%SZ')})
             
         one_hour_before_first_match = None
         time_after_last_match = None

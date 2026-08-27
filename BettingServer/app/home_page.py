@@ -31,7 +31,7 @@ def homepage():
                         "WHERE unixepoch(match.datetime) > unixepoch(:now) "
                         "ORDER BY date ASC, time ASC")
 
-    result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string(), 'l' : session['language'], 'u' : g.user['username'], 'tz' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'now' : time_handler.get_now_time_string_with_seconds(), 'l' : session['language'], 'u' : g.user['username'], 'tz' : g.user['timezone']})
 
     days_query_string = text("SELECT DISTINCT date(time_converter(match.datetime, 'utc', :tz)) AS date FROM match")
     days_result = get_db().session.execute(days_query_string, {'tz' : g.user['timezone']})
@@ -67,7 +67,7 @@ def homepage():
 @sign_in_required()
 def credit():
     daily_point_parameters = score_calculator.get_daily_point_parameters()
-    daily_point_parameters.update({'u' : g.user['username'], 'l' : session['language'], 'now' : time_handler.get_now_time_object().strftime('%Y-%m-%d %H:%M')})
+    daily_point_parameters.update({'u' : g.user['username'], 'l' : session['language'], 'now' : time_handler.get_now_time_object().strftime('%Y-%m-%dT%H:%M:%SZ')})
 
     daily_point_query = score_calculator.get_daily_points_by_current_time_query(users=':u')
     day_result = get_db().session.execute(text(daily_point_query), daily_point_parameters)
@@ -92,7 +92,7 @@ def players():
 @sign_in_required()
 def results():
     date_query_string = text('SELECT date(match.datetime) AS date FROM match WHERE unixepoch(match.datetime) < unixepoch(:now) GROUP BY date(match.datetime) ORDER BY date(match.datetime) DESC')
-    date_result = get_db().session.execute(date_query_string, {'now' : time_handler.get_now_time_string()})
+    date_result = get_db().session.execute(date_query_string, {'now' : time_handler.get_now_time_string_with_seconds()})
     dates = date_result.fetchall()
 
     return [d._asdict()['date'] for d in dates]

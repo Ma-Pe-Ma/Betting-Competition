@@ -33,7 +33,7 @@ def match_bet():
                         "LEFT JOIN (SELECT * FROM match_bet WHERE username = :u ) AS bet ON bet.match_id = match.id "
                         "WHERE match.id = :match_id")
 
-    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string(), 'u' : g.user['username'], 'l' : session['language'], 'tz' : g.user['timezone']})
+    result = get_db().session.execute(query_string, {'match_id' : match_id, 'now' : time_handler.get_now_time_string_with_seconds(), 'u' : g.user['username'], 'l' : session['language'], 'tz' : g.user['timezone']})
     match_from_db = result.fetchone()._asdict()
 
     if 'active' not in match_from_db or match_from_db['active'] == None:

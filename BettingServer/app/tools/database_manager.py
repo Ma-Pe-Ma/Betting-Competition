@@ -56,8 +56,8 @@ def initialize_matches():
         fields = next(data_reader)
 
         for row in data_reader:        
-            time_object = datetime.strptime(row[2], "%d/%m/%Y %H:%M")
-            time_string = time_object.strftime("%Y-%m-%d %H:%M")
+            time_object = datetime.strptime(row[2], '%d/%m/%Y %H:%M')
+            time_string = time_object.strftime('%Y-%m-%dT%H:%M:%SZ')
             query_string = text('INSERT INTO match (id, team1, team2, datetime, round, max_bet) VALUES (:id, :t1, :t2, :t, :r, :m)')
             get_db().session.execute(query_string, {'id' : row[0], 't1' : row[4], 't2' : row[5], 't' : time_string, 'r' : row[1], 'm' : bet_values['default_max_bet_per_match']})
 

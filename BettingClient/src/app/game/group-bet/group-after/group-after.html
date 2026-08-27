@@ -187,7 +187,8 @@
                         <div class="row g-0 rounded border border-secondary overflow-hidden">
                             <div class="col-2 col-sm-1 bg-dark border-end border-secondary text-center">
                                 <div
-                                    class="p-2 border-bottom border-secondary fw-bold text-white-50 small bg-secondary">#</div>
+                                    class="p-2 border-bottom border-secondary fw-bold text-white-50 small bg-secondary">
+                                    #</div>
                                 @for(team of group.teams; track team) {
                                 <div class="p-2 border-bottom border-secondary d-flex align-items-center justify-content-center text-white-50 fw-semibold"
                                     style="height: 43px;">
@@ -211,19 +212,20 @@
 
                             <div class="col"
                                 [ngClass]="groupState != GroupState.EVALUATED ? 'col-10 col-sm-11' : 'col-5 col-sm-6'">
-                                <div class="p-2 border-bottom border-secondary fw-bold text-white-50 small bg-secondary ps-3"
+                                <div class="p-2 border-bottom border-secondary fw-bold text-white-50 small bg-secondary ps-3 text-nowrap text-truncate"
                                     i18n="@@predictedOrder">Predicted order</div>
                                 <div class="list-group list-group-flush">
                                     @for(team of group.teams; track team) {
-                                    <div class="list-group-item text-white border-bottom border-secondary d-flex align-items-center ps-3 fw-semibold transition-all"
+                                    <div class="list-group-item text-white border-bottom border-secondary d-flex align-items-center ps-3 fw-semibold transition-all overflow-hidden"
                                         [ngClass]="groupState != GroupState.EVALUATED ? 'bg-dark' : (team.bet_name == team.name ? 'bg-success bg-opacity-25 text-success' : 'bg-danger bg-opacity-10 text-danger-hover')"
                                         style="height: 43px; font-size: 0.9rem;">
 
                                         @if (groupState == GroupState.EVALUATED) {
-                                        <i class="bi me-2"
+                                        <i class="bi me-2 flex-shrink-0"
                                             [ngClass]="team.bet_name == team.name ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-danger'"></i>
                                         }
-                                        <span class="truncate">{{ team?.bet_name_tr ?? '-' }}</span>
+                                        <span class="truncate text-nowrap text-truncate d-inline-block w-100">{{
+                                            team?.bet_name_tr ?? '-' }}</span>
                                     </div>
                                     }
                                 </div>
